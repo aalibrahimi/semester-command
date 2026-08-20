@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Semester Command</title>
+
+    <!--
+      THEME PRE-PAINT. Blocking on purpose (SPEC.md §9.6).
+
+      This script runs before React, before the stylesheet finishes, before
+      anything renders. If it were deferred, or moved into a React effect, the
+      window would paint the default theme for one frame and then swap — a white
+      flash on every single launch. That flash is called out in the spec as the
+      most common bug in this feature, so: do not add `defer`, do not move this
+      into a module, and do not make it async.
+
+      Source of truth for the preference is the SQLite settings table, read over
+      IPC after mount. IPC is async and therefore useless this early, so
+      `sc.theme` in localStorage is a synchronous mirror of it, rewritten by the
+      theme provider whenever the DB value changes. If the two ever disagree the
+      DB wins and the class is corrected within the first frame after hydration
+      — invisible, because it only happens when the preference changed on
+      another launch.
+
+      `matchMedia` is what resolves "system" here rather than tauri-plugin-os:
+      the plugin is async too. The provider reconciles with the plugin later.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("sc.theme"); // "light" | "dark" | "system" | null
+          var mode = stored || "system";
+          var resolved =
+            mode === "system"
+              ? window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : "dark"
+              : mode;
+          var root = document.documentElement;
+          root.classList.remove("light", "dark");
+          root.classList.add(resolved);
+          root.style.colorScheme = resolved;
+        } catch (e) {
+          /* Private mode, storage disabled, anything at all: fall through to
+             the `class="dark"` already on <html>. Never let this throw and take
+             the app down before it starts. */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

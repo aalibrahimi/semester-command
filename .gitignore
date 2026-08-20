@@ -1,0 +1,70 @@
+# Rust / Tauri
+/src-tauri/target/
+/src-tauri/gen/
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# Secrets — nothing here ever gets committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+canvas_token*
+
+# Local data — contains my actual grades
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+/data/
+*.ics
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Build artifacts
+/src-tauri/Cargo.lock.orig
+*.log
+
+# ── Additions beyond SPEC.md §12 ────────────────────────────────────────────
+# The spec's list assumes macOS. This repo is developed cross-platform, and a
+# few things it does not mention are worth keeping out of history.
+
+# Windows shell debris (Thumbs.db above is only half of it)
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+*~
+
+# The harvested Canvas session lives in the OS credential store, but the
+# documented fallback in §1 is a 0600 file in the app config dir. If that path
+# is ever pointed at the repo during debugging, this is the backstop.
+session.json
+cookies.json
+/src-tauri/.session*
+
+# sqlx offline query cache is intentionally NOT ignored — it must be committed
+# so the project builds without a live database. See docs/DEVELOPMENT.md.
+# (no entry for /src-tauri/.sqlx/ on purpose)
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Test and coverage output
+/coverage/

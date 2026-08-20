@@ -1,0 +1,101 @@
+[package]
+name = "semester-command"
+version = "0.1.0"
+description = "Local-first Canvas coursework triage and grade planning"
+authors = ["Simplicty Dev V2"]
+edition = "2021"
+rust-version = "1.77"
+
+# The binary is named `semester-command` and doubles as the MCP server in M5
+# (`semester-command --mcp`), which is why there is one binary rather than two.
+[lib]
+name = "semester_command_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-os = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+# Structured logging. The Canvas client logs every request's rate-limit headers,
+# and grepping that back out of println! is miserable.
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# ── Declared now, used from M1 ──────────────────────────────────────────────
+# They are here at M0 on purpose: resolving the full dependency graph once, at
+# scaffold time, is how you find out that two crates disagree about a rustls
+# version before you are halfway through writing the sync engine.
+
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+
+# rustls, not native-tls (SPEC.md §1). It also removes OpenSSL from the Windows
+# and macOS build, which is one fewer thing to get wrong when packaging.
+reqwest = { version = "0.12", default-features = false, features = [
+  "rustls-tls",
+  "json",
+  "cookies",
+  "gzip",
+  "stream",
+] }
+
+sqlx = { version = "0.8", default-features = false, features = [
+  "runtime-tokio-rustls",
+  "sqlite",
+  "chrono",
+  "json",
+  "macros",
+  "migrate",
+] }
+
+chrono = { version = "0.4", features = ["serde"] }
+url = "2"
+
+# ── Platform-specific ───────────────────────────────────────────────────────
+
+# Autostart is desktop-only; the plugin does not exist for mobile targets.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"
+
+# keyring's backend is chosen per platform rather than by its defaults, so a
+# Linux build does not silently pull in a D-Bus/secret-service dependency that
+# a headless CI machine cannot satisfy.
+#
+# macOS  → Keychain              (what §1 assumes)
+# Windows → Credential Manager   (the equivalent, and where this repo is developed)
+# Linux  → kernel keyutils       (no D-Bus, no desktop session required)
+#
+# All three are treated as short-lived storage that is expected to expire
+# (§2.0). If keyring init fails on any platform we fall back to a 0600 file in
+# the app config dir and say so in the UI.
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { version = "3", features = ["apple-native"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+keyring = { version = "3", features = ["windows-native"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+keyring = { version = "3", features = ["linux-native"] }
+
+[features]
+# Tauri's default feature set. `custom-protocol` is what the release build uses
+# to serve the frontend from the binary instead of a dev server.
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+# A grade calculator is not a game engine; optimise for a small, fast-starting
+# binary rather than for throughput.
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
