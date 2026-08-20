@@ -26,6 +26,7 @@ const FILL: Record<SignalStatus, string> = {
   locked: "bg-locked",
 };
 
+
 /** Screen-reader and tooltip wording. Colour alone must never be the only
  *  channel carrying the meaning (§9.7). */
 const LABEL: Record<SignalStatus, string> = {
