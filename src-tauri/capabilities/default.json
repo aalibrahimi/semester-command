@@ -9,6 +9,13 @@
     "notification:default",
     "os:allow-os-type",
     "os:allow-platform",
-    "opener:allow-open-url"
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://sjsu.instructure.com/*"
+        }
+      ]
+    }
   ]
 }
