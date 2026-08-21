@@ -222,7 +222,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                 aria-label="Settings"
                 className={({ isActive }) =>
                   cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-micro",
+                    "flex h-8 w-8 shrink-0 justify-items-center content-center rounded-md transition-colors duration-micro",
                     isActive
                       ? "bg-fill-ghost-selected text-foreground"
                       : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
