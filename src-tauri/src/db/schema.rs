@@ -97,6 +97,25 @@ pub struct InstructorRow {
     pub synced_at: Option<String>,
 }
 
+/// Local-only (§3): the user's target grade per course.
+#[derive(Debug, Clone, FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TargetRow {
+    pub course_id: String,
+    pub target_letter: Option<String>,
+    pub target_pct: Option<f64>,
+    pub grade_scale_json: Option<String>,
+}
+
+/// Local-only (§3): the user's time estimate per assignment.
+#[derive(Debug, Clone, FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EstimateRow {
+    pub assignment_id: String,
+    pub est_minutes: Option<i64>,
+    pub my_note: Option<String>,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SyncLogRow {

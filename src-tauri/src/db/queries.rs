@@ -108,3 +108,11 @@ pub async fn all_instructors(db: &Db) -> Result<Vec<InstructorRow>, sqlx::Error>
         .fetch_all(db)
         .await
 }
+
+pub async fn all_targets(db: &Db) -> Result<Vec<TargetRow>, sqlx::Error> {
+    sqlx::query_as("SELECT * FROM targets").fetch_all(db).await
+}
+
+pub async fn all_estimates(db: &Db) -> Result<Vec<EstimateRow>, sqlx::Error> {
+    sqlx::query_as("SELECT * FROM estimates").fetch_all(db).await
+}

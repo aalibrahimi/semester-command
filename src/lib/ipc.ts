@@ -16,12 +16,18 @@
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
 import type {
   AuthStatus,
+  CalendarItem,
+  CourseDetailPayload,
+  Dashboard,
   DebugDump,
   DebugOverview,
   HarvestReport,
   IcsSummary,
+  InstructorRow,
+  SolverAnswer,
   SyncStatus,
   ThemeMode,
+  TriageRow,
 } from "@/types";
 
 /**
@@ -195,6 +201,72 @@ export async function saveManualAssignment(args: {
 /** Record a score by hand; null explicitly un-grades. */
 export async function saveManualScore(assignmentId: string, score: number | null): Promise<void> {
   return call<void>("save_manual_score", { assignmentId, score });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Grades + screens (§4, §5) — all numbers computed in Rust.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/** Every course graded and ranked by risk, plus the nav counts. Outside
+ *  Tauri: an empty dashboard so the shell renders in browser-only work. */
+export async function courseSummaries(): Promise<Dashboard> {
+  if (!IS_TAURI) return { courses: [], openTotal: 0, dueThisWeek: 0 };
+  return call<Dashboard>("course_summaries");
+}
+
+/** Everything the course-detail screen needs in one read. */
+export async function courseDetail(courseId: string): Promise<CourseDetailPayload> {
+  return call<CourseDetailPayload>("course_detail", { courseId });
+}
+
+/** "What do I need?" — null assignmentId = averaged over everything left. */
+export async function whatDoINeed(
+  courseId: string,
+  targetPct: number,
+  assignmentId: string | null,
+): Promise<SolverAnswer> {
+  return call<SolverAnswer>("what_do_i_need", { courseId, targetPct, assignmentId });
+}
+
+/** Set a course's target grade. */
+export async function setTarget(
+  courseId: string,
+  targetPct: number,
+  targetLetter?: string,
+): Promise<void> {
+  return call<void>("set_target", { courseId, targetPct, targetLetter });
+}
+
+/** The ranked triage list. Outside Tauri: empty. */
+export async function triageRows(): Promise<TriageRow[]> {
+  if (!IS_TAURI) return [];
+  return call<TriageRow[]>("triage_rows");
+}
+
+/** Every dated assignment, ascending. Outside Tauri: empty. */
+export async function calendarItems(): Promise<CalendarItem[]> {
+  if (!IS_TAURI) return [];
+  return call<CalendarItem[]>("calendar_items");
+}
+
+/** Instructors across all courses. Outside Tauri: empty. */
+export async function listInstructors(): Promise<InstructorRow[]> {
+  if (!IS_TAURI) return [];
+  return call<InstructorRow[]>("list_instructors");
+}
+
+/** Save the local-only note on an instructor. */
+export async function saveInstructorNote(
+  id: string,
+  courseId: string,
+  note: string | null,
+): Promise<void> {
+  return call<void>("save_instructor_note", { id, courseId, note });
+}
+
+/** Save the local-only time estimate on an assignment (triage's divisor). */
+export async function setEstimate(assignmentId: string, estMinutes: number | null): Promise<void> {
+  return call<void>("set_estimate", { assignmentId, estMinutes });
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

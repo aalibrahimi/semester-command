@@ -18,8 +18,8 @@
  * everything else goes. The dots are the whole reason to glance at a collapsed
  * sidebar, so they are the last thing to be cut.
  *
- * TODO(M1): the course list is fed from `listCourses()` once sync lands. Until
- * then it renders its empty state, which is the honest thing to show.
+ * The course list and nav counts come from `useCourses()` — every number and
+ * every status colour was computed in Rust (§10).
  */
 import { NavLink } from "react-router-dom";
 import {
@@ -36,7 +36,10 @@ import {
 import { cn } from "@/lib/utils";
 import { shortcut } from "@/lib/platform";
 import { sinceSync } from "@/lib/format";
+import { openCanvasLogin } from "@/lib/ipc";
 import { useSync } from "@/hooks/useSync";
+import { useCourses } from "@/hooks/useCourses";
+import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -60,13 +63,14 @@ export interface SidebarProps {
 
 export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { status, isReconnectRequired } = useSync();
+  const { courses, openTotal, dueThisWeek, loaded } = useCourses();
 
-  // TODO(M1): counts come from the DB. Null until then, which is why no badges
-  // render on a fresh install — better than a confident, wrong zero.
+  // Zero-count badges render as no badge at all — a "0" chip is noise. Before
+  // the first load counts stay null for the same reason.
   const items: NavItem[] = [
-    { to: "/", label: "Triage", icon: ListChecks, digit: "1", count: null },
+    { to: "/", label: "Triage", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
     { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
-    { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: null },
+    { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
     { to: "/contacts", label: "Contacts", icon: Users, digit: "4", count: null },
   ];
 
@@ -134,13 +138,54 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
               Courses
             </h2>
           )}
-          {/* Empty state names the next action rather than saying "No data"
-              (§9.7). */}
-          {collapsed ? (
+          {courses.length > 0 ? (
+            <div className="flex flex-col gap-0.5">
+              {courses.map((c) => {
+                const label = c.courseCode ?? c.name ?? c.id;
+                const row = (
+                  <NavLink
+                    key={c.id}
+                    to={`/courses/${c.id}`}
+                    className={({ isActive }) =>
+                      cn(
+                        "group flex h-8 items-center gap-2 rounded-lg px-2.5 text-xs transition-colors duration-micro",
+                        collapsed && "justify-center px-0",
+                        isActive
+                          ? "bg-card font-medium text-foreground shadow-card"
+                          : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
+                        !c.gradeable && "opacity-60",
+                      )
+                    }
+                  >
+                    <CourseStatusDot status={c.status} emphasize={c.status === "critical"} />
+                    {!collapsed && <span className="truncate">{label}</span>}
+                    {!collapsed && c.gradeable && (
+                      <span data-numeric className="ml-auto font-mono text-2xs text-muted-foreground">
+                        {c.grade.currentPct !== null ? `${c.grade.currentPct.toFixed(0)}%` : "—"}
+                      </span>
+                    )}
+                  </NavLink>
+                );
+                // Collapsed rail: the dot is the row; give it the course name
+                // on hover, since the dots are the reason the rail exists.
+                return collapsed ? (
+                  <Tooltip key={c.id}>
+                    <TooltipTrigger asChild>{row}</TooltipTrigger>
+                    <TooltipContent side="right">{label}</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  row
+                );
+              })}
+            </div>
+          ) : /* Empty state names the next action rather than saying "No
+                 data" (§9.7). Hidden until the first load so it can't flash
+                 over a populated list. */
+          collapsed ? (
             <div className="flex justify-center py-2">
               <span className="h-2 w-2 rounded-full border border-dashed border-border" />
             </div>
-          ) : (
+          ) : loaded ? (
             <p className="px-2 py-1 text-xs leading-relaxed text-muted-foreground">
               No courses yet.{" "}
               <NavLink to="/settings" className="text-brand-fg underline underline-offset-2">
@@ -148,7 +193,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
               </NavLink>{" "}
               to sync, or add a calendar feed URL.
             </p>
-          )}
+          ) : null}
         </div>
       </ScrollArea>
 
@@ -273,7 +318,7 @@ function SyncIndicator({
     const content = (
       <button
         type="button"
-        // TODO(M1): opens the Canvas login webview and re-harvests cookies.
+        onClick={() => void openCanvasLogin()}
         className={cn(
           "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-critical-fg transition-colors duration-micro hover:bg-critical/10",
           collapsed && "justify-center px-0",

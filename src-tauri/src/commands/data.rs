@@ -84,6 +84,109 @@ pub async fn debug_force_reconnect(app: AppHandle) -> CommandResult<()> {
     Ok(())
 }
 
+// ── Screen reads ────────────────────────────────────────────────────────────
+
+/// The triage list, ranked in Rust (§5 screen 1 — the frontend never ranks).
+#[tauri::command]
+pub async fn triage_rows(app: AppHandle) -> CommandResult<Vec<crate::triage::TriageRow>> {
+    let db = db_of(&app);
+    let bundle = crate::commands::grades::load_bundle(&db)
+        .await
+        .map_err(storage_err)?;
+    Ok(crate::triage::rank(&bundle, chrono::Utc::now()))
+}
+
+/// One calendar item. Mirrored as `CalendarItem` in types.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CalendarItem {
+    pub assignment_id: String,
+    pub course_id: String,
+    pub course_code: Option<String>,
+    pub name: Option<String>,
+    pub due_at: String,
+    pub points_possible: Option<f64>,
+    pub submitted: bool,
+    pub graded: bool,
+    pub source: String,
+}
+
+/// Every dated assignment, ascending — the calendar's whole diet.
+#[tauri::command]
+pub async fn calendar_items(app: AppHandle) -> CommandResult<Vec<CalendarItem>> {
+    let db = db_of(&app);
+    let bundle = crate::commands::grades::load_bundle(&db)
+        .await
+        .map_err(storage_err)?;
+
+    let code_of: std::collections::HashMap<&str, Option<String>> = bundle
+        .courses
+        .iter()
+        .map(|c| (c.id.as_str(), c.course_code.clone()))
+        .collect();
+
+    let mut items: Vec<CalendarItem> = bundle
+        .assignments
+        .iter()
+        .filter_map(|a| {
+            let due_at = a.due_at.clone()?;
+            let s = bundle.submissions.get(&a.id);
+            Some(CalendarItem {
+                assignment_id: a.id.clone(),
+                course_id: a.course_id.clone(),
+                course_code: code_of.get(a.course_id.as_str()).cloned().flatten(),
+                name: a.name.clone(),
+                due_at,
+                points_possible: a.points_possible,
+                submitted: s.map(|s| s.submitted_at.is_some()).unwrap_or(false),
+                graded: s.map(|s| s.score.is_some()).unwrap_or(false),
+                source: a.source.clone(),
+            })
+        })
+        .collect();
+    items.sort_by(|a, b| a.due_at.cmp(&b.due_at));
+    Ok(items)
+}
+
+/// Instructors across all courses, for the Contacts screen.
+#[tauri::command]
+pub async fn list_instructors(app: AppHandle) -> CommandResult<Vec<InstructorRow>> {
+    let db = db_of(&app);
+    queries::all_instructors(&db).await.map_err(storage_err)
+}
+
+/// The user's note on an instructor: office hours, "answers email fast".
+/// Local-only, survives every sync (§3).
+#[tauri::command]
+pub async fn save_instructor_note(
+    app: AppHandle,
+    id: String,
+    course_id: String,
+    note: Option<String>,
+) -> CommandResult<()> {
+    let db = db_of(&app);
+    upsert::instructor_note(&db, &id, &course_id, note.as_deref())
+        .await
+        .map_err(storage_err)
+}
+
+/// The user's time estimate for an assignment — the denominator of the
+/// triage score, inline-editable on the list (§5).
+#[tauri::command]
+pub async fn set_estimate(
+    app: AppHandle,
+    assignment_id: String,
+    est_minutes: Option<i64>,
+) -> CommandResult<()> {
+    if est_minutes.map(|m| m < 0 || m > 10_000).unwrap_or(false) {
+        return Err(CommandError::internal("That estimate doesn't look like minutes."));
+    }
+    let db = db_of(&app);
+    upsert::estimate(&db, &assignment_id, est_minutes)
+        .await
+        .map_err(storage_err)
+}
+
 // ── Manual entry (§3) ───────────────────────────────────────────────────────
 
 /// A fresh id no Canvas entity can collide with.

@@ -229,3 +229,127 @@ export interface IcsSummary {
   coursesCreated: number;
   skippedEvents: number;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Grades (§4) — mirrors of grades.rs and commands/grades.rs. Every number
+   here was computed in Rust; the frontend renders, never derives.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export type GradingMode = "weighted" | "points";
+
+export interface CourseGrade {
+  /** Ungraded excluded — what Canvas shows. Null = nothing graded yet. */
+  currentPct: number | null;
+  /** Every ungraded counted as zero — the honest number. */
+  projectedPct: number;
+  /** currentPct − projectedPct, precomputed in Rust. */
+  gapPct: number | null;
+  mode: GradingMode;
+  /** Canvas's own current_score, kept beside ours, never replacing it. */
+  canvasCurrentPct: number | null;
+  /** Set when ours and Canvas's differ by >0.1 — the mismatch banner. */
+  reconciliationDelta: number | null;
+}
+
+export interface CourseSummary {
+  id: string;
+  courseCode: string | null;
+  name: string | null;
+  term: string | null;
+  source: Source;
+  grade: CourseGrade;
+  maxPossiblePct: number;
+  currentLetter: string | null;
+  projectedLetter: string;
+  targetPct: number;
+  targetLetter: string;
+  status: SignalStatus;
+  openCount: number;
+  missingCount: number;
+  /** False for shells (announcements, advising) — de-emphasised in the UI. */
+  gradeable: boolean;
+}
+
+export interface Dashboard {
+  /** Sorted by risk in Rust; render in order. */
+  courses: CourseSummary[];
+  openTotal: number;
+  dueThisWeek: number;
+}
+
+export interface GroupDetail {
+  id: string;
+  name: string | null;
+  weight: number | null;
+  currentPct: number | null;
+  gradedCount: number;
+  totalCount: number;
+}
+
+export interface AssignmentDetail {
+  id: string;
+  groupId: string | null;
+  name: string | null;
+  dueAt: string | null;
+  pointsPossible: number | null;
+  score: number | null;
+  excused: boolean;
+  missing: boolean;
+  late: boolean;
+  submitted: boolean;
+  omitted: boolean;
+  htmlUrl: string | null;
+  source: Source;
+  hasRubric: boolean;
+  rubricJson: string | null;
+  /** Percentage points of the final grade riding on this assignment. */
+  impactPct: number;
+  estMinutes: number | null;
+}
+
+export interface CourseDetailPayload {
+  summary: CourseSummary;
+  groups: GroupDetail[];
+  assignments: AssignmentDetail[];
+  instructors: InstructorRow[];
+}
+
+/** The solver's answer (§4.3) — blunt on purpose. */
+export type SolverAnswer =
+  | { outcome: "required"; pct: number; pointsNeeded: number | null; pointsPossible: number | null }
+  | { outcome: "unreachable"; bestPossiblePct: number; bestPossibleLetter: string }
+  | { outcome: "alreadyLocked"; floorPct: number; floorLetter: string };
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Triage + calendar — mirrors of triage.rs and commands/data.rs.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export type TriageState = "missing" | "overdue" | "open";
+
+export interface TriageRow {
+  assignmentId: string;
+  courseId: string;
+  courseCode: string | null;
+  name: string | null;
+  dueAt: string | null;
+  pointsPossible: number | null;
+  /** "worth X% of your final grade". */
+  impactPct: number;
+  estMinutes: number | null;
+  state: TriageState;
+  htmlUrl: string | null;
+  /** The Rust-computed rank score, for the debug view. */
+  score: number;
+}
+
+export interface CalendarItem {
+  assignmentId: string;
+  courseId: string;
+  courseCode: string | null;
+  name: string | null;
+  dueAt: string;
+  pointsPossible: number | null;
+  submitted: boolean;
+  graded: boolean;
+  source: Source;
+}

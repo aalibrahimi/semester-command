@@ -261,6 +261,67 @@ pub async fn instructor(db: &Db, r: &InstructorRow) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+/// Set a course's target grade (local-only table, user-owned).
+pub async fn target(
+    db: &Db,
+    course_id: &str,
+    letter: &str,
+    pct: f64,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        INSERT INTO targets (course_id, target_letter, target_pct)
+        VALUES (?1, ?2, ?3)
+        ON CONFLICT(course_id) DO UPDATE SET
+            target_letter = excluded.target_letter,
+            target_pct = excluded.target_pct
+        "#,
+    )
+    .bind(course_id)
+    .bind(letter)
+    .bind(pct)
+    .execute(db)
+    .await?;
+    Ok(())
+}
+
+/// Set an assignment's time estimate (local-only table, user-owned).
+pub async fn estimate(
+    db: &Db,
+    assignment_id: &str,
+    est_minutes: Option<i64>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        INSERT INTO estimates (assignment_id, est_minutes)
+        VALUES (?1, ?2)
+        ON CONFLICT(assignment_id) DO UPDATE SET est_minutes = excluded.est_minutes
+        "#,
+    )
+    .bind(assignment_id)
+    .bind(est_minutes)
+    .execute(db)
+    .await?;
+    Ok(())
+}
+
+/// Update the user's note on an instructor — the one instructor field sync
+/// never touches, so this is its only writer.
+pub async fn instructor_note(
+    db: &Db,
+    id: &str,
+    course_id: &str,
+    note: Option<&str>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE instructors SET office_hours_note = ?1 WHERE id = ?2 AND course_id = ?3")
+        .bind(note)
+        .bind(id)
+        .bind(course_id)
+        .execute(db)
+        .await?;
+    Ok(())
+}
+
 /// Open a `sync_log` row, returning its id for [`sync_log_finish`].
 pub async fn sync_log_start(db: &Db, entity: &str) -> Result<i64, sqlx::Error> {
     let res = sqlx::query("INSERT INTO sync_log (started_at, entity) VALUES (?1, ?2)")
