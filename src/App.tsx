@@ -27,6 +27,7 @@ import Contacts from "@/routes/Contacts";
 import Settings from "@/routes/Settings";
 import DevTokens from "@/routes/DevTokens";
 import DevPreview from "@/routes/DevPreview";
+import DevDebug from "@/routes/DevDebug";
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
                   condition is statically false there. */}
               {import.meta.env.DEV && <Route path="dev/tokens" element={<DevTokens />} />}
               {import.meta.env.DEV && <Route path="dev/preview" element={<DevPreview />} />}
+              {import.meta.env.DEV && <Route path="dev/debug" element={<DevDebug />} />}
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

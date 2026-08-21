@@ -111,3 +111,121 @@ export interface HarvestReport {
   cookieNames: string[];
   validatedAs: string | null;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Synced rows (§3) — mirrors of the Rust structs in db/schema.rs.
+   All camelCase via serde; every row carries `source` so the UI can mark
+   anything Canvas didn't confirm.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface CourseRow {
+  id: string;
+  name: string | null;
+  courseCode: string | null;
+  term: string | null;
+  /** null = Canvas didn't say (grade engine treats as points mode). */
+  applyGroupWeights: boolean | null;
+  /** Canvas's own computed scores, for reconciliation — not ours. */
+  currentScore: number | null;
+  finalScore: number | null;
+  syllabusHtml: string | null;
+  source: Source;
+  rawJson: string | null;
+  syncedAt: string | null;
+}
+
+export interface AssignmentGroupRow {
+  id: string;
+  courseId: string;
+  name: string | null;
+  groupWeight: number | null;
+  position: number | null;
+  source: Source;
+  rawJson: string | null;
+  syncedAt: string | null;
+}
+
+export interface AssignmentRow {
+  id: string;
+  courseId: string;
+  groupId: string | null;
+  name: string | null;
+  dueAt: string | null;
+  pointsPossible: number | null;
+  omitFromFinalGrade: boolean | null;
+  /** JSON array as text, e.g. '["online_upload"]'. */
+  submissionTypes: string | null;
+  htmlUrl: string | null;
+  rubricJson: string | null;
+  source: Source;
+  rawJson: string | null;
+  syncedAt: string | null;
+}
+
+export interface SubmissionRow {
+  assignmentId: string;
+  /** null = not graded. Never conflate with 0. */
+  score: number | null;
+  grade: string | null;
+  submittedAt: string | null;
+  gradedAt: string | null;
+  workflowState: string | null;
+  excused: boolean | null;
+  missing: boolean | null;
+  late: boolean | null;
+  source: Source;
+  rawJson: string | null;
+  syncedAt: string | null;
+}
+
+export interface InstructorRow {
+  id: string;
+  courseId: string;
+  name: string | null;
+  email: string | null;
+  role: string | null;
+  /** Local-only; sync never touches it. */
+  officeHoursNote: string | null;
+  source: Source;
+  rawJson: string | null;
+  syncedAt: string | null;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Sync engine + debug surface — mirrors of commands/{sync,data}.rs.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface SyncLogRow {
+  id: number;
+  startedAt: string;
+  finishedAt: string | null;
+  entity: string;
+  ok: boolean;
+  error: string | null;
+}
+
+export interface EntityStat {
+  entity: string;
+  rows: number;
+  lastSyncedAt: string | null;
+}
+
+export interface DebugOverview {
+  stats: EntityStat[];
+  syncLog: SyncLogRow[];
+}
+
+export interface DebugDump {
+  courses: CourseRow[];
+  assignmentGroups: AssignmentGroupRow[];
+  assignments: AssignmentRow[];
+  submissions: SubmissionRow[];
+  instructors: InstructorRow[];
+}
+
+/** What a Tier 2 feed import did. */
+export interface IcsSummary {
+  assignments: number;
+  coursesCreated: number;
+  skippedEvents: number;
+}

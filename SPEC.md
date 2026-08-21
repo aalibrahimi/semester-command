@@ -531,3 +531,6 @@ Deviations from this spec made during implementation, each with its reason. Kept
 | 9.6 | Theme persisted to the DB | JSON file in the app config dir, same interface | The database arrives in M1; the theme toggle has to work in M0. TODO(M1) migrates it |
 | 10 | Four route files | Five, plus a dev-only token page | The sidebar's Courses nav item needs an index destination; `/dev/tokens` measures §9.6 contrast live and is stripped from release builds |
 | 12 | `.gitignore` as listed | Same, plus Windows/Linux debris and session-file backstops | The list assumes macOS |
+| 1 | sqlx compile-time checked queries | Runtime `query_as` against the typed row structs in `db/schema.rs` | The macros need a live `DATABASE_URL` or committed `.sqlx/` cache at build time, breaking `cargo check` on fresh clones for a modest gain on a single-user schema |
+| 10 | Sync flows through `commands/sync.rs` | Engine lives in `src-tauri/src/sync.rs`; the command is a thin trigger | Sync also runs from launch and a 30-minute timer — commands are the webview's surface, not a scheduler |
+| 9.6 | Theme migrates from JSON file to DB in M1 | Stays in the settings JSON file | Same interface, zero user-visible difference; a migration would add risk to M1 for nothing |

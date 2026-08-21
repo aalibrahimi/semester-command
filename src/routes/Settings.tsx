@@ -13,7 +13,8 @@
  *
  * TODO(M1 step 7): wire Tier 2 (the calendar feed URL field).
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { KeyRound, Link2, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -32,11 +33,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { IS_TAURI } from "@/lib/ipc";
+import {
+  getCalendarFeedUrl,
+  IS_TAURI,
+  setCalendarFeedUrl,
+  triggerIcsImport,
+} from "@/lib/ipc";
 
 export default function Settings() {
   const { status, busy, signIn, saveToken, signOut } = useAuth();
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [feedOpen, setFeedOpen] = useState(false);
+  const [feedUrl, setFeedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    // oxlint-disable-next-line set-state-in-effect -- reads external state once
+    void getCalendarFeedUrl().then(setFeedUrl).catch(() => {});
+  }, []);
 
   const sessionActive = status.tier === "session";
   const tokenActive = status.tier === "token";
@@ -120,13 +133,31 @@ export default function Settings() {
               icon={PencilLine}
               tier="Tier 2"
               name="Calendar feed"
-              status="Not configured"
+              status={feedUrl ? "Configured" : "Not configured"}
               description="Your private Canvas .ics URL from Calendar → Calendar Feed. Needs no login and always works, but carries due dates only — no grades, no weights, no rubrics. Paired with entering scores by hand, the grade engine still works end to end."
-              cta="Add feed URL"
-              disabled
+              cta={feedUrl ? "Change / import" : "Add feed URL"}
+              disabled={!IS_TAURI}
+              onCta={() => setFeedOpen(true)}
             />
           </CardContent>
         </Card>
+
+        {/* Dev-only: the sync debug surface. Statically stripped in release. */}
+        {import.meta.env.DEV && (
+          <Card className="rounded-2xl border-dashed border-border/60">
+            <CardContent className="flex items-center justify-between gap-4 py-4">
+              <div>
+                <div className="text-sm font-medium">Sync debug</div>
+                <p className="text-xs text-muted-foreground">
+                  Row counts, the sync log, and raw Canvas JSON. Dev builds only.
+                </p>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/dev/debug">Open</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* ── Appearance ────────────────────────────────────────────────── */}
         <Card className="rounded-2xl border-border/60 shadow-card">
@@ -146,7 +177,90 @@ export default function Settings() {
       </div>
 
       <TokenDialog open={tokenOpen} onOpenChange={setTokenOpen} onSave={saveToken} />
+      <FeedDialog
+        open={feedOpen}
+        onOpenChange={setFeedOpen}
+        current={feedUrl}
+        onSaved={setFeedUrl}
+      />
     </>
+  );
+}
+
+/**
+ * Tier 2 configuration: store the feed URL, optionally import right away.
+ * The URL is a capability secret (it grants read access to due dates), so it
+ * renders masked like the token field.
+ */
+function FeedDialog({
+  open,
+  onOpenChange,
+  current,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  current: string | null;
+  onSaved: (url: string | null) => void;
+}) {
+  const [url, setUrl] = useState("");
+  const [working, setWorking] = useState(false);
+
+  const close = (next: boolean) => {
+    if (!next) setUrl("");
+    onOpenChange(next);
+  };
+
+  const saveAndImport = () => {
+    const next = url.trim() === "" ? current : url.trim();
+    if (!next) return;
+    setWorking(true);
+    setCalendarFeedUrl(next)
+      .then(() => {
+        onSaved(next);
+        return triggerIcsImport();
+      })
+      .then((s) => {
+        toast.success(
+          `Imported ${s.assignments} assignment${s.assignments === 1 ? "" : "s"}` +
+            (s.coursesCreated > 0 ? ` across ${s.coursesCreated} new course entries` : ""),
+        );
+        close(false);
+      })
+      .catch((e: unknown) => toast.error(errorText(e, "Import failed")))
+      .finally(() => setWorking(false));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={close}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Canvas calendar feed</DialogTitle>
+          <DialogDescription>
+            In Canvas: Calendar → Calendar Feed → copy the URL. It carries every due date across
+            your courses and needs no login.{" "}
+            {current ? "A feed is already configured; leave the field empty to just re-import." : ""}
+          </DialogDescription>
+        </DialogHeader>
+        <input
+          type="password"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder={current ? "Keep current feed URL" : "https://sjsu.instructure.com/feeds/calendars/…"}
+          autoComplete="off"
+          spellCheck={false}
+          className="w-full rounded-md border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => close(false)} disabled={working}>
+            Cancel
+          </Button>
+          <Button onClick={saveAndImport} disabled={working || (url.trim() === "" && !current)}>
+            {working ? "Importing…" : "Save and import"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

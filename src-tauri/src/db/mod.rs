@@ -19,7 +19,47 @@ pub mod queries;
 pub mod schema;
 pub mod upsert;
 
-// TODO(M1): `pool()` — opens the SQLite pool at the app data dir and runs
-//           `migrations/` on startup. WAL mode; the app is single-user and
-//           single-process, but the MCP server in M5 opens the same file
-//           read-only while the desktop app is running.
+use std::path::Path;
+
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
+
+/// The one pool. Clone freely — it is a handle.
+pub type Db = sqlx::SqlitePool;
+
+/// Open (creating if missing) the database and run migrations.
+///
+/// WAL mode: the app is single-user and single-process today, but the MCP
+/// server in M5 opens this same file while the desktop app is running, and
+/// WAL is what makes concurrent reader + writer safe.
+///
+/// # Errors
+/// Anything sqlx raises opening the file or running `migrations/`. A failed
+/// migration is fatal to the caller — running against half a schema corrupts
+/// more than it saves.
+pub async fn open(data_dir: &Path) -> Result<Db, sqlx::Error> {
+    std::fs::create_dir_all(data_dir).map_err(sqlx::Error::Io)?;
+    let path = data_dir.join("semester-command.db");
+
+    let opts = SqliteConnectOptions::new()
+        .filename(&path)
+        .create_if_missing(true)
+        .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
+        // NORMAL is durable enough under WAL and much faster than FULL; a
+        // grade cache can always be re-synced, unlike a ledger.
+        .synchronous(sqlx::sqlite::SqliteSynchronous::Normal)
+        .foreign_keys(true);
+
+    let pool = SqlitePoolOptions::new()
+        .max_connections(4)
+        .connect_with(opts)
+        .await?;
+
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    tracing::info!(db = %path.display(), "database open, migrations current");
+    Ok(pool)
+}
+
+/// Now, as the RFC 3339 UTC string every timestamp column stores.
+pub fn now_rfc3339() -> String {
+    chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true)
+}

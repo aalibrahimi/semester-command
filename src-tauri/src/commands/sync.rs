@@ -1,11 +1,14 @@
 //! Sync commands: trigger a sync, report where it is.
 //!
-//! Called by: `src/lib/ipc.ts` (`getSyncStatus`; `triggerSync` from M1).
-//! Calls: the sync engine (M1) and [`crate::db`].
+//! Called by: `src/lib/ipc.ts` (`getSyncStatus`, `triggerSync`,
+//! `triggerIcsImport`).
+//! Calls: [`crate::sync`], [`crate::ical`], [`crate::db`].
 
 use serde::Serialize;
+use tauri::{AppHandle, Manager};
 
-use super::CommandResult;
+use super::{CommandError, CommandResult};
+use crate::db::{queries, upsert, Db};
 
 /// Where the sync engine is, as the sidebar footer renders it.
 ///
@@ -54,15 +57,12 @@ pub enum AuthModeTag {
     None,
 }
 
-/// Current sync status.
-///
-/// Auth tier and session health are live as of M1 steps 1–4; the sync engine
-/// itself (last-synced time, syncing phase) lands with M1 steps 5–6.
+/// Current sync status: live engine state plus the last successful run.
 #[tauri::command]
-pub async fn get_sync_status(app: tauri::AppHandle) -> CommandResult<SyncStatus> {
+pub async fn get_sync_status(app: AppHandle) -> CommandResult<SyncStatus> {
     use crate::canvas::client::AuthMode;
     use crate::commands::auth::AuthCtx;
-    use tauri::Manager;
+    use crate::sync::SyncState;
 
     let ctx = app.state::<AuthCtx>();
     let mode = ctx.client.auth_mode().await;
@@ -82,22 +82,64 @@ pub async fn get_sync_status(app: tauri::AppHandle) -> CommandResult<SyncStatus>
 
     // A credential that stopped working means every number on screen is stale
     // and the footer must say so from any screen (§2.0, §5).
-    let phase = if !mode.is_none() && !ctx.client.is_alive() {
+    let phase = if app.state::<SyncState>().is_running() {
+        SyncPhase::Syncing
+    } else if !mode.is_none() && !ctx.client.is_alive() {
         SyncPhase::ReconnectRequired
     } else {
         SyncPhase::Idle
     };
 
-    // TODO(M1 steps 5–6): read the latest `sync_log` row for last_synced_at
-    // and the live Syncing phase.
+    let db = app.state::<Db>().inner().clone();
+    let last_synced_at = queries::last_ok_sync(&db)
+        .await
+        .map_err(|e| CommandError::storage(format!("Could not read sync history: {e}")))?;
+
     Ok(SyncStatus {
         phase,
-        last_synced_at: None,
+        last_synced_at,
         message: None,
         auth_mode,
     })
 }
 
-// TODO(M1): trigger_sync() — kicks a sync, returns immediately. The engine
-//           enforces the 30-minute floor (§2.0) and caps concurrency at 4;
-//           a manual "Sync now" bypasses the floor but not the cap.
+/// Kick a sync and return immediately; progress lands on the `sync:` event
+/// and in `get_sync_status`. Manual, so it bypasses the 30-minute floor but
+/// not the concurrency cap (§6).
+#[tauri::command]
+pub async fn trigger_sync(app: AppHandle) -> CommandResult<()> {
+    tauri::async_runtime::spawn(async move {
+        crate::sync::run(&app, true).await;
+    });
+    Ok(())
+}
+
+/// Import the Tier 2 calendar feed now. Returns what it did — this one is
+/// awaited rather than fire-and-forget because the Settings screen shows the
+/// result inline.
+#[tauri::command]
+pub async fn trigger_ics_import(app: AppHandle) -> CommandResult<crate::ical::IcsSummary> {
+    let dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|e| CommandError::storage(format!("No config dir: {e}")))?;
+    let url = crate::settings::load(&dir)
+        .calendar_feed_url
+        .ok_or_else(|| CommandError::internal("No calendar feed URL is configured."))?;
+
+    let db = app.state::<Db>().inner().clone();
+    let log_id = upsert::sync_log_start(&db, "ics")
+        .await
+        .map_err(|e| CommandError::storage(format!("Could not open sync log: {e}")))?;
+
+    match crate::ical::import_feed(&db, &url).await {
+        Ok(summary) => {
+            let _ = upsert::sync_log_finish(&db, log_id, true, None).await;
+            Ok(summary)
+        }
+        Err(e) => {
+            let _ = upsert::sync_log_finish(&db, log_id, false, Some(&e)).await;
+            Err(CommandError::internal(e))
+        }
+    }
+}

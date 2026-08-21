@@ -37,6 +37,34 @@ pub fn get_preferred_theme(app: AppHandle) -> CommandResult<Option<String>> {
 /// be written. The frontend deliberately ignores this: the localStorage mirror
 /// already carried the change, so the only consequence is that the preference
 /// does not survive a restart.
+/// The stored Tier 2 calendar feed URL, if any.
+#[tauri::command]
+pub fn get_calendar_feed_url(app: AppHandle) -> CommandResult<Option<String>> {
+    let dir = config_dir(&app)?;
+    Ok(settings::load(&dir).calendar_feed_url)
+}
+
+/// Store (or clear, with `None`/empty) the Tier 2 calendar feed URL.
+///
+/// Light validation only — a wrong-but-https URL fails loudly at import time
+/// with a better message than any guess we could make here.
+#[tauri::command]
+pub fn set_calendar_feed_url(app: AppHandle, url: Option<String>) -> CommandResult<()> {
+    let url = url.map(|u| u.trim().to_string()).filter(|u| !u.is_empty());
+    if let Some(u) = &url {
+        if !u.starts_with("https://") {
+            return Err(CommandError::internal(
+                "That doesn't look like a feed URL — it should start with https://",
+            ));
+        }
+    }
+    let dir = config_dir(&app)?;
+    let mut current = settings::load(&dir);
+    current.calendar_feed_url = url;
+    settings::save(&dir, &current)
+        .map_err(|e| CommandError::storage(format!("Could not save the feed URL: {e}")))
+}
+
 #[tauri::command]
 pub fn set_preferred_theme(app: AppHandle, mode: String) -> CommandResult<()> {
     // Validate rather than trust. The webview is our own code, but a command is

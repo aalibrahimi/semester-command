@@ -170,6 +170,12 @@ impl CanvasClient {
         self.alive.load(Ordering::SeqCst)
     }
 
+    /// Force the session-dead state (debug tooling; the reconnect flow needs
+    /// to be testable without waiting for SJSU to expire a real session).
+    pub fn mark_dead(&self) {
+        self.alive.store(false, Ordering::SeqCst);
+    }
+
     /// Confirm a credential works by asking Canvas who we are.
     ///
     /// Used by the login poller (with a candidate cookie header, before it is

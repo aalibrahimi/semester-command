@@ -31,6 +31,7 @@ pub mod ical;
 pub mod mcp;
 pub mod notify;
 pub mod settings;
+pub mod sync;
 pub mod triage;
 
 use tauri::Manager;
@@ -74,9 +75,20 @@ pub fn run() {
             commands::auth::harvest_session,
             commands::auth::open_canvas_login,
             commands::auth::set_access_token,
+            commands::data::debug_dump,
+            commands::data::debug_force_reconnect,
+            commands::data::debug_overview,
+            commands::data::save_manual_assignment,
+            commands::data::save_manual_course,
+            commands::data::save_manual_group,
+            commands::data::save_manual_score,
+            commands::settings::get_calendar_feed_url,
             commands::settings::get_preferred_theme,
+            commands::settings::set_calendar_feed_url,
             commands::settings::set_preferred_theme,
             commands::sync::get_sync_status,
+            commands::sync::trigger_ics_import,
+            commands::sync::trigger_sync,
         ])
         .setup(|app| {
             // Resolving the config directory once, at startup, means every later
@@ -86,10 +98,17 @@ pub fn run() {
             std::fs::create_dir_all(&dir)?;
             tracing::info!(config_dir = %dir.display(), "app config directory ready");
 
-            setup_auth(app.handle().clone(), dir);
+            // The database opens before anything that might read it. Blocking
+            // setup on this is deliberate: every screen assumes the pool
+            // exists, and migrations failing is a stop-the-world problem.
+            let data_dir = app.path().app_data_dir()?;
+            let pool = tauri::async_runtime::block_on(db::open(&data_dir))?;
+            app.manage(pool);
+            app.manage(sync::SyncState::new());
 
-            // TODO(M1 steps 5–6): open the SQLite pool, run migrations, and
-            //           kick off the first sync.
+            setup_auth(app.handle().clone(), dir);
+            setup_sync_schedule(app.handle().clone());
+
             // TODO(M4): build the tray icon with "Sync now" and the next three
             //           deadlines, and start minimised when launched at login.
             Ok(())
@@ -138,6 +157,10 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
                     *ctx.validated_as.lock().unwrap() = user.name.clone();
                     tracing::info!(user = ?user.name, "restored session validated");
                     commands::auth::emit_status(&app, None).await;
+                    // Sync on launch (§6) — but only once the credential is
+                    // proven, so a dead session shows the reconnect banner
+                    // instead of a wall of failed-sync noise.
+                    sync::run(&app, false).await;
                 }
                 Err(e) => {
                     // validate() already marked the client dead on session
@@ -152,6 +175,25 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
             }
         });
     }
+}
+
+/// The 30-minute background sync loop (§6).
+///
+/// The interval fires unconditionally; `sync::run` itself declines when the
+/// floor hasn't elapsed, when a run is already going, or when there is no
+/// usable credential — keeping every "should we sync" rule in one place.
+fn setup_sync_schedule(app: tauri::AppHandle) {
+    tauri::async_runtime::spawn(async move {
+        let mut interval =
+            tokio::time::interval(std::time::Duration::from_secs(30 * 60));
+        // The first tick fires immediately; skip it — launch sync is handled
+        // by setup_auth once the credential is validated.
+        interval.tick().await;
+        loop {
+            interval.tick().await;
+            sync::run(&app, false).await;
+        }
+    });
 }
 
 /// Initialise `tracing`.

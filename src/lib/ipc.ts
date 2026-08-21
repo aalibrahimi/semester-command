@@ -14,7 +14,15 @@
  * needs plus a sync-status read the shell footer renders.
  */
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import type { AuthStatus, HarvestReport, SyncStatus, ThemeMode } from "@/types";
+import type {
+  AuthStatus,
+  DebugDump,
+  DebugOverview,
+  HarvestReport,
+  IcsSummary,
+  SyncStatus,
+  ThemeMode,
+} from "@/types";
 
 /**
  * True when running inside the Tauri webview, false under a plain `vite dev`.
@@ -126,7 +134,84 @@ export async function clearSession(): Promise<void> {
   return call<void>("clear_session");
 }
 
-// TODO(M1): triggerSync
-// TODO(M1): listCourses, listAssignments, listInstructors
+/**
+ * Kick a full Canvas sync. Fire-and-forget: progress arrives via the
+ * "sync:status-changed" event and getSyncStatus polling.
+ */
+export async function triggerSync(): Promise<void> {
+  return call<void>("trigger_sync");
+}
+
+/** Import the Tier 2 calendar feed now. Resolves with what it did. */
+export async function triggerIcsImport(): Promise<IcsSummary> {
+  return call<IcsSummary>("trigger_ics_import");
+}
+
+/** The stored Tier 2 feed URL, if any. */
+export async function getCalendarFeedUrl(): Promise<string | null> {
+  if (!IS_TAURI) return null;
+  return call<string | null>("get_calendar_feed_url");
+}
+
+/** Store (or clear, with null) the Tier 2 feed URL. */
+export async function setCalendarFeedUrl(url: string | null): Promise<void> {
+  return call<void>("set_calendar_feed_url", { url });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Manual entry (§3) — first-class under Tier 2, not a debug feature.
+   Each save resolves with the row id (fresh when created).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export async function saveManualCourse(args: {
+  id?: string;
+  name: string;
+  courseCode?: string;
+  applyGroupWeights?: boolean;
+}): Promise<string> {
+  return call<string>("save_manual_course", args);
+}
+
+export async function saveManualGroup(args: {
+  id?: string;
+  courseId: string;
+  name: string;
+  groupWeight?: number;
+}): Promise<string> {
+  return call<string>("save_manual_group", args);
+}
+
+export async function saveManualAssignment(args: {
+  id?: string;
+  courseId: string;
+  groupId?: string;
+  name: string;
+  dueAt?: string;
+  pointsPossible?: number;
+}): Promise<string> {
+  return call<string>("save_manual_assignment", args);
+}
+
+/** Record a score by hand; null explicitly un-grades. */
+export async function saveManualScore(assignmentId: string, score: number | null): Promise<void> {
+  return call<void>("save_manual_score", { assignmentId, score });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Debug surface (dev builds only — the /dev/debug route).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export async function debugOverview(): Promise<DebugOverview> {
+  return call<DebugOverview>("debug_overview");
+}
+
+export async function debugDump(): Promise<DebugDump> {
+  return call<DebugDump>("debug_dump");
+}
+
+/** Force the session-dead state to exercise the reconnect flow. */
+export async function debugForceReconnect(): Promise<void> {
+  return call<void>("debug_force_reconnect");
+}
 // TODO(M2): getCourseGrades, whatDoINeed
 // TODO(M4): exportIcs

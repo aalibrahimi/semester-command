@@ -301,9 +301,22 @@ async fn poll_for_session(app: AppHandle) {
         }
     };
 
+    let succeeded = outcome.is_none();
     let ctx = app.state::<AuthCtx>();
     ctx.polling.store(false, Ordering::SeqCst);
     emit_status(&app, outcome).await;
+    if succeeded {
+        kick_sync(&app);
+    }
+}
+
+/// Fire-and-forget a sync right after auth is established — a fresh
+/// credential with no data behind it is exactly when the user is watching.
+fn kick_sync(app: &AppHandle) {
+    let app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        crate::sync::run(&app, true).await;
+    });
 }
 
 /// One manual harvest attempt against the open login window, for the debug
@@ -346,6 +359,7 @@ pub async fn harvest_session(app: AppHandle) -> CommandResult<HarvestReport> {
             *ctx.backend.lock().unwrap() = backend;
             let _ = win.close();
             emit_status(&app, None).await;
+            kick_sync(&app);
             Ok(HarvestReport { connected: true, cookie_names, validated_as: user.name })
         }
         Err(_) => Ok(HarvestReport { connected: false, cookie_names, validated_as: None }),
@@ -376,6 +390,7 @@ pub async fn set_access_token(app: AppHandle, token: String) -> CommandResult<()
     *ctx.validated_as.lock().unwrap() = user.name.clone();
     *ctx.backend.lock().unwrap() = Some(backend);
     emit_status(&app, None).await;
+    kick_sync(&app);
     Ok(())
 }
 
