@@ -1,20 +1,31 @@
 /**
- * Triage — the default screen (SPEC.md §5, screen 1).
+ * Triage — the default screen (§5, screen 1), as a bento dashboard.
  *
  * Called by: the router, at "/".
- * Calls: ipc `triage_rows` / `set_estimate`; TriageRow rendering is local.
+ * Calls: ipc triage_rows / set_estimate / calendar_items; useCourses.
  *
- * The whole design brief for this screen is one sentence: open the laptop,
- * look at row one, start working. Anything that does not serve that belongs
- * on another screen — no chart, no summary card, no greeting.
+ * The brief is still one sentence: open the laptop, look at the top-left
+ * tile, start working. The bento grid exists to make the *rest* of the
+ * picture — standings, the week, the counts — visible in the same viewport
+ * without the hero losing primacy.
  *
- * Ranking happens in `src-tauri/src/triage.rs`, never here (§10). Rows arrive
- * pre-sorted: pinned (missing/overdue) first, then by score. The estimate is
- * the one editable cell — it is the denominator of the score, so editing it
- * visibly reorders the list, which is exactly the feedback loop §5 wants.
+ * Grid contract (xl, 4 columns):
+ *
+ * ```
+ * ┌────────────────────┬──────────┬──────────┐
+ * │  UP NEXT (hero)    │ standings│  stats   │
+ * │  2 × 2             │  1 col   │  stack   │
+ * ├────────────────────┴───────┬──┴──────────┤
+ * │  THE QUEUE (ranked list)   │ next 7 days │
+ * │  3 cols                    │   1 col     │
+ * └────────────────────────────┴─────────────┘
+ * ```
+ *
+ * Below xl everything stacks full-width in priority order. Ranking still
+ * happens in `src-tauri/src/triage.rs`, never here (§10).
  */
 import { useCallback, useEffect, useState } from "react";
-import { CalendarClock, ListChecks } from "lucide-react";
+import { ArrowUpRight, CalendarClock, CircleAlert, Inbox, ListChecks, Timer } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { toast } from "sonner";
@@ -39,6 +50,8 @@ const STATE_CHIP: Record<TriageState, { label: string; cls: string }> = {
 
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
+  const [week, setWeek] = useState<CalendarItem[]>([]);
+  const { courses, openTotal, dueThisWeek, loaded } = useCourses();
 
   const refresh = useCallback(() => {
     triageRows()
@@ -48,66 +61,6 @@ export default function Triage() {
 
   useEffect(() => {
     refresh();
-  }, [refresh]);
-
-  return (
-    <>
-      <ScreenHeader
-        title="Triage"
-        subtitle="Everything not yet submitted, ranked by what it costs you to skip."
-      />
-
-      {/* Two columns on wide windows: the ranked list, plus an at-a-glance
-          rail (course standings + the week ahead) so the day's picture fits
-          in one viewport instead of a scroll. */}
-      <div className="mx-8 mb-8 flex items-start gap-6">
-        <div className="min-w-0 flex-1">
-          {rows === null ? (
-            <div className="flex flex-col gap-2">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-14 rounded-xl" />
-              ))}
-            </div>
-          ) : rows.length === 0 ? (
-            <EmptyState
-              icon={ListChecks}
-              title="Nothing to triage"
-              description="Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
-              action={
-                <Button asChild variant="outline">
-                  <Link to="/courses">See your courses</Link>
-                </Button>
-              }
-            />
-          ) : (
-            <div className="flex flex-col gap-1.5">
-              {rows.map((row, i) => (
-                <TriageRowItem
-                  key={row.assignmentId}
-                  row={row}
-                  rank={i + 1}
-                  onEstimateSaved={refresh}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <OverviewRail />
-      </div>
-    </>
-  );
-}
-
-/**
- * The at-a-glance column: every course's standing plus the next seven days.
- * Hidden below xl — on a narrow window the ranked list IS the overview.
- */
-function OverviewRail() {
-  const { courses } = useCourses();
-  const [week, setWeek] = useState<CalendarItem[]>([]);
-
-  useEffect(() => {
     const now = Date.now();
     calendarItems()
       .then((items) =>
@@ -122,21 +75,59 @@ function OverviewRail() {
         ),
       )
       .catch(() => {});
-  }, []);
+  }, [refresh]);
 
   const visible = courses.filter((c) => !c.hidden && c.gradeable);
-  if (visible.length === 0 && week.length === 0) return null;
+  const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
+
+  if (rows === null || !loaded) {
+    return (
+      <>
+        <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
+        <div className="mx-8 grid grid-cols-1 gap-4 xl:grid-cols-4">
+          <Skeleton className="h-56 rounded-3xl xl:col-span-2" />
+          <Skeleton className="h-56 rounded-3xl" />
+          <Skeleton className="h-56 rounded-3xl" />
+          <Skeleton className="h-72 rounded-3xl xl:col-span-3" />
+          <Skeleton className="h-72 rounded-3xl" />
+        </div>
+      </>
+    );
+  }
+
+  if (rows.length === 0) {
+    return (
+      <>
+        <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
+        <EmptyState
+          icon={ListChecks}
+          title="Nothing to triage"
+          description="Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
+          action={
+            <Button asChild variant="outline">
+              <Link to="/courses">See your courses</Link>
+            </Button>
+          }
+        />
+      </>
+    );
+  }
+
+  const [hero, ...queue] = rows;
 
   return (
-    <aside className="hidden w-72 shrink-0 flex-col gap-4 xl:flex">
-      {visible.length > 0 && (
-        <section className="rounded-2xl border border-border/60 bg-card p-3 shadow-card">
-          <h2 className="mb-2 px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-            Standings
-          </h2>
+    <>
+      <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
+
+      <div className="mx-8 mb-8 grid grid-cols-1 gap-4 xl:grid-cols-4">
+        {/* ── Hero: the one thing to start now ─────────────────────────── */}
+        <HeroTile row={hero} onEstimateSaved={refresh} />
+
+        {/* ── Standings ────────────────────────────────────────────────── */}
+        <Tile label="Standings" icon={ListChecks} className="xl:row-span-1">
           <div className="flex flex-col gap-2.5">
             {visible.map((c) => (
-              <Link key={c.id} to={`/courses/${c.id}`} className="group px-1">
+              <Link key={c.id} to={`/courses/${c.id}`} className="group">
                 <div className="flex items-center gap-2">
                   <CourseStatusDot status={c.status} />
                   <span className="min-w-0 flex-1 truncate text-xs group-hover:underline">
@@ -157,35 +148,192 @@ function OverviewRail() {
               </Link>
             ))}
           </div>
-        </section>
-      )}
+        </Tile>
 
-      {week.length > 0 && (
-        <section className="rounded-2xl border border-border/60 bg-card p-3 shadow-card">
-          <h2 className="mb-2 flex items-center gap-1.5 px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-            <CalendarClock className="h-3 w-3" /> Next 7 days
-          </h2>
-          <div className="flex flex-col gap-1">
-            {week.map((i) => (
-              <Link
-                key={i.assignmentId}
-                to={`/courses/${i.courseId}`}
-                className="flex items-baseline gap-2 rounded-md px-1 py-0.5 hover:bg-fill-ghost"
-              >
-                <span className="min-w-0 flex-1 truncate text-xs">{i.name ?? "Untitled"}</span>
-                <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
-                  {relativeDue(i.dueAt)}
-                </span>
-              </Link>
+        {/* ── Stat stack ───────────────────────────────────────────────── */}
+        <div className="grid grid-cols-3 gap-4 xl:grid-cols-1">
+          <StatMini label="due this week" value={dueThisWeek} icon={CalendarClock} />
+          <StatMini label="open items" value={openTotal} icon={Inbox} />
+          <StatMini
+            label="missing"
+            value={missingTotal}
+            icon={CircleAlert}
+            tone={missingTotal > 0 ? "critical" : undefined}
+          />
+        </div>
+
+        {/* ── The queue ────────────────────────────────────────────────── */}
+        <Tile
+          label={`Queue · ${queue.length} more`}
+          icon={ListChecks}
+          className="xl:col-span-3"
+          padded={false}
+        >
+          <div className="flex flex-col">
+            {queue.map((row, i) => (
+              <QueueRow key={row.assignmentId} row={row} rank={i + 2} onEstimateSaved={refresh} />
             ))}
+            {queue.length === 0 && (
+              <p className="px-4 pb-4 text-xs text-muted-foreground">
+                Just the one item — clear it and you're done.
+              </p>
+            )}
           </div>
-        </section>
-      )}
-    </aside>
+        </Tile>
+
+        {/* ── Next 7 days ──────────────────────────────────────────────── */}
+        <Tile label="Next 7 days" icon={CalendarClock}>
+          {week.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Nothing due in the next week.</p>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {week.map((i) => (
+                <Link
+                  key={i.assignmentId}
+                  to={`/courses/${i.courseId}`}
+                  className="flex items-baseline gap-2 rounded-md px-1 py-0.5 hover:bg-fill-ghost"
+                >
+                  <span className="min-w-0 flex-1 truncate text-xs">{i.name ?? "Untitled"}</span>
+                  <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
+                    {relativeDue(i.dueAt)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </Tile>
+      </div>
+    </>
   );
 }
 
-function TriageRowItem({
+/* ── Tiles ───────────────────────────────────────────────────────────────── */
+
+/** The shared bento tile: one shape, one border, one label style. */
+function Tile({
+  label,
+  icon: Icon,
+  children,
+  className,
+  padded = true,
+}: {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+  className?: string;
+  padded?: boolean;
+}) {
+  return (
+    <section
+      className={cn(
+        "min-w-0 rounded-3xl border border-border/60 bg-card shadow-card",
+        padded ? "p-4" : "pt-4",
+        className,
+      )}
+    >
+      <h2
+        className={cn(
+          "mb-2.5 flex items-center gap-1.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground",
+          !padded && "px-4",
+        )}
+      >
+        <Icon className="h-3 w-3" />
+        {label}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+/** Rank #1, given the room it deserves: this is the "start working" tile. */
+function HeroTile({ row, onEstimateSaved }: { row: TriageRow; onEstimateSaved: () => void }) {
+  const chip = STATE_CHIP[row.state];
+  const pinned = row.state !== "open";
+
+  return (
+    <section
+      className={cn(
+        "flex min-w-0 flex-col rounded-3xl border p-5 shadow-card xl:col-span-2",
+        pinned ? "border-critical/40 bg-critical/5" : "border-brand/25 bg-brand/5",
+      )}
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+          Up next
+        </span>
+        <span className={cn("chip text-2xs", chip.cls)}>{chip.label}</span>
+      </div>
+
+      <h2 className="mt-2 font-display text-2xl font-semibold leading-snug">
+        {row.name ?? "Untitled"}
+      </h2>
+      <div className="mt-1 flex flex-wrap items-baseline gap-3 text-sm text-muted-foreground">
+        <Link to={`/courses/${row.courseId}`} className="hover:underline">
+          {row.courseCode ?? "—"}
+        </Link>
+        <span data-numeric className={cn("font-mono tabular-nums", pinned && "text-critical-fg")}>
+          {relativeDue(row.dueAt)}
+        </span>
+      </div>
+
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-4">
+        <div>
+          <div data-numeric className="font-mono text-3xl font-medium tabular-nums">
+            {row.impactPct.toFixed(1)}%
+          </div>
+          <div className="text-2xs text-muted-foreground">of your final grade riding on this</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <EstimateCell row={row} onSaved={onEstimateSaved} prominent />
+          <Button asChild size="sm">
+            <Link to={`/courses/${row.courseId}`}>
+              Open course <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatMini({
+  label,
+  value,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  value: number;
+  icon: React.ComponentType<{ className?: string }>;
+  tone?: "critical";
+}) {
+  return (
+    <div
+      className={cn(
+        "flex min-w-0 flex-col justify-center rounded-3xl border border-border/60 bg-card px-4 py-3 shadow-card",
+        tone === "critical" && "border-critical/40",
+      )}
+    >
+      <div className="flex items-center gap-1.5 text-2xs uppercase tracking-wider text-muted-foreground">
+        <Icon className="h-3 w-3" />
+        {label}
+      </div>
+      <div
+        data-numeric
+        className={cn(
+          "mt-0.5 font-mono text-2xl font-medium tabular-nums",
+          tone === "critical" && value > 0 && "text-critical-fg",
+        )}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+/** One compact queue row. `layout` keeps reorders visible — that motion is
+ *  information (§9.4). */
+function QueueRow({
   row,
   rank,
   onEstimateSaved,
@@ -195,34 +343,27 @@ function TriageRowItem({
   onEstimateSaved: () => void;
 }) {
   const reduced = useReducedMotion();
-  const pinned = row.state !== "open";
   const chip = STATE_CHIP[row.state];
+  const pinned = row.state !== "open";
 
   return (
-    // `layout` is the point: when an estimate edit or a sync changes priority,
-    // rows visibly slide to their new position — that movement is information
-    // (§9.4).
     <motion.div
       layout
       transition={springy(reduced)}
       className={cn(
-        "flex items-center gap-3 rounded-xl border bg-card px-4 py-2.5 shadow-card",
-        pinned ? "border-critical/40" : "border-border/60",
+        "flex items-center gap-3 border-t border-border/40 px-4 py-2",
+        pinned && "bg-critical/5",
       )}
     >
       <span
         data-numeric
-        className={cn(
-          "w-6 shrink-0 text-center font-mono text-sm tabular-nums",
-          rank === 1 ? "font-semibold text-foreground" : "text-muted-foreground",
-        )}
+        className="w-5 shrink-0 text-center font-mono text-xs tabular-nums text-muted-foreground"
       >
         {rank}
       </span>
-
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium">{row.name ?? "Untitled"}</span>
+          <span className="truncate text-sm">{row.name ?? "Untitled"}</span>
           <span className={cn("chip shrink-0 text-2xs", chip.cls)}>{chip.label}</span>
         </div>
         <div className="mt-0.5 flex gap-2 text-2xs text-muted-foreground">
@@ -234,22 +375,25 @@ function TriageRowItem({
           </span>
         </div>
       </div>
-
-      {/* The headline: share of the final grade at stake. */}
-      <div className="w-28 shrink-0 text-right">
-        <span data-numeric className="font-mono text-sm font-medium tabular-nums">
-          {row.impactPct.toFixed(1)}%
-        </span>
-        <div className="text-2xs text-muted-foreground">of final grade</div>
-      </div>
-
+      <span data-numeric className="w-20 shrink-0 text-right font-mono text-xs tabular-nums">
+        {row.impactPct.toFixed(1)}%
+      </span>
       <EstimateCell row={row} onSaved={onEstimateSaved} />
     </motion.div>
   );
 }
 
-/** The inline-editable time estimate (§5) — minutes in, "1h 30m" out. */
-function EstimateCell({ row, onSaved }: { row: TriageRow; onSaved: () => void }) {
+/** The inline-editable time estimate (§5) — minutes in, "1h 30m" out.
+ *  Editing re-ranks the list: the estimate is the score's denominator. */
+function EstimateCell({
+  row,
+  onSaved,
+  prominent,
+}: {
+  row: TriageRow;
+  onSaved: () => void;
+  prominent?: boolean;
+}) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
 
@@ -263,7 +407,7 @@ function EstimateCell({ row, onSaved }: { row: TriageRow; onSaved: () => void })
     setEstimate(row.assignmentId, mins)
       .then(() => {
         setEditing(false);
-        onSaved(); // re-rank: the estimate is the score's denominator
+        onSaved();
       })
       .catch(() => toast.error("Could not save the estimate."));
   };
@@ -276,9 +420,15 @@ function EstimateCell({ row, onSaved }: { row: TriageRow; onSaved: () => void })
           setValue(row.estMinutes?.toString() ?? "");
           setEditing(true);
         }}
-        className="w-16 shrink-0 rounded-md px-2 py-1 text-right font-mono text-xs tabular-nums text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-foreground"
+        className={cn(
+          "shrink-0 rounded-md text-right font-mono text-xs tabular-nums text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-foreground",
+          prominent
+            ? "flex items-center gap-1 border border-border/60 px-2.5 py-1.5"
+            : "w-16 px-2 py-1",
+        )}
         title="Your time estimate — click to edit"
       >
+        {prominent && <Timer className="h-3 w-3" />}
         {minutes(row.estMinutes)}
       </button>
     );

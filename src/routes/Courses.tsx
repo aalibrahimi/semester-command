@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { announceCoursesChanged, useCourses } from "@/hooks/useCourses";
 import { setCourseHidden } from "@/lib/ipc";
 import { pct } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { CourseSummary } from "@/types";
 
 export default function Courses() {
@@ -53,8 +54,10 @@ export default function Courses() {
       ) : (
         <div className="mx-8 mb-8 flex flex-col gap-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {courses.map((c) => (
-              <CourseCard key={c.id} course={c} />
+            {/* Rust sorts by risk, so index 0 is the course most worth
+                worrying about — it gets the full-width feature tile. */}
+            {courses.map((c, i) => (
+              <CourseCard key={c.id} course={c} featured={i === 0 && courses.length > 2} />
             ))}
           </div>
 
@@ -96,11 +99,14 @@ export default function Courses() {
   );
 }
 
-function CourseCard({ course: c }: { course: CourseSummary }) {
+function CourseCard({ course: c, featured }: { course: CourseSummary; featured?: boolean }) {
   return (
     <Link
       to={`/courses/${c.id}`}
-      className="group flex flex-col gap-3 rounded-2xl border border-border/60 bg-card p-4 shadow-card transition-colors duration-micro hover:border-border"
+      className={cn(
+        "group flex flex-col gap-3 rounded-3xl border border-border/60 bg-card p-4 shadow-card transition-colors duration-micro hover:border-border",
+        featured && "lg:col-span-2 p-5",
+      )}
     >
       <div className="flex items-start gap-2.5">
         <CourseStatusDot status={c.status} emphasize className="mt-1.5" />
@@ -143,7 +149,7 @@ function CourseCard({ course: c }: { course: CourseSummary }) {
             maxPossiblePct={c.maxPossiblePct}
             targetPct={c.targetPct}
             status={c.status}
-            size="compact"
+            size={featured ? "default" : "compact"}
           />
           <div className="flex gap-3 text-2xs text-muted-foreground">
             {c.openCount > 0 && <span>{c.openCount} open</span>}

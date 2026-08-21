@@ -169,10 +169,11 @@ export default function CourseDetail() {
         }
       />
 
-      <div className="mx-8 mb-10 flex flex-col gap-4">
+      {/* Bento: numbers wide, groups beside them, assignments full width. */}
+      <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* Reconciliation warning (§4.2): our math vs Canvas's, never silent. */}
         {s.grade.reconciliationDelta !== null && (
-          <Alert className="border-at-risk/40">
+          <Alert className="border-at-risk/40 xl:col-span-3">
             <AlertTriangle className="h-4 w-4 text-at-risk-fg" />
             <AlertTitle>Our math disagrees with Canvas here</AlertTitle>
             <AlertDescription>
@@ -186,7 +187,12 @@ export default function CourseDetail() {
         )}
 
         {/* ── The numbers (§4.2: both, always) ──────────────────────────── */}
-        <Card className="rounded-2xl border-border/60 shadow-card">
+        <Card
+          className={cn(
+            "rounded-3xl border-border/60 shadow-card",
+            groups.length > 0 ? "xl:col-span-2" : "xl:col-span-3",
+          )}
+        >
           <CardContent className="flex flex-col gap-5 pt-6">
             <div className="flex flex-wrap items-end gap-8">
               <div>
@@ -233,7 +239,7 @@ export default function CourseDetail() {
 
         {/* ── Groups ────────────────────────────────────────────────────── */}
         {groups.length > 0 && (
-          <Card className="rounded-2xl border-border/60 shadow-card">
+          <Card className="rounded-3xl border-border/60 shadow-card xl:col-span-1">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Assignment groups</CardTitle>
             </CardHeader>
@@ -259,7 +265,7 @@ export default function CourseDetail() {
         )}
 
         {/* ── Assignments ───────────────────────────────────────────────── */}
-        <Card className="rounded-2xl border-border/60 shadow-card">
+        <Card className="rounded-3xl border-border/60 shadow-card xl:col-span-3">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Assignments</CardTitle>
           </CardHeader>
