@@ -27,7 +27,7 @@ export default function Settings() {
     <>
       <ScreenHeader title="Settings" />
 
-      <div className="mx-6 mb-8 flex max-w-3xl flex-col gap-4">
+      <div className="mx-8 mb-8 flex max-w-3xl flex-col gap-4">
         <Alert>
           <AlertTitle>Read-only, always</AlertTitle>
           <AlertDescription>
@@ -38,7 +38,7 @@ export default function Settings() {
         </Alert>
 
         {/* ── Auth ──────────────────────────────────────────────────────── */}
-        <Card>
+        <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Canvas connection</CardTitle>
             <CardDescription>
@@ -77,7 +77,7 @@ export default function Settings() {
         </Card>
 
         {/* ── Appearance ────────────────────────────────────────────────── */}
-        <Card>
+        <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Appearance</CardTitle>
             <CardDescription>

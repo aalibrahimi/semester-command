@@ -112,10 +112,15 @@ export default {
         display: ["3rem", { lineHeight: "1", letterSpacing: "-0.02em" }], // 48
       },
 
+      // 12px base (--radius), stepping up to 16/20 for the floating cards and
+      // down for nested controls. The soft-modern restyle leans on this scale:
+      // cards are rounded-2xl, buttons and inputs are pills or rounded-lg.
       borderRadius: {
-        lg: "var(--radius)",
+        lg: "var(--radius)", // 12 — buttons, inputs, nav items
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)", // 16 — inner cards, tiles
+        "2xl": "calc(var(--radius) + 8px)", // 20 — top-level panels
       },
 
       // Sidebar geometry (§5), named so AppShell and Sidebar cannot disagree
@@ -126,10 +131,14 @@ export default {
       },
 
       // Light mode lifts with shadow rather than tint, because --surface and
-      // --elevated are both #FFFFFF there (§9.1).
+      // --elevated are both #FFFFFF there (§9.1). The soft-modern restyle uses
+      // large, low-opacity, slightly blue-grey shadows (16 24 40 is slate-950)
+      // — a hard black shadow at small blur is what makes a card look pasted
+      // on rather than floating.
       boxShadow: {
-        elevated: "0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.08)",
-        popover: "0 1px 2px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.10)",
+        card: "0 1px 2px rgb(16 24 40 / 0.04), 0 1px 3px rgb(16 24 40 / 0.03)",
+        elevated: "0 4px 8px -2px rgb(16 24 40 / 0.06), 0 12px 32px -4px rgb(16 24 40 / 0.10)",
+        popover: "0 2px 4px rgb(16 24 40 / 0.06), 0 8px 24px -4px rgb(16 24 40 / 0.12)",
       },
 
       // Durations from §9.4, named so that "the modal feels slow" is a one-line

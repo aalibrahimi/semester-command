@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Search as SearchIcon } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { SemesterProgress } from "@/components/layout/SemesterProgress";
 import { CommandPalette } from "@/components/layout/CommandPalette";
@@ -72,22 +73,25 @@ export function AppShell() {
         {/* ── Header ────────────────────────────────────────────────────────
             Deliberately thin. The screen below it is the product; this strip
             carries only what has to be true on every screen. */}
-        <header className="flex h-12 shrink-0 items-center gap-4 border-b border-border px-4">
+        <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border/60 px-6">
           {/* TODO(M1): real term dates from courses.term. Renders nothing until
               then rather than inventing a semester. */}
           <SemesterProgress />
 
           <div className="ml-auto flex items-center gap-2">
+            {/* Styled as the reference's floating search pill rather than a
+                bordered button — same ⌘K affordance, softer body language. */}
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setPaletteOpen(true)}
-              className="gap-2 text-muted-foreground"
+              className="gap-2 rounded-full bg-card pl-4 pr-1.5 text-muted-foreground shadow-card hover:bg-card hover:text-foreground"
             >
-              <span className="text-xs">Search</span>
+              <SearchIcon className="h-3.5 w-3.5" />
+              <span className="text-xs">Search anything…</span>
               <kbd
                 data-numeric
-                className="rounded border border-border bg-fill-ghost px-1 font-mono text-2xs"
+                className="rounded-full bg-fill-ghost px-2 py-0.5 font-mono text-2xs"
               >
                 {shortcut("K")}
               </kbd>

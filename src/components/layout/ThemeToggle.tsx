@@ -54,7 +54,7 @@ export function ThemeToggle({ collapsed = false }: ThemeToggleProps) {
     <div
       role="radiogroup"
       aria-label="Theme"
-      className="flex items-center gap-0.5 rounded-md border border-border bg-surface p-0.5"
+      className="flex items-center gap-0.5 rounded-full border border-border/60 bg-card p-0.5 shadow-card"
     >
       {OPTIONS.map(({ mode: m, icon: Icon, label }) => {
         const active = mode === m;
@@ -68,7 +68,7 @@ export function ThemeToggle({ collapsed = false }: ThemeToggleProps) {
                 aria-label={label}
                 onClick={() => setMode(m)}
                 className={cn(
-                  "flex h-6 flex-1 items-center justify-center rounded transition-colors duration-micro",
+                  "flex h-6 w-7 items-center justify-center rounded-full transition-colors duration-micro",
                   active
                     ? "bg-fill-ghost-selected text-foreground"
                     : "text-muted-foreground hover:text-foreground",

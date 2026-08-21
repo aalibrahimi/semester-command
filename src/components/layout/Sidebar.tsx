@@ -73,7 +73,10 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-full shrink-0 flex-col border-r border-border bg-surface",
+        // Sits on the canvas rather than on its own surface — in the soft
+        // restyle the *content* floats as cards and the sidebar is quiet
+        // negative space. The active nav pill (below) provides the contrast.
+        "flex h-full shrink-0 flex-col border-r border-border/60 bg-background",
         // Width is a token (`w-sidebar` / `w-rail`) so AppShell and this file
         // cannot disagree about where the content column starts.
         collapsed ? "w-rail" : "w-sidebar",
@@ -150,7 +153,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
       </ScrollArea>
 
       {/* ── Zone 3 · Footer ─────────────────────────────────────────────── */}
-      <div className="shrink-0 border-t border-border p-2">
+      <div className="shrink-0 border-t border-border/60 p-2">
         <SyncIndicator
           collapsed={collapsed}
           phase={status.phase}
@@ -201,10 +204,13 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
       end={item.to === "/"}
       className={({ isActive }) =>
         cn(
-          "group relative flex h-8 items-center gap-2.5 rounded-md px-2 text-sm transition-colors duration-micro",
+          "group relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-micro",
           collapsed && "justify-center px-0",
+          // Active state is a floating white pill (card + soft shadow), the
+          // reference pattern. In dark the same classes resolve to the raised
+          // #161923 pill — one rule, both themes.
           isActive
-            ? "bg-fill-ghost-selected text-foreground"
+            ? "bg-card font-medium text-foreground shadow-card"
             : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
         )
       }
@@ -216,7 +222,7 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
           <span
             aria-hidden
             className={cn(
-              "absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r bg-brand transition-opacity duration-micro",
+              "absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-brand transition-opacity duration-micro",
               isActive ? "opacity-100" : "opacity-0",
             )}
           />
@@ -225,7 +231,7 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
           {!collapsed && item.count !== null && (
             <span
               data-numeric
-              className="ml-auto rounded bg-fill-ghost px-1.5 font-mono text-2xs text-muted-foreground"
+              className="chip ml-auto bg-fill-ghost font-mono text-muted-foreground"
             >
               {item.count}
             </span>

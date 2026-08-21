@@ -26,6 +26,7 @@ import Calendar from "@/routes/Calendar";
 import Contacts from "@/routes/Contacts";
 import Settings from "@/routes/Settings";
 import DevTokens from "@/routes/DevTokens";
+import DevPreview from "@/routes/DevPreview";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
               {/* Stripped from release builds by the bundler, since the
                   condition is statically false there. */}
               {import.meta.env.DEV && <Route path="dev/tokens" element={<DevTokens />} />}
+              {import.meta.env.DEV && <Route path="dev/preview" element={<DevPreview />} />}
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

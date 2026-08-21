@@ -2,6 +2,8 @@
 
 Modern, clean, dense. Closer to a well-built terminal client than to a landing page. Every pixel earns its place by making a number easier to read or a decision easier to make.
 
+> **Soft-modern restyle (post-M0).** The surface language was reworked toward a bento-style dashboard: 12px base radius scaling to 20px on floating panels, near-invisible borders with large low-opacity shadows in light mode, pill-shaped chips and controls, and more whitespace. The token architecture, signal palette, type scale and both-themes-first-class rules below are unchanged — the restyle touched *surfaces*, not *meaning*. Two shared component classes carry it: `.panel` (floating card) and `.chip` (pill badge), defined in `globals.css`. `/#/dev/preview` renders the whole language on fabricated sample data.
+
 Values live in `src/styles/globals.css`. Names live in `tailwind.config.ts`. **No component contains a hex literal.**
 
 ---

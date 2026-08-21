@@ -109,7 +109,11 @@
     --input: var(--border);
     --ring: var(--accent);
 
-    --radius: 0.625rem;
+    /* Soft-modern surface language: 12px base, scaling to 20px on the big
+       floating cards. Chosen over the original 10px after the restyle toward
+       an airier, bento-style layout — radius is the single cheapest signal of
+       "new" in a UI, and everything derives from this one value. */
+    --radius: 0.75rem;
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -196,6 +200,22 @@
      not draw it; keyboard navigation always does. */
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* The one card treatment, used by every floating panel in the app.
+     Light: near-invisible border + a soft two-part shadow — the reference
+     look, where cards float on the cool-grey canvas. Dark: the shadow is
+     invisible against #0E1016, so the border does the separating instead. */
+  .panel {
+    @apply rounded-2xl border border-border/60 bg-card text-card-foreground shadow-card;
+  }
+
+  /* Pill chip for deltas, statuses and counts ("↑ 4.2", "3 due", "on track").
+     Callers add the colour pair: `chip bg-on-track/10 text-on-track-fg`. */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium;
   }
 }
 

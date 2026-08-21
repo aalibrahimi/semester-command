@@ -33,7 +33,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "mx-6 flex flex-col items-center justify-center rounded-lg border border-dashed border-border px-6 py-14 text-center",
+        "mx-8 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border px-6 py-14 text-center",
         className,
       )}
     >

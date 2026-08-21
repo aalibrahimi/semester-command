@@ -21,7 +21,7 @@ export interface ScreenHeaderProps {
 
 export function ScreenHeader({ title, subtitle, actions, className }: ScreenHeaderProps) {
   return (
-    <div className={cn("flex items-start gap-4 px-6 pb-4 pt-6", className)}>
+    <div className={cn("flex items-start gap-4 px-8 pb-5 pt-7", className)}>
       <div className="min-w-0">
         <h1 className="truncate font-display text-xl font-semibold tracking-tight">{title}</h1>
         {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
