@@ -78,3 +78,31 @@ impl CommandError {
 
 /// Convenient alias — every command returns this.
 pub type CommandResult<T> = Result<T, CommandError>;
+
+impl From<crate::canvas::client::CanvasError> for CommandError {
+    /// Map client errors onto the frontend's vocabulary. The messages are the
+    /// user-facing text, written per §9.7: name what broke and how to fix it.
+    fn from(e: crate::canvas::client::CanvasError) -> Self {
+        use crate::canvas::client::CanvasError as E;
+        let (kind, message) = match &e {
+            E::SessionExpired => (
+                ErrorKind::SessionExpired,
+                "Canvas session expired — sign in again from Settings.".to_string(),
+            ),
+            E::RateLimited => (
+                ErrorKind::RateLimited,
+                "Canvas is rate-limiting us. Wait a minute and try again.".to_string(),
+            ),
+            E::Network(_) => (
+                ErrorKind::Network,
+                "Could not reach Canvas — check your connection.".to_string(),
+            ),
+            E::NoAuth => (
+                ErrorKind::SessionExpired,
+                "Not connected to Canvas. Sign in from Settings.".to_string(),
+            ),
+            E::Http { .. } | E::Parse { .. } => (ErrorKind::Internal, format!("{e}")),
+        };
+        Self { kind, message }
+    }
+}

@@ -3,7 +3,7 @@
  *
  * Called by: the router, at "/settings"; linked from the sidebar footer and
  * from every empty state.
- * Calls: ThemeToggle. From M1: the auth commands.
+ * Calls: useAuth (live status + actions), ThemeToggle.
  *
  * The auth section is the reason this screen matters. SJSU has disabled
  * student-generated API tokens, so there are three tiers (§2.0) and the user
@@ -11,9 +11,11 @@
  * from a calendar feed plus manual entry is a different kind of number than one
  * Canvas confirmed, and the app should never blur that line.
  *
- * TODO(M1): wire all three tiers, plus the session-expiry reconnect flow.
+ * TODO(M1 step 7): wire Tier 2 (the calendar feed URL field).
  */
+import { useState } from "react";
 import { KeyRound, Link2, PencilLine } from "lucide-react";
+import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -21,8 +23,47 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/useAuth";
+import { IS_TAURI } from "@/lib/ipc";
 
 export default function Settings() {
+  const { status, busy, signIn, saveToken, signOut } = useAuth();
+  const [tokenOpen, setTokenOpen] = useState(false);
+
+  const sessionActive = status.tier === "session";
+  const tokenActive = status.tier === "token";
+
+  /** Status line for Tier 1, honest about the three states that matter. */
+  const sessionStatus = sessionActive
+    ? status.alive
+      ? `Connected${status.validatedAs ? ` as ${status.validatedAs}` : ""}${
+          status.storage === "file" ? " · stored in fallback file (keyring unavailable)" : ""
+        }`
+      : "Session expired — sign in again"
+    : busy
+      ? (status.message ?? "Waiting for you to sign in…")
+      : "Not connected";
+
+  const handleSignIn = () => {
+    void signIn().catch((e: unknown) => {
+      toast.error(errorText(e, "Could not open the login window"));
+    });
+  };
+
+  const handleSignOut = () => {
+    void signOut()
+      .then(() => toast.success("Signed out. Local data is untouched."))
+      .catch((e: unknown) => toast.error(errorText(e, "Could not clear the session")));
+  };
+
   return (
     <>
       <ScreenHeader title="Settings" />
@@ -51,18 +92,28 @@ export default function Settings() {
               icon={Link2}
               tier="Tier 1"
               name="Sign in to Canvas"
-              status="Not connected"
+              status={sessionStatus}
               description="Opens an SJSU login window. You sign in through SSO yourself, including MFA — the app never sees your password, only the resulting session cookie. Sessions expire; you will be asked to sign in again periodically."
-              cta="Sign in to Canvas"
+              cta={sessionActive && status.alive ? "Sign out" : busy ? "Waiting…" : "Sign in to Canvas"}
+              disabled={!IS_TAURI || busy || tokenActive}
+              onCta={sessionActive && status.alive ? handleSignOut : handleSignIn}
             />
             <Separator />
             <AuthTier
               icon={KeyRound}
               tier="Tier 0"
               name="Access token"
-              status="Unavailable"
+              status={
+                tokenActive
+                  ? status.alive
+                    ? `Active${status.validatedAs ? ` as ${status.validatedAs}` : ""}`
+                    : "Token no longer works"
+                  : "None entered"
+              }
               description="If an SJSU administrator ever issues you a scoped read-only token, paste it here and everything above becomes unnecessary. The client supports both paths behind the same interface."
-              cta="Enter token"
+              cta={tokenActive ? "Remove" : "Enter token"}
+              disabled={!IS_TAURI}
+              onCta={tokenActive ? handleSignOut : () => setTokenOpen(true)}
             />
             <Separator />
             <AuthTier
@@ -72,6 +123,7 @@ export default function Settings() {
               status="Not configured"
               description="Your private Canvas .ics URL from Calendar → Calendar Feed. Needs no login and always works, but carries due dates only — no grades, no weights, no rubrics. Paired with entering scores by hand, the grade engine still works end to end."
               cta="Add feed URL"
+              disabled
             />
           </CardContent>
         </Card>
@@ -92,12 +144,13 @@ export default function Settings() {
           </CardContent>
         </Card>
       </div>
+
+      <TokenDialog open={tokenOpen} onOpenChange={setTokenOpen} onSave={saveToken} />
     </>
   );
 }
 
-/** One row of the auth card. Disabled until M1 wires the commands — visible and
- *  disabled beats hidden, because the tiers themselves are information. */
+/** One row of the auth card. */
 function AuthTier({
   icon: Icon,
   tier,
@@ -105,6 +158,8 @@ function AuthTier({
   status,
   description,
   cta,
+  disabled,
+  onCta,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   tier: string;
@@ -112,6 +167,8 @@ function AuthTier({
   status: string;
   description: string;
   cta: string;
+  disabled?: boolean;
+  onCta?: () => void;
 }) {
   return (
     <div className="flex gap-3">
@@ -126,9 +183,89 @@ function AuthTier({
         </div>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
       </div>
-      <Button variant="outline" size="sm" disabled className="shrink-0 self-start">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={disabled}
+        onClick={onCta}
+        className="shrink-0 self-start"
+      >
         {cta}
       </Button>
     </div>
   );
+}
+
+/**
+ * The Tier 0 token entry dialog. The token goes straight to Rust, is validated
+ * against Canvas before storage, and is never echoed back — the input clears
+ * on every close for the same reason.
+ */
+function TokenDialog({
+  open,
+  onOpenChange,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (token: string) => Promise<void>;
+}) {
+  const [token, setToken] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const close = (next: boolean) => {
+    if (!next) setToken("");
+    onOpenChange(next);
+  };
+
+  const submit = () => {
+    setSaving(true);
+    onSave(token)
+      .then(() => {
+        toast.success("Token validated and stored.");
+        close(false);
+      })
+      .catch((e: unknown) => toast.error(errorText(e, "Canvas rejected that token")))
+      .finally(() => setSaving(false));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={close}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Canvas access token</DialogTitle>
+          <DialogDescription>
+            Validated against Canvas before it is stored in the OS keyring. Never leaves this
+            machine.
+          </DialogDescription>
+        </DialogHeader>
+        <input
+          type="password"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          placeholder="Paste the token"
+          autoComplete="off"
+          spellCheck={false}
+          className="w-full rounded-md border border-border bg-transparent px-3 py-2 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => close(false)} disabled={saving}>
+            Cancel
+          </Button>
+          <Button onClick={submit} disabled={saving || token.trim() === ""}>
+            {saving ? "Validating…" : "Validate and save"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** Pull the display message out of a CommandError (or anything else thrown). */
+function errorText(e: unknown, fallback: string): string {
+  if (e && typeof e === "object" && "message" in e && typeof e.message === "string") {
+    return e.message;
+  }
+  if (typeof e === "string") return e;
+  return fallback;
 }

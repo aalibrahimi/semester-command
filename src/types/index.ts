@@ -75,3 +75,39 @@ export type AuthMode = "token" | "session" | "ics" | "none";
  * numbers Canvas confirmed and which they typed in themselves.
  */
 export type Source = "api" | "ics" | "manual";
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Auth (§2.0) — mirrors `commands/auth.rs`.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * The auth picture Settings and the reconnect banner render. Emitted on the
+ * "auth:status-changed" Tauri event after every transition, and returned by
+ * `auth_status` for first render. The credential itself never crosses the
+ * IPC boundary — this is everything about it except the secret.
+ */
+export interface AuthStatus {
+  /** Which tier holds a credential right now. "ics" never appears here — that
+   *  tier is a feed URL in settings, not a credential (see SyncStatus). */
+  tier: "token" | "session" | "none";
+  /** Is the credential believed to currently work? False → reconnect banner. */
+  alive: boolean;
+  /** Display name Canvas confirmed via GET /users/self, once validated. */
+  validatedAs: string | null;
+  /** Where the credential is stored. "file" means the OS keyring failed (or
+   *  the cookie header exceeded Windows' credential size cap) and the UI
+   *  should say the fallback is in use. */
+  storage: "keyring" | "file" | null;
+  /** Display-ready progress or error line ("Waiting for you to sign in…"). */
+  message: string | null;
+}
+
+/**
+ * Result of a manual harvest attempt (dev/debug surface). Cookie *names* only
+ * — the M1 acceptance list wants them reported, and names are not secrets.
+ */
+export interface HarvestReport {
+  connected: boolean;
+  cookieNames: string[];
+  validatedAs: string | null;
+}

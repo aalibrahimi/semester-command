@@ -69,6 +69,11 @@ pub fn run() {
 
     builder
         .invoke_handler(tauri::generate_handler![
+            commands::auth::auth_status,
+            commands::auth::clear_session,
+            commands::auth::harvest_session,
+            commands::auth::open_canvas_login,
+            commands::auth::set_access_token,
             commands::settings::get_preferred_theme,
             commands::settings::set_preferred_theme,
             commands::sync::get_sync_status,
@@ -81,14 +86,72 @@ pub fn run() {
             std::fs::create_dir_all(&dir)?;
             tracing::info!(config_dir = %dir.display(), "app config directory ready");
 
-            // TODO(M1): open the SQLite pool, run migrations, restore the
-            //           session from the keyring, and kick off the first sync.
+            setup_auth(app.handle().clone(), dir);
+
+            // TODO(M1 steps 5–6): open the SQLite pool, run migrations, and
+            //           kick off the first sync.
             // TODO(M4): build the tray icon with "Sync now" and the next three
             //           deadlines, and start minimised when launched at login.
             Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running Semester Command");
+}
+
+/// Build the Canvas client, restore any stored credential, and manage the
+/// shared [`commands::auth::AuthCtx`].
+///
+/// The restored credential is *presumed* alive for instant startup, then
+/// validated in a background task — SSO sessions routinely die overnight, and
+/// the difference between "session restored" and "session restored but dead"
+/// is exactly what the reconnect banner exists to show (§2.0). Blocking
+/// startup on a network round-trip would be the wrong trade.
+fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
+    use canvas::client::{AuthMode, CanvasClient, BASE_URL};
+    use canvas::session_store::{SessionStore, Slot};
+    use commands::auth::AuthCtx;
+
+    // Raw response bodies land next to the config, not in the repo (§2.2).
+    let raw_dir = config_dir.join("raw");
+    let client = std::sync::Arc::new(CanvasClient::new(BASE_URL, Some(raw_dir)));
+    let store = SessionStore::new(config_dir);
+
+    let restored = store.load();
+    let ctx = AuthCtx::new(client.clone(), store);
+    if let Some(r) = &restored {
+        *ctx.backend.lock().unwrap() = Some(r.backend);
+    }
+    app.manage(ctx);
+
+    if let Some(r) = restored {
+        let mode = match r.slot {
+            Slot::Token => AuthMode::Token(r.secret),
+            Slot::Session => AuthMode::Session { cookie_header: r.secret },
+        };
+        tracing::info!(slot = ?r.slot, backend = ?r.backend, "credential restored from storage");
+
+        tauri::async_runtime::spawn(async move {
+            client.set_auth(mode.clone()).await;
+            match client.validate(&mode).await {
+                Ok(user) => {
+                    let ctx = app.state::<AuthCtx>();
+                    *ctx.validated_as.lock().unwrap() = user.name.clone();
+                    tracing::info!(user = ?user.name, "restored session validated");
+                    commands::auth::emit_status(&app, None).await;
+                }
+                Err(e) => {
+                    // validate() already marked the client dead on session
+                    // death; the footer picks it up as ReconnectRequired.
+                    tracing::info!(error = %e, "restored credential no longer works");
+                    commands::auth::emit_status(
+                        &app,
+                        Some("Your saved Canvas session has expired — sign in again.".into()),
+                    )
+                    .await;
+                }
+            }
+        });
+    }
 }
 
 /// Initialise `tracing`.

@@ -14,7 +14,7 @@
  * needs plus a sync-status read the shell footer renders.
  */
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import type { SyncStatus, ThemeMode } from "@/types";
+import type { AuthStatus, HarvestReport, SyncStatus, ThemeMode } from "@/types";
 
 /**
  * True when running inside the Tauri webview, false under a plain `vite dev`.
@@ -81,7 +81,52 @@ export async function getSyncStatus(): Promise<SyncStatus> {
   return call<SyncStatus>("get_sync_status");
 }
 
-// TODO(M1): triggerSync, getAuthMode, openLoginWindow, clearSession
+/* ────────────────────────────────────────────────────────────────────────────
+   Auth (§2.0)
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Current auth tier and health, for first render. Live updates arrive on the
+ * "auth:status-changed" event — see hooks/useAuth.
+ *
+ * Outside Tauri: a disconnected status, so Settings renders sensibly in
+ * browser-only UI work.
+ */
+export async function getAuthStatus(): Promise<AuthStatus> {
+  if (!IS_TAURI) {
+    return { tier: "none", alive: false, validatedAs: null, storage: null, message: null };
+  }
+  return call<AuthStatus>("auth_status");
+}
+
+/**
+ * Open the SJSU login window (Tier 1). Rust polls for the session cookie,
+ * validates it against Canvas, stores it, and closes the window itself;
+ * progress lands on the "auth:status-changed" event. Resolves as soon as the
+ * window is open, not when login completes.
+ */
+export async function openCanvasLogin(): Promise<void> {
+  return call<void>("open_canvas_login");
+}
+
+/** One manual harvest attempt against the open login window (debug surface). */
+export async function harvestSession(): Promise<HarvestReport> {
+  return call<HarvestReport>("harvest_session");
+}
+
+/** Tier 0: validate and store an admin-issued access token. Throws with a
+ *  display-ready message if Canvas rejects it. */
+export async function setAccessToken(token: string): Promise<void> {
+  return call<void>("set_access_token", { token });
+}
+
+/** Sign out: wipes the stored credential (both slots, both backends). Local
+ *  data is untouched — losing a session never means losing data. */
+export async function clearSession(): Promise<void> {
+  return call<void>("clear_session");
+}
+
+// TODO(M1): triggerSync
 // TODO(M1): listCourses, listAssignments, listInstructors
 // TODO(M2): getCourseGrades, whatDoINeed
 // TODO(M4): exportIcs

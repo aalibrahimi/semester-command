@@ -233,3 +233,10 @@ Running list. Add to it as M1 turns assumptions into facts.
 | 12 | `/courses/:id/files` often 403s for students | A permissions error must not abort that course's sync |
 | 13 | `due_at` is UTC and often `null` | Off-by-one days if rendered without local conversion; sorting blows up on null |
 | 14 | Session expiry can present as `200 text/html` | Login page parsed as JSON, confusing parse error instead of a reconnect prompt |
+| 15 | Canvas hands an anonymous `canvas_session` to *unauthenticated* visitors | Cookie presence looks like login; only `GET /users/self` proves a session (observed live 2026-08-20) |
+| 16 | Cookie names never change across login — only values rotate | Name-based change detection can't see SSO complete; fingerprint values instead |
+| 17 | WebView2 returns the cookie jar in nondeterministic order | Naive jar comparison sees phantom changes every read |
+| 18 | Windows Credential Manager caps a secret at 2560 bytes | A fat cookie header fails keyring storage even though the keyring is healthy; file fallback is a live path (SJSU's three-cookie header fit, at ~half the cap) |
+| 19 | SJSU's SSO chain is Canvas → `sjsu.okta.com` (SAML) → `api-*.duosecurity.com` (embedded Duo) → Okta callback → Canvas | Debugging login without knowing the hops means staring at a blank webview; a mid-chain `ERR_CONNECTION_RESET` renders as a white window with no error |
+
+Confirmed live 2026-08-20: SJSU's Canvas cookie set is `canvas_session`, `_csrf_token`, `log_session_id`.

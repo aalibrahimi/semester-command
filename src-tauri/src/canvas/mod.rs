@@ -19,3 +19,4 @@
 pub mod client;
 pub mod endpoints;
 pub mod models;
+pub mod session_store;

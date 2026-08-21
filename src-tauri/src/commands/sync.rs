@@ -56,18 +56,45 @@ pub enum AuthModeTag {
 
 /// Current sync status.
 ///
-/// # Errors
-/// Infallible today. It returns `CommandResult` anyway because from M1 it reads
-/// the `sync_log` table, and changing a command's signature later means
-/// changing its TypeScript wrapper and every call site at the same time.
+/// Auth tier and session health are live as of M1 steps 1–4; the sync engine
+/// itself (last-synced time, syncing phase) lands with M1 steps 5–6.
 #[tauri::command]
-pub fn get_sync_status() -> CommandResult<SyncStatus> {
-    // TODO(M1): read the latest `sync_log` row and the live engine state.
+pub async fn get_sync_status(app: tauri::AppHandle) -> CommandResult<SyncStatus> {
+    use crate::canvas::client::AuthMode;
+    use crate::commands::auth::AuthCtx;
+    use tauri::Manager;
+
+    let ctx = app.state::<AuthCtx>();
+    let mode = ctx.client.auth_mode().await;
+
+    let auth_mode = match &mode {
+        AuthMode::Token(_) => AuthModeTag::Token,
+        AuthMode::Session { .. } => AuthModeTag::Session,
+        AuthMode::None => {
+            // Tier 2 is "no Canvas credential, but a feed URL is configured".
+            let dir = app.path().app_config_dir().ok();
+            let has_feed = dir
+                .map(|d| crate::settings::load(&d).calendar_feed_url.is_some())
+                .unwrap_or(false);
+            if has_feed { AuthModeTag::Ics } else { AuthModeTag::None }
+        }
+    };
+
+    // A credential that stopped working means every number on screen is stale
+    // and the footer must say so from any screen (§2.0, §5).
+    let phase = if !mode.is_none() && !ctx.client.is_alive() {
+        SyncPhase::ReconnectRequired
+    } else {
+        SyncPhase::Idle
+    };
+
+    // TODO(M1 steps 5–6): read the latest `sync_log` row for last_synced_at
+    // and the live Syncing phase.
     Ok(SyncStatus {
-        phase: SyncPhase::Idle,
+        phase,
         last_synced_at: None,
         message: None,
-        auth_mode: AuthModeTag::None,
+        auth_mode,
     })
 }
 
