@@ -268,6 +268,9 @@ export interface CourseSummary {
   missingCount: number;
   /** False for shells (announcements, advising) — de-emphasised in the UI. */
   gradeable: boolean;
+  /** Local view preference — hidden courses render only in the Courses
+   *  page's collapsed section. */
+  hidden: boolean;
 }
 
 export interface Dashboard {
@@ -302,6 +305,10 @@ export interface AssignmentDetail {
   source: Source;
   hasRubric: boolean;
   rubricJson: string | null;
+  /** Instructor's description as Canvas HTML, from the stored raw JSON. */
+  descriptionHtml: string | null;
+  /** JSON array as text, e.g. '["online_upload"]'. */
+  submissionTypes: string | null;
   /** Percentage points of the final grade riding on this assignment. */
   impactPct: number;
   estMinutes: number | null;

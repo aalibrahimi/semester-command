@@ -285,6 +285,21 @@ pub async fn target(
     Ok(())
 }
 
+/// Hide or unhide a course (local-only view preference on `targets`).
+pub async fn course_hidden(db: &Db, course_id: &str, hidden: bool) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        INSERT INTO targets (course_id, hidden) VALUES (?1, ?2)
+        ON CONFLICT(course_id) DO UPDATE SET hidden = excluded.hidden
+        "#,
+    )
+    .bind(course_id)
+    .bind(hidden)
+    .execute(db)
+    .await?;
+    Ok(())
+}
+
 /// Set an assignment's time estimate (local-only table, user-owned).
 pub async fn estimate(
     db: &Db,

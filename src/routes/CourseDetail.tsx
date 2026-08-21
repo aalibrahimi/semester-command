@@ -15,11 +15,12 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { AlertTriangle, Calculator, GraduationCap, Target } from "lucide-react";
+import { AlertTriangle, Calculator, Eye, EyeOff, GraduationCap, Target } from "lucide-react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
+import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { courseDetail, setTarget, whatDoINeed } from "@/lib/ipc";
+import { courseDetail, setCourseHidden, setTarget, whatDoINeed } from "@/lib/ipc";
+import { announceCoursesChanged } from "@/hooks/useCourses";
 import { dateTime, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AssignmentDetail, CourseDetailPayload, SolverAnswer } from "@/types";
@@ -61,6 +63,7 @@ export default function CourseDetail() {
   const [data, setData] = useState<CourseDetailPayload | null>(null);
   const [missingCourse, setMissingCourse] = useState(false);
   const [solverOpen, setSolverOpen] = useState(false);
+  const [openAssignmentId, setOpenAssignmentId] = useState<string | null>(null);
 
   const refresh = useCallback(() => {
     if (!courseId) return;
@@ -108,7 +111,10 @@ export default function CourseDetail() {
     const found = TARGETS.find(([l]) => l === letter);
     if (!found || !courseId) return;
     setTarget(courseId, found[1], found[0])
-      .then(refresh)
+      .then(() => {
+        refresh();
+        announceCoursesChanged(); // a new target can flip the sidebar dot
+      })
       .catch(() => toast.error("Could not save the target."));
   };
 
@@ -119,6 +125,28 @@ export default function CourseDetail() {
         subtitle={s.courseCode ? (s.name ?? undefined) : undefined}
         actions={
           <div className="flex items-center gap-2">
+            {/* Hide/unhide — a view preference, not a deletion. */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (!courseId) return;
+                setCourseHidden(courseId, !s.hidden)
+                  .then(() => {
+                    announceCoursesChanged();
+                    refresh();
+                    toast.success(
+                      s.hidden
+                        ? "Course restored everywhere."
+                        : "Course hidden — its data stays synced. Unhide from Courses.",
+                    );
+                  })
+                  .catch(() => toast.error("Could not update the course."));
+              }}
+              title={s.hidden ? "Unhide this course" : "Hide this course everywhere"}
+            >
+              {s.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Button>
             {/* Target picker — the marker on every bar. */}
             <Select value={s.targetLetter} onValueChange={pickTarget}>
               <SelectTrigger className="h-8 w-36 text-xs">
@@ -237,7 +265,7 @@ export default function CourseDetail() {
           </CardHeader>
           <CardContent className="flex flex-col gap-0.5">
             {assignments.map((a) => (
-              <AssignmentRowItem key={a.id} a={a} />
+              <AssignmentRowItem key={a.id} a={a} onOpen={() => setOpenAssignmentId(a.id)} />
             ))}
           </CardContent>
         </Card>
@@ -250,13 +278,24 @@ export default function CourseDetail() {
         defaultTargetPct={s.targetPct}
         assignments={assignments.filter((a) => a.score === null && !a.excused && !a.omitted)}
       />
+
+      {/* Sheet, not Dialog: the list stays visible behind it (§9.5). Looked
+          up by id so a refresh (estimate edit) updates the open sheet too. */}
+      <AssignmentSheet
+        assignment={assignments.find((a) => a.id === openAssignmentId) ?? null}
+        onOpenChange={(open) => !open && setOpenAssignmentId(null)}
+        onChanged={refresh}
+      />
     </>
   );
 }
 
-function AssignmentRowItem({ a }: { a: AssignmentDetail }) {
+function AssignmentRowItem({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm hover:bg-fill-ghost/60">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-colors duration-micro hover:bg-fill-ghost/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="truncate">{a.name ?? "Untitled"}</span>
@@ -281,7 +320,7 @@ function AssignmentRowItem({ a }: { a: AssignmentDetail }) {
       >
         {points(a.score, a.pointsPossible)}
       </span>
-    </div>
+    </button>
   );
 }
 

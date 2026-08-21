@@ -10,7 +10,7 @@
  * into Course detail. If it starts growing analytics, that work belongs on
  * Course detail instead.
  */
-import { GraduationCap } from "lucide-react";
+import { Eye, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
@@ -19,12 +19,15 @@ import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCourses } from "@/hooks/useCourses";
+import { announceCoursesChanged, useCourses } from "@/hooks/useCourses";
+import { setCourseHidden } from "@/lib/ipc";
 import { pct } from "@/lib/format";
 import type { CourseSummary } from "@/types";
 
 export default function Courses() {
-  const { courses, loaded } = useCourses();
+  const { courses: allCourses, loaded, refresh } = useCourses();
+  const courses = allCourses.filter((c) => !c.hidden);
+  const hidden = allCourses.filter((c) => c.hidden);
 
   return (
     <>
@@ -36,7 +39,7 @@ export default function Courses() {
             <Skeleton key={i} className="h-36 rounded-2xl" />
           ))}
         </div>
-      ) : courses.length === 0 ? (
+      ) : allCourses.length === 0 ? (
         <EmptyState
           icon={GraduationCap}
           title="No courses synced"
@@ -48,10 +51,45 @@ export default function Courses() {
           }
         />
       ) : (
-        <div className="mx-8 mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {courses.map((c) => (
-            <CourseCard key={c.id} course={c} />
-          ))}
+        <div className="mx-8 mb-8 flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {courses.map((c) => (
+              <CourseCard key={c.id} course={c} />
+            ))}
+          </div>
+
+          {/* Hidden courses: present but quiet, one click to restore. */}
+          {hidden.length > 0 && (
+            <details className="mt-2">
+              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                {hidden.length} hidden course{hidden.length === 1 ? "" : "s"}
+              </summary>
+              <div className="mt-2 flex flex-col gap-1">
+                {hidden.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center gap-3 rounded-xl border border-dashed border-border/60 px-4 py-2 text-sm text-muted-foreground"
+                  >
+                    <span className="min-w-0 flex-1 truncate">
+                      {c.courseCode ?? c.name ?? c.id}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        void setCourseHidden(c.id, false).then(() => {
+                          announceCoursesChanged();
+                          void refresh();
+                        })
+                      }
+                    >
+                      <Eye className="mr-1.5 h-3.5 w-3.5" /> Unhide
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
         </div>
       )}
     </>

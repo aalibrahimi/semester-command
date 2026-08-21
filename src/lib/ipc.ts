@@ -228,6 +228,11 @@ export async function whatDoINeed(
   return call<SolverAnswer>("what_do_i_need", { courseId, targetPct, assignmentId });
 }
 
+/** Hide/unhide a course everywhere (view preference, never a deletion). */
+export async function setCourseHidden(courseId: string, hidden: boolean): Promise<void> {
+  return call<void>("set_course_hidden", { courseId, hidden });
+}
+
 /** Set a course's target grade. */
 export async function setTarget(
   courseId: string,

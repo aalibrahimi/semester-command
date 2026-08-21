@@ -128,6 +128,7 @@ pub async fn calendar_items(app: AppHandle) -> CommandResult<Vec<CalendarItem>> 
     let mut items: Vec<CalendarItem> = bundle
         .assignments
         .iter()
+        .filter(|a| !bundle.is_hidden(&a.course_id))
         .filter_map(|a| {
             let due_at = a.due_at.clone()?;
             let s = bundle.submissions.get(&a.id);

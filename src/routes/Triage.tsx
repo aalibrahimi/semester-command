@@ -14,19 +14,22 @@
  * visibly reorders the list, which is exactly the feedback loop §5 wants.
  */
 import { useCallback, useEffect, useState } from "react";
-import { ListChecks } from "lucide-react";
+import { CalendarClock, ListChecks } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
+import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
+import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
-import { setEstimate, triageRows } from "@/lib/ipc";
-import { minutes, relativeDue } from "@/lib/format";
+import { useCourses } from "@/hooks/useCourses";
+import { calendarItems, setEstimate, triageRows } from "@/lib/ipc";
+import { minutes, pct, relativeDue } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { TriageRow, TriageState } from "@/types";
+import type { CalendarItem, TriageRow, TriageState } from "@/types";
 
 const STATE_CHIP: Record<TriageState, { label: string; cls: string }> = {
   missing: { label: "missing", cls: "bg-critical/10 text-critical-fg" },
@@ -54,31 +57,131 @@ export default function Triage() {
         subtitle="Everything not yet submitted, ranked by what it costs you to skip."
       />
 
-      {rows === null ? (
-        <div className="mx-8 flex flex-col gap-2">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-14 rounded-xl" />
-          ))}
+      {/* Two columns on wide windows: the ranked list, plus an at-a-glance
+          rail (course standings + the week ahead) so the day's picture fits
+          in one viewport instead of a scroll. */}
+      <div className="mx-8 mb-8 flex items-start gap-6">
+        <div className="min-w-0 flex-1">
+          {rows === null ? (
+            <div className="flex flex-col gap-2">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-14 rounded-xl" />
+              ))}
+            </div>
+          ) : rows.length === 0 ? (
+            <EmptyState
+              icon={ListChecks}
+              title="Nothing to triage"
+              description="Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
+              action={
+                <Button asChild variant="outline">
+                  <Link to="/courses">See your courses</Link>
+                </Button>
+              }
+            />
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {rows.map((row, i) => (
+                <TriageRowItem
+                  key={row.assignmentId}
+                  row={row}
+                  rank={i + 1}
+                  onEstimateSaved={refresh}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      ) : rows.length === 0 ? (
-        <EmptyState
-          icon={ListChecks}
-          title="Nothing to triage"
-          description="Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
-          action={
-            <Button asChild variant="outline">
-              <Link to="/courses">See your courses</Link>
-            </Button>
-          }
-        />
-      ) : (
-        <div className="mx-8 mb-8 flex flex-col gap-1.5">
-          {rows.map((row, i) => (
-            <TriageRowItem key={row.assignmentId} row={row} rank={i + 1} onEstimateSaved={refresh} />
-          ))}
-        </div>
-      )}
+
+        <OverviewRail />
+      </div>
     </>
+  );
+}
+
+/**
+ * The at-a-glance column: every course's standing plus the next seven days.
+ * Hidden below xl — on a narrow window the ranked list IS the overview.
+ */
+function OverviewRail() {
+  const { courses } = useCourses();
+  const [week, setWeek] = useState<CalendarItem[]>([]);
+
+  useEffect(() => {
+    const now = Date.now();
+    calendarItems()
+      .then((items) =>
+        setWeek(
+          items
+            .filter((i) => !i.submitted && !i.graded)
+            .filter((i) => {
+              const t = new Date(i.dueAt).getTime();
+              return t > now && t < now + 7 * 86_400_000;
+            })
+            .slice(0, 8),
+        ),
+      )
+      .catch(() => {});
+  }, []);
+
+  const visible = courses.filter((c) => !c.hidden && c.gradeable);
+  if (visible.length === 0 && week.length === 0) return null;
+
+  return (
+    <aside className="hidden w-72 shrink-0 flex-col gap-4 xl:flex">
+      {visible.length > 0 && (
+        <section className="rounded-2xl border border-border/60 bg-card p-3 shadow-card">
+          <h2 className="mb-2 px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+            Standings
+          </h2>
+          <div className="flex flex-col gap-2.5">
+            {visible.map((c) => (
+              <Link key={c.id} to={`/courses/${c.id}`} className="group px-1">
+                <div className="flex items-center gap-2">
+                  <CourseStatusDot status={c.status} />
+                  <span className="min-w-0 flex-1 truncate text-xs group-hover:underline">
+                    {c.courseCode ?? c.name}
+                  </span>
+                  <span data-numeric className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {pct(c.grade.currentPct)}
+                  </span>
+                </div>
+                <GradeGapBar
+                  projectedPct={c.grade.projectedPct}
+                  maxPossiblePct={c.maxPossiblePct}
+                  targetPct={c.targetPct}
+                  status={c.status}
+                  size="compact"
+                  className="mt-1"
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {week.length > 0 && (
+        <section className="rounded-2xl border border-border/60 bg-card p-3 shadow-card">
+          <h2 className="mb-2 flex items-center gap-1.5 px-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+            <CalendarClock className="h-3 w-3" /> Next 7 days
+          </h2>
+          <div className="flex flex-col gap-1">
+            {week.map((i) => (
+              <Link
+                key={i.assignmentId}
+                to={`/courses/${i.courseId}`}
+                className="flex items-baseline gap-2 rounded-md px-1 py-0.5 hover:bg-fill-ghost"
+              >
+                <span className="min-w-0 flex-1 truncate text-xs">{i.name ?? "Untitled"}</span>
+                <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
+                  {relativeDue(i.dueAt)}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </aside>
   );
 }
 

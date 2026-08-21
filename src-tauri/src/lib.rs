@@ -89,6 +89,7 @@ pub fn run() {
             commands::data::triage_rows,
             commands::grades::course_detail,
             commands::grades::course_summaries,
+            commands::grades::set_course_hidden,
             commands::grades::set_target,
             commands::grades::what_do_i_need,
             commands::settings::get_calendar_feed_url,

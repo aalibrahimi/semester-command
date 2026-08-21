@@ -20,6 +20,15 @@ const EMPTY: Dashboard = { courses: [], openTotal: 0, dueThisWeek: 0 };
 /** Keep in sync with SYNC_EVENT in src-tauri/src/sync.rs. */
 const SYNC_EVENT = "sync:status-changed";
 
+/** DOM event bridging separate useCourses() instances: fire after any local
+ *  edit that changes the dashboard (hide/unhide, target change) so the
+ *  sidebar updates immediately instead of on its next interval. */
+const LOCAL_EVENT = "courses:changed";
+
+export function announceCoursesChanged(): void {
+  window.dispatchEvent(new Event(LOCAL_EVENT));
+}
+
 export function useCourses() {
   const [dashboard, setDashboard] = useState<Dashboard>(EMPTY);
   const [loaded, setLoaded] = useState(false);
@@ -39,6 +48,9 @@ export function useCourses() {
     void refresh();
     const id = window.setInterval(() => void refresh(), 60_000);
 
+    const onLocal = () => void refresh();
+    window.addEventListener(LOCAL_EVENT, onLocal);
+
     let unlisten: (() => void) | undefined;
     if (IS_TAURI) {
       void listen(SYNC_EVENT, () => void refresh()).then((f) => {
@@ -47,6 +59,7 @@ export function useCourses() {
     }
     return () => {
       window.clearInterval(id);
+      window.removeEventListener(LOCAL_EVENT, onLocal);
       unlisten?.();
     };
   }, [refresh]);

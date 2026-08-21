@@ -132,6 +132,11 @@ impl Bundle {
         }
     }
 
+    /// Is this course hidden (local view preference)?
+    pub fn is_hidden(&self, course_id: &str) -> bool {
+        self.targets.get(course_id).map(|t| t.hidden).unwrap_or(false)
+    }
+
     /// Missing-work count: Canvas's own `missing` flag on ungraded work.
     pub fn missing_count(&self, course_id: &str) -> usize {
         self.assignments
@@ -184,6 +189,9 @@ pub struct CourseSummary {
     /// True when the course has any assignment worth points — the shells
     /// (announcements, advising) are false and the UI can de-emphasise them.
     pub gradeable: bool,
+    /// Local view preference: hidden courses render only in the Courses
+    /// page's collapsed section; every other surface skips them.
+    pub hidden: bool,
 }
 
 /// The whole dashboard in one read. Mirrored as `Dashboard` in types.
@@ -231,6 +239,7 @@ fn summary_of(bundle: &Bundle, course: &CourseRow) -> CourseSummary {
         open_count: bundle.open_count(&course.id),
         missing_count: missing,
         gradeable,
+        hidden: bundle.is_hidden(&course.id),
     }
 }
 
@@ -247,15 +256,16 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         .collect();
 
     // Risk order (§5): the course closest to falling short sits on top.
-    // Shells sink below everything gradeable regardless of status.
-    fn rank(s: &CourseSummary) -> (u8, u8) {
+    // Shells sink below everything gradeable; hidden courses below that
+    // (they still ship so the Courses page can offer an unhide section).
+    fn rank(s: &CourseSummary) -> (u8, u8, u8) {
         let status = match s.status {
             SignalStatus::Critical => 0,
             SignalStatus::AtRisk => 1,
             SignalStatus::OnTrack => 2,
             SignalStatus::Locked => 3,
         };
-        (u8::from(!s.gradeable), status)
+        (u8::from(s.hidden), u8::from(!s.gradeable), status)
     }
     courses.sort_by(|a, b| {
         rank(a).cmp(&rank(b)).then(
@@ -266,7 +276,9 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         )
     });
 
-    let open_total = courses.iter().map(|c| c.open_count).sum();
+    // Counts describe what the user actually watches — hidden courses are
+    // out of both.
+    let open_total = courses.iter().filter(|c| !c.hidden).map(|c| c.open_count).sum();
     // Same to_rfc3339_opts rendering as every stored timestamp ("…Z"), so
     // the string comparison below is a real time comparison.
     let now = crate::db::now_rfc3339();
@@ -275,6 +287,7 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
     let due_this_week = bundle
         .assignments
         .iter()
+        .filter(|a| !bundle.is_hidden(&a.course_id))
         .filter(|a| {
             a.due_at
                 .as_deref()
@@ -309,6 +322,12 @@ pub struct AssignmentDetail {
     pub source: String,
     pub has_rubric: bool,
     pub rubric_json: Option<String>,
+    /// The instructor's description, as Canvas HTML. Not a schema column —
+    /// extracted from the stored `raw_json` on read, which is exactly the
+    /// "shapes we didn't model are still on disk" payoff of §2.2.
+    pub description_html: Option<String>,
+    /// JSON array as text, e.g. `["online_upload"]`, for the detail sheet.
+    pub submission_types: Option<String>,
     /// Percentage points of the final grade riding on this one assignment.
     pub impact_pct: f64,
     pub est_minutes: Option<i64>,
@@ -398,6 +417,13 @@ pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<C
                 source: a.source.clone(),
                 has_rubric: a.rubric_json.is_some(),
                 rubric_json: a.rubric_json.clone(),
+                description_html: a
+                    .raw_json
+                    .as_deref()
+                    .and_then(|raw| serde_json::from_str::<serde_json::Value>(raw).ok())
+                    .and_then(|v| v.get("description")?.as_str().map(str::to_string))
+                    .filter(|s| !s.trim().is_empty()),
+                submission_types: a.submission_types.clone(),
                 impact_pct: grades::grade_impact_pct(&input, &a.id),
                 est_minutes: bundle.estimates.get(&a.id).and_then(|e| e.est_minutes),
             }
@@ -436,6 +462,20 @@ pub async fn what_do_i_need(
         None => SolveScope::EverythingRemaining,
     };
     Ok(grades::solve(&input, target_pct, scope, grades::DEFAULT_SCALE))
+}
+
+/// Hide or unhide a course everywhere. A view preference, never a deletion —
+/// the course's data stays synced and unhiding restores it instantly.
+#[tauri::command]
+pub async fn set_course_hidden(
+    app: AppHandle,
+    course_id: String,
+    hidden: bool,
+) -> CommandResult<()> {
+    let db = app.state::<Db>().inner().clone();
+    upsert::course_hidden(&db, &course_id, hidden)
+        .await
+        .map_err(storage_err)
 }
 
 /// Set (or reset) a course's target grade.

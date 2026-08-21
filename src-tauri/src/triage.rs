@@ -67,6 +67,11 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
     let mut rows: Vec<TriageRow> = Vec::new();
 
     for course in &bundle.courses {
+        // Hidden courses are out of triage entirely — hiding FA25 LING-101
+        // must also remove its leftover deadlines from the top of the list.
+        if bundle.is_hidden(&course.id) {
+            continue;
+        }
         let input = bundle.course_input(&course.id);
 
         for a in bundle.assignments.iter().filter(|a| a.course_id == course.id) {

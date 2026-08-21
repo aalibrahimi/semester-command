@@ -244,3 +244,58 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Instructor-authored Canvas HTML (assignment descriptions, syllabus body).
+ * Canvas ships content styled for its own page; these rules make it readable
+ * inside the AssignmentSheet without letting it shout — muted headings, brand
+ * links, images that cannot overflow the panel.
+ */
+.canvas-html a {
+  color: rgb(var(--brand-fg));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.canvas-html p,
+.canvas-html ul,
+.canvas-html ol,
+.canvas-html table {
+  margin-block: 0.5rem;
+}
+.canvas-html ul {
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+.canvas-html ol {
+  list-style: decimal;
+  padding-inline-start: 1.25rem;
+}
+.canvas-html h1,
+.canvas-html h2,
+.canvas-html h3,
+.canvas-html h4 {
+  margin-block: 0.75rem 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.canvas-html img,
+.canvas-html video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.canvas-html table {
+  width: 100%;
+  font-size: 0.75rem;
+  border-collapse: collapse;
+}
+.canvas-html td,
+.canvas-html th {
+  border: 1px solid rgb(var(--border));
+  padding: 0.25rem 0.5rem;
+}
+.canvas-html pre,
+.canvas-html code {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+}

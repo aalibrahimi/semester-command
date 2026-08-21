@@ -105,6 +105,9 @@ pub struct TargetRow {
     pub target_letter: Option<String>,
     pub target_pct: Option<f64>,
     pub grade_scale_json: Option<String>,
+    /// View preference: true removes the course from every surface except
+    /// the Courses page's "hidden" section. Never deletes anything.
+    pub hidden: bool,
 }
 
 /// Local-only (§3): the user's time estimate per assignment.

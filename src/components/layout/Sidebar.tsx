@@ -62,8 +62,10 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
+  const { courses: allCourses, openTotal, dueThisWeek, loaded } = useCourses();
   const { status, isReconnectRequired } = useSync();
-  const { courses, openTotal, dueThisWeek, loaded } = useCourses();
+  // Hidden courses live only in the Courses page's own section.
+  const courses = allCourses.filter((c) => !c.hidden);
 
   // Zero-count badges render as no badge at all — a "0" chip is noise. Before
   // the first load counts stay null for the same reason.
