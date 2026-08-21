@@ -23,8 +23,10 @@ import type {
   DebugOverview,
   HarvestReport,
   IcsSummary,
+  CourseSyllabus,
   InstructorRow,
   SolverAnswer,
+  SyllabusFileRow,
   SyncStatus,
   ThemeMode,
   TriageRow,
@@ -258,6 +260,35 @@ export async function calendarItems(): Promise<CalendarItem[]> {
 export async function listInstructors(): Promise<InstructorRow[]> {
   if (!IS_TAURI) return [];
   return call<InstructorRow[]>("list_instructors");
+}
+
+/** Syllabus material (page HTML + stored documents) per visible course. */
+export async function syllabi(): Promise<CourseSyllabus[]> {
+  if (!IS_TAURI) return [];
+  return call<CourseSyllabus[]>("syllabi");
+}
+
+/** Pull syllabus files for a course from Canvas now. Resolves with how many
+ *  new documents were stored (0 = none found / files closed to students). */
+export async function fetchSyllabusFromCanvas(courseId: string): Promise<number> {
+  return call<number>("fetch_syllabus_from_canvas", { courseId });
+}
+
+/** Import a syllabus document from a local path (from the file dialog). */
+export async function importSyllabusFile(
+  courseId: string,
+  path: string,
+): Promise<SyllabusFileRow> {
+  return call<SyllabusFileRow>("import_syllabus_file", { courseId, path });
+}
+
+/** Star/unstar "this is MY professor" (local-only). */
+export async function setInstructorStarred(
+  id: string,
+  courseId: string,
+  starred: boolean,
+): Promise<void> {
+  return call<void>("set_instructor_starred", { id, courseId, starred });
 }
 
 /** Save the local-only note on an instructor. */

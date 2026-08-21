@@ -186,6 +186,8 @@ export interface InstructorRow {
   role: string | null;
   /** Local-only; sync never touches it. */
   officeHoursNote: string | null;
+  /** Local-only "this is MY professor" flag. */
+  starred: boolean;
   source: Source;
   rawJson: string | null;
   syncedAt: string | null;
@@ -359,4 +361,32 @@ export interface CalendarItem {
   submitted: boolean;
   graded: boolean;
   source: Source;
+}
+
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Syllabi — mirrors of commands/data.rs CourseSyllabus + db SyllabusFileRow.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface SyllabusFileRow {
+  id: number;
+  courseId: string;
+  canvasFileId: string | null;
+  filename: string;
+  contentType: string | null;
+  /** Absolute path on disk — open with the opener plugin. */
+  localPath: string;
+  /** Plain text for search; null when extraction isn't supported. */
+  extractedText: string | null;
+  source: Source;
+  fetchedAt: string | null;
+}
+
+export interface CourseSyllabus {
+  courseId: string;
+  courseCode: string | null;
+  courseName: string | null;
+  /** The Canvas syllabus page HTML — rarely used at SJSU. */
+  syllabusHtml: string | null;
+  files: SyllabusFileRow[];
 }

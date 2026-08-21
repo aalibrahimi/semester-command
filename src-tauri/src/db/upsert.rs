@@ -320,6 +320,54 @@ pub async fn estimate(
     Ok(())
 }
 
+/// Record a syllabus file. Keyed on the Canvas file id when there is one so
+/// a re-fetch replaces rather than duplicates; manual imports always insert.
+pub async fn syllabus_file(db: &Db, r: &SyllabusFileRow) -> Result<(), sqlx::Error> {
+    if let Some(canvas_id) = &r.canvas_file_id {
+        sqlx::query("DELETE FROM syllabus_files WHERE course_id = ?1 AND canvas_file_id = ?2")
+            .bind(&r.course_id)
+            .bind(canvas_id)
+            .execute(db)
+            .await?;
+    }
+    sqlx::query(
+        r#"
+        INSERT INTO syllabus_files (course_id, canvas_file_id, filename,
+                                    content_type, local_path, extracted_text,
+                                    source, fetched_at)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+        "#,
+    )
+    .bind(&r.course_id)
+    .bind(&r.canvas_file_id)
+    .bind(&r.filename)
+    .bind(&r.content_type)
+    .bind(&r.local_path)
+    .bind(&r.extracted_text)
+    .bind(&r.source)
+    .bind(&r.fetched_at)
+    .execute(db)
+    .await?;
+    Ok(())
+}
+
+/// Star or unstar an instructor as "my professor" (local-only, like the
+/// note — sync never touches it).
+pub async fn instructor_starred(
+    db: &Db,
+    id: &str,
+    course_id: &str,
+    starred: bool,
+) -> Result<(), sqlx::Error> {
+    sqlx::query("UPDATE instructors SET starred = ?1 WHERE id = ?2 AND course_id = ?3")
+        .bind(starred)
+        .bind(id)
+        .bind(course_id)
+        .execute(db)
+        .await?;
+    Ok(())
+}
+
 /// Update the user's note on an instructor — the one instructor field sync
 /// never touches, so this is its only writer.
 pub async fn instructor_note(

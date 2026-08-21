@@ -129,6 +129,12 @@ pub async fn run(app: &AppHandle, manual: bool) -> Option<Result<SyncSummary, Ca
 async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
     let db = app.state::<Db>().inner().clone();
     let client = app.state::<AuthCtx>().client.clone();
+    // For syllabus document storage. Failure to resolve it would have failed
+    // setup long before a sync could run.
+    let data_dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|_| CanvasError::Http { status: 0, path: "app data dir".into() })?;
     let mut summary = SyncSummary::default();
 
     let umbrella = upsert::sync_log_start(&db, "sync").await.map_err(log_db_err)?;
@@ -165,7 +171,7 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
             .unwrap_or_else(|| course.id.clone());
         let log_id = upsert::sync_log_start(&db, &format!("course:{label}")).await.map_err(log_db_err)?;
 
-        match sync_one_course(&db, &client, raw, &mut summary).await {
+        match sync_one_course(&db, &client, &data_dir, raw, &mut summary).await {
             Ok(()) => {
                 let _ = upsert::sync_log_finish(&db, log_id, true, None).await;
             }
@@ -203,6 +209,7 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
 async fn sync_one_course(
     db: &Db,
     client: &crate::canvas::client::CanvasClient,
+    data_dir: &std::path::Path,
     course: &endpoints::Raw<models::Course>,
     summary: &mut SyncSummary,
 ) -> Result<(), CanvasError> {
@@ -228,6 +235,16 @@ async fn sync_one_course(
         }
     }
 
+    // Syllabus files, opportunistically: fetch_for_course treats a 403 and
+    // an empty result as Ok(0), and anything it stores makes the Syllabi
+    // screen richer. Only session death propagates.
+    match crate::syllabus::fetch_for_course(db, client, data_dir, course_id).await {
+        Ok(n) if n > 0 => tracing::info!(course_id, files = n, "syllabus documents stored"),
+        Ok(_) => {}
+        Err(CanvasError::SessionExpired) => return Err(CanvasError::SessionExpired),
+        Err(e) => tracing::info!(course_id, error = %e, "syllabus fetch failed; continuing"),
+    }
+
     // Instructors are nice-to-have: a 403 here (SJSU hides rosters in some
     // courses) must not fail the course. Fall back to the display names that
     // came embedded in the course payload.
@@ -247,6 +264,7 @@ async fn sync_one_course(
                         email: None,
                         role: Some("teacher".into()),
                         office_hours_note: None,
+                        starred: false,
                         source: "api".into(),
                         raw_json: None,
                         synced_at: Some(now.clone()),
@@ -282,6 +300,7 @@ async fn instructors_for(
                 email: u.parsed.email.clone(),
                 role: Some(role.to_string()),
                 office_hours_note: None,
+                starred: false,
                 source: "api".into(),
                 raw_json: Some(u.raw.to_string()),
                 synced_at: Some(now.to_string()),

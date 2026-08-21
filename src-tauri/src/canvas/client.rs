@@ -270,6 +270,57 @@ impl CanvasClient {
         Ok(out)
     }
 
+    /// Download a file's bytes, following redirects **manually**.
+    ///
+    /// Canvas file downloads 302 to inst-fs/S3. The client's no-redirect
+    /// policy is what lets session-death detection work, so redirects are
+    /// walked by hand here — and credentials are attached ONLY on hops to
+    /// the Canvas host. Cookies must never be handed to a storage CDN.
+    pub async fn get_bytes(&self, url: &str) -> Result<Vec<u8>, CanvasError> {
+        let auth = self.auth_mode().await;
+        if auth.is_none() {
+            return Err(CanvasError::NoAuth);
+        }
+        let canvas_host = url::Url::parse(&self.base).ok().and_then(|u| u.host_str().map(String::from));
+
+        let mut current = url.to_string();
+        for _hop in 0..5 {
+            let _permit = self.limiter.acquire().await.map_err(|_| CanvasError::RateLimited)?;
+            let on_canvas = url::Url::parse(&current)
+                .ok()
+                .and_then(|u| u.host_str().map(String::from))
+                == canvas_host;
+
+            let req = self.http.get(&current);
+            let req = if on_canvas { auth.apply(req) } else { req };
+            let resp = req.send().await?;
+            let status = resp.status();
+
+            if status.is_redirection() {
+                let next = resp
+                    .headers()
+                    .get(LOCATION)
+                    .and_then(|v| v.to_str().ok())
+                    .ok_or(CanvasError::Http { status: status.as_u16(), path: current.clone() })?;
+                // Location may be relative; resolve against the current URL.
+                current = url::Url::parse(&current)
+                    .and_then(|base| base.join(next))
+                    .map(|u| u.to_string())
+                    .unwrap_or_else(|_| next.to_string());
+                continue;
+            }
+            if status.as_u16() == 401 && on_canvas {
+                self.alive.store(false, Ordering::SeqCst);
+                return Err(CanvasError::SessionExpired);
+            }
+            if !status.is_success() {
+                return Err(CanvasError::Http { status: status.as_u16(), path: current });
+            }
+            return Ok(resp.bytes().await?.to_vec());
+        }
+        Err(CanvasError::Http { status: 310, path: url.to_string() })
+    }
+
     /// One authenticated GET, concurrency-capped. The only network call in
     /// the crate.
     async fn send_with(

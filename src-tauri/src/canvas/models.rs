@@ -119,6 +119,22 @@ pub struct Submission {
     pub late: Option<bool>,
 }
 
+/// A file, from `GET /courses/:id/files?search_term=...`.
+///
+/// NOTE the hyphen: Canvas serialises the MIME type as `content-type`, not
+/// `content_type` — one of the shapes gotcha lists exist for.
+#[derive(Debug, Clone, Deserialize)]
+pub struct CourseFile {
+    pub id: String,
+    pub display_name: Option<String>,
+    pub filename: Option<String>,
+    #[serde(rename = "content-type")]
+    pub content_type: Option<String>,
+    /// Authenticated download URL (302s to storage).
+    pub url: Option<String>,
+    pub size: Option<i64>,
+}
+
 /// A user, from `GET /courses/:id/users?enrollment_type[]=...`.
 ///
 /// The role is *not* in this payload — it is implied by the

@@ -23,12 +23,13 @@ import { hasMod, shortcut } from "@/lib/platform";
  *  TODO(M1): promote to the settings table, keeping this as the mirror. */
 const COLLAPSE_KEY = "sc.sidebar.collapsed";
 
-/** Digit → route, for ⌘1–⌘4 (§5). */
+/** Digit → route, for ⌘1–⌘5 (§5, plus the Syllabi screen). */
 const DIGIT_ROUTES: Record<string, string> = {
   "1": "/",
   "2": "/courses",
   "3": "/calendar",
-  "4": "/contacts",
+  "4": "/syllabi",
+  "5": "/contacts",
 };
 
 export function AppShell() {

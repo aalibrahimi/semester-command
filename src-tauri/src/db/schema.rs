@@ -92,9 +92,27 @@ pub struct InstructorRow {
     pub role: Option<String>,
     /// Local-only; the upsert never touches it (§3).
     pub office_hours_note: Option<String>,
+    /// Local-only "this is MY professor" flag — Canvas lists every section's
+    /// teacher on umbrella courses, so which one is yours is user knowledge.
+    pub starred: bool,
     pub source: String,
     pub raw_json: Option<String>,
     pub synced_at: Option<String>,
+}
+
+/// A syllabus document on disk, with its extracted text (migration 0003).
+#[derive(Debug, Clone, FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyllabusFileRow {
+    pub id: i64,
+    pub course_id: String,
+    pub canvas_file_id: Option<String>,
+    pub filename: String,
+    pub content_type: Option<String>,
+    pub local_path: String,
+    pub extracted_text: Option<String>,
+    pub source: String,
+    pub fetched_at: Option<String>,
 }
 
 /// Local-only (§3): the user's target grade per course.

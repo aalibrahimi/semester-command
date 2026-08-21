@@ -31,6 +31,7 @@ pub mod ical;
 pub mod mcp;
 pub mod notify;
 pub mod settings;
+pub mod syllabus;
 pub mod sync;
 pub mod triage;
 
@@ -50,6 +51,7 @@ pub fn run() {
     init_tracing();
 
     let mut builder = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init());
@@ -76,6 +78,10 @@ pub fn run() {
             commands::auth::open_canvas_login,
             commands::auth::set_access_token,
             commands::data::calendar_items,
+            commands::data::fetch_syllabus_from_canvas,
+            commands::data::import_syllabus_file,
+            commands::data::set_instructor_starred,
+            commands::data::syllabi,
             commands::data::debug_dump,
             commands::data::debug_force_reconnect,
             commands::data::debug_overview,

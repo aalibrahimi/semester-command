@@ -24,6 +24,7 @@
 import { NavLink } from "react-router-dom";
 import {
   AlertTriangle,
+  BookOpen,
   CalendarDays,
   ChevronsLeft,
   ChevronsRight,
@@ -73,7 +74,8 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
     { to: "/", label: "Triage", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
     { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
-    { to: "/contacts", label: "Contacts", icon: Users, digit: "4", count: null },
+    { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },
+    { to: "/contacts", label: "Contacts", icon: Users, digit: "5", count: null },
   ];
 
   return (

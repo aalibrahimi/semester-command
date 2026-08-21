@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { setEstimate } from "@/lib/ipc";
+import { sanitize } from "@/lib/canvasHtml";
 import { dateTime, minutes, points, relativeDue } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AssignmentDetail } from "@/types";
@@ -265,21 +266,3 @@ function parseRubric(raw: string | null): Criterion[] {
   }
 }
 
-/**
- * Strip active content from instructor HTML. The CSP is the real boundary;
- * this keeps the DOM clean of inert-but-ugly leftovers.
- */
-function sanitize(html: string): string {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  for (const el of doc.querySelectorAll("script, iframe, object, embed, form")) {
-    el.remove();
-  }
-  for (const el of doc.querySelectorAll("*")) {
-    for (const attr of [...el.attributes]) {
-      if (attr.name.startsWith("on") || (attr.name === "href" && attr.value.startsWith("javascript:"))) {
-        el.removeAttribute(attr.name);
-      }
-    }
-  }
-  return doc.body.innerHTML;
-}

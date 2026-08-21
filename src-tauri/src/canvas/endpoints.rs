@@ -96,6 +96,21 @@ pub async fn teachers(
     .await
 }
 
+/// Files in one course matching a search term ("syllabus"). Students often
+/// get 403 here (docs/CANVAS_API.md gotcha 12) — callers must treat that as
+/// "not available", never as a failed course.
+pub async fn files_search(
+    client: &CanvasClient,
+    course_id: &str,
+    term: &str,
+) -> Result<(Vec<Raw<CourseFile>>, usize), CanvasError> {
+    get_all_raw(
+        client,
+        &format!("/courses/{course_id}/files?search_term={term}&sort=updated_at&order=desc"),
+    )
+    .await
+}
+
 /// TAs of one course.
 pub async fn tas(
     client: &CanvasClient,

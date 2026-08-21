@@ -24,6 +24,7 @@ import Courses from "@/routes/Courses";
 import CourseDetail from "@/routes/CourseDetail";
 import Calendar from "@/routes/Calendar";
 import Contacts from "@/routes/Contacts";
+import Syllabi from "@/routes/Syllabi";
 import Settings from "@/routes/Settings";
 import DevTokens from "@/routes/DevTokens";
 import DevPreview from "@/routes/DevPreview";
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="courses" element={<Courses />} />
               <Route path="courses/:courseId" element={<CourseDetail />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="syllabi" element={<Syllabi />} />
               <Route path="contacts" element={<Contacts />} />
               <Route path="settings" element={<Settings />} />
 

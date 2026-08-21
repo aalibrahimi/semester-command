@@ -188,6 +188,94 @@ pub async fn set_estimate(
         .map_err(storage_err)
 }
 
+// ── Syllabi ─────────────────────────────────────────────────────────────────
+
+/// One course's syllabus material: the Canvas syllabus page (rarely used at
+/// SJSU) plus every stored document. Mirrored as `CourseSyllabus` in types.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CourseSyllabus {
+    pub course_id: String,
+    pub course_code: Option<String>,
+    pub course_name: Option<String>,
+    pub syllabus_html: Option<String>,
+    pub files: Vec<SyllabusFileRow>,
+}
+
+/// Syllabus material for every visible course, whether or not any exists —
+/// the screen renders "nothing yet + how to fix it" per course.
+#[tauri::command]
+pub async fn syllabi(app: AppHandle) -> CommandResult<Vec<CourseSyllabus>> {
+    let db = db_of(&app);
+    let bundle = crate::commands::grades::load_bundle(&db)
+        .await
+        .map_err(storage_err)?;
+    let files = queries::all_syllabus_files(&db).await.map_err(storage_err)?;
+
+    Ok(bundle
+        .courses
+        .iter()
+        .filter(|c| !bundle.is_hidden(&c.id))
+        .map(|c| CourseSyllabus {
+            course_id: c.id.clone(),
+            course_code: c.course_code.clone(),
+            course_name: c.name.clone(),
+            syllabus_html: c
+                .syllabus_html
+                .clone()
+                .filter(|h| !h.trim().is_empty()),
+            files: files.iter().filter(|f| f.course_id == c.id).cloned().collect(),
+        })
+        .collect())
+}
+
+/// Try to pull syllabus files for one course from Canvas right now.
+/// Returns how many new documents were stored (0 = none found or files
+/// closed to students — the UI offers manual import either way).
+#[tauri::command]
+pub async fn fetch_syllabus_from_canvas(app: AppHandle, course_id: String) -> CommandResult<usize> {
+    let db = db_of(&app);
+    let ctx = app.state::<crate::commands::auth::AuthCtx>();
+    let data_dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| CommandError::storage(format!("No data dir: {e}")))?;
+    let stored = crate::syllabus::fetch_for_course(&db, &ctx.client, &data_dir, &course_id).await?;
+    Ok(stored)
+}
+
+/// Import a syllabus the user picked from disk (path comes from the native
+/// file dialog — the webview itself has no filesystem access).
+#[tauri::command]
+pub async fn import_syllabus_file(
+    app: AppHandle,
+    course_id: String,
+    path: String,
+) -> CommandResult<SyllabusFileRow> {
+    let db = db_of(&app);
+    let data_dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| CommandError::storage(format!("No data dir: {e}")))?;
+    crate::syllabus::import_local(&db, &data_dir, &course_id, std::path::Path::new(&path))
+        .await
+        .map_err(CommandError::internal)
+}
+
+/// Star/unstar "this is MY professor" (local-only, survives sync).
+#[tauri::command]
+pub async fn set_instructor_starred(
+    app: AppHandle,
+    id: String,
+    course_id: String,
+    starred: bool,
+) -> CommandResult<()> {
+    let db = db_of(&app);
+    upsert::instructor_starred(&db, &id, &course_id, starred)
+        .await
+        .map_err(storage_err)
+}
+
 // ── Manual entry (§3) ───────────────────────────────────────────────────────
 
 /// A fresh id no Canvas entity can collide with.

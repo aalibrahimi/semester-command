@@ -109,6 +109,12 @@ pub async fn all_instructors(db: &Db) -> Result<Vec<InstructorRow>, sqlx::Error>
         .await
 }
 
+pub async fn all_syllabus_files(db: &Db) -> Result<Vec<SyllabusFileRow>, sqlx::Error> {
+    sqlx::query_as("SELECT * FROM syllabus_files ORDER BY course_id, id")
+        .fetch_all(db)
+        .await
+}
+
 pub async fn all_targets(db: &Db) -> Result<Vec<TargetRow>, sqlx::Error> {
     sqlx::query_as("SELECT * FROM targets").fetch_all(db).await
 }

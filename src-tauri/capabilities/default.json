@@ -9,6 +9,8 @@
     "notification:default",
     "os:allow-os-type",
     "os:allow-platform",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+    "opener:allow-open-path",
+    "dialog:allow-open"
   ]
 }
