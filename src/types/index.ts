@@ -390,3 +390,29 @@ export interface CourseSyllabus {
   syllabusHtml: string | null;
   files: SyllabusFileRow[];
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Sync digest (§6) — mirror of sync.rs SyncChanges, delivered on the
+   "sync:digest" event after any run that changed something.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface GradeEvent {
+  courseCode: string | null;
+  assignmentName: string | null;
+  score: number | null;
+  pointsPossible: number | null;
+}
+
+export interface CourseMove {
+  courseId: string;
+  courseCode: string | null;
+  oldPct: number;
+  newPct: number;
+}
+
+export interface SyncChanges {
+  newGrades: GradeEvent[];
+  courseMoves: CourseMove[];
+  missingFlips: GradeEvent[];
+  newAssignments: number;
+}

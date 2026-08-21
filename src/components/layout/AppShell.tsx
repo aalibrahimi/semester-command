@@ -10,12 +10,16 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { listen } from "@tauri-apps/api/event";
 import { Search as SearchIcon } from "lucide-react";
+import { toast } from "sonner";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { SemesterProgress } from "@/components/layout/SemesterProgress";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { Button } from "@/components/ui/button";
 import { hasMod, shortcut } from "@/lib/platform";
+import { IS_TAURI } from "@/lib/ipc";
+import type { SyncChanges } from "@/types";
 
 /** Synchronous mirror of the collapse preference, same pattern as the theme:
  *  read before first paint so the sidebar does not visibly snap from 220px to
@@ -43,6 +47,41 @@ export function AppShell() {
       localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
       return next;
     });
+  }, []);
+
+  // The sync digest (§6): any run that changed something announces what.
+  // Lives in the shell so it fires regardless of which screen is open.
+  useEffect(() => {
+    if (!IS_TAURI) return;
+    const unlisten = listen<SyncChanges>("sync:digest", (e) => {
+      const c = e.payload;
+      const lines: string[] = [];
+      if (c.newGrades.length > 0) {
+        const first = c.newGrades[0];
+        lines.push(
+          c.newGrades.length === 1
+            ? `Grade posted: ${first.assignmentName ?? "an assignment"} (${first.courseCode ?? "—"})`
+            : `${c.newGrades.length} new grades posted`,
+        );
+      }
+      for (const m of c.courseMoves) {
+        lines.push(
+          `${m.courseCode ?? "A course"} moved ${m.oldPct.toFixed(1)}% → ${m.newPct.toFixed(1)}%`,
+        );
+      }
+      if (c.missingFlips.length > 0) {
+        lines.push(`${c.missingFlips.length} marked missing`);
+      }
+      if (c.newAssignments > 0) {
+        lines.push(`${c.newAssignments} new assignment${c.newAssignments === 1 ? "" : "s"}`);
+      }
+      if (lines.length > 0) {
+        toast.info("Sync update", { description: lines.join(" · "), duration: 8000 });
+      }
+    });
+    return () => {
+      void unlisten.then((f) => f());
+    };
   }, []);
 
   // ⌘\ collapse and ⌘1–⌘4 navigation. ⌘K is owned by CommandPalette.

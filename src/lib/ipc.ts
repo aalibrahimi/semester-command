@@ -262,6 +262,11 @@ export async function listInstructors(): Promise<InstructorRow[]> {
   return call<InstructorRow[]>("list_instructors");
 }
 
+/** Write the semester .ics to a chosen path. Resolves with the event count. */
+export async function exportSemesterIcs(path: string): Promise<number> {
+  return call<number>("export_semester_ics", { path });
+}
+
 /** Syllabus material (page HTML + stored documents) per visible course. */
 export async function syllabi(): Promise<CourseSyllabus[]> {
   if (!IS_TAURI) return [];

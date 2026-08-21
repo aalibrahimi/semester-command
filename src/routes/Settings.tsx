@@ -15,6 +15,11 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  disable as disableAutostart,
+  enable as enableAutostart,
+  isEnabled as isAutostartEnabled,
+} from "@tauri-apps/plugin-autostart";
 import { KeyRound, Link2, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -24,6 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -159,6 +165,21 @@ export default function Settings() {
           </Card>
         )}
 
+        {/* ── Background & reminders (§6) ───────────────────────────────── */}
+        <Card className="rounded-2xl border-border/60 shadow-card">
+          <CardHeader>
+            <CardTitle className="text-base">Background &amp; reminders</CardTitle>
+            <CardDescription>
+              Deadline reminders scale with grade impact — a heavy midterm pings at 7d/3d/24h/3h,
+              a small discussion post only the day before. Closing the window keeps the app in
+              the tray so reminders still fire; quit from the tray icon.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AutostartToggle />
+          </CardContent>
+        </Card>
+
         {/* ── Appearance ────────────────────────────────────────────────── */}
         <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
@@ -261,6 +282,54 @@ function FeedDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * Start-at-login toggle, backed by the autostart plugin. The login item
+ * carries `--minimized`, so an autostarted launch goes straight to the tray.
+ */
+function AutostartToggle() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!IS_TAURI) return;
+    // oxlint-disable-next-line set-state-in-effect -- reads external state once
+    void isAutostartEnabled().then(setEnabled).catch(() => setEnabled(false));
+  }, []);
+
+  const toggle = (next: boolean) => {
+    setEnabled(next); // optimistic; reverted on failure below
+    (next ? enableAutostart() : disableAutostart())
+      .then(() =>
+        toast.success(
+          next
+            ? "Will start minimized to the tray when you log in."
+            : "Removed from login items.",
+        ),
+      )
+      .catch(() => {
+        setEnabled(!next);
+        toast.error("Could not change the login item.");
+      });
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <div className="text-sm">Start when I log in</div>
+        <p className="text-xs text-muted-foreground">
+          Minimized to the tray. Reminders are worthless if the app only runs when you remember
+          to open it.
+        </p>
+      </div>
+      <Switch
+        checked={enabled === true}
+        disabled={enabled === null || !IS_TAURI}
+        onCheckedChange={toggle}
+        aria-label="Start at login"
+      />
+    </div>
   );
 }
 

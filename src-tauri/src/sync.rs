@@ -83,6 +83,48 @@ pub struct SyncSummary {
     pub skipped_rows: usize,
     /// Course-level failures, as display-ready strings.
     pub course_errors: Vec<String>,
+    /// What actually changed — the digest's and notifier's whole diet.
+    pub changes: SyncChanges,
+}
+
+/// The differences one sync run made, computed by comparing each row against
+/// what the database held *before* the upsert. This is what turns a silent
+/// background sync into "2 new grades, HIST-15 moved +1.4" (§6).
+#[derive(Debug, Default, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncChanges {
+    pub new_grades: Vec<GradeEvent>,
+    pub course_moves: Vec<CourseMove>,
+    /// Assignments Canvas newly flagged `missing` — always notified.
+    pub missing_flips: Vec<GradeEvent>,
+    pub new_assignments: usize,
+}
+
+impl SyncChanges {
+    pub fn is_empty(&self) -> bool {
+        self.new_grades.is_empty()
+            && self.course_moves.is_empty()
+            && self.missing_flips.is_empty()
+            && self.new_assignments == 0
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GradeEvent {
+    pub course_code: Option<String>,
+    pub assignment_name: Option<String>,
+    pub score: Option<f64>,
+    pub points_possible: Option<f64>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CourseMove {
+    pub course_id: String,
+    pub course_code: Option<String>,
+    pub old_pct: f64,
+    pub new_pct: f64,
 }
 
 /// Run a sync if one is due. Returns `None` when skipped (already running,
@@ -119,8 +161,15 @@ pub async fn run(app: &AppHandle, manual: bool) -> Option<Result<SyncSummary, Ca
     state.running.store(false, Ordering::SeqCst);
     let _ = app.emit(SYNC_EVENT, if result.is_ok() { "idle" } else { "error" });
 
-    if let Err(e) = &result {
-        tracing::warn!(error = %e, "sync run failed");
+    match &result {
+        Ok(summary) if !summary.changes.is_empty() => {
+            // The digest toast in the UI, and the OS notifications for the
+            // changes that matter even when the window is hidden (§6).
+            let _ = app.emit("sync:digest", &summary.changes);
+            crate::notify::on_sync_changes(app, &summary.changes).await;
+        }
+        Ok(_) => {}
+        Err(e) => tracing::warn!(error = %e, "sync run failed"),
     }
     Some(result)
 }
@@ -136,6 +185,15 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
         .app_data_dir()
         .map_err(|_| CanvasError::Http { status: 0, path: "app data dir".into() })?;
     let mut summary = SyncSummary::default();
+
+    // On the very first sync everything is "new" — that is a fresh install,
+    // not news. Changes are collected but discarded at the end of a first
+    // run so the digest and notifications stay meaningful.
+    let first_run = crate::db::queries::last_ok_sync(&db)
+        .await
+        .ok()
+        .flatten()
+        .is_none();
 
     let umbrella = upsert::sync_log_start(&db, "sync").await.map_err(log_db_err)?;
 
@@ -158,7 +216,28 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
 
     let now = db::now_rfc3339();
     for raw in &courses {
-        upsert::course(&db, &course_row(raw, &now)).await.map_err(log_db_err)?;
+        let row = course_row(raw, &now);
+        // Diff Canvas's own current score against what we held before the
+        // write — a move of more than a point is digest + notification
+        // material (§6).
+        let old: Option<f64> =
+            sqlx::query_scalar("SELECT current_score FROM courses WHERE id = ?1")
+                .bind(&row.id)
+                .fetch_optional(&db)
+                .await
+                .ok()
+                .flatten();
+        if let (Some(old_pct), Some(new_pct)) = (old, row.current_score) {
+            if (new_pct - old_pct).abs() > 1.0 {
+                summary.changes.course_moves.push(CourseMove {
+                    course_id: row.id.clone(),
+                    course_code: row.course_code.clone(),
+                    old_pct,
+                    new_pct,
+                });
+            }
+        }
+        upsert::course(&db, &row).await.map_err(log_db_err)?;
         summary.courses += 1;
     }
 
@@ -193,6 +272,10 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
     let err_text = (!ok).then(|| summary.course_errors.join("; "));
     let _ = upsert::sync_log_finish(&db, umbrella, ok, err_text.as_deref()).await;
 
+    if first_run {
+        summary.changes = SyncChanges::default();
+    }
+
     tracing::info!(
         courses = summary.courses,
         assignments = summary.assignments,
@@ -225,11 +308,58 @@ async fn sync_one_course(
 
     let (assignments, skipped) = endpoints::assignments(client, course_id).await?;
     summary.skipped_rows += skipped;
+
+    // Snapshot what we already knew, once per course, so the loop below can
+    // diff without a query per row.
+    let known_ids: std::collections::HashSet<String> =
+        sqlx::query_scalar::<_, String>("SELECT id FROM assignments WHERE course_id = ?1")
+            .bind(course_id)
+            .fetch_all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .collect();
+    let old_subs: std::collections::HashMap<String, (Option<f64>, Option<bool>)> =
+        sqlx::query_as::<_, (String, Option<f64>, Option<bool>)>(
+            "SELECT s.assignment_id, s.score, s.missing FROM submissions s
+             JOIN assignments a ON a.id = s.assignment_id WHERE a.course_id = ?1",
+        )
+        .fetch_all(db)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(|(id, score, missing)| (id, (score, missing)))
+        .collect();
+    let course_code = &course.parsed.course_code;
+
     for a in &assignments {
+        if !known_ids.contains(&a.parsed.id) {
+            summary.changes.new_assignments += 1;
+        }
         upsert::assignment(db, &assignment_row(a, course_id, &now)).await.map_err(log_db_err)?;
         summary.assignments += 1;
 
         if let Some(sub) = &a.parsed.submission {
+            let (old_score, old_missing) = old_subs
+                .get(&a.parsed.id)
+                .cloned()
+                .unwrap_or((None, None));
+
+            let event = || GradeEvent {
+                course_code: course_code.clone(),
+                assignment_name: a.parsed.name.clone(),
+                score: sub.score,
+                points_possible: a.parsed.points_possible,
+            };
+            // A grade where there was none, or a regrade to a new number.
+            if sub.score.is_some() && sub.score != old_score {
+                summary.changes.new_grades.push(event());
+            }
+            // Newly flagged missing (and still ungraded) — always worth a ping.
+            if sub.missing == Some(true) && old_missing != Some(true) && sub.score.is_none() {
+                summary.changes.missing_flips.push(event());
+            }
+
             upsert::submission(db, &submission_row(sub, &a.parsed.id, &now)).await.map_err(log_db_err)?;
             summary.submissions += 1;
         }

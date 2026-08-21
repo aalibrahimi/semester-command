@@ -14,15 +14,17 @@
  * update rather than duplicate.
  */
 import { useEffect, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { save as saveFileDialog } from "@tauri-apps/plugin-dialog";
+import { CalendarDays, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { calendarItems } from "@/lib/ipc";
+import { calendarItems, exportSemesterIcs } from "@/lib/ipc";
 import { relativeDue } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { CalendarItem } from "@/types";
@@ -65,8 +67,28 @@ export default function Calendar() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <Button variant="outline" size="sm" disabled title="Lands in M4">
-              Export (.ics)
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Stable UIDs mean re-importing after a sync UPDATES events
+                // in the user's real calendar instead of duplicating them.
+                void saveFileDialog({
+                  defaultPath: "semester-command.ics",
+                  filters: [{ name: "Calendar", extensions: ["ics"] }],
+                }).then((path) => {
+                  if (!path) return;
+                  exportSemesterIcs(path)
+                    .then((n) =>
+                      toast.success(
+                        `Exported ${n} due date${n === 1 ? "" : "s"}. Import the file into Google Calendar or Outlook — re-exporting later updates the same events.`,
+                      ),
+                    )
+                    .catch(() => toast.error("Export failed."));
+                });
+              }}
+            >
+              <Download className="mr-1.5 h-3.5 w-3.5" /> Export (.ics)
             </Button>
           </div>
         }

@@ -40,9 +40,46 @@
 
 use std::str::FromStr;
 
-use icalendar::{Calendar, CalendarComponent, Component, DatePerhapsTime};
+use icalendar::{Calendar, CalendarComponent, Component, DatePerhapsTime, Event, EventLike};
 
 use crate::db::{self, schema::*, upsert, Db};
+
+/// Build the semester `.ics` from every dated, non-hidden assignment (§5).
+///
+/// The UID is the load-bearing part: `canvas-assignment-{id}@semester-command`
+/// is stable across exports, so re-importing after a sync *updates* events in
+/// the user's real calendar instead of duplicating them all. Generating a
+/// fresh UID per export is the naive default and produces a calendar nobody
+/// can use by week four.
+pub fn build_semester_ics(
+    items: &[(String, Option<String>, Option<String>, String, Option<f64>)],
+) -> String {
+    let mut calendar = Calendar::new();
+    calendar.name("Semester Command — due dates");
+
+    for (assignment_id, course_code, name, due_at, points) in items {
+        let Ok(due) = chrono::DateTime::parse_from_rfc3339(due_at) else { continue };
+        let due = due.with_timezone(&chrono::Utc);
+
+        let title = match (name, course_code) {
+            (Some(n), Some(c)) => format!("{n} [{c}]"),
+            (Some(n), None) => n.clone(),
+            (None, Some(c)) => format!("Assignment [{c}]"),
+            (None, None) => "Assignment".to_string(),
+        };
+        let mut event = Event::new();
+        event
+            .uid(&format!("canvas-assignment-{assignment_id}@semester-command"))
+            .summary(&title)
+            .starts(due)
+            .ends(due);
+        if let Some(p) = points {
+            event.description(&format!("{p} points"));
+        }
+        calendar.push(event.done());
+    }
+    calendar.done().to_string()
+}
 
 /// What an import run did, for the debug view and toasts.
 #[derive(Debug, Default, serde::Serialize)]

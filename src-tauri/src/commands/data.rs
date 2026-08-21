@@ -188,6 +188,37 @@ pub async fn set_estimate(
         .map_err(storage_err)
 }
 
+/// Write the semester `.ics` to a path the user picked in the save dialog.
+/// Returns how many events were written.
+#[tauri::command]
+pub async fn export_semester_ics(app: AppHandle, path: String) -> CommandResult<usize> {
+    let db = db_of(&app);
+    let bundle = crate::commands::grades::load_bundle(&db)
+        .await
+        .map_err(storage_err)?;
+
+    let items: Vec<(String, Option<String>, Option<String>, String, Option<f64>)> = bundle
+        .assignments
+        .iter()
+        .filter(|a| !bundle.is_hidden(&a.course_id))
+        .filter_map(|a| {
+            let due = a.due_at.clone()?;
+            let code = bundle
+                .courses
+                .iter()
+                .find(|c| c.id == a.course_id)
+                .and_then(|c| c.course_code.clone());
+            Some((a.id.clone(), code, a.name.clone(), due, a.points_possible))
+        })
+        .collect();
+
+    let count = items.len();
+    let ics = crate::ical::build_semester_ics(&items);
+    std::fs::write(&path, ics)
+        .map_err(|e| CommandError::storage(format!("Could not write the file: {e}")))?;
+    Ok(count)
+}
+
 // ── Syllabi ─────────────────────────────────────────────────────────────────
 
 /// One course's syllabus material: the Canvas syllabus page (rarely used at
