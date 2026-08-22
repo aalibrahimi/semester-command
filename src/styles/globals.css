@@ -46,14 +46,14 @@
   :root,
   .dark {
     /* ---- Layer 1 · surfaces ---- */
-    --bg: 14 16 22; /* #0E1016  canvas */
-    --surface: 22 25 35; /* #161923  cards, panels */
-    --elevated: 31 35 48; /* #1F2330  modals, popovers, hover */
-    --border: 42 47 62; /* #2A2F3E */
+    --bg: 10 10 11; /* #0A0A0B  canvas — editorial zinc, near-black */
+    --surface: 19 19 22; /* #131316  cards, panels */
+    --elevated: 28 28 31; /* #1C1C1F  modals, popovers, hover */
+    --border: 39 39 42; /* #27272A  zinc-800 hairline */
 
     /* ---- Layer 1 · text ---- */
-    --text: 232 234 242; /* #E8EAF2 */
-    --text-muted: 139 146 168; /* #8B92A8 */
+    --text: 250 250 250; /* #FAFAFA */
+    --text-muted: 161 161 170; /* #A1A1AA  zinc-400 */
 
     /* ---- Layer 1 · accent — interactive affordances only ----
        --accent       the periwinkle itself; focus rings, active indicators.
@@ -80,14 +80,14 @@
     --locked-fg: 124 131 149; /* #7C8395  lightened; #6B7284 is 3.95:1 as text */
 
     /* ---- Layer 1 · derived fills (§5 sidebar) ---- */
-    --fill-ghost: 31 35 48; /* #1F2330  hover */
-    --fill-ghost-selected: 42 47 62; /* #2A2F3E  active nav item */
+    --fill-ghost: 28 28 31; /* #1C1C1F  hover */
+    --fill-ghost-selected: 39 39 42; /* #27272A  active nav item */
 
     /* ---- Layer 1 · Grade Gap hatch (§9.3) ----
        "Still winnable" renders as a low-opacity diagonal hatch so the region
        reads as unstable. Opacity lives here so each theme can tune it without
        the component knowing which theme is active. */
-    --hatch-opacity: 0.28;
+    --hatch-opacity: 0.22;
 
     /* ══════ Layer 2 · shadcn/ui semantic contract — aliases only ══════ */
     --background: var(--bg);
@@ -109,11 +109,10 @@
     --input: var(--border);
     --ring: var(--accent);
 
-    /* Soft-modern surface language: 12px base, scaling to 20px on the big
-       floating cards. Chosen over the original 10px after the restyle toward
-       an airier, bento-style layout — radius is the single cheapest signal of
-       "new" in a UI, and everything derives from this one value. */
-    --radius: 0.75rem;
+    /* Editorial zinc language: 10px base. Crisper than the earlier
+       soft-modern 12px — on a near-black canvas with hairline borders,
+       tighter corners read as sharper, not colder. */
+    --radius: 0.625rem;
   }
 
   /* ══════════════════════════════════════════════════════════════════════════

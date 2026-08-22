@@ -23,6 +23,7 @@ import { announceCoursesChanged, useCourses } from "@/hooks/useCourses";
 import { setCourseHidden } from "@/lib/ipc";
 import { pct } from "@/lib/format";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
+import { parseCourseLabel } from "@/lib/courseLabel";
 import { cn } from "@/lib/utils";
 import type { CourseSummary } from "@/types";
 
@@ -101,22 +102,33 @@ export default function Courses() {
 }
 
 function CourseCard({ course: c, featured }: { course: CourseSummary; featured?: boolean }) {
+  const label = parseCourseLabel(c.courseCode ?? c.name ?? c.id);
+  const graded = c.grade.currentPct !== null;
   return (
     <Link
       to={`/courses/${c.id}`}
       className={cn(
-        "group flex flex-col gap-3 rounded-3xl border border-border/60 bg-card p-4 shadow-card transition-colors duration-micro hover:border-border",
+        // Editorial zinc: hairline border, tight radius, no soft shadow —
+        // sharpness is the styling.
+        "group flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-colors duration-micro hover:border-muted-foreground/40",
         featured && "lg:col-span-2 p-5",
       )}
     >
-      <div className="flex items-start gap-2.5">
+      <div className="flex items-start gap-3">
         <CourseStatusDot status={c.status} emphasize className="mt-1.5" />
         <div className="min-w-0 flex-1">
-          <div className="truncate font-display text-sm font-semibold">
-            {c.courseCode ?? c.name ?? c.id}
+          <div className="flex items-baseline gap-2">
+            <span className={cn("font-mono font-semibold tracking-tight", featured ? "text-lg" : "text-sm")}>
+              {label.code ?? label.title}
+            </span>
+            {label.term && (
+              <span className="text-2xs font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
+                {label.term}
+              </span>
+            )}
           </div>
-          {c.courseCode && c.name && (
-            <div className="truncate text-xs text-muted-foreground">{c.name}</div>
+          {label.code && label.title !== label.code && (
+            <div className="truncate text-xs text-muted-foreground">{label.title}</div>
           )}
         </div>
         {c.source !== "api" && (
@@ -128,19 +140,27 @@ function CourseCard({ course: c, featured }: { course: CourseSummary; featured?:
 
       {c.gradeable ? (
         <>
-          {/* Current vs projected, side by side — never one without the
-              other (§4.2). The gap is the motivation. */}
+          {/* Current vs projected (§4.2). Week one gets honest words, not an
+              alarming pair of zeros: no grades yet means "—", said plainly. */}
           <div className="flex items-baseline gap-4 font-mono tabular-nums">
-            <div>
-              <span className="text-xl font-medium">{pct(c.grade.currentPct)}</span>
-              <span className="ml-1.5 text-2xs text-muted-foreground">current</span>
-            </div>
-            <div>
-              <span className="text-xl font-medium text-muted-foreground">
-                {pct(c.grade.projectedPct)}
+            {graded ? (
+              <>
+                <div>
+                  <span className="text-xl font-medium">{pct(c.grade.currentPct)}</span>
+                  <span className="ml-1.5 text-2xs text-muted-foreground">current</span>
+                </div>
+                <div>
+                  <span className="text-xl font-medium text-muted-foreground">
+                    {pct(c.grade.projectedPct)}
+                  </span>
+                  <span className="ml-1.5 text-2xs text-muted-foreground">projected</span>
+                </div>
+              </>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                nothing graded yet
               </span>
-              <span className="ml-1.5 text-2xs text-muted-foreground">projected</span>
-            </div>
+            )}
             <span className="ml-auto text-2xs text-muted-foreground">
               target {c.targetLetter} ({c.targetPct.toFixed(0)}%)
             </span>

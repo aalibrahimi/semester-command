@@ -28,6 +28,7 @@ import { fetchSyllabusFromCanvas, importSyllabusFile, syllabi } from "@/lib/ipc"
 import { countMatches, sanitize } from "@/lib/canvasHtml";
 import { Highlighted } from "@/components/layout/Highlighted";
 import { cn } from "@/lib/utils";
+import { courseFull, courseShort } from "@/lib/courseLabel";
 import type { CourseSyllabus } from "@/types";
 
 /** The policies worth one click. Keywords are matched case-insensitively in
@@ -121,7 +122,7 @@ export default function Syllabi() {
                     className={cn("h-3.5 w-3.5 shrink-0", !has && "opacity-30")}
                   />
                   <span className="min-w-0 flex-1 truncate">
-                    {c.courseCode ?? c.courseName ?? c.courseId}
+                    {courseShort(c.courseCode ?? c.courseName ?? c.courseId)}
                   </span>
                   {c.files.length > 0 && (
                     <span data-numeric className="font-mono text-2xs text-muted-foreground">
@@ -236,7 +237,7 @@ function SyllabusViewer({
       {/* Header: actions */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h2 className="min-w-0 flex-1 truncate font-display text-sm font-semibold">
-          {course.courseCode ?? course.courseName}
+          {courseFull(course.courseCode ?? course.courseName)}
         </h2>
         <Button size="sm" variant="outline" onClick={fetchFromCanvas} disabled={fetching}>
           <CloudDownload className="mr-1.5 h-3.5 w-3.5" />

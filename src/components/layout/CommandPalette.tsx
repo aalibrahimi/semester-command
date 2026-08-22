@@ -38,6 +38,7 @@ import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { useCourses } from "@/hooks/useCourses";
 import { triageRows, triggerSync } from "@/lib/ipc";
 import { pct } from "@/lib/format";
+import { courseFull, courseShort } from "@/lib/courseLabel";
 import { hasMod, shortcut } from "@/lib/platform";
 import type { TriageRow } from "@/types";
 
@@ -131,7 +132,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               >
                 <CourseStatusDot status={c.status} className="mr-2" />
                 <span className="min-w-0 flex-1 truncate">
-                  {c.courseCode ?? c.name}
+                  {courseFull(c.courseCode ?? c.name)}
                 </span>
                 <span data-numeric className="ml-2 font-mono text-xs text-muted-foreground">
                   {pct(c.grade.currentPct)}
@@ -151,8 +152,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               >
                 <ClipboardList className="mr-2 h-4 w-4 shrink-0" />
                 <span className="min-w-0 flex-1 truncate">{a.name ?? "Untitled"}</span>
-                <span className="ml-2 shrink-0 text-xs text-muted-foreground">
-                  {a.courseCode ?? ""}
+                <span className="ml-2 shrink-0 font-mono text-xs text-muted-foreground">
+                  {courseShort(a.courseCode)}
                 </span>
               </CommandItem>
             ))}

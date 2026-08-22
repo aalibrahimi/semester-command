@@ -126,7 +126,7 @@ export default {
       // Sidebar geometry (§5), named so AppShell and Sidebar cannot disagree
       // about where the content column starts.
       spacing: {
-        sidebar: "220px",
+        sidebar: "252px",
         rail: "56px",
       },
 

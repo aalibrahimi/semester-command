@@ -34,6 +34,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useCourses } from "@/hooks/useCourses";
 import { listInstructors, saveInstructorNote, setInstructorStarred, syllabi } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
+import { courseFull } from "@/lib/courseLabel";
 import type { CourseSyllabus, InstructorRow } from "@/types";
 
 export default function Contacts() {
@@ -108,7 +109,7 @@ export default function Contacts() {
               <section key={course.id}>
                 <div className="mb-2 flex flex-wrap items-baseline gap-3">
                   <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    {course.courseCode ?? course.name ?? course.id}
+                    {courseFull(course.courseCode ?? course.name ?? course.id)}
                   </h2>
                   {info && <SyllabusContactChips info={info} />}
                 </div>

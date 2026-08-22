@@ -38,6 +38,7 @@ import {
 import { cn } from "@/lib/utils";
 import { shortcut } from "@/lib/platform";
 import { sinceSync } from "@/lib/format";
+import { parseCourseLabel } from "@/lib/courseLabel";
 import { openCanvasLogin } from "@/lib/ipc";
 import { useSync } from "@/hooks/useSync";
 import { useCourses } from "@/hooks/useCourses";
@@ -150,26 +151,37 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
           {courses.length > 0 ? (
             <div className="flex flex-col gap-0.5">
               {courses.map((c) => {
-                const label = c.courseCode ?? c.name ?? c.id;
+                const parsed = parseCourseLabel(c.courseCode ?? c.name ?? c.id);
                 const row = (
                   <NavLink
                     key={c.id}
                     to={`/courses/${c.id}`}
                     className={({ isActive }) =>
                       cn(
-                        "group flex h-8 items-center gap-2 rounded-lg px-2.5 text-xs transition-colors duration-micro",
-                        collapsed && "justify-center px-0",
+                        "group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors duration-micro",
+                        collapsed && "justify-center px-0 py-2",
                         isActive
-                          ? "bg-card font-medium text-foreground shadow-card"
+                          ? "bg-card text-foreground shadow-card"
                           : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
-                        !c.gradeable && "opacity-60",
+                        !c.gradeable && "opacity-55",
                       )
                     }
                   >
                     <CourseStatusDot status={c.status} emphasize={c.status === "critical"} />
-                    {!collapsed && <span className="truncate">{label}</span>}
+                    {!collapsed && (
+                      <span className="min-w-0 flex-1 leading-tight">
+                        <span className="block truncate font-mono text-xs font-semibold text-foreground/90">
+                          {parsed.code ?? parsed.title}
+                        </span>
+                        {parsed.code && parsed.title !== parsed.code && (
+                          <span className="block truncate text-2xs text-muted-foreground">
+                            {parsed.title}
+                          </span>
+                        )}
+                      </span>
+                    )}
                     {!collapsed && c.gradeable && (
-                      <span data-numeric className="ml-auto font-mono text-2xs text-muted-foreground">
+                      <span data-numeric className="ml-auto shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
                         {c.grade.currentPct !== null ? `${c.grade.currentPct.toFixed(0)}%` : "—"}
                       </span>
                     )}
@@ -180,7 +192,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                 return collapsed ? (
                   <Tooltip key={c.id}>
                     <TooltipTrigger asChild>{row}</TooltipTrigger>
-                    <TooltipContent side="right">{label}</TooltipContent>
+                    <TooltipContent side="right">{parsed.code ?? parsed.title}</TooltipContent>
                   </Tooltip>
                 ) : (
                   row

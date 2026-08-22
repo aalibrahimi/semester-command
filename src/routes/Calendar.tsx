@@ -26,6 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { calendarItems, exportSemesterIcs } from "@/lib/ipc";
 import { relativeDue } from "@/lib/format";
+import { courseShort } from "@/lib/courseLabel";
 import { cn } from "@/lib/utils";
 import type { CalendarItem } from "@/types";
 
@@ -157,9 +158,9 @@ function AgendaView({ items }: { items: CalendarItem[] }) {
               >
                 <Link
                   to={`/courses/${item.courseId}`}
-                  className="w-40 shrink-0 truncate font-mono text-xs text-muted-foreground hover:underline"
+                  className="w-24 shrink-0 truncate font-mono text-xs text-muted-foreground hover:underline"
                 >
-                  {item.courseCode ?? "—"}
+                  {courseShort(item.courseCode)}
                 </Link>
                 <span
                   className={cn(
@@ -289,7 +290,7 @@ function MonthView({ items }: { items: CalendarItem[] }) {
                         </Link>
                       </TooltipTrigger>
                       <TooltipContent side="top">
-                        {item.courseCode ?? "—"} · {item.name ?? "Untitled"}
+                        {courseShort(item.courseCode)} · {item.name ?? "Untitled"}
                       </TooltipContent>
                     </Tooltip>
                   ))}

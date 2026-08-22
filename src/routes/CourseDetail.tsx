@@ -43,6 +43,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { courseDetail, setCourseHidden, setTarget, whatDoINeed } from "@/lib/ipc";
 import { announceCoursesChanged } from "@/hooks/useCourses";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
+import { parseCourseLabel } from "@/lib/courseLabel";
 import { dateTime, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AssignmentDetail, CourseDetailPayload, SolverAnswer } from "@/types";
@@ -129,8 +130,11 @@ export default function CourseDetail() {
   return (
     <>
       <ScreenHeader
-        title={s.courseCode ?? s.name ?? "Course"}
-        subtitle={s.courseCode ? (s.name ?? undefined) : undefined}
+        title={parseCourseLabel(s.courseCode ?? s.name).code ?? parseCourseLabel(s.courseCode ?? s.name).title}
+        subtitle={(() => {
+          const l = parseCourseLabel(s.courseCode ?? s.name);
+          return l.code && l.title !== l.code ? l.title : undefined;
+        })()}
         actions={
           <div className="flex items-center gap-2">
             {/* Hide/unhide — a view preference, not a deletion. */}

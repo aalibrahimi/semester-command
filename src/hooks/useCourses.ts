@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { courseSummaries, IS_TAURI } from "@/lib/ipc";
+import { registerCourses } from "@/lib/courseColor";
 import type { Dashboard } from "@/types";
 
 const EMPTY: Dashboard = { courses: [], openTotal: 0, dueThisWeek: 0 };
@@ -35,7 +36,12 @@ export function useCourses() {
 
   const refresh = useCallback(async () => {
     try {
-      setDashboard(await courseSummaries());
+      const next = await courseSummaries();
+      // Identity colors are dealt in sorted-id order over the full roster —
+      // registering everything (hidden included) before rows render keeps
+      // every course's color stable for the whole session.
+      registerCourses(next.courses.map((c) => c.id));
+      setDashboard(next);
       setLoaded(true);
     } catch {
       // A failed read keeps the last known dashboard; the sync footer is the
