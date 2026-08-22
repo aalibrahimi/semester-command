@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { announceCoursesChanged, useCourses } from "@/hooks/useCourses";
 import { setCourseHidden } from "@/lib/ipc";
 import { pct } from "@/lib/format";
+import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { cn } from "@/lib/utils";
 import type { CourseSummary } from "@/types";
 
@@ -148,6 +149,12 @@ function CourseCard({ course: c, featured }: { course: CourseSummary; featured?:
             projectedPct={c.grade.projectedPct}
             maxPossiblePct={c.maxPossiblePct}
             targetPct={c.targetPct}
+            floorPct={floorForCanvasCourse(c.courseCode)?.pct}
+            floorLabel={
+              floorForCanvasCourse(c.courseCode)
+                ? `${floorForCanvasCourse(c.courseCode)?.letter} required for degree credit`
+                : undefined
+            }
             status={c.status}
             size={featured ? "default" : "compact"}
           />

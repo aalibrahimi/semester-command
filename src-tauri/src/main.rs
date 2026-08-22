@@ -17,9 +17,16 @@
 )]
 
 fn main() {
-    // TODO(M5): `--mcp` starts the stdio MCP server against the same database
-    // instead of opening a window. Parsed here, before Tauri initialises,
-    // because an MCP server must not touch the windowing system at all — a
-    // headless agent host has no display to attach to.
+    // `--mcp` starts the stdio MCP server against the same database instead
+    // of opening a window. Parsed here, before Tauri initialises, because an
+    // MCP server must not touch the windowing system at all — a headless
+    // agent host has no display to attach to.
+    if std::env::args().any(|a| a == "--mcp") {
+        if let Err(e) = semester_command_lib::mcp::serve() {
+            eprintln!("mcp server error: {e}");
+            std::process::exit(1);
+        }
+        return;
+    }
     semester_command_lib::run()
 }

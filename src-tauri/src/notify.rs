@@ -166,6 +166,17 @@ async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+/// The Canvas session died. One OS ping per death (guarded by the caller's
+/// `death_notified` flag) — the whole point is reaching the user when the
+/// window is hidden and grades are silently going stale.
+pub fn session_died(app: &AppHandle) {
+    send(
+        app,
+        "Canvas disconnected",
+        "Your SJSU session expired — grades are frozen until you sign in again. Open Semester Command and click Reconnect.",
+    );
+}
+
 /// Sync-driven notifications: course grade moves and missing flips. The
 /// change list arrives pre-diffed from the sync engine.
 pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {

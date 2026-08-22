@@ -169,6 +169,14 @@ pub async fn run(app: &AppHandle, manual: bool) -> Option<Result<SyncSummary, Ca
             crate::notify::on_sync_changes(app, &summary.changes).await;
         }
         Ok(_) => {}
+        Err(CanvasError::SessionExpired) => {
+            // Session death is only dangerous when nobody notices — ping the
+            // OS once per death, re-armed on the next successful sign-in.
+            let ctx = app.state::<AuthCtx>();
+            if !ctx.death_notified.swap(true, Ordering::SeqCst) {
+                crate::notify::session_died(app);
+            }
+        }
         Err(e) => tracing::warn!(error = %e, "sync run failed"),
     }
     Some(result)
@@ -235,6 +243,33 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
                     old_pct,
                     new_pct,
                 });
+            }
+        }
+        // Trajectory memory (migration 0007): append a snapshot whenever the
+        // scores differ from what we held — any delta, not just the >1pt
+        // notification threshold — plus one baseline row for a course with
+        // no history yet. Errors are logged and swallowed; history must
+        // never fail a sync.
+        let has_history: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM score_history WHERE course_id = ?1)",
+        )
+        .bind(&row.id)
+        .fetch_one(&db)
+        .await
+        .unwrap_or(true);
+        if (row.current_score != old || !has_history) && row.current_score.is_some() {
+            if let Err(e) = sqlx::query(
+                "INSERT INTO score_history (course_id, recorded_at, current_score, final_score)
+                 VALUES (?1, ?2, ?3, ?4)",
+            )
+            .bind(&row.id)
+            .bind(&now)
+            .bind(row.current_score)
+            .bind(row.final_score)
+            .execute(&db)
+            .await
+            {
+                tracing::warn!(error = %e, "score history append failed");
             }
         }
         upsert::course(&db, &row).await.map_err(log_db_err)?;

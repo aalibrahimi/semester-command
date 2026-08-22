@@ -39,6 +39,7 @@ import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
 import { calendarItems, setEstimate, triageRows } from "@/lib/ipc";
 import { minutes, pct, relativeDue } from "@/lib/format";
+import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { cn } from "@/lib/utils";
 import type { CalendarItem, TriageRow, TriageState } from "@/types";
 
@@ -141,6 +142,7 @@ export default function Triage() {
                   projectedPct={c.grade.projectedPct}
                   maxPossiblePct={c.maxPossiblePct}
                   targetPct={c.targetPct}
+                  floorPct={floorForCanvasCourse(c.courseCode)?.pct}
                   status={c.status}
                   size="compact"
                   className="mt-1"

@@ -210,6 +210,15 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
                     // validate() already marked the client dead on session
                     // death; the footer picks it up as ReconnectRequired.
                     tracing::info!(error = %e, "restored credential no longer works");
+                    if matches!(e, canvas::client::CanvasError::SessionExpired) {
+                        let ctx = app.state::<commands::auth::AuthCtx>();
+                        if !ctx
+                            .death_notified
+                            .swap(true, std::sync::atomic::Ordering::SeqCst)
+                        {
+                            notify::session_died(&app);
+                        }
+                    }
                     commands::auth::emit_status(
                         &app,
                         Some("Your saved Canvas session has expired — sign in again.".into()),

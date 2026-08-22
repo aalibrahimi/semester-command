@@ -59,6 +59,13 @@ export interface GradeGapBarProps {
   maxPossiblePct: number;
   /** Target grade, drawn as the vertical marker. Omit to hide the marker. */
   targetPct?: number;
+  /** Degree floor: below this the course stops counting toward the degree
+   *  (C-/C from the requirement). Drawn as a short red tick at the base of
+   *  the track — a hard line, visually distinct from the aspirational
+   *  target marker above it. */
+  floorPct?: number;
+  /** Label for the floor tooltip, e.g. "C- required for the major". */
+  floorLabel?: string;
   /** The course's standing, computed in Rust. Drives every colour here. */
   status: SignalStatus;
   /** Track height. The compact size is for course cards. */
@@ -70,6 +77,8 @@ export function GradeGapBar({
   projectedPct,
   maxPossiblePct,
   targetPct,
+  floorPct,
+  floorLabel,
   status,
   size = "default",
   className,
@@ -167,6 +176,24 @@ export function GradeGapBar({
           </Tooltip>
         )}
       </div>
+
+      {/* Degree floor. Below the track, in critical red, always: unlike the
+          target this line is not aspirational — under it the course stops
+          counting toward the degree. */}
+      {floorPct !== undefined && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              aria-hidden
+              className="absolute -bottom-1.5 h-2 w-0.5 rounded-full bg-critical"
+              style={{ left: `${clamp(floorPct)}%` }}
+            />
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            {floorLabel ?? `Degree floor ${floorPct.toFixed(0)}%`}
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Target marker. Sits above the track so it reads as a goal line, not a
           fourth region. Springs to on-track together with the bar. */}

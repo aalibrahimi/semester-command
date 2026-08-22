@@ -42,6 +42,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { courseDetail, setCourseHidden, setTarget, whatDoINeed } from "@/lib/ipc";
 import { announceCoursesChanged } from "@/hooks/useCourses";
+import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { dateTime, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AssignmentDetail, CourseDetailPayload, SolverAnswer } from "@/types";
@@ -106,6 +107,13 @@ export default function CourseDetail() {
   }
 
   const { summary: s, groups, assignments } = data;
+  const floor = floorForCanvasCourse(s.courseCode);
+  // The degree-floor verdicts. "Current below" is the emergency; "projected
+  // below" early in a term is normal (most work ungraded) so it only warns
+  // when there is a current grade to trust.
+  const currentBelowFloor =
+    floor !== null && s.grade.currentPct !== null && s.grade.currentPct < floor.pct;
+  const maxBelowFloor = floor !== null && s.maxPossiblePct < floor.pct;
 
   const pickTarget = (letter: string) => {
     const found = TARGETS.find(([l]) => l === letter);
@@ -171,6 +179,27 @@ export default function CourseDetail() {
 
       {/* Bento: numbers wide, groups beside them, assignments full width. */}
       <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        {/* Degree-floor warning: the class grade and the DEGREE are different
+            ledgers — below the floor this course stops counting toward
+            graduation no matter what the course target says. */}
+        {(currentBelowFloor || maxBelowFloor) && floor && (
+          <Alert className="border-critical/50 xl:col-span-3">
+            <AlertTriangle className="h-4 w-4 text-critical-fg" />
+            <AlertTitle>
+              {maxBelowFloor
+                ? "This course can no longer meet the degree minimum"
+                : `Current grade is below the ${floor.letter} degree floor`}
+            </AlertTitle>
+            <AlertDescription>
+              The degree requires <strong>{floor.letter}</strong> ({floor.pct}%) or better for
+              this course to count{floor.note ? ` — ${floor.note}` : "."}{" "}
+              {maxBelowFloor
+                ? "Even a perfect run from here lands below it — talk to the professor and your advisor about options this week, not at finals."
+                : "Passing the class below that line means retaking it for degree credit — check the Graduation tab before deprioritizing this course."}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Reconciliation warning (§4.2): our math vs Canvas's, never silent. */}
         {s.grade.reconciliationDelta !== null && (
           <Alert className="border-at-risk/40 xl:col-span-3">
@@ -222,6 +251,10 @@ export default function CourseDetail() {
               projectedPct={s.grade.projectedPct}
               maxPossiblePct={s.maxPossiblePct}
               targetPct={s.targetPct}
+              floorPct={floor?.pct}
+              floorLabel={
+                floor ? `${floor.letter} required for degree credit (${floor.pct}%)` : undefined
+              }
               status={s.status}
             />
             <div className="flex justify-between text-2xs text-muted-foreground">

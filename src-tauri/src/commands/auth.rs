@@ -52,6 +52,9 @@ pub struct AuthCtx {
     pub store: SessionStore,
     /// Guards against two concurrent login pollers when the button is mashed.
     polling: AtomicBool,
+    /// One OS notification per session death, not one per failed sync.
+    /// Cleared whenever a credential validates again.
+    pub death_notified: AtomicBool,
     /// Where the live credential is physically stored, for UI honesty.
     pub backend: std::sync::Mutex<Option<Backend>>,
     /// Who Canvas last said we are ("validated as Ali …" in Settings).
@@ -64,6 +67,7 @@ impl AuthCtx {
             client,
             store,
             polling: AtomicBool::new(false),
+            death_notified: AtomicBool::new(false),
             backend: std::sync::Mutex::new(None),
             validated_as: std::sync::Mutex::new(None),
         }
@@ -312,7 +316,9 @@ async fn poll_for_session(app: AppHandle) {
 
 /// Fire-and-forget a sync right after auth is established — a fresh
 /// credential with no data behind it is exactly when the user is watching.
+/// Also re-arms the session-death notification: this session is alive.
 fn kick_sync(app: &AppHandle) {
+    app.state::<AuthCtx>().death_notified.store(false, Ordering::SeqCst);
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
         crate::sync::run(&app, true).await;
