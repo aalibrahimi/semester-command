@@ -416,3 +416,106 @@ export interface SyncChanges {
   missingFlips: GradeEvent[];
   newAssignments: number;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Degree progress — mirror of commands/degree.rs.
+
+   Sourced from a pasted MySJSU MyProgress report, not from Canvas: Canvas has
+   no concept of degree requirements. Nothing here is synced, and nothing here
+   is computed in TypeScript — `unitsFromCourses` and the retake flags come
+   from `src-tauri/src/degree.rs`.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/** MyProgress's own word for a requirement's state. `error` means "not yet
+ *  completed" — it is not a fault. */
+export type ReqStatus = "taken" | "enrolled" | "planned" | "error" | "exception";
+
+export type DegreeCourseStatus = "taken" | "enrolled" | "planned" | "transferred";
+
+/** Which terms a course runs in, parsed from the report's `When` column. */
+export interface Offering {
+  /** The cell verbatim, shown in a tooltip so a bad parse is visible. */
+  raw: string;
+  fall: boolean;
+  spring: boolean;
+  summer: boolean;
+  /** `Fall in odd years` halves the chances of ever catching it. */
+  parity: "odd" | "even" | null;
+  /** `Variable Offering See Advisor` — no committed cadence. */
+  variable: boolean;
+  /** A concrete term like `Fall 2026`: this row is a current enrolment. */
+  term: string | null;
+}
+
+export interface DegreeCourse {
+  code: string;
+  description: string | null;
+  units: number | null;
+  offering: Offering | null;
+  /** null = not attempted. Never 0. */
+  grade: string | null;
+  status: DegreeCourseStatus | null;
+  designation: string | null;
+}
+
+/** A paginated option table we only saw part of — the user needs to re-paste
+ *  with **View All** clicked. */
+export interface Truncation {
+  shown: number;
+  total: number;
+}
+
+export interface AuditItem {
+  key: string;
+  title: string;
+  unitsNeeded: number | null;
+  /** Minimum passing grade, inherited from the enclosing block. */
+  minGrade: string | null;
+  /** Set when a prior attempt failed this requirement's grade floor. This is a
+   *  **retake**, not something never taken — the distinction the whole
+   *  feature turns on. */
+  retakeOf: DegreeCourse | null;
+  /** Every eligible option runs in exactly one term per year. */
+  singleTermOnly: boolean;
+  /** Every eligible option is `Variable Offering See Advisor`. */
+  needsAdvisor: boolean;
+  options: DegreeCourse[];
+  truncated: Truncation | null;
+}
+
+export interface DegreeBucket {
+  key: string;
+  title: string;
+  unitsNeeded: number | null;
+}
+
+export interface DegreeHeader {
+  studentName: string | null;
+  studentId: string | null;
+  career: string | null;
+  program: string | null;
+  plan: string | null;
+  catalogTerm: string | null;
+  /** `Not Applied` means the degree cannot be conferred however the
+   *  coursework lands. */
+  graduationStatus: string | null;
+  lastTermRegistered: string | null;
+  academicStanding: string | null;
+  overallGpa: number | null;
+  sjsuGpa: number | null;
+  generatedAt: string | null;
+}
+
+export interface DegreeAudit {
+  header: DegreeHeader;
+  outstanding: AuditItem[];
+  /** Unit totals satisfied *by* the outstanding courses, not alongside them. */
+  buckets: DegreeBucket[];
+  unitsFromCourses: number;
+  /** Elective room the buckets demand that no itemised requirement covers. */
+  unallocatedBucketUnits: number;
+  targetTerm: string | null;
+  importedAt: string | null;
+  generatedAt: string | null;
+  truncatedRequirements: string[];
+}

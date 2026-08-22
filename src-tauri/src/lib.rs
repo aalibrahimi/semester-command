@@ -26,6 +26,7 @@
 pub mod canvas;
 pub mod commands;
 pub mod db;
+pub mod degree;
 pub mod grades;
 pub mod ical;
 pub mod mcp;
@@ -97,6 +98,9 @@ pub fn run() {
             commands::data::save_manual_score,
             commands::data::set_estimate,
             commands::data::triage_rows,
+            commands::degree::get_degree_audit,
+            commands::degree::import_myprogress,
+            commands::degree::set_target_term,
             commands::grades::course_detail,
             commands::grades::course_summaries,
             commands::grades::set_course_hidden,

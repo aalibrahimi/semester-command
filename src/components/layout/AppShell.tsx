@@ -34,6 +34,7 @@ const DIGIT_ROUTES: Record<string, string> = {
   "3": "/calendar",
   "4": "/syllabi",
   "5": "/contacts",
+  "6": "/graduation",
 };
 
 export function AppShell() {
@@ -84,7 +85,7 @@ export function AppShell() {
     };
   }, []);
 
-  // ⌘\ collapse and ⌘1–⌘4 navigation. ⌘K is owned by CommandPalette.
+  // ⌘\ collapse and ⌘1–⌘6 navigation. ⌘K is owned by CommandPalette.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!hasMod(e)) return;

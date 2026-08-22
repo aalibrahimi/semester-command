@@ -27,6 +27,15 @@ canvas_token*
 /data/
 *.ics
 
+# Degree records. A real MyProgress export is a full academic transcript —
+# student id, every grade, every attempt. The committed test fixture is
+# synthetic (tests/fixtures/myprogress_sample.txt) precisely so this rule can
+# stay absolute. Drop a real export at the path below to have degree_test
+# verify the parser against it; it never leaves your machine.
+/src-tauri/tests/fixtures/myprogress_real.txt
+*MyProgress*.pdf
+*My Progress*.pdf
+
 # Editor / OS
 .DS_Store
 Thumbs.db
