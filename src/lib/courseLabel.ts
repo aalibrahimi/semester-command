@@ -40,10 +40,14 @@ export function parseCourseLabel(raw: string | null | undefined): CourseLabel {
   return { term: term ?? null, code: code ?? null, title };
 }
 
-/** The shortest useful handle: "CS-146", else a trimmed title. */
+/** The shortest useful handle: "CS-146", else a clipped title — a chip
+ *  reading "SJSU AI Literacy Essentials (Transfer Students)" defeats the
+ *  point of a chip. Parentheticals go first, then a hard clip. */
 export function courseShort(raw: string | null | undefined): string {
   const { code, title } = parseCourseLabel(raw);
-  return code ?? title;
+  if (code) return code;
+  const clean = title.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+  return clean.length > 18 ? `${clean.slice(0, 17).trimEnd()}…` : clean;
 }
 
 /** Code + title when both exist and differ: "CS-146 · Data Struct and Alg". */

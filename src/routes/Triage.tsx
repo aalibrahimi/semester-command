@@ -25,7 +25,15 @@
  * happens in `src-tauri/src/triage.rs`, never here (§10).
  */
 import { useCallback, useEffect, useState } from "react";
-import { ArrowUpRight, CalendarClock, CircleAlert, Inbox, ListChecks, Timer } from "lucide-react";
+import {
+  ArrowUpRight,
+  CalendarClock,
+  ChevronDown,
+  CircleAlert,
+  Inbox,
+  ListChecks,
+  Timer,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { toast } from "sonner";
@@ -33,17 +41,18 @@ import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
+import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
-import { calendarItems, setEstimate, triageRows } from "@/lib/ipc";
+import { calendarItems, courseDetail, setEstimate, triageRows } from "@/lib/ipc";
 import { minutes, pct, relativeDue } from "@/lib/format";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { courseFull, courseShort } from "@/lib/courseLabel";
 import { chipStyle, tickStyle } from "@/lib/courseColor";
 import { cn } from "@/lib/utils";
-import type { CalendarItem, TriageRow, TriageState } from "@/types";
+import type { AssignmentDetail, CalendarItem, TriageRow, TriageState } from "@/types";
 
 const STATE_CHIP: Record<TriageState, { label: string; cls: string }> = {
   missing: { label: "missing", cls: "bg-critical/10 text-critical-fg" },
@@ -54,7 +63,20 @@ const STATE_CHIP: Record<TriageState, { label: string; cls: string }> = {
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
   const [week, setWeek] = useState<CalendarItem[]>([]);
+  const [openAssignment, setOpenAssignment] = useState<AssignmentDetail | null>(null);
   const { courses, openTotal, dueThisWeek, loaded } = useCourses();
+
+  // Row click → the full assignment sheet (description, rubric, estimate),
+  // fetched lazily from the course's detail payload.
+  const openSheet = useCallback((row: TriageRow) => {
+    courseDetail(row.courseId)
+      .then((d) => {
+        const a = d.assignments.find((x) => x.id === row.assignmentId);
+        if (a) setOpenAssignment(a);
+        else toast.error("Could not load that assignment.");
+      })
+      .catch(() => toast.error("Could not load that assignment."));
+  }, []);
 
   const refresh = useCallback(() => {
     triageRows()
@@ -167,7 +189,7 @@ export default function Triage() {
         </div>
 
         {/* ── The queue ────────────────────────────────────────────────── */}
-        <QueueTile queue={queue} onEstimateSaved={refresh} />
+        <QueueTile queue={queue} onEstimateSaved={refresh} onOpenAssignment={openSheet} />
 
         {/* ── Next 7 days ──────────────────────────────────────────────── */}
         <Tile label="Next 7 days" icon={CalendarClock}>
@@ -178,6 +200,14 @@ export default function Triage() {
           )}
         </Tile>
       </div>
+
+      {/* One click from the queue to the full assignment: description,
+          rubric, estimate — without leaving the dashboard. */}
+      <AssignmentSheet
+        assignment={openAssignment}
+        onOpenChange={(open) => !open && setOpenAssignment(null)}
+        onChanged={refresh}
+      />
     </>
   );
 }
@@ -427,9 +457,11 @@ const QUEUE_VIEW_KEY = "triage-queue-view";
 function QueueTile({
   queue,
   onEstimateSaved,
+  onOpenAssignment,
 }: {
   queue: TriageRow[];
   onEstimateSaved: () => void;
+  onOpenAssignment: (row: TriageRow) => void;
 }) {
   const [view, setView] = useState<QueueView>(() => {
     const v = localStorage.getItem(QUEUE_VIEW_KEY);
@@ -438,10 +470,18 @@ function QueueTile({
   // Captured once per mount: bucket boundaries drifting a few minutes stale
   // is invisible; an impure render is a lint error.
   const [nowRef] = useState(() => Date.now());
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const pick = (v: QueueView) => {
     setView(v);
     localStorage.setItem(QUEUE_VIEW_KEY, v);
   };
+  const toggleGroup = (key: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   // Global rank = position in the ranked list, +2 because the hero is #1.
   const rankOf = new Map(queue.map((r, i) => [r.assignmentId, i + 2]));
@@ -455,21 +495,32 @@ function QueueTile({
       byCourse.set(r.courseId, [...(byCourse.get(r.courseId) ?? []), r]);
     }
     for (const [courseId, rows] of byCourse) {
-      const impact = rows.reduce((s, r) => s + r.impactPct, 0);
+      // The header stat that's actually informative: the group's nearest
+      // deadline. (The old "% of grade at stake" summed to ~100 for every
+      // course at week one — true, and useless.)
+      const nextDue = rows
+        .map((r) => r.dueAt)
+        .filter((d): d is string => d !== null)
+        .sort()[0];
       groups.push({
         key: courseId,
         heading: (
-          <span className="flex min-w-0 items-center gap-2">
+          <span className="flex min-w-0 flex-1 items-center gap-2">
             <span className="h-3 w-[3px] shrink-0 rounded-full" style={tickStyle(courseId)} />
             <span className="truncate font-mono text-xs font-semibold text-foreground/90">
               {courseFull(rows[0].courseCode)}
             </span>
             <span className="shrink-0 text-2xs text-muted-foreground">
-              {rows.length} item{rows.length === 1 ? "" : "s"} ·{" "}
-              <span data-numeric className="font-mono tabular-nums">
-                {impact.toFixed(1)}%
-              </span>{" "}
-              of grade at stake
+              {rows.length} item{rows.length === 1 ? "" : "s"}
+              {nextDue && (
+                <>
+                  {" "}
+                  · next due{" "}
+                  <span data-numeric className="font-mono tabular-nums">
+                    {relativeDue(nextDue)}
+                  </span>
+                </>
+              )}
             </span>
           </span>
         ),
@@ -541,23 +592,39 @@ function QueueTile({
       actions={toggle}
     >
       <div className="flex flex-col">
-        {groups.map((g) => (
-          <div key={g.key}>
-            {g.heading && (
-              <div className="flex items-center border-t border-border/60 bg-fill-ghost/40 px-4 py-1.5">
-                {g.heading}
-              </div>
-            )}
-            {g.rows.map((row) => (
-              <QueueRow
-                key={row.assignmentId}
-                row={row}
-                rank={rankOf.get(row.assignmentId) ?? 0}
-                onEstimateSaved={onEstimateSaved}
-              />
-            ))}
-          </div>
-        ))}
+        {groups.map((g) => {
+          const isCollapsed = collapsed.has(g.key);
+          return (
+            <div key={g.key}>
+              {g.heading && (
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(g.key)}
+                  className="flex w-full items-center gap-2 border-t border-border/60 bg-fill-ghost/40 px-4 py-1.5 text-left transition-colors duration-micro hover:bg-fill-ghost"
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-micro",
+                      isCollapsed && "-rotate-90",
+                    )}
+                  />
+                  {g.heading}
+                </button>
+              )}
+              {!isCollapsed &&
+                g.rows.map((row) => (
+                  <QueueRow
+                    key={row.assignmentId}
+                    row={row}
+                    rank={rankOf.get(row.assignmentId) ?? 0}
+                    grouped={view === "course"}
+                    onEstimateSaved={onEstimateSaved}
+                    onOpen={() => onOpenAssignment(row)}
+                  />
+                ))}
+            </div>
+          );
+        })}
         {queue.length === 0 && (
           <p className="px-4 pb-4 text-xs text-muted-foreground">
             Just the one item — clear it and you're done.
@@ -573,22 +640,30 @@ function QueueTile({
 function QueueRow({
   row,
   rank,
+  grouped,
   onEstimateSaved,
+  onOpen,
 }: {
   row: TriageRow;
   rank: number;
+  /** Inside a per-course group the course chip is the header's job. */
+  grouped?: boolean;
   onEstimateSaved: () => void;
+  onOpen: () => void;
 }) {
   const reduced = useReducedMotion();
-  const chip = STATE_CHIP[row.state];
   const pinned = row.state !== "open";
+  // "not submitted" is the DEFAULT state of a triage row — chipping it 20
+  // times per screen is noise. Only the exceptional states get a chip.
+  const chip = pinned ? STATE_CHIP[row.state] : null;
 
   return (
     <motion.div
       layout
       transition={springy(reduced)}
+      onClick={onOpen}
       className={cn(
-        "relative flex items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4",
+        "relative flex cursor-pointer items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
         pinned && "bg-critical/5",
       )}
     >
@@ -607,25 +682,36 @@ function QueueRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="truncate text-sm">{row.name ?? "Untitled"}</span>
-          <span className={cn("chip shrink-0 text-2xs", chip.cls)}>{chip.label}</span>
+          {chip && <span className={cn("chip shrink-0 text-2xs", chip.cls)}>{chip.label}</span>}
         </div>
         <div className="mt-0.5 flex items-center gap-2 text-2xs text-muted-foreground">
-          <Link
-            to={`/courses/${row.courseId}`}
-            className="shrink-0 rounded px-1 font-mono font-medium text-foreground/80 hover:underline"
-            style={chipStyle(row.courseId)}
-          >
-            {courseShort(row.courseCode)}
-          </Link>
+          {!grouped && (
+            <Link
+              to={`/courses/${row.courseId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0 rounded px-1 font-mono font-medium text-foreground/80 hover:underline"
+              style={chipStyle(row.courseId)}
+            >
+              {courseShort(row.courseCode)}
+            </Link>
+          )}
           <span data-numeric className={cn("font-mono", pinned && "text-critical-fg")}>
-            {relativeDue(row.dueAt)}
+            {row.dueAt ? relativeDue(row.dueAt) : "no due date"}
           </span>
         </div>
       </div>
-      <span data-numeric className="w-20 shrink-0 text-right font-mono text-xs tabular-nums">
+      <span
+        data-numeric
+        className={cn(
+          "w-20 shrink-0 text-right font-mono text-xs tabular-nums",
+          row.impactPct <= 0 && "text-muted-foreground/40",
+        )}
+      >
         {row.impactPct.toFixed(1)}%
       </span>
-      <EstimateCell row={row} onSaved={onEstimateSaved} />
+      <span onClick={(e) => e.stopPropagation()}>
+        <EstimateCell row={row} onSaved={onEstimateSaved} />
+      </span>
     </motion.div>
   );
 }
