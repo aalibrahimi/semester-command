@@ -15,6 +15,7 @@ import {
   Activity,
   AlertTriangle,
   ArrowRight,
+  CalendarRange,
   Compass,
   GitBranch,
   Layers,
@@ -32,7 +33,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getCourseIntel, getTransferNote, isTransferred } from "@/lib/gradData";
 import type { CourseIntel, RegFlag } from "@/lib/gradData";
-import type { GradStatus } from "@/lib/gradPlan";
+import { TERMS, type GradStatus } from "@/lib/gradPlan";
 import { cn } from "@/lib/utils";
 
 const RISK_CLS: Record<string, string> = {
@@ -46,12 +47,15 @@ export function GradCourseSheet({
   code,
   statusOf,
   onOpenChange,
+  onMove,
 }: {
   /** Null = closed. */
   code: string | null;
   /** Live status lookup from the merged plan, for chain resolution. */
   statusOf: (code: string) => GradStatus | undefined;
   onOpenChange: (open: boolean) => void;
+  /** Re-slot this course to another term (null = back to the default). */
+  onMove?: (termId: string | null) => void;
 }) {
   const intel = code ? getCourseIntel(code) : undefined;
   return (
@@ -66,7 +70,7 @@ export function GradCourseSheet({
             </SheetDescription>
           </SheetHeader>
         )}
-        {intel && <Body intel={intel} statusOf={statusOf} />}
+        {intel && <Body intel={intel} statusOf={statusOf} onMove={onMove} />}
       </SheetContent>
     </Sheet>
   );
@@ -75,9 +79,11 @@ export function GradCourseSheet({
 function Body({
   intel,
   statusOf,
+  onMove,
 }: {
   intel: CourseIntel;
   statusOf: (code: string) => GradStatus | undefined;
+  onMove?: (termId: string | null) => void;
 }) {
   return (
     <>
@@ -280,6 +286,34 @@ function Body({
         <Section title="Advisor note" icon={StickyNote}>
           <p className="rounded-lg border border-at-risk/30 bg-at-risk/5 px-3 py-2 text-xs leading-relaxed">
             {intel.advisorNote}
+          </p>
+        </Section>
+      )}
+
+      {/* ── Re-slot ──────────────────────────────────────────────────────── */}
+      {onMove && (
+        <Section title="Re-slot this course" icon={CalendarRange}>
+          <div className="flex flex-wrap gap-1.5">
+            {TERMS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => onMove(t.id)}
+                className="rounded-sm border border-border px-2 py-1 text-2xs text-muted-foreground transition-colors duration-micro hover:border-brand/40 hover:text-foreground"
+              >
+                {t.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => onMove(null)}
+              className="rounded-sm border border-dashed border-border px-2 py-1 text-2xs text-muted-foreground transition-colors duration-micro hover:text-foreground"
+            >
+              reset to planned term
+            </button>
+          </div>
+          <p className="mt-2 text-2xs text-muted-foreground">
+            Moving only changes your plan — check “{intel.offered}” before committing.
           </p>
         </Section>
       )}

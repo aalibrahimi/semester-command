@@ -84,6 +84,7 @@ pub fn run() {
             commands::data::calendar_items,
             commands::data::fetch_syllabus_from_canvas,
             commands::data::grad_overrides,
+            commands::data::grad_requirement_statuses,
             commands::data::set_grad_override,
             commands::data::import_syllabus_file,
             commands::data::set_instructor_starred,

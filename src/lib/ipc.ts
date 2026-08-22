@@ -268,6 +268,15 @@ export async function exportSemesterIcs(path: string): Promise<number> {
   return call<number>("export_semester_ics", { path });
 }
 
+/** Registrar requirement statuses from the imported MyProgress report —
+ *  empty until a report is imported. Feeds the plan merge. */
+export async function gradRequirementStatuses(): Promise<
+  { title: string; status: string }[]
+> {
+  if (!IS_TAURI) return [];
+  return call("grad_requirement_statuses");
+}
+
 /** Stored graduation-plan overrides (status / term moves). */
 export async function gradOverrides(): Promise<
   { code: string; status: string | null; termId: string | null }[]

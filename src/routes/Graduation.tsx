@@ -60,17 +60,21 @@ import { useCourses } from "@/hooks/useCourses";
 import {
   getDegreeAudit,
   gradOverrides,
+  gradRequirementStatuses,
   importMyProgress,
   setGradOverride,
 } from "@/lib/ipc";
 import {
   DANGER_PAIRS,
   mergePlan,
+  TERMS,
   type GradOverride,
   type GradStatus,
   type MergedPlan,
   type PlanRow,
+  type RequirementStatus,
 } from "@/lib/gradPlan";
+import { COURSE_INTEL } from "@/lib/gradData";
 import { cn } from "@/lib/utils";
 import type { AuditItem, DegreeAudit, Offering } from "@/types";
 
@@ -86,18 +90,25 @@ const STATUS_PILL: Record<GradStatus, { label: string; cls: string }> = {
  *  the automatic derivation (Canvas enrollment, term position) decides. */
 const CYCLE: (GradStatus | null)[] = [null, "passed", "failed", "dropped"];
 
+type GradTab = "timeline" | "registrar" | "risk";
+
 export default function Graduation() {
   const { courses, loaded } = useCourses();
   const [overrides, setOverrides] = useState<GradOverride[] | null>(null);
+  const [requirements, setRequirements] = useState<RequirementStatus[]>([]);
   const [audit, setAudit] = useState<DegreeAudit | null>(null);
   const [auditLoaded, setAuditLoaded] = useState(false);
   const [openCode, setOpenCode] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [tab, setTab] = useState<GradTab>("timeline");
 
   const refresh = useCallback(() => {
     gradOverrides()
       .then(setOverrides)
       .catch(() => setOverrides([]));
+    gradRequirementStatuses()
+      .then(setRequirements)
+      .catch(() => {});
     getDegreeAudit()
       .then(setAudit)
       .catch(() => {})
@@ -109,8 +120,8 @@ export default function Graduation() {
   }, [refresh]);
 
   const plan: MergedPlan | null = useMemo(
-    () => (overrides !== null && loaded ? mergePlan(overrides, courses) : null),
-    [overrides, courses, loaded],
+    () => (overrides !== null && loaded ? mergePlan(overrides, courses, requirements) : null),
+    [overrides, courses, requirements, loaded],
   );
 
   const statusOf = useCallback(
@@ -126,6 +137,16 @@ export default function Graduation() {
     setGradOverride(row.code, next, ov?.termId ?? null)
       .then(refresh)
       .catch(() => toast.error("Could not update the course status."));
+  };
+
+  const moveCourse = (code: string, termId: string | null) => {
+    const ov = overrides?.find((o) => o.code === code);
+    setGradOverride(code, ov?.status ?? null, termId)
+      .then(() => {
+        refresh();
+        toast.success(termId ? "Course re-slotted." : "Course back to its planned term.");
+      })
+      .catch(() => toast.error("Could not move the course."));
   };
 
   if (!plan || !auditLoaded) {
@@ -330,28 +351,81 @@ export default function Graduation() {
         </div>
       </motion.section>
 
+      {/* ═══ TAB STRIP — one page, three questions ════════════════════ */}
+      <TabStrip active={tab} onChange={setTab} registrarBacked={plan.registrarBacked} />
+
       {/* ═══ 4 · TERM TIMELINE ════════════════════════════════════════ */}
+      {tab === "timeline" && (
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.12, ease: "easeOut" }}
-        className="px-10 pb-10"
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="px-10 pb-10 pt-6"
       >
+        {/* Overdue strip: registrar says owed, the slot is already gone. */}
+        {plan.overdue.length > 0 && (
+          <div className="mb-6 border-l-[3px] border-critical/70 bg-critical/[0.04] py-3 pl-4 pr-3">
+            <div className="mb-2 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-critical-fg">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              Still owed — needs a new slot
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {plan.overdue.map((row) => (
+                <div key={row.code} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <button
+                    type="button"
+                    onClick={() => setOpenCode(row.code)}
+                    className="font-mono text-xs font-semibold hover:underline"
+                  >
+                    {row.code}
+                  </button>
+                  <span className="min-w-0 flex-1 truncate text-sm">{row.name}</span>
+                  <span className="text-2xs text-muted-foreground">
+                    was planned {termLabel(row.plannedTerm)} · offered{" "}
+                    {offeredOf(row.code) ?? "check advisor"}
+                  </span>
+                  <TermPicker
+                    value={null}
+                    onPick={(termId) => moveCourse(row.code, termId)}
+                    fromTermId={plan.currentTermId}
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-2xs text-muted-foreground">
+              The registrar still counts these against the degree. Pick the term you'll actually
+              take them and they slot back into the timeline.
+            </p>
+          </div>
+        )}
+
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-display text-lg font-bold tracking-tight">Term Timeline</h2>
-          <span className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
             Click a course for intelligence · click a status pill to mark it
           </span>
         </div>
 
         <div className="border-t border-border">
-          {plan.terms.map((term, idx) => (
+          {plan.terms.map((term, idx) => {
+            const past =
+              plan.currentTermId !== null &&
+              plan.terms.findIndex((t) => t.id === term.id) <
+                plan.terms.findIndex((t) => t.id === plan.currentTermId);
+            return (
             <motion.div
               key={term.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.15 + idx * 0.04, ease: "easeOut" }}
-              className="grid grid-cols-1 gap-x-8 border-b border-border py-6 last:border-b-0 lg:grid-cols-[190px_1fr]"
+              transition={{ duration: 0.35, delay: 0.1 + idx * 0.04, ease: "easeOut" }}
+              className={cn(
+                "grid grid-cols-1 gap-x-8 border-b border-border py-6 last:border-b-0 lg:grid-cols-[190px_1fr]",
+                // Shading does the wayfinding: history recedes, the present
+                // is warm, the finish line is green — all at whisper opacity.
+                past && "opacity-55 transition-opacity hover:opacity-100",
+                term.isCurrent && "-mx-4 bg-at-risk/[0.045] px-4",
+                term.isTarget && "-mx-4 bg-on-track/[0.035] px-4",
+              )}
             >
               {/* Left rail — the CWA accent bar. */}
               <div className="relative pl-5">
@@ -426,17 +500,57 @@ export default function Graduation() {
                 )}
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </motion.section>
+      )}
 
-      {/* ═══ 5 · DANGER PAIRS ═════════════════════════════════════════ */}
+      {/* ═══ 5 · RISK & RULES TAB ═════════════════════════════════════ */}
+      {tab === "risk" && (
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.15, ease: "easeOut" }}
-        className="px-10 pb-12"
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="px-10 pb-12 pt-6"
       >
+        {/* Critical path first: the courses that, missed, cost a semester. */}
+        <div className="mb-8">
+          <div className="mb-4 flex items-center gap-2.5">
+            <AlertTriangle className="h-5 w-5 text-at-risk-fg" />
+            <h2 className="font-display text-lg font-bold tracking-tight">Critical Path</h2>
+            <span className="ml-2 text-2xs font-semibold uppercase tracking-[0.15em] text-muted-foreground/70">
+              Missing any of these delays graduation ≥ 1 semester
+            </span>
+          </div>
+          <div className="border-t border-border">
+            {plan.terms
+              .flatMap((t) => t.rows.map((r) => ({ ...r, termLabel: t.label })))
+              .concat(plan.overdue.map((r) => ({ ...r, termLabel: "UNSLOTTED" })))
+              .filter((r) => r.critical)
+              .map((r) => (
+                <button
+                  key={r.code}
+                  type="button"
+                  onClick={() => setOpenCode(r.code)}
+                  className="grid w-full grid-cols-[110px_minmax(0,1fr)_minmax(100px,auto)_minmax(90px,auto)] items-center gap-x-4 border-b border-border/60 px-2 py-3 text-left transition-colors last:border-b-0 hover:bg-fill-ghost/40"
+                >
+                  <span className="font-mono text-xs font-semibold">{r.code}</span>
+                  <span className="truncate text-sm">{r.name}</span>
+                  <span className="text-2xs text-muted-foreground">{r.termLabel}</span>
+                  <span
+                    className={cn(
+                      "rounded-sm border px-2 py-0.5 text-center text-2xs font-semibold",
+                      STATUS_PILL[r.status].cls,
+                    )}
+                  >
+                    {STATUS_PILL[r.status].label}
+                  </span>
+                </button>
+              ))}
+          </div>
+        </div>
+
         <div className="mb-5 flex flex-wrap items-center gap-2.5">
           <Flame className="h-5 w-5 text-critical-fg" />
           <h2 className="font-display text-lg font-bold tracking-tight">
@@ -465,18 +579,20 @@ export default function Graduation() {
           ))}
         </div>
       </motion.section>
+      )}
 
-      {/* ═══ 6 · MYPROGRESS AUDIT ═════════════════════════════════════ */}
+      {/* ═══ 6 · REGISTRAR TAB ════════════════════════════════════════ */}
+      {tab === "registrar" && (
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.18, ease: "easeOut" }}
-        className="px-10"
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="px-10 pt-6"
       >
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2 border-t border-border pt-8">
+        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
           <div>
             <h2 className="font-display text-lg font-bold tracking-tight">Registrar Audit</h2>
-            <p className="mt-0.5 text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="mt-0.5 text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
               What SJSU still counts against you · from MyProgress
             </p>
           </div>
@@ -498,11 +614,13 @@ export default function Graduation() {
           <AuditReport audit={audit} notApplied={notApplied} />
         )}
       </motion.section>
+      )}
 
       <GradCourseSheet
         code={openCode}
         statusOf={statusOf}
         onOpenChange={(open) => !open && setOpenCode(null)}
+        onMove={(termId) => openCode && moveCourse(openCode, termId)}
       />
       <ImportDialog
         open={importOpen}
@@ -517,6 +635,113 @@ export default function Graduation() {
 }
 
 /* ═══ Plan atoms ═══════════════════════════════════════════════════════════ */
+
+/** The CWA scenario-tab strip: bold label, letterspaced sub, spring
+ *  underline via layoutId. One page, three questions. */
+function TabStrip({
+  active,
+  onChange,
+  registrarBacked,
+}: {
+  active: GradTab;
+  onChange: (t: GradTab) => void;
+  registrarBacked: boolean;
+}) {
+  const tabs: { id: GradTab; label: string; sub: string; icon: React.ReactNode }[] = [
+    {
+      id: "timeline",
+      label: "Timeline",
+      sub: "What to take · which semester",
+      icon: <CalendarClock className="h-3.5 w-3.5" />,
+    },
+    {
+      id: "registrar",
+      label: "Registrar",
+      sub: registrarBacked ? "MyProgress · what SJSU counts" : "Import MyProgress",
+      icon: <ClipboardPaste className="h-3.5 w-3.5" />,
+    },
+    {
+      id: "risk",
+      label: "Risk & Rules",
+      sub: "Critical path · pairing rules",
+      icon: <Flame className="h-3.5 w-3.5" />,
+    },
+  ];
+  return (
+    <div className="px-10">
+      <div className="flex items-stretch gap-0 border-b border-border">
+        {tabs.map((t) => {
+          const isActive = t.id === active;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => onChange(t.id)}
+              className={cn(
+                "group relative px-6 py-3 text-left transition-colors",
+                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/85",
+              )}
+            >
+              <div className="mb-0.5 flex items-center gap-2">
+                <span className={isActive ? "text-brand-fg" : "text-muted-foreground/70"}>
+                  {t.icon}
+                </span>
+                <span className="text-sm font-bold tracking-tight">{t.label}</span>
+              </div>
+              <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/70">
+                {t.sub}
+              </div>
+              {isActive && (
+                <motion.div
+                  layoutId="grad-tab-underline"
+                  className="absolute -bottom-px left-0 right-0 h-[2px] bg-brand"
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Inline term chooser for re-slotting a course. Only current + future
+ *  terms are offered — moving work into the past is fiction. */
+function TermPicker({
+  value,
+  onPick,
+  fromTermId,
+}: {
+  value: string | null;
+  onPick: (termId: string | null) => void;
+  fromTermId: string | null;
+}) {
+  const fromIdx = TERMS.findIndex((t) => t.id === fromTermId);
+  const options = TERMS.filter((_, i) => fromIdx === -1 || i >= fromIdx);
+  return (
+    <select
+      value={value ?? ""}
+      onChange={(e) => onPick(e.target.value === "" ? null : e.target.value)}
+      className="rounded-sm border border-border bg-transparent px-1.5 py-1 text-2xs text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <option value="">move to…</option>
+      {options.map((t) => (
+        <option key={t.id} value={t.id}>
+          {t.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function termLabel(id: string): string {
+  return TERMS.find((t) => t.id === id)?.label ?? id;
+}
+
+function offeredOf(code: string): string | undefined {
+  return COURSE_INTEL[code]?.offered;
+}
 
 function Stat({
   label,
@@ -638,6 +863,8 @@ function CourseLine({
             {row.note === "not enrolled" && "⚠ planned this term but not enrolled"}
             {row.note === "off-plan" && "enrolled, outside the plan"}
             {row.note === "moved" && "moved from its planned term"}
+            {row.note === "registered" && "registered — not yet published on Canvas"}
+            {row.note === "overdue" && "owed from a past term"}
           </span>
         )}
       </button>

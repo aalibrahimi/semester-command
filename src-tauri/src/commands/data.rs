@@ -219,6 +219,28 @@ pub async fn export_semester_ics(app: AppHandle, path: String) -> CommandResult<
     Ok(count)
 }
 
+/// One registrar requirement's title + status, for the plan merge.
+/// Statuses as MyProgress reports them: 'taken' (satisfied), 'enrolled'
+/// (registered this term), 'error' (outstanding).
+#[derive(Debug, Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct RequirementStatus {
+    pub title: String,
+    pub status: String,
+}
+
+/// Every parsed requirement's status from the imported MyProgress report.
+/// Empty when no report has been imported. The frontend maps titles to plan
+/// course codes — the mapping is presentation knowledge, not registrar data.
+#[tauri::command]
+pub async fn grad_requirement_statuses(app: AppHandle) -> CommandResult<Vec<RequirementStatus>> {
+    let db = db_of(&app);
+    sqlx::query_as("SELECT title, status FROM degree_requirements")
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)
+}
+
 // ── Graduation plan overrides ───────────────────────────────────────────────
 
 /// One user override on the static degree plan. Mirrored as `GradOverride`.
