@@ -19,6 +19,7 @@
 
 pub mod auth;
 pub mod data;
+pub mod degree;
 pub mod grades;
 pub mod settings;
 pub mod sync;

@@ -15,6 +15,7 @@
 //! synced table carries a `source` column (`api` | `ics` | `manual`), and the
 //! UI marks anything that is not `api`.
 
+pub mod degree;
 pub mod queries;
 pub mod schema;
 pub mod upsert;

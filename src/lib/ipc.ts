@@ -16,6 +16,7 @@
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
 import type {
   AuthStatus,
+  DegreeAudit,
   CalendarItem,
   CourseDetailPayload,
   Dashboard,
@@ -328,3 +329,29 @@ export async function debugForceReconnect(): Promise<void> {
 }
 // TODO(M2): getCourseGrades, whatDoINeed
 // TODO(M4): exportIcs
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Degree progress (MyProgress import)
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * The stored degree audit, or null when nothing has been imported yet.
+ * Outside Tauri: null, so the empty state renders in `vite dev`.
+ */
+export async function getDegreeAudit(): Promise<DegreeAudit | null> {
+  if (!IS_TAURI) return null;
+  return call<DegreeAudit | null>("get_degree_audit");
+}
+
+/**
+ * Parse and store a pasted MyProgress page, returning the audit computed from
+ * it. Rejects with a CommandError when the text is not a MyProgress report.
+ */
+export async function importMyProgress(text: string): Promise<DegreeAudit> {
+  return call<DegreeAudit>("import_myprogress", { text });
+}
+
+/** Set the graduation term the audit is measured against, e.g. "Fall 2027". */
+export async function setTargetTerm(term: string): Promise<void> {
+  await call<void>("set_target_term", { term });
+}

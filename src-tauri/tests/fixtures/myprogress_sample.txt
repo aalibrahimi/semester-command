@@ -1,0 +1,328 @@
+My Progress
+Test Student
+000000000
+Step 3
+Print Report
+New Window
+Current Academic Objective
+Requirement (Catalog) Term
+Career:
+Undergraduate
+Fall 2025
+Program:
+UGD - Undergraduate Degree
+Fall 2025
+Plan:
+Underwater Basket Weaving & Logic
+Fall 2025
+Graduation Status:Not Applied
+
+Current Academic Summary
+Last Term Registered:Fall 2026
+Academic Standing:Good Standing
+Overall GPA:2.527
+SJSU GPA:2.459
+General Information
+IMPORTANT SJSU INFORMATION - PLEASE READ
+This is an unofficial degree progress report based on your "Requirement (Catalog) Term".
+
+These symbols show the status for each requirement within your MyProgress report.
+MyProgress Icons
+Taken
+Requirement is complete
+Enrolled
+Requirement in progress
+Planned
+Plan for completion in place
+Error
+Requirement not yet completed
+Exception made for requirement
+Exception made for requirement
+
+Course Icons
+Taken
+Course completed
+Enrolled
+Course in progress
+Planned
+Course planned for future
+Transferred
+Transfer/Test credit granted
+Course for what if only
+Course for what-if only
+San Jose State University | Undergraduate
+This report last generated on08/21/2026  5:02PM
+Collapse All
+
+Expand All
+University Units (RG1048)Error
+MINIMUM UNIVERSITY UNITS REQUIREMENTS FOR UNDERGRADUATE DEGREE (RG1048) All SJSU students must take 30 semester units in residence.
+
+Minimum 120 UnitsTaken
+40 Total Upper Division UnitsError
+Minimum 40 Total Upper Division Semester Units
+("taken" units include in-progress courses) (RQ39, LI30)
+
+Units: 40.00 required, 27.00 taken, 13.00 needed
+30 Total Residence at SJSUEnrolled
+("taken" units include in-progress courses) (RQ39, LI40)
+
+Units: 30.00 required, 40.00 taken, 0.00 needed
+GE Core Requirements (RG1045)Error
+34 units Core General Education.
+
+Units: 34.00 required, 36.00 taken, 0.00 needed
+GEC: Area 1 (RQ1)Taken
+GE CORE AREA 1: ENGLISH COMMUNICATION AND CRITICAL THINKING.
+A minimum grade of "C-" is required for each course. (RQ1)
+
+GE: 1A Written CommunicationTaken
+GEC: Area 6 (RQ2527)Error
+GE CORE AREA 6: ETHNIC STUDIES (RQ2527)
+A minimum grade of "C-" is required.
+
+GE: 6 Ethnic StudiesError
+A minimum grade of "C-" is required. (RQ2527, LI10)
+
+Units: 2.60 required, 0.00 taken, 2.60 needed
+Courses: 1 required, 0 taken, 1 needed
+The following courses may be used to satisfy this requirement:
+Course
+Description
+Units
+When
+Grade
+Status
+Course
+(***)
+Description
+Approved Transfer Credit
+ 	When
+Grade
+Status
+
+Course
+AAS 1
+Description
+Intro Asn Am Studies
+Units
+3.00
+When
+All Terms
+Grade
+Status
+
+Course
+AAS 159
+Description
+Asian Am Media Rep
+Units
+3.00
+When
+Fall in odd years
+Grade
+Status
+
+Course
+AFAM 25
+Description
+Changing Majority
+Units
+3.00
+When
+Spring
+Grade
+Status
+
+Course
+CCS 25
+Description
+Changing Majority
+Units
+3.00
+When
+Spring Summer & Fall
+Grade
+Status
+
+Table Pagination
+ First	 Previous	1-10 of 13	Next 	Last
+Table Options
+View All
+UBWL Major PreparationError
+BS Underwater Basket Weaving and Logic (RG4511)
+
+A grade of 'C-" or better is required for courses being used to meet any requirement in any minor or major offered by the Department of Basket Weaving, including preparation courses.
+
+UBWL MATH 30Taken
+Complete 1 course. (RQ2995, LI10)
+
+The following courses may be used to satisfy this requirement:
+Course	Description	Units	When	Grade	Requirement
+Designation	Status
+Course
+MATH 30
+Description
+Calculus I
+Units
+5.00
+When
+Fall 2025
+Grade
+B
+RequirementDesignation
+GE: 2 Math/Quant Reason (B4)
+Status
+Transferred
+UBWL MATH 31Error
+Complete 1 course. (RQ2995, LI20)
+
+Courses: 1 required, 0 taken, 1 needed
+The following courses may be used to satisfy this requirement:
+Course	Description	Units	When	Grade	Status
+Course
+MATH 31
+Description
+Calculus II
+Units
+4.00
+When
+Spring Summer & Fall
+Grade
+Status
+
+UBWL BW 171Error
+Complete 1 course. (RQ2997, LI70)
+
+Courses: 1 required, 0 taken, 1 needed
+The following courses may be used to satisfy this requirement:
+Course	Description	Units	When	Grade	Status
+Course
+BW 171
+Description
+Intro Machine Weaving
+Units
+3.00
+When
+Fall
+Grade
+Status
+
+UBWL BW 156Error
+Complete 1 course. (RQ2997, LI60)
+
+Courses: 1 required, 0 taken, 1 needed
+The following courses may be used to satisfy this requirement:
+Course	Description	Units	When	Grade	Status
+Course
+BW 156
+Description
+Int Artificial Weaving
+Units
+3.00
+When
+Variable Offering See Advisor
+Grade
+Status
+
+UBWL BW 146Enrolled
+Complete 1 course. (RQ2997, LI40)
+
+The following courses may be used to satisfy this requirement:
+Course	Description	Units	When	Grade	Status
+Course
+BW 146
+Description
+Data Struct & Weave
+Units
+3.00
+When
+Fall 2026
+Grade
+Status
+Enrolled
+UBWL Major ElectivesError
+Complete 15 units. (RQ3000)
+
+Units: 15.00 required, 3.00 taken, 12.00 needed
+Additional Courses
+Courses not used above (RG2975)
+
+Earned Units
+The following coursework will be used to satisfy university elective requirements as needed. (RQ1160, LI10)
+
+Units: 0.00 required, 63.00 taken, 0.00 needed
+The following courses were used to satisfy this requirement:
+Course
+Description
+Units
+When
+Grade
+Requirement
+Designation
+Status
+Course
+MATH 31
+Description
+Calculus II
+Units
+4.00
+When
+Fall 2025
+Grade
+D
+RequirementDesignation
+GE: 2 Math/Quant Reason (B4)
+Status
+Taken
+Course
+ENGL 2
+Description
+Critical Thinking and Writing
+Units
+3.00
+When
+Fall 2025
+Grade
+D
+RequirementDesignation
+GE: 1B Critical Thinking (A3)
+Status
+Transferred
+Course
+ENGL 2
+Description
+Critical Thinking and Writing
+Units
+3.00
+When
+Fall 2025
+Grade
+C
+RequirementDesignation
+GE: 1B Critical Thinking (A3)
+Status
+Transferred
+Course
+ARTH 10
+Description
+View Course Details
+Units
+3.00
+When
+Fall 2025
+Grade
+B
+RequirementDesignation
+GE: 3A  Arts (C1)
+Status
+Transferred
+Table Pagination
+ First	 Previous	1-10 of 21	Next 	Last
+Table Options
+View All
+Ineligible Coursework
+In this section
+Plan
+Enroll
+My Academics
