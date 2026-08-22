@@ -219,6 +219,66 @@ pub async fn export_semester_ics(app: AppHandle, path: String) -> CommandResult<
     Ok(count)
 }
 
+// ── Graduation plan overrides ───────────────────────────────────────────────
+
+/// One user override on the static degree plan. Mirrored as `GradOverride`.
+#[derive(Debug, Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct GradOverride {
+    pub code: String,
+    pub status: Option<String>,
+    pub term_id: Option<String>,
+}
+
+/// Every stored override, for the Graduation screen's merge.
+#[tauri::command]
+pub async fn grad_overrides(app: AppHandle) -> CommandResult<Vec<GradOverride>> {
+    let db = db_of(&app);
+    sqlx::query_as("SELECT * FROM grad_overrides")
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)
+}
+
+/// Set (or clear, with both fields None) an override for one course code.
+#[tauri::command]
+pub async fn set_grad_override(
+    app: AppHandle,
+    code: String,
+    status: Option<String>,
+    term_id: Option<String>,
+) -> CommandResult<()> {
+    if let Some(s) = &status {
+        if !matches!(s.as_str(), "planned" | "in_progress" | "passed" | "failed" | "dropped") {
+            return Err(CommandError::internal(format!("Unknown status \"{s}\".")));
+        }
+    }
+    let db = db_of(&app);
+    if status.is_none() && term_id.is_none() {
+        sqlx::query("DELETE FROM grad_overrides WHERE code = ?1")
+            .bind(&code)
+            .execute(&db)
+            .await
+            .map_err(storage_err)?;
+    } else {
+        sqlx::query(
+            r#"
+            INSERT INTO grad_overrides (code, status, term_id) VALUES (?1, ?2, ?3)
+            ON CONFLICT(code) DO UPDATE SET
+                status = excluded.status,
+                term_id = excluded.term_id
+            "#,
+        )
+        .bind(&code)
+        .bind(&status)
+        .bind(&term_id)
+        .execute(&db)
+        .await
+        .map_err(storage_err)?;
+    }
+    Ok(())
+}
+
 // ── Syllabi ─────────────────────────────────────────────────────────────────
 
 /// One course's syllabus material: the Canvas syllabus page (rarely used at

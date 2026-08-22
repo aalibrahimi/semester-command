@@ -268,6 +268,23 @@ export async function exportSemesterIcs(path: string): Promise<number> {
   return call<number>("export_semester_ics", { path });
 }
 
+/** Stored graduation-plan overrides (status / term moves). */
+export async function gradOverrides(): Promise<
+  { code: string; status: string | null; termId: string | null }[]
+> {
+  if (!IS_TAURI) return [];
+  return call("grad_overrides");
+}
+
+/** Set (or clear, with both null) one course's plan override. */
+export async function setGradOverride(
+  code: string,
+  status: string | null,
+  termId: string | null,
+): Promise<void> {
+  return call<void>("set_grad_override", { code, status, termId });
+}
+
 /** Syllabus material (page HTML + stored documents) per visible course. */
 export async function syllabi(): Promise<CourseSyllabus[]> {
   if (!IS_TAURI) return [];

@@ -1,46 +1,50 @@
 /**
- * Graduation — what is left before the degree is conferred.
+ * Graduation — the degree, term by term, in CWA-Manager's editorial design.
  *
  * Called by: the router, at "/graduation".
- * Calls: ipc get_degree_audit / import_myprogress / set_target_term.
+ * Calls: lib/gradPlan (the plan merge), ipc grad overrides + degree audit,
+ * useCourses (live Canvas enrollment), GradCourseSheet.
  *
- * # Why this screen is not a progress bar
+ * Two layers, one screen:
  *
- * Canvas knows nothing about degree requirements. Everything here comes from
- * a pasted MySJSU MyProgress report, and the three things that actually cost a
- * student a semester are none of them "percent complete":
+ *   1. **The plan** (ported from CWA-Manager's GraduationPlan): hero, stat
+ *      strip, segmented unit bar, and the term timeline that answers "what
+ *      do I take, and which semester". The merge in lib/gradPlan reconciles
+ *      the static plan against live Canvas enrollment — courses taken early
+ *      move to the current term with a flag, planned-but-not-enrolled
+ *      courses are called out, and clicking any row opens its intelligence
+ *      sheet (prereq chains, unlocks, risk, pairing rules).
+ *   2. **The MyProgress audit** (pre-existing): the pasted registrar report
+ *      with outstanding requirements, retake flags and offering cadence.
+ *      The plan says what you intend; the audit says what SJSU still counts
+ *      against you. Divergence between them is exactly what to bring to an
+ *      advisor.
  *
- *   1. **Graduation status.** A finished degree is not a conferred degree.
- *      `Not Applied` sits at the top of this screen in `--critical` because
- *      no amount of coursework fixes it.
- *   2. **Retakes.** A course passed with a grade below a requirement's floor
- *      reads as "not completed" in the report and as "never taken" in a naive
- *      audit. It is neither. Retakes get their own badge and say what the
- *      grade was.
- *   3. **Offering cadence.** A Fall-only course behind a prerequisite chain is
- *      what turns one missing course into an extra year. Single-term and
- *      `Variable Offering` requirements are called out, not buried in a cell.
+ * Design language mimics the CWA original: monochrome editorial — full-bleed
+ * sections split by hairline borders, 11px letterspaced uppercase labels, a
+ * segmented unit bar with in-segment counts, term rows with a colored left
+ * rail (at-risk amber = current, on-track = target graduation), staggered
+ * entrance motion. CWA's emerald/amber/red map onto this app's signal tokens.
  *
- * # No arithmetic here
- *
- * Every number rendered was computed in `src-tauri/src/degree.rs`. Per
- * SPEC.md §10 a percentage derived in TypeScript is a bug — this file
- * formats and arranges, nothing else.
+ * Per SPEC.md §10 nothing here computes a grade; the audit numbers come from
+ * `degree.rs` and the plan merge is bookkeeping, not grade math.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion } from "motion/react";
 import {
   AlertTriangle,
   CalendarClock,
+  CheckCircle2,
   ClipboardPaste,
+  Clock,
+  Flame,
   GraduationCap,
   Info,
   RotateCcw,
-  ScrollText,
+  Target,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ScreenHeader } from "@/components/layout/ScreenHeader";
-import { EmptyState } from "@/components/layout/EmptyState";
-import { StatTile } from "@/components/layout/StatTile";
+import { GradCourseSheet } from "@/components/grade/GradCourseSheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,141 +55,629 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCourses } from "@/hooks/useCourses";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { getDegreeAudit, importMyProgress, setTargetTerm } from "@/lib/ipc";
+  getDegreeAudit,
+  gradOverrides,
+  importMyProgress,
+  setGradOverride,
+} from "@/lib/ipc";
+import {
+  DANGER_PAIRS,
+  mergePlan,
+  type GradOverride,
+  type GradStatus,
+  type MergedPlan,
+  type PlanRow,
+} from "@/lib/gradPlan";
 import { cn } from "@/lib/utils";
 import type { AuditItem, DegreeAudit, Offering } from "@/types";
 
-/** Terms the user can aim at. Kept short deliberately — this is a choice
- *  between two or three realistic dates, not a date picker. */
-const TARGET_TERMS = ["Fall 2026", "Spring 2027", "Fall 2027", "Spring 2028", "Fall 2028"];
+const STATUS_PILL: Record<GradStatus, { label: string; cls: string }> = {
+  planned: { label: "Planned", cls: "border-border/60 text-muted-foreground" },
+  in_progress: { label: "In Progress", cls: "border-at-risk/40 bg-at-risk/10 text-at-risk-fg" },
+  passed: { label: "Passed", cls: "border-on-track/40 bg-on-track/10 text-on-track-fg" },
+  failed: { label: "Failed", cls: "border-critical/40 bg-critical/10 text-critical-fg" },
+  dropped: { label: "Dropped", cls: "border-border/60 text-muted-foreground/60 line-through" },
+};
+
+/** Click-to-cycle order for the status pill. `null` = clear the override so
+ *  the automatic derivation (Canvas enrollment, term position) decides. */
+const CYCLE: (GradStatus | null)[] = [null, "passed", "failed", "dropped"];
 
 export default function Graduation() {
+  const { courses, loaded } = useCourses();
+  const [overrides, setOverrides] = useState<GradOverride[] | null>(null);
   const [audit, setAudit] = useState<DegreeAudit | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [auditLoaded, setAuditLoaded] = useState(false);
+  const [openCode, setOpenCode] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
 
-  const refresh = useCallback(async () => {
-    try {
-      setAudit(await getDegreeAudit());
-    } catch (e) {
-      toast.error(errorMessage(e));
-    }
-  }, []);
-
-  // The initial load is its own effect rather than a call to `refresh` so the
-  // `alive` guard can drop a response that arrives after the user has already
-  // navigated away — setting state on an unmounted route is a warning nobody
-  // can act on, three screens later.
-  useEffect(() => {
-    let alive = true;
+  const refresh = useCallback(() => {
+    gradOverrides()
+      .then(setOverrides)
+      .catch(() => setOverrides([]));
     getDegreeAudit()
-      .then((a) => {
-        if (alive) setAudit(a);
-      })
-      .catch((e: unknown) => toast.error(errorMessage(e)))
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
+      .then(setAudit)
+      .catch(() => {})
+      .finally(() => setAuditLoaded(true));
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const plan: MergedPlan | null = useMemo(
+    () => (overrides !== null && loaded ? mergePlan(overrides, courses) : null),
+    [overrides, courses, loaded],
+  );
+
+  const statusOf = useCallback(
+    (code: string): GradStatus | undefined =>
+      plan?.terms.flatMap((t) => t.rows).find((r) => r.code === code)?.status,
+    [plan],
+  );
+
+  const cycleStatus = (row: PlanRow) => {
+    const ov = overrides?.find((o) => o.code === row.code);
+    const at = CYCLE.indexOf((ov?.status as GradStatus | null) ?? null);
+    const next = CYCLE[(at + 1) % CYCLE.length];
+    setGradOverride(row.code, next, ov?.termId ?? null)
+      .then(refresh)
+      .catch(() => toast.error("Could not update the course status."));
+  };
+
+  if (!plan || !auditLoaded) {
     return (
-      <div className="px-8 py-7">
-        <Skeleton className="h-8 w-56" />
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-24" />
-          ))}
-        </div>
+      <div className="px-10 pt-8">
+        <Skeleton className="h-32 rounded-xl" />
+        <Skeleton className="mt-4 h-96 rounded-xl" />
       </div>
     );
   }
 
+  const { unitTotals: u, criticalLeft } = plan;
+  const anyFailed = plan.terms.flatMap((t) => t.rows).some((r) => r.status === "failed");
+  const notApplied = audit?.header.graduationStatus?.toLowerCase() === "not applied";
+  const onTrack = !anyFailed;
+
   return (
     <div className="pb-16">
-      <ScreenHeader
-        title="Graduation"
-        subtitle={
-          audit?.header.plan
-            ? `${audit.header.plan}${audit.header.catalogTerm ? ` · catalog ${audit.header.catalogTerm}` : ""}`
-            : "what is left before the degree is conferred"
-        }
-        actions={
-          <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
-            <ClipboardPaste className="mr-1.5 size-4" />
-            {audit ? "Re-import" : "Import MyProgress"}
-          </Button>
-        }
-      />
+      {/* ═══ 1 · HERO ═════════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="px-10 pb-6 pt-8"
+      >
+        <div className="flex items-start justify-between gap-8">
+          <div className="min-w-0">
+            <div className="mb-4 flex items-center gap-2.5">
+              <div className="rounded-sm border border-brand/30 bg-brand/10 p-2">
+                <GraduationCap className="h-4 w-4 text-brand-fg" />
+              </div>
+              <span className="text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/70">
+                Personal Education Plan
+              </span>
+            </div>
+            <h1 className="font-display text-[34px] font-bold leading-[1.05] tracking-tight">
+              BS Computer Science <span className="text-muted-foreground/70">&amp;</span>{" "}
+              Linguistics
+            </h1>
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground/75">San José State University</span>
+              <span className="text-muted-foreground/40">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Target className="h-4 w-4" />
+                Target graduation:{" "}
+                <span className="font-semibold text-foreground">
+                  {audit?.targetTerm ?? "Spring 2028"}
+                </span>
+              </span>
+              <span className="text-muted-foreground/40">·</span>
+              <span>{plan.transferredCount} transfer credits banked</span>
+            </div>
+          </div>
 
-      {!audit ? (
-        <div className="px-8">
-          <EmptyState
-            icon={GraduationCap}
-            title="No degree progress imported yet"
-            description={
+          {/* The ping-dot status badge — the CWA signature. */}
+          <div
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2.5 rounded-sm border px-4 py-2 text-xs font-semibold tracking-wide",
+              onTrack
+                ? "border-on-track/40 bg-on-track/10 text-on-track-fg"
+                : "border-critical/40 bg-critical/10 text-critical-fg",
+            )}
+          >
+            <span className="relative inline-flex h-2 w-2">
+              <span
+                className={cn(
+                  "absolute inline-flex h-full w-full animate-ping rounded-full opacity-80",
+                  onTrack ? "bg-on-track" : "bg-critical",
+                )}
+              />
+              <span
+                className={cn(
+                  "relative inline-flex h-2 w-2 rounded-full",
+                  onTrack ? "bg-on-track" : "bg-critical",
+                )}
+              />
+            </span>
+            {onTrack ? "On Track" : "At Risk"}
+          </div>
+        </div>
+
+        {/* GPA strip — real numbers from the imported MyProgress report. */}
+        {audit && (audit.header.sjsuGpa !== null || audit.header.overallGpa !== null) && (
+          <div className="mt-6 flex flex-wrap items-center gap-10 border-t border-border pt-5">
+            {audit.header.sjsuGpa !== null && (
+              <div>
+                <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  SJSU GPA
+                </div>
+                <div className="mt-1 flex items-baseline gap-2.5">
+                  <span
+                    data-numeric
+                    className={cn(
+                      "font-mono text-[30px] font-bold leading-none tabular-nums tracking-tight",
+                      audit.header.sjsuGpa < 2.0 && "text-critical-fg",
+                    )}
+                  >
+                    {audit.header.sjsuGpa.toFixed(3)}
+                  </span>
+                  {audit.header.sjsuGpa < 2.0 && (
+                    <span className="flex items-center gap-1 text-xs font-medium text-critical-fg">
+                      <AlertTriangle className="h-3.5 w-3.5" /> below 2.0 minimum
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            {audit.header.overallGpa !== null && (
               <>
-                Canvas does not know your degree requirements. Open{" "}
-                <span className="font-medium">MySJSU → My Progress</span>, click{" "}
-                <span className="font-medium">Expand All</span> and{" "}
-                <span className="font-medium">View All</span> on every course
-                table, select the whole page and paste it here.
+                <div className="h-10 w-px bg-border" />
+                <div>
+                  <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    Overall GPA
+                  </div>
+                  <div
+                    data-numeric
+                    className="mt-1 font-mono text-[30px] font-bold leading-none tabular-nums tracking-tight"
+                  >
+                    {audit.header.overallGpa.toFixed(3)}
+                  </div>
+                </div>
               </>
-            }
-            action={
-              <Button onClick={() => setImportOpen(true)}>
-                <ClipboardPaste className="mr-1.5 size-4" />
-                Paste report
-              </Button>
-            }
+            )}
+          </div>
+        )}
+      </motion.section>
+
+      {/* ═══ 2 · STAT STRIP ═══════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
+        className="px-10 pb-6"
+      >
+        <div className="border-y border-border">
+          <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
+            <Stat label="Plan Units" value={String(u.required)} sub={`${u.remaining} remaining`} />
+            <Stat label="Completed" value={String(u.completed)} sub={`${u.inProgress} in progress`} />
+            <Stat
+              label="Semesters Left"
+              value={String(
+                plan.terms.filter(
+                  (t) =>
+                    plan.currentTermId === null ||
+                    plan.terms.findIndex((x) => x.id === t.id) >=
+                      plan.terms.findIndex((x) => x.id === plan.currentTermId),
+                ).length,
+              )}
+              sub="including current"
+            />
+            <Stat
+              label="Critical Left"
+              value={String(criticalLeft.length)}
+              sub={criticalLeft.length ? criticalLeft.join(" · ") : "all on track"}
+              accent={criticalLeft.length ? "critical" : "onTrack"}
+            />
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ═══ 3 · UNIT BAR ═════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
+        className="px-10 pb-8"
+      >
+        <div className="mb-3 flex items-baseline justify-between">
+          <h3 className="text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/80">
+            Unit Progress
+          </h3>
+          <span className="text-sm tabular-nums text-muted-foreground">
+            <span className="font-semibold text-foreground">{u.completed}</span>
+            <span className="text-muted-foreground/60"> / </span>
+            <span className="text-foreground/85">{u.required}</span> plan units done
+          </span>
+        </div>
+        <div className="flex h-10 w-full overflow-hidden rounded-sm border border-border bg-card">
+          <Segment
+            pct={(u.completed / u.required) * 100}
+            n={u.completed}
+            cls="border-r border-on-track/60 bg-on-track/40 text-on-track-fg"
+            delay={0.15}
+          />
+          <Segment
+            pct={(u.inProgress / u.required) * 100}
+            n={u.inProgress}
+            cls="border-r border-at-risk/60 bg-at-risk/40 text-at-risk-fg"
+            delay={0.35}
+          />
+          <Segment
+            pct={(u.remaining / u.required) * 100}
+            n={u.remaining}
+            cls="bg-fill-ghost text-muted-foreground"
+            delay={0.5}
           />
         </div>
-      ) : (
-        <Report audit={audit} onChanged={refresh} />
-      )}
+        <div className="mt-3 flex items-center gap-5 text-2xs text-muted-foreground">
+          <Legend cls="bg-on-track" label="Completed" />
+          <Legend cls="bg-at-risk" label="In progress" />
+          <Legend cls="bg-muted-foreground/30" label="Remaining" />
+        </div>
+      </motion.section>
 
+      {/* ═══ 4 · TERM TIMELINE ════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.12, ease: "easeOut" }}
+        className="px-10 pb-10"
+      >
+        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-display text-lg font-bold tracking-tight">Term Timeline</h2>
+          <span className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Click a course for intelligence · click a status pill to mark it
+          </span>
+        </div>
+
+        <div className="border-t border-border">
+          {plan.terms.map((term, idx) => (
+            <motion.div
+              key={term.id}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.15 + idx * 0.04, ease: "easeOut" }}
+              className="grid grid-cols-1 gap-x-8 border-b border-border py-6 last:border-b-0 lg:grid-cols-[190px_1fr]"
+            >
+              {/* Left rail — the CWA accent bar. */}
+              <div className="relative pl-5">
+                <div
+                  className={cn(
+                    "absolute bottom-0 left-0 top-0 w-[3px] rounded-full",
+                    term.isCurrent
+                      ? "bg-at-risk/70"
+                      : term.isTarget
+                        ? "bg-on-track/70"
+                        : "bg-border",
+                  )}
+                />
+                <div className="text-xl font-bold leading-tight tracking-tight">{term.label}</div>
+                {(term.tag || term.isCurrent || term.isTarget) && (
+                  <div
+                    className={cn(
+                      "mt-1.5 text-2xs font-semibold uppercase tracking-[0.15em]",
+                      term.isCurrent
+                        ? "text-at-risk-fg"
+                        : term.isTarget
+                          ? "text-on-track-fg"
+                          : "text-muted-foreground",
+                    )}
+                  >
+                    {term.isCurrent
+                      ? "Current term"
+                      : term.isTarget
+                        ? "Target graduation"
+                        : term.tag}
+                  </div>
+                )}
+                <div className="mt-2.5 flex items-center gap-2 text-xs tabular-nums text-muted-foreground">
+                  <span className="font-semibold text-foreground">{term.totalUnits}</span>
+                  <span>units</span>
+                  <span className="text-muted-foreground/40">·</span>
+                  <span>{term.rows.length} courses</span>
+                </div>
+                {term.isCurrent && (
+                  <div className="mt-2 inline-flex items-center gap-1.5 text-2xs font-medium text-at-risk-fg">
+                    <Clock className="h-3.5 w-3.5" /> active
+                  </div>
+                )}
+                {term.isTarget && (
+                  <div className="mt-2 inline-flex items-center gap-1.5 text-2xs font-medium text-on-track-fg">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> graduation
+                  </div>
+                )}
+              </div>
+
+              {/* Course table. */}
+              <div className="min-w-0">
+                <div className="grid grid-cols-[96px_minmax(0,1fr)_44px_minmax(100px,auto)] items-center gap-x-4 border-b border-border px-2 pb-2 md:grid-cols-[110px_minmax(0,1fr)_44px_minmax(150px,auto)_minmax(100px,auto)]">
+                  <Th>Code</Th>
+                  <Th>Course</Th>
+                  <Th right>Units</Th>
+                  <Th className="hidden md:block">Category</Th>
+                  <Th right>Status</Th>
+                </div>
+                {term.rows.map((row) => (
+                  <CourseLine
+                    key={row.code}
+                    row={row}
+                    onOpen={() => setOpenCode(row.code)}
+                    onCycleStatus={() => cycleStatus(row)}
+                  />
+                ))}
+                {term.rows.length === 0 && (
+                  <div className="px-2 py-4 text-xs italic text-muted-foreground/60">
+                    Nothing slotted this term.
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ═══ 5 · DANGER PAIRS ═════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15, ease: "easeOut" }}
+        className="px-10 pb-12"
+      >
+        <div className="mb-5 flex flex-wrap items-center gap-2.5">
+          <Flame className="h-5 w-5 text-critical-fg" />
+          <h2 className="font-display text-lg font-bold tracking-tight">
+            High-Risk Course Combinations
+          </h2>
+          <span className="ml-2 text-2xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            Avoid pairing in the same term
+          </span>
+        </div>
+        <div className="border-t border-border">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-x-8 border-b border-border px-2 py-3">
+            <Th>Avoid pairing</Th>
+            <Th>Why</Th>
+          </div>
+          {DANGER_PAIRS.map((p, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-x-8 border-b border-border/60 px-2 py-4 transition-colors last:border-b-0 hover:bg-fill-ghost/40"
+            >
+              <div className="flex min-w-0 items-center gap-2.5">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-critical-fg" />
+                <code className="truncate text-sm font-semibold">{p.pair}</code>
+              </div>
+              <p className="text-sm leading-relaxed text-foreground/75">{p.why}</p>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ═══ 6 · MYPROGRESS AUDIT ═════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.18, ease: "easeOut" }}
+        className="px-10"
+      >
+        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2 border-t border-border pt-8">
+          <div>
+            <h2 className="font-display text-lg font-bold tracking-tight">Registrar Audit</h2>
+            <p className="mt-0.5 text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              What SJSU still counts against you · from MyProgress
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+            <ClipboardPaste className="mr-1.5 h-4 w-4" />
+            {audit ? "Re-import" : "Import MyProgress"}
+          </Button>
+        </div>
+
+        {!audit ? (
+          <p className="max-w-2xl border-l-[3px] border-border pl-4 text-sm text-muted-foreground">
+            The plan above says what you intend; the registrar's audit says what SJSU still
+            requires. Open <span className="font-medium text-foreground/80">MySJSU → My
+            Progress</span>, click Expand All and View All on every table, copy the whole page
+            and import it — retake flags, unit gaps and “apply to graduate” status all come
+            from there.
+          </p>
+        ) : (
+          <AuditReport audit={audit} notApplied={notApplied} />
+        )}
+      </motion.section>
+
+      <GradCourseSheet
+        code={openCode}
+        statusOf={statusOf}
+        onOpenChange={(open) => !open && setOpenCode(null)}
+      />
       <ImportDialog
         open={importOpen}
         onOpenChange={setImportOpen}
-        onImported={(a) => {
-          setAudit(a);
+        onImported={() => {
           setImportOpen(false);
+          refresh();
         }}
       />
     </div>
   );
 }
 
-function Report({
-  audit,
-  onChanged,
+/* ═══ Plan atoms ═══════════════════════════════════════════════════════════ */
+
+function Stat({
+  label,
+  value,
+  sub,
+  accent,
 }: {
-  audit: DegreeAudit;
-  onChanged: () => void;
+  label: string;
+  value: string;
+  sub: string;
+  accent?: "critical" | "onTrack";
 }) {
-  const notApplied = audit.header.graduationStatus?.toLowerCase() === "not applied";
+  return (
+    <div className="px-5 py-4">
+      <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+      </div>
+      <div
+        data-numeric
+        className={cn(
+          "mt-1 font-mono text-[26px] font-bold leading-none tabular-nums tracking-tight",
+          accent === "critical" && "text-critical-fg",
+          accent === "onTrack" && "text-on-track-fg",
+        )}
+      >
+        {value}
+      </div>
+      <div className="mt-1 truncate text-2xs text-muted-foreground" title={sub}>
+        {sub}
+      </div>
+    </div>
+  );
+}
+
+function Segment({ pct, n, cls, delay }: { pct: number; n: number; cls: string; delay: number }) {
+  if (pct <= 0) return null;
+  return (
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: `${pct}%` }}
+      transition={{ duration: 0.7, delay, ease: "easeOut" }}
+      className={cn("flex h-full items-center justify-center", cls)}
+    >
+      {pct > 5 && (
+        <span data-numeric className="text-sm font-bold tabular-nums">
+          {n}
+        </span>
+      )}
+    </motion.div>
+  );
+}
+
+function Legend({ cls, label }: { cls: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={cn("h-2 w-2 rounded-full", cls)} />
+      {label}
+    </span>
+  );
+}
+
+function Th({
+  children,
+  right,
+  className,
+}: {
+  children: React.ReactNode;
+  right?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground",
+        right && "text-right",
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+function CourseLine({
+  row,
+  onOpen,
+  onCycleStatus,
+}: {
+  row: PlanRow;
+  onOpen: () => void;
+  onCycleStatus: () => void;
+}) {
+  const pill = STATUS_PILL[row.status];
+  return (
+    <div className="grid grid-cols-[96px_minmax(0,1fr)_44px_minmax(100px,auto)] items-center gap-x-4 border-b border-border/50 px-2 py-2.5 transition-colors last:border-b-0 hover:bg-fill-ghost/40 md:grid-cols-[110px_minmax(0,1fr)_44px_minmax(150px,auto)_minmax(100px,auto)]">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="text-left font-mono text-xs font-semibold hover:underline"
+        title="Open course intelligence"
+      >
+        {row.code}
+        {row.critical && (
+          <span className="ml-1 text-critical-fg" title="Critical path">
+            ●
+          </span>
+        )}
+      </button>
+      <button type="button" onClick={onOpen} className="min-w-0 text-left">
+        <span className="block truncate text-sm hover:underline">{row.name}</span>
+        {row.note && (
+          <span
+            className={cn(
+              "text-2xs",
+              row.note === "not enrolled" ? "text-critical-fg" : "text-at-risk-fg",
+            )}
+          >
+            {row.note === "taken early" && "↑ taken earlier than planned"}
+            {row.note === "not enrolled" && "⚠ planned this term but not enrolled"}
+            {row.note === "off-plan" && "enrolled, outside the plan"}
+            {row.note === "moved" && "moved from its planned term"}
+          </span>
+        )}
+      </button>
+      <span data-numeric className="text-right font-mono text-xs tabular-nums text-muted-foreground">
+        {row.units}
+      </span>
+      <span className="hidden truncate text-2xs text-muted-foreground md:block">
+        {row.category}
+      </span>
+      <div className="text-right">
+        <button
+          type="button"
+          onClick={onCycleStatus}
+          title="Click to mark: auto → passed → failed → dropped"
+          className={cn(
+            "rounded-sm border px-2 py-1 text-2xs font-semibold transition-colors duration-micro hover:brightness-110",
+            pill.cls,
+          )}
+        >
+          {pill.label}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Audit layer (pre-existing MyProgress import, restyled) ═══════════════ */
+
+function AuditReport({ audit, notApplied }: { audit: DegreeAudit; notApplied: boolean }) {
   const retakes = useMemo(
     () => audit.outstanding.filter((i) => i.retakeOf),
     [audit.outstanding],
   );
-
-  // Rust computed both halves; this only decides how to say "36.6" versus
-  // "36.6–42.6" when the report leaves elective room unallocated.
   const unitsLabel =
     audit.unallocatedBucketUnits > 0
       ? `${fmt(audit.unitsFromCourses)}–${fmt(audit.unitsFromCourses + audit.unallocatedBucketUnits)}`
       : fmt(audit.unitsFromCourses);
 
   return (
-    <div className="space-y-6 px-8">
+    <div className="space-y-6 pb-4">
       {notApplied && (
         <Callout
           tone="critical"
@@ -194,10 +686,9 @@ function Report({
           body={
             <>
               MyProgress reports your graduation status as{" "}
-              <span className="font-medium">Not Applied</span>. SJSU requires
-              the application roughly two terms ahead of your intended
-              graduation date, and missing that window delays conferral no
-              matter how the coursework lands. This is the one item on this
+              <span className="font-medium">Not Applied</span>. SJSU requires the application
+              roughly two terms ahead of your intended graduation date, and missing that window
+              delays conferral no matter how the coursework lands. This is the one item on this
               screen that no amount of studying fixes.
             </>
           }
@@ -211,42 +702,46 @@ function Report({
           title={`${audit.truncatedRequirements.length} course list${audit.truncatedRequirements.length === 1 ? " was" : "s were"} cut short`}
           body={
             <>
-              MyProgress shows only ten rows per table. These requirements have
-              more eligible courses than were captured:{" "}
-              <span className="font-medium">
-                {audit.truncatedRequirements.join(", ")}
-              </span>
-              . Re-paste with <span className="font-medium">View All</span>{" "}
-              clicked so the options you can actually schedule are not hidden.
+              MyProgress shows only ten rows per table. These requirements have more eligible
+              courses than were captured:{" "}
+              <span className="font-medium">{audit.truncatedRequirements.join(", ")}</span>.
+              Re-paste with <span className="font-medium">View All</span> clicked.
             </>
           }
         />
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatTile
-          icon={ScrollText}
-          label="Units remaining"
-          value={unitsLabel}
-          caption={
-            audit.unallocatedBucketUnits > 0
-              ? `${fmt(audit.unallocatedBucketUnits)} units of elective room unallocated`
-              : "across itemised requirements"
-          }
-        />
-        <StatTile
-          icon={GraduationCap}
-          label="Requirements left"
-          value={String(audit.outstanding.length)}
-          caption={retakes.length > 0 ? `${retakes.length} is a retake` : "none are retakes"}
-        />
-        <TargetTile audit={audit} onChanged={onChanged} />
+      {/* Editorial stat strip, matching the plan's. */}
+      <div className="border-y border-border">
+        <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-3">
+          <Stat
+            label="Units Remaining"
+            value={unitsLabel}
+            sub={
+              audit.unallocatedBucketUnits > 0
+                ? `${fmt(audit.unallocatedBucketUnits)} elective units unallocated`
+                : "across itemised requirements"
+            }
+          />
+          <Stat
+            label="Requirements Left"
+            value={String(audit.outstanding.length)}
+            sub={retakes.length > 0 ? `${retakes.length} is a retake` : "none are retakes"}
+            accent={retakes.length > 0 ? "critical" : undefined}
+          />
+          <Stat
+            label="Graduation Status"
+            value={notApplied ? "Not Applied" : (audit.header.graduationStatus ?? "—")}
+            sub={audit.generatedAt ? `report from ${audit.generatedAt}` : "from MyProgress"}
+            accent={notApplied ? "critical" : "onTrack"}
+          />
+        </div>
       </div>
 
       <section>
-        <h2 className="mb-3 font-display text-base font-semibold">
-          Outstanding requirements
-        </h2>
+        <h3 className="mb-3 text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/80">
+          Outstanding Requirements
+        </h3>
         <div className="space-y-2.5">
           {audit.outstanding.map((item) => (
             <RequirementCard key={item.key} item={item} />
@@ -256,17 +751,20 @@ function Report({
 
       {audit.buckets.length > 0 && (
         <section>
-          <h2 className="mb-1 font-display text-base font-semibold">Unit totals</h2>
+          <h3 className="mb-1 text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/80">
+            Unit Totals
+          </h3>
           <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
-            Satisfied <em>by</em> the courses above rather than alongside them,
-            so these are not added to the total. MyProgress renders the nesting
-            with indentation, which pasting discards — where a total exceeds
-            what its itemised requirements cover, the difference is real work
-            with no row of its own.
+            Satisfied <em>by</em> the courses above rather than alongside them — where a total
+            exceeds what its itemised requirements cover, the difference is real work with no
+            row of its own.
           </p>
-          <div className="panel divide-y divide-border/60">
+          <div className="border-t border-border">
             {audit.buckets.map((b) => (
-              <div key={b.key} className="flex items-center justify-between px-4 py-2.5">
+              <div
+                key={b.key}
+                className="flex items-center justify-between border-b border-border/60 px-2 py-2.5 last:border-b-0"
+              >
                 <span className="text-sm">{b.title}</span>
                 <span className="font-mono text-sm text-muted-foreground" data-numeric>
                   {b.unitsNeeded === null ? "—" : `${fmt(b.unitsNeeded)} units`}
@@ -277,7 +775,10 @@ function Report({
         </section>
       )}
 
-      <Provenance audit={audit} />
+      <p className="text-2xs text-muted-foreground">
+        Unofficial report. SJSU and CSU regulations prevail — confirm anything here with your
+        advisor before planning around it.
+      </p>
     </div>
   );
 }
@@ -289,58 +790,52 @@ function RequirementCard({ item }: { item: AuditItem }) {
   return (
     <div
       className={cn(
-        "panel px-4 py-3",
-        item.retakeOf && "border-critical/40",
+        "border-l-[3px] py-1 pl-4",
+        item.retakeOf ? "border-critical/60" : item.singleTermOnly ? "border-at-risk/60" : "border-border",
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-medium">{item.title}</span>
+        <span className="text-sm font-medium">{item.title}</span>
 
         {item.retakeOf && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Badge className="chip bg-critical/15 text-critical-fg">
-                <RotateCcw className="mr-1 size-3" />
+                <RotateCcw className="mr-1 h-3 w-3" />
                 Retake
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
               You took {item.retakeOf.code} and scored{" "}
-              <span className="font-medium">{item.retakeOf.grade}</span>. This
-              requirement needs {item.minGrade} or better, so it must be taken
-              again — the grade counted elsewhere but not here.
+              <span className="font-medium">{item.retakeOf.grade}</span>. This requirement needs{" "}
+              {item.minGrade} or better, so it must be taken again.
             </TooltipContent>
           </Tooltip>
         )}
-
         {item.singleTermOnly && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Badge className="chip bg-at-risk/15 text-at-risk-fg">
-                <CalendarClock className="mr-1 size-3" />
+                <CalendarClock className="mr-1 h-3 w-3" />
                 {seasonOf(item.options)} only
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
-              Offered in one term per year. Miss it and the next chance is a
-              full year away, which is how a single course becomes an extra
-              semester.
+              Offered once per year. Miss it and the next chance is a full year away.
             </TooltipContent>
           </Tooltip>
         )}
-
         {item.needsAdvisor && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Badge className="chip bg-at-risk/15 text-at-risk-fg">
-                <AlertTriangle className="mr-1 size-3" />
+                <AlertTriangle className="mr-1 h-3 w-3" />
                 Variable offering
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
-              MyProgress says “Variable Offering — See Advisor”. The department
-              commits to no cadence, so a plan that depends on this course has
-              nothing behind it. Ask your advisor when it next runs.
+              “Variable Offering — See Advisor.” The department commits to no cadence; confirm
+              when it next runs before planning around it.
             </TooltipContent>
           </Tooltip>
         )}
@@ -351,7 +846,7 @@ function RequirementCard({ item }: { item: AuditItem }) {
       </div>
 
       {item.options.length > 0 && (
-        <ul className="mt-2.5 space-y-1">
+        <ul className="mt-2 space-y-1">
           {shown.map((c, i) => (
             <li key={`${c.code}-${i}`} className="flex items-baseline gap-2 text-sm">
               <span className="font-mono text-xs" data-numeric>
@@ -384,90 +879,52 @@ function RequirementCard({ item }: { item: AuditItem }) {
             : `Show ${item.options.length - 4} more option${item.options.length - 4 === 1 ? "" : "s"}`}
         </button>
       )}
-
       {item.truncated && (
         <p className="mt-2 text-2xs text-at-risk-fg">
-          Only {item.truncated.shown} of {item.truncated.total} eligible courses
-          were captured — re-paste with View All.
+          Only {item.truncated.shown} of {item.truncated.total} eligible courses were captured —
+          re-paste with View All.
         </p>
       )}
     </div>
   );
 }
 
-function TargetTile({
-  audit,
-  onChanged,
+function Callout({
+  tone,
+  icon: Icon,
+  title,
+  body,
 }: {
-  audit: DegreeAudit;
-  onChanged: () => void;
+  tone: "critical" | "at-risk";
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  body: React.ReactNode;
 }) {
-  const [saving, setSaving] = useState(false);
-
-  async function pick(term: string) {
-    setSaving(true);
-    try {
-      await setTargetTerm(term);
-      onChanged();
-    } catch (e) {
-      toast.error(errorMessage(e));
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
-    <div className="panel px-4 py-3">
-      <p className="text-xs text-muted-foreground">Target graduation</p>
-      <p className="mt-0.5 font-mono text-lg" data-numeric>
-        {audit.targetTerm ?? "not set"}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-1">
-        {TARGET_TERMS.map((t) => (
-          <button
-            key={t}
-            type="button"
-            disabled={saving}
-            onClick={() => void pick(t)}
-            className={cn(
-              "chip border border-border px-2 py-0.5 text-2xs transition-colors duration-micro",
-              t === audit.targetTerm
-                ? "border-brand bg-brand/10 text-brand-fg"
-                : "text-muted-foreground hover:bg-accent",
-            )}
-          >
-            {t}
-          </button>
-        ))}
+    <div
+      className={cn(
+        "flex gap-3 border-l-[3px] py-1 pl-4",
+        tone === "critical" ? "border-critical/60" : "border-at-risk/60",
+      )}
+    >
+      <Icon
+        className={cn(
+          "mt-0.5 h-4 w-4 shrink-0",
+          tone === "critical" ? "text-critical-fg" : "text-at-risk-fg",
+        )}
+      />
+      <div>
+        <p
+          className={cn(
+            "text-sm font-medium",
+            tone === "critical" ? "text-critical-fg" : "text-at-risk-fg",
+          )}
+        >
+          {title}
+        </p>
+        <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{body}</p>
       </div>
     </div>
-  );
-}
-
-function Provenance({ audit }: { audit: DegreeAudit }) {
-  return (
-    <p className="text-2xs text-muted-foreground">
-      {audit.header.overallGpa !== null && (
-        <>
-          Overall GPA{" "}
-          <span className="font-mono" data-numeric>
-            {audit.header.overallGpa.toFixed(3)}
-          </span>
-          {audit.header.sjsuGpa !== null && (
-            <>
-              {" · "}SJSU{" "}
-              <span className="font-mono" data-numeric>
-                {audit.header.sjsuGpa.toFixed(3)}
-              </span>
-            </>
-          )}
-          {" · "}
-        </>
-      )}
-      {audit.generatedAt && <>MyProgress generated {audit.generatedAt}. </>}
-      This is an unofficial report. SJSU and CSU regulations prevail — confirm
-      anything here with your advisor before planning around it.
-    </p>
   );
 }
 
@@ -478,7 +935,7 @@ function ImportDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onImported: (a: DegreeAudit) => void;
+  onImported: () => void;
 }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -491,7 +948,7 @@ function ImportDialog({
         `Imported ${audit.outstanding.length} outstanding requirement${audit.outstanding.length === 1 ? "" : "s"}`,
       );
       setText("");
-      onImported(audit);
+      onImported();
     } catch (e) {
       toast.error(errorMessage(e));
     } finally {
@@ -505,11 +962,11 @@ function ImportDialog({
         <DialogHeader>
           <DialogTitle>Import MyProgress</DialogTitle>
           <DialogDescription>
-            In MySJSU open <span className="font-medium">My Progress</span>,
-            click <span className="font-medium">Expand All</span>, then{" "}
-            <span className="font-medium">View All</span> on every course table
-            — they cap at ten rows and the rest are silently dropped. Select the
-            whole page, copy, and paste below.
+            In MySJSU open <span className="font-medium">My Progress</span>, click{" "}
+            <span className="font-medium">Expand All</span>, then{" "}
+            <span className="font-medium">View All</span> on every course table — they cap at
+            ten rows and the rest are silently dropped. Select the whole page, copy, and paste
+            below.
           </DialogDescription>
         </DialogHeader>
         <textarea
@@ -533,53 +990,12 @@ function ImportDialog({
   );
 }
 
-/* ── helpers ──────────────────────────────────────────────────────────────── */
+/* ═══ helpers ══════════════════════════════════════════════════════════════ */
 
-function Callout({
-  tone,
-  icon: Icon,
-  title,
-  body,
-}: {
-  tone: "critical" | "at-risk";
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  body: React.ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "panel flex gap-3 px-4 py-3",
-        tone === "critical" ? "border-critical/40 bg-critical/5" : "border-at-risk/40 bg-at-risk/5",
-      )}
-    >
-      <Icon
-        className={cn(
-          "mt-0.5 size-4 shrink-0",
-          tone === "critical" ? "text-critical-fg" : "text-at-risk-fg",
-        )}
-      />
-      <div>
-        <p
-          className={cn(
-            "text-sm font-medium",
-            tone === "critical" ? "text-critical-fg" : "text-at-risk-fg",
-          )}
-        >
-          {title}
-        </p>
-        <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{body}</p>
-      </div>
-    </div>
-  );
-}
-
-/** One decimal, but only when there is one — "3" not "3.0", "2.6" stays. */
 function fmt(units: number): string {
   return Number.isInteger(units) ? String(units) : units.toFixed(1);
 }
 
-/** Short label for the `When` column. The raw string is the tooltip. */
 function offeringLabel(o: Offering): string {
   if (o.term) return o.term;
   if (o.variable) return "varies";
@@ -591,7 +1007,6 @@ function offeringLabel(o: Offering): string {
   return o.parity ? `${base} (${o.parity} yrs)` : base;
 }
 
-/** Which single season a set of single-term options runs in. */
 function seasonOf(options: AuditItem["options"]): string {
   const o = options.find((c) => c.offering)?.offering;
   if (!o) return "One term";
@@ -601,7 +1016,6 @@ function seasonOf(options: AuditItem["options"]): string {
   return "One term";
 }
 
-/** CommandError crosses IPC as `{ kind, message }`; anything else is a bug. */
 function errorMessage(e: unknown): string {
   if (e && typeof e === "object" && "message" in e) {
     return String((e as { message: unknown }).message);
