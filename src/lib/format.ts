@@ -96,11 +96,21 @@ export function dueShort(iso: string | null | undefined): string {
   if (!iso) return "no date yet";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
-  const wd = d.toLocaleDateString(undefined, { weekday: "short" });
   const h = d.getHours();
   const hour12 = h % 12 === 0 ? 12 : h % 12;
   const suffix = h >= 12 ? "p" : "a";
-  return `${wd} ${hour12}:${String(d.getMinutes()).padStart(2, "0")}${suffix}`;
+  const time = `${hour12}:${String(d.getMinutes()).padStart(2, "0")}${suffix}`;
+  // "Mon" only names a day unambiguously within a week — beyond that, the
+  // weekday alone reads as ambiguous, so switch to month + day.
+  const today = new Date();
+  const days =
+    (new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() -
+      new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) /
+    86_400_000;
+  if (days >= -1 && days < 7) {
+    return `${d.toLocaleDateString(undefined, { weekday: "short" })} ${time}`;
+  }
+  return `${d.toLocaleDateString(undefined, { month: "short", day: "numeric" })} ${time}`;
 }
 
 /**
