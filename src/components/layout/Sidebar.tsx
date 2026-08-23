@@ -23,6 +23,7 @@
  */
 import { NavLink } from "react-router-dom";
 import {
+  CheckCheck,
   AlertTriangle,
   Award,
   BookOpen,
@@ -86,6 +87,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
     { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
     { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },
     { to: "/contacts", label: "Contacts", icon: Users, digit: "5", count: null },
+    { to: "/done", label: "Done", icon: CheckCheck, digit: "7", count: null },
     // No count badge: the degree audit is a separate import the sidebar would
     // have to load on every paint to produce a number, and unlike the triage
     // and calendar counts it does not move between syncs.

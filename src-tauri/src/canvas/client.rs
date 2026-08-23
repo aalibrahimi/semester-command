@@ -270,6 +270,23 @@ impl CanvasClient {
         Ok(out)
     }
 
+    /// Fetch a single JSON-object endpoint (no pagination). For the rare
+    /// endpoints that answer with one object, e.g. `/submissions/self`.
+    pub async fn get_object(&self, path: &str) -> Result<serde_json::Value, CanvasError> {
+        let url = format!("{}/api/v1{}", self.base, path);
+        let auth = self.auth_mode().await;
+        let resp = self.send_with(&auth, &url).await?;
+        self.check_session_alive(&resp)?;
+        let status = resp.status().as_u16();
+        if status != 200 {
+            return Err(CanvasError::Http { status, path: path.into() });
+        }
+        self.respect_rate_limit(&resp).await;
+        let body = resp.text().await?;
+        serde_json::from_str(&body)
+            .map_err(|source| CanvasError::Parse { path: path.into(), source })
+    }
+
     /// Download a file's bytes, following redirects **manually**.
     ///
     /// Canvas file downloads 302 to inst-fs/S3. The client's no-redirect

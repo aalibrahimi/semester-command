@@ -225,6 +225,14 @@ export interface DebugDump {
   instructors: InstructorRow[];
 }
 
+/** One professor comment on a submission, fetched live (never synced). */
+export interface SubmissionComment {
+  id: string;
+  author: string | null;
+  comment: string;
+  createdAt: string | null;
+}
+
 /** What a Tier 2 feed import did. */
 export interface IcsSummary {
   assignments: number;

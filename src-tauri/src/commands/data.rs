@@ -210,6 +210,57 @@ pub async fn detect_class_slots(
     Ok(crate::class_slots::detect(&db, &client, &courses).await)
 }
 
+/// One professor comment on a submission. Comments are NOT synced — Canvas
+/// only serves them from the submission endpoints, so the Done screen
+/// fetches them live, per assignment, on demand.
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SubmissionCommentOut {
+    pub id: String,
+    pub author: Option<String>,
+    pub comment: String,
+    pub created_at: Option<String>,
+}
+
+/// Professor feedback on one of the user's submissions, fetched live.
+/// Read-only GET, same contract as every Canvas call (§2).
+#[tauri::command]
+pub async fn fetch_submission_comments(
+    app: AppHandle,
+    course_id: String,
+    assignment_id: String,
+) -> CommandResult<Vec<SubmissionCommentOut>> {
+    let client = app.state::<crate::commands::auth::AuthCtx>().client.clone();
+    let path = format!(
+        "/courses/{course_id}/assignments/{assignment_id}/submissions/self?include[]=submission_comments"
+    );
+    let v = client.get_object(&path).await?;
+    let comments = v
+        .get("submission_comments")
+        .and_then(|c| c.as_array())
+        .cloned()
+        .unwrap_or_default();
+    Ok(comments
+        .iter()
+        .map(|c| SubmissionCommentOut {
+            id: c.get("id").map(|i| i.to_string()).unwrap_or_default(),
+            author: c
+                .get("author_name")
+                .and_then(|a| a.as_str())
+                .map(String::from),
+            comment: c
+                .get("comment")
+                .and_then(|a| a.as_str())
+                .unwrap_or_default()
+                .to_string(),
+            created_at: c
+                .get("created_at")
+                .and_then(|a| a.as_str())
+                .map(String::from),
+        })
+        .collect())
+}
+
 // ── Weekly planner (migration 0009) ─────────────────────────────────────────
 
 /// Every planner block — the week view expands recurrence client-side.

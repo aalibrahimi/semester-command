@@ -33,6 +33,7 @@ import type {
   SyncStatus,
   ThemeMode,
   TriageRow,
+  SubmissionComment,
 } from "@/types";
 
 /**
@@ -289,6 +290,15 @@ export async function savePlannerBlock(block: {
 /** Delete one planner block. */
 export async function deletePlannerBlock(id: number): Promise<void> {
   return call<void>("delete_planner_block", { id });
+}
+
+/** Professor comments on one submission — live Canvas read, needs a
+ *  working session. Never synced; the Done screen fetches on demand. */
+export async function submissionComments(
+  courseId: string,
+  assignmentId: string,
+): Promise<SubmissionComment[]> {
+  return call<SubmissionComment[]>("fetch_submission_comments", { courseId, assignmentId });
 }
 
 /** Instructors across all courses. Outside Tauri: empty. */
