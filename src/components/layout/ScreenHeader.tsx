@@ -11,7 +11,8 @@
 import { cn } from "@/lib/utils";
 
 export interface ScreenHeaderProps {
-  title: string;
+  /** Usually a string; CourseDetail passes its nickname editor. */
+  title: React.ReactNode;
   /** One line, lowercase-ish, explaining what the screen is for. Optional. */
   subtitle?: string;
   /** Right-aligned controls — filters, an export button. */

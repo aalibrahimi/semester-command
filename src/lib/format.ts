@@ -89,6 +89,21 @@ export function relativeDue(iso: string | null | undefined, now: Date = new Date
 }
 
 /**
+ * The strict-grid due format from the design review: "Wed 10:30a". Fixed
+ * shape so the column never wraps; "no date yet" for undated work.
+ */
+export function dueShort(iso: string | null | undefined): string {
+  if (!iso) return "no date yet";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  const wd = d.toLocaleDateString(undefined, { weekday: "short" });
+  const h = d.getHours();
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  const suffix = h >= 12 ? "p" : "a";
+  return `${wd} ${hour12}:${String(d.getMinutes()).padStart(2, "0")}${suffix}`;
+}
+
+/**
  * "synced 4m ago" for the sidebar footer (§5). Returns "never" before the first
  * successful sync, which is a real state the empty-state copy depends on.
  */

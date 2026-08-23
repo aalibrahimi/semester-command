@@ -1,30 +1,52 @@
 /**
  * CourseDetail — one course, in full (SPEC.md §5, screen 2).
  *
- * Called by: the router, at "/courses/:courseId".
- * Calls: ipc `course_detail` / `what_do_i_need` / `set_target`.
+ * Called by: the router, at "/courses/:courseId" (`?solver=1` auto-opens the
+ * solver — triage's quick action lands there).
+ * Calls: ipc `course_detail` / `what_do_i_need` / `set_target`; localPrefs
+ * for the nickname.
  *
- * The only screen allowed to use the 48px display size, and only on the
- * current grade (§9.2). Layout: current vs projected side by side with the
- * gap labelled, the Grade Gap bar, groups with weights, the full assignment
- * list, and the "what do I need" solver.
+ * Design-review layout:
+ * - **Grade hero** — current vs projected + the gap bar, but ONLY once at
+ *   least one item is graded. Before that: "No grades posted yet" and when
+ *   the first graded work lands. Never 0.0%, never a projected F, never an
+ *   empty hatched bar. "Best still possible" lives in the solver dialog.
+ * - **Composition card** — the app's one donut: assignment-group weights,
+ *   muted segments for groups with nothing graded, current grade in the
+ *   center. The legend IS the group summary; hover highlights, click
+ *   filters the list. Zero-weight groups that contain assignments always
+ *   carry a "0% of grade" warning chip.
+ * - **Assignment list** — grouped by assignment group, heaviest first,
+ *   collapsible, sticky headers. Within groups by due date, undated last.
+ *   Strict row grid: title (flex) · due ("Wed 10:30a", fixed) · impact bar
+ *   (fixed) · points (fixed, right, mono). Title shouting like [REQUIRED]
+ *   demotes to a quiet outline chip.
  *
- * Every percentage on this screen came out of `grades.rs` (§10). The
- * reconciliation banner renders whenever our current differs from Canvas's
- * by more than 0.1 — we never silently prefer either number (§4.2).
+ * Every percentage came out of `grades.rs` (§10); this file arranges.
  */
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { AlertTriangle, Calculator, Eye, EyeOff, GraduationCap, Target } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import {
+  AlertTriangle,
+  Calculator,
+  ChevronDown,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Pencil,
+  Target,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
+import { ImpactBar } from "@/components/triage/ImpactBar";
+import { urgencyTier } from "@/lib/urgency";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -40,13 +62,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { courseDetail, setCourseHidden, setTarget, whatDoINeed } from "@/lib/ipc";
 import { announceCoursesChanged } from "@/hooks/useCourses";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { parseCourseLabel } from "@/lib/courseLabel";
-import { dateTime, pct, points } from "@/lib/format";
+import { setNickname, useNicknames } from "@/lib/localPrefs";
+import { dueShort, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { AssignmentDetail, CourseDetailPayload, SolverAnswer } from "@/types";
+import type {
+  AssignmentDetail,
+  CourseDetailPayload,
+  GroupDetail,
+  SolverAnswer,
+} from "@/types";
 
 /** Letter → percent for the target picker. Mirrors DEFAULT_SCALE in Rust. */
 const TARGETS: [string, number][] = [
@@ -60,12 +89,20 @@ const TARGETS: [string, number][] = [
   ["C-", 70],
 ];
 
+/** Categorical hues for the donut segments — the same family as course
+ *  identity colors, applied per group here. */
+const SEGMENT_HUES = [217, 330, 172, 282, 48, 255, 200];
+
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<CourseDetailPayload | null>(null);
   const [missingCourse, setMissingCourse] = useState(false);
   const [solverOpen, setSolverOpen] = useState(false);
   const [openAssignmentId, setOpenAssignmentId] = useState<string | null>(null);
+  const [hoverGroupId, setHoverGroupId] = useState<string | null>(null);
+  const [filterGroupId, setFilterGroupId] = useState<string | null>(null);
+  const nicknames = useNicknames();
 
   const refresh = useCallback(() => {
     if (!courseId) return;
@@ -80,8 +117,18 @@ export default function CourseDetail() {
     // oxlint-disable-next-line set-state-in-effect
     setData(null);
     setMissingCourse(false);
+    setFilterGroupId(null);
     refresh();
   }, [refresh]);
+
+  // Triage's solver quick-action arrives as ?solver=1.
+  useEffect(() => {
+    if (searchParams.get("solver") === "1") {
+      // oxlint-disable-next-line set-state-in-effect
+      setSolverOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   if (missingCourse) {
     return (
@@ -108,10 +155,10 @@ export default function CourseDetail() {
   }
 
   const { summary: s, groups, assignments } = data;
+  const label = parseCourseLabel(s.courseCode ?? s.name);
+  const nickname = nicknames[s.id];
   const floor = floorForCanvasCourse(s.courseCode);
-  // The degree-floor verdicts. "Current below" is the emergency; "projected
-  // below" early in a term is normal (most work ungraded) so it only warns
-  // when there is a current grade to trust.
+  const anyGraded = assignments.some((a) => a.score !== null);
   const currentBelowFloor =
     floor !== null && s.grade.currentPct !== null && s.grade.currentPct < floor.pct;
   const maxBelowFloor = floor !== null && s.maxPossiblePct < floor.pct;
@@ -122,7 +169,7 @@ export default function CourseDetail() {
     setTarget(courseId, found[1], found[0])
       .then(() => {
         refresh();
-        announceCoursesChanged(); // a new target can flip the sidebar dot
+        announceCoursesChanged();
       })
       .catch(() => toast.error("Could not save the target."));
   };
@@ -130,14 +177,16 @@ export default function CourseDetail() {
   return (
     <>
       <ScreenHeader
-        title={parseCourseLabel(s.courseCode ?? s.name).code ?? parseCourseLabel(s.courseCode ?? s.name).title}
-        subtitle={(() => {
-          const l = parseCourseLabel(s.courseCode ?? s.name);
-          return l.code && l.title !== l.code ? l.title : undefined;
-        })()}
+        title={
+          <TitleWithNickname
+            courseId={s.id}
+            nickname={nickname}
+            fallback={label.code ?? label.title}
+          />
+        }
+        subtitle={label.code && label.title !== label.code ? label.title : undefined}
         actions={
           <div className="flex items-center gap-2">
-            {/* Hide/unhide — a view preference, not a deletion. */}
             <Button
               variant="ghost"
               size="sm"
@@ -159,7 +208,6 @@ export default function CourseDetail() {
             >
               {s.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </Button>
-            {/* Target picker — the marker on every bar. */}
             <Select value={s.targetLetter} onValueChange={pickTarget}>
               <SelectTrigger className="h-8 w-36 text-xs">
                 <Target className="mr-1 h-3.5 w-3.5 text-muted-foreground" />
@@ -181,11 +229,8 @@ export default function CourseDetail() {
         }
       />
 
-      {/* Bento: numbers wide, groups beside them, assignments full width. */}
       <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
-        {/* Degree-floor warning: the class grade and the DEGREE are different
-            ledgers — below the floor this course stops counting toward
-            graduation no matter what the course target says. */}
+        {/* Degree-floor warning: class grade and DEGREE are different ledgers. */}
         {(currentBelowFloor || maxBelowFloor) && floor && (
           <Alert className="border-critical/50 xl:col-span-3">
             <AlertTriangle className="h-4 w-4 text-critical-fg" />
@@ -219,99 +264,107 @@ export default function CourseDetail() {
           </Alert>
         )}
 
-        {/* ── The numbers (§4.2: both, always) ──────────────────────────── */}
+        {/* ── Grade hero (§ design review: honest empty state) ──────────── */}
         <Card
           className={cn(
             "rounded-3xl border-border/60 shadow-card",
             groups.length > 0 ? "xl:col-span-2" : "xl:col-span-3",
           )}
         >
-          <CardContent className="flex flex-col gap-5 pt-6">
-            <div className="flex flex-wrap items-end gap-8">
-              <div>
-                <div className="font-display text-display font-semibold leading-none tabular-nums">
-                  {pct(s.grade.currentPct)}
+          <CardContent className="flex h-full flex-col gap-5 pt-6">
+            {anyGraded ? (
+              <>
+                <div className="flex flex-wrap items-end gap-8">
+                  <div>
+                    <div
+                      data-numeric
+                      className="font-display text-display font-semibold leading-none tabular-nums"
+                    >
+                      {pct(s.grade.currentPct)}
+                    </div>
+                    <div className="mt-1.5 text-xs text-muted-foreground">
+                      current{s.currentLetter ? ` · ${s.currentLetter}` : ""} — ungraded work
+                      excluded
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      data-numeric
+                      className="font-mono text-3xl font-medium tabular-nums text-muted-foreground"
+                    >
+                      {pct(s.grade.projectedPct)}
+                    </div>
+                    <div className="mt-1.5 text-xs text-muted-foreground">
+                      projected · {s.projectedLetter} — if you stopped today
+                    </div>
+                  </div>
+                  {s.grade.gapPct !== null && s.grade.gapPct > 0.05 && (
+                    <div className="mb-1 whitespace-nowrap rounded-lg bg-at-risk/10 px-3 py-1.5 text-xs text-at-risk-fg">
+                      {s.grade.gapPct.toFixed(1)} points still in play
+                    </div>
+                  )}
                 </div>
-                <div className="mt-1.5 text-xs text-muted-foreground">
-                  current{s.currentLetter ? ` · ${s.currentLetter}` : ""} — ungraded work excluded
+                <GradeGapBar
+                  projectedPct={s.grade.projectedPct}
+                  maxPossiblePct={s.maxPossiblePct}
+                  targetPct={s.targetPct}
+                  floorPct={floor?.pct}
+                  floorLabel={
+                    floor ? `${floor.letter} required for degree credit (${floor.pct}%)` : undefined
+                  }
+                  status={s.status}
+                />
+                <div className="flex justify-between text-2xs text-muted-foreground">
+                  <span>
+                    target: {s.targetLetter} ({s.targetPct.toFixed(0)}%)
+                  </span>
+                  <span>
+                    grading: {s.grade.mode === "weighted" ? "weighted groups" : "total points"}
+                  </span>
                 </div>
+              </>
+            ) : (
+              /* Nothing graded: current is mathematically undefined. Say so —
+                 never 0.0%, never a projected F, never an empty hatched bar. */
+              <div className="flex h-full flex-col items-start justify-center gap-2 py-6">
+                <div className="font-display text-2xl font-semibold">No grades posted yet</div>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  {firstDueLabel(assignments) ??
+                    "Grades appear here the moment the first item is scored."}
+                </p>
+                <p className="text-2xs text-muted-foreground">
+                  Target {s.targetLetter} ({s.targetPct.toFixed(0)}%) ·{" "}
+                  {s.grade.mode === "weighted" ? "weighted groups" : "total points"}
+                </p>
               </div>
-              <div>
-                <div className="font-mono text-3xl font-medium tabular-nums text-muted-foreground">
-                  {pct(s.grade.projectedPct)}
-                </div>
-                <div className="mt-1.5 text-xs text-muted-foreground">
-                  projected · {s.projectedLetter} — if you stopped today
-                </div>
-              </div>
-              {s.grade.gapPct !== null && s.grade.gapPct > 0.05 && (
-                <div className="mb-1 rounded-lg bg-at-risk/10 px-3 py-1.5 text-xs text-at-risk-fg">
-                  {s.grade.gapPct.toFixed(1)} points still in play
-                </div>
-              )}
-            </div>
-
-            <GradeGapBar
-              projectedPct={s.grade.projectedPct}
-              maxPossiblePct={s.maxPossiblePct}
-              targetPct={s.targetPct}
-              floorPct={floor?.pct}
-              floorLabel={
-                floor ? `${floor.letter} required for degree credit (${floor.pct}%)` : undefined
-              }
-              status={s.status}
-            />
-            <div className="flex justify-between text-2xs text-muted-foreground">
-              <span>
-                best still possible:{" "}
-                <span data-numeric className="font-mono">{pct(s.maxPossiblePct)}</span>
-              </span>
-              <span>
-                grading:{" "}
-                {s.grade.mode === "weighted" ? "weighted groups" : "total points"}
-              </span>
-            </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* ── Groups ────────────────────────────────────────────────────── */}
+        {/* ── Composition (the app's one donut) ─────────────────────────── */}
         {groups.length > 0 && (
-          <Card className="rounded-3xl border-border/60 shadow-card xl:col-span-1">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Assignment groups</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-1">
-              {groups.map((g) => (
-                <div key={g.id} className="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm">
-                  <span className="min-w-0 flex-1 truncate">{g.name ?? "Unnamed group"}</span>
-                  {s.grade.mode === "weighted" && (
-                    <span data-numeric className="w-16 text-right font-mono text-xs tabular-nums text-muted-foreground">
-                      {g.weight !== null ? `${g.weight.toFixed(0)}%` : "—"}
-                    </span>
-                  )}
-                  <span data-numeric className="w-20 text-right font-mono text-xs tabular-nums text-muted-foreground">
-                    {g.gradedCount}/{g.totalCount} graded
-                  </span>
-                  <span data-numeric className="w-16 text-right font-mono text-sm tabular-nums">
-                    {pct(g.currentPct)}
-                  </span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <CompositionCard
+            groups={groups}
+            mode={s.grade.mode}
+            centerLabel={anyGraded ? pct(s.grade.currentPct) : "—"}
+            assignments={assignments}
+            hoverGroupId={hoverGroupId}
+            onHover={setHoverGroupId}
+            filterGroupId={filterGroupId}
+            onFilter={(id) => setFilterGroupId((cur) => (cur === id ? null : id))}
+          />
         )}
 
-        {/* ── Assignments ───────────────────────────────────────────────── */}
-        <Card className="rounded-3xl border-border/60 shadow-card xl:col-span-3">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Assignments</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-0.5">
-            {assignments.map((a) => (
-              <AssignmentRowItem key={a.id} a={a} onOpen={() => setOpenAssignmentId(a.id)} />
-            ))}
-          </CardContent>
-        </Card>
+        {/* ── Assignments, grouped (§ design review strict grid) ────────── */}
+        <GroupedAssignments
+          groups={groups}
+          assignments={assignments}
+          mode={s.grade.mode}
+          hoverGroupId={hoverGroupId}
+          filterGroupId={filterGroupId}
+          onClearFilter={() => setFilterGroupId(null)}
+          onOpen={setOpenAssignmentId}
+        />
       </div>
 
       <SolverDialog
@@ -319,11 +372,10 @@ export default function CourseDetail() {
         onOpenChange={setSolverOpen}
         courseId={s.id}
         defaultTargetPct={s.targetPct}
+        maxPossiblePct={s.maxPossiblePct}
         assignments={assignments.filter((a) => a.score === null && !a.excused && !a.omitted)}
       />
 
-      {/* Sheet, not Dialog: the list stays visible behind it (§9.5). Looked
-          up by id so a refresh (estimate edit) updates the open sheet too. */}
       <AssignmentSheet
         assignment={assignments.find((a) => a.id === openAssignmentId) ?? null}
         onOpenChange={(open) => !open && setOpenAssignmentId(null)}
@@ -333,31 +385,450 @@ export default function CourseDetail() {
   );
 }
 
-function AssignmentRowItem({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void }) {
+/* ── Header nickname ─────────────────────────────────────────────────────── */
+
+/** The course title with an inline nickname editor: the pencil appears on
+ *  hover; the nickname is view-layer state used everywhere. */
+function TitleWithNickname({
+  courseId,
+  nickname,
+  fallback,
+}: {
+  courseId: string;
+  nickname: string | undefined;
+  fallback: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => {
+          setNickname(courseId, value);
+          setEditing(false);
+          announceCoursesChanged();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          if (e.key === "Escape") setEditing(false);
+        }}
+        placeholder={fallback}
+        className="w-64 rounded-md border border-brand bg-transparent px-2 py-0.5 font-display text-xl font-semibold outline-none"
+      />
+    );
+  }
+  return (
+    <span className="group inline-flex items-center gap-2">
+      {nickname ?? fallback}
+      <button
+        type="button"
+        onClick={() => {
+          setValue(nickname ?? "");
+          setEditing(true);
+        }}
+        title="Set a nickname — used everywhere in place of the Canvas name"
+        className="rounded p-1 text-muted-foreground opacity-0 transition-opacity duration-micro hover:bg-fill-ghost group-hover:opacity-100"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </button>
+    </span>
+  );
+}
+
+/* ── Composition donut ───────────────────────────────────────────────────── */
+
+interface SegmentInfo {
+  group: GroupDetail;
+  share: number; // 0–100, share of the course
+  hue: number;
+  graded: boolean;
+  zeroWeightWithWork: boolean;
+}
+
+function segmentsOf(
+  groups: GroupDetail[],
+  mode: string,
+  assignments: AssignmentDetail[],
+): SegmentInfo[] {
+  const pointsOf = (g: GroupDetail) =>
+    assignments
+      .filter((a) => a.groupId === g.id)
+      .reduce((s, a) => s + (a.pointsPossible ?? 0), 0);
+  const totalPoints = groups.reduce((s, g) => s + pointsOf(g), 0);
+  const totalWeight = groups.reduce((s, g) => s + (g.weight ?? 0), 0);
+
+  return groups
+    .map((g, i) => {
+      const share =
+        mode === "weighted"
+          ? totalWeight > 0
+            ? ((g.weight ?? 0) / totalWeight) * 100
+            : 0
+          : totalPoints > 0
+            ? (pointsOf(g) / totalPoints) * 100
+            : 0;
+      return {
+        group: g,
+        share,
+        hue: SEGMENT_HUES[i % SEGMENT_HUES.length],
+        graded: g.gradedCount > 0,
+        zeroWeightWithWork: mode === "weighted" && (g.weight ?? 0) === 0 && g.totalCount > 0,
+      };
+    })
+    .sort((a, b) => b.share - a.share);
+}
+
+function CompositionCard({
+  groups,
+  mode,
+  centerLabel,
+  assignments,
+  hoverGroupId,
+  onHover,
+  filterGroupId,
+  onFilter,
+}: {
+  groups: GroupDetail[];
+  mode: string;
+  centerLabel: string;
+  assignments: AssignmentDetail[];
+  hoverGroupId: string | null;
+  onHover: (id: string | null) => void;
+  filterGroupId: string | null;
+  onFilter: (id: string) => void;
+}) {
+  const segments = useMemo(
+    () => segmentsOf(groups, mode, assignments),
+    [groups, mode, assignments],
+  );
+
+  // Donut geometry: r=54, stroke 16, circumference splits by share. Offsets
+  // are precomputed so render stays pure.
+  const R = 54;
+  const C = 2 * Math.PI * R;
+  const withOffsets = useMemo(
+    () =>
+      segments.reduce<{ seg: SegmentInfo; len: number; offset: number }[]>((out, seg) => {
+        const len = (seg.share / 100) * C;
+        const prev = out[out.length - 1];
+        out.push({ seg, len, offset: prev ? prev.offset + prev.len : 0 });
+        return out;
+      }, []),
+    [segments, C],
+  );
+
+  return (
+    <Card className="rounded-3xl border-border/60 shadow-card xl:col-span-1">
+      <CardContent className="flex h-full flex-col gap-4 pt-6">
+        <h3 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+          Composition
+        </h3>
+        <div className="flex items-center justify-center">
+          <div className="relative">
+            <svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="Grade composition">
+              {withOffsets.map(({ seg, len, offset }) => (
+                <circle
+                  key={seg.group.id}
+                  cx="75"
+                  cy="75"
+                  r={R}
+                  fill="none"
+                  strokeWidth={hoverGroupId === seg.group.id ? 20 : 16}
+                  stroke={
+                    seg.graded
+                      ? `hsl(${seg.hue} 60% 58%)`
+                      : `hsl(${seg.hue} 25% 40% / 0.35)`
+                  }
+                  strokeDasharray={`${len} ${C - len}`}
+                  strokeDashoffset={-offset}
+                  transform="rotate(-90 75 75)"
+                  className="cursor-pointer transition-all duration-micro"
+                  onMouseEnter={() => onHover(seg.group.id)}
+                  onMouseLeave={() => onHover(null)}
+                  onClick={() => onFilter(seg.group.id)}
+                />
+              ))}
+            </svg>
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              <span data-numeric className="font-mono text-xl font-semibold tabular-nums">
+                {centerLabel}
+              </span>
+              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                current
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Legend = the group summary. No separate groups panel exists. */}
+        <div className="flex flex-col gap-0.5">
+          {segments.map((seg) => (
+            <button
+              key={seg.group.id}
+              type="button"
+              onMouseEnter={() => onHover(seg.group.id)}
+              onMouseLeave={() => onHover(null)}
+              onClick={() => onFilter(seg.group.id)}
+              className={cn(
+                "flex items-center gap-2 rounded-md px-2 py-1 text-left transition-colors duration-micro",
+                hoverGroupId === seg.group.id && "bg-fill-ghost",
+                filterGroupId === seg.group.id && "bg-fill-ghost-selected",
+              )}
+            >
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 shrink-0 rounded-sm"
+                style={{
+                  backgroundColor: seg.graded
+                    ? `hsl(${seg.hue} 60% 58%)`
+                    : `hsl(${seg.hue} 25% 40% / 0.45)`,
+                }}
+              />
+              <span className="min-w-0 flex-1 truncate text-xs">
+                {seg.group.name ?? "Unnamed group"}
+              </span>
+              {seg.zeroWeightWithWork && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="chip shrink-0 whitespace-nowrap border border-at-risk/40 bg-at-risk/10 text-2xs text-at-risk-fg">
+                      0% of grade
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-60">
+                    This group contains {seg.group.totalCount} assignment
+                    {seg.group.totalCount === 1 ? "" : "s"} but carries zero weight — either the
+                    instructor's real choice, or a sync artifact worth checking.
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <span
+                data-numeric
+                className="w-14 shrink-0 whitespace-nowrap text-right font-mono text-2xs tabular-nums text-muted-foreground"
+              >
+                {seg.group.gradedCount}/{seg.group.totalCount}
+              </span>
+              <span
+                data-numeric
+                className="w-11 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums"
+              >
+                {seg.share.toFixed(0)}%
+              </span>
+            </button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ── Grouped assignment list ─────────────────────────────────────────────── */
+
+function GroupedAssignments({
+  groups,
+  assignments,
+  mode,
+  hoverGroupId,
+  filterGroupId,
+  onClearFilter,
+  onOpen,
+}: {
+  groups: GroupDetail[];
+  assignments: AssignmentDetail[];
+  mode: string;
+  hoverGroupId: string | null;
+  filterGroupId: string | null;
+  onClearFilter: () => void;
+  onOpen: (id: string) => void;
+}) {
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const toggle = (id: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  // Heaviest weight first; the synthetic "ungrouped" section trails.
+  const ordered = useMemo(() => {
+    const withRows = groups
+      .map((g) => ({
+        group: g,
+        rows: assignments
+          .filter((a) => a.groupId === g.id)
+          .sort(byDueUndatedLast),
+      }))
+      .filter((g) => g.rows.length > 0)
+      .sort((a, b) => (b.group.weight ?? -1) - (a.group.weight ?? -1));
+    const orphans = assignments.filter((a) => !groups.some((g) => g.id === a.groupId));
+    if (orphans.length > 0) {
+      withRows.push({
+        group: {
+          id: "__ungrouped",
+          name: "Ungrouped",
+          weight: null,
+          currentPct: null,
+          gradedCount: orphans.filter((a) => a.score !== null).length,
+          totalCount: orphans.length,
+        },
+        rows: [...orphans].sort(byDueUndatedLast),
+      });
+    }
+    return filterGroupId ? withRows.filter((g) => g.group.id === filterGroupId) : withRows;
+  }, [groups, assignments, filterGroupId]);
+
+  return (
+    <Card className="rounded-3xl border-border/60 pt-4 shadow-card xl:col-span-3">
+      <div className="mb-1 flex items-center justify-between px-5">
+        <h3 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+          Assignments
+        </h3>
+        {filterGroupId && (
+          <button
+            type="button"
+            onClick={onClearFilter}
+            className="text-2xs text-brand-fg underline underline-offset-2"
+          >
+            Clear group filter
+          </button>
+        )}
+      </div>
+      <div className="flex flex-col pb-2">
+        {ordered.map(({ group, rows }) => {
+          const isCollapsed = collapsed.has(group.id);
+          return (
+            <div
+              key={group.id}
+              className={cn(hoverGroupId === group.id && "bg-fill-ghost/30")}
+            >
+              {/* Sticky group header: name · weight · graded count. */}
+              <button
+                type="button"
+                onClick={() => toggle(group.id)}
+                className="sticky top-0 z-10 flex w-full items-center gap-2 border-t border-border/60 bg-card px-5 py-2 text-left transition-colors duration-micro hover:bg-fill-ghost"
+              >
+                <ChevronDown
+                  className={cn(
+                    "h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-micro",
+                    isCollapsed && "-rotate-90",
+                  )}
+                />
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold">
+                  {group.name ?? "Unnamed group"}
+                </span>
+                {mode === "weighted" && (
+                  <span
+                    data-numeric
+                    className="w-16 shrink-0 whitespace-nowrap text-right font-mono text-2xs tabular-nums text-muted-foreground"
+                  >
+                    {group.weight !== null ? `${group.weight.toFixed(0)}% wt` : "—"}
+                  </span>
+                )}
+                <span
+                  data-numeric
+                  className="w-20 shrink-0 whitespace-nowrap text-right font-mono text-2xs tabular-nums text-muted-foreground"
+                >
+                  {group.gradedCount}/{group.totalCount} graded
+                </span>
+                <span
+                  data-numeric
+                  className="w-14 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums"
+                >
+                  {pct(group.currentPct)}
+                </span>
+              </button>
+              {!isCollapsed && rows.map((a) => <AssignmentRow key={a.id} a={a} onOpen={() => onOpen(a.id)} />)}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+function byDueUndatedLast(a: AssignmentDetail, b: AssignmentDetail): number {
+  // Undated items never float to the top: they sort after everything dated.
+  return (a.dueAt ?? "9999") .localeCompare(b.dueAt ?? "9999");
+}
+
+/** "[REQUIRED] Homework 1" → clean title + quiet chips. */
+function stripShouting(name: string | null): { title: string; flags: string[] } {
+  const raw = name ?? "Untitled";
+  const flags: string[] = [];
+  const title = raw
+    .replace(/\[([A-Z][A-Z !]{2,})\]/g, (_, f: string) => {
+      flags.push(f.trim().toLowerCase());
+      return "";
+    })
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  return { title: title || raw, flags };
+}
+
+/** Strict row grid: title (flex) · due (fixed) · impact bar (fixed) ·
+ *  points (fixed, right, mono). Badges are exceptions only. */
+function AssignmentRow({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void }) {
+  const { title, flags } = stripShouting(a.name);
+  const state = a.missing ? "missing" : "open";
   return (
     <button
       type="button"
       onClick={onOpen}
-      className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-colors duration-micro hover:bg-fill-ghost/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate">{a.name ?? "Untitled"}</span>
-          {a.missing && <span className="chip bg-critical/10 text-2xs text-critical-fg">missing</span>}
-          {a.late && <span className="chip bg-at-risk/10 text-2xs text-at-risk-fg">late</span>}
-          {a.excused && <span className="chip bg-fill-ghost text-2xs text-muted-foreground">excused</span>}
-          {a.source !== "api" && (
-            <Badge variant="secondary" className="text-2xs">{a.source}</Badge>
-          )}
-        </div>
-        <div className="text-2xs text-muted-foreground">{dateTime(a.dueAt)}</div>
-      </div>
-      <span data-numeric className="w-20 shrink-0 text-right font-mono text-2xs tabular-nums text-muted-foreground">
-        {a.impactPct > 0 ? `${a.impactPct.toFixed(1)}% of grade` : ""}
+      className="flex w-full items-center gap-3 border-t border-border/30 px-5 py-1.5 text-left transition-colors duration-micro hover:bg-fill-ghost/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="flex min-w-0 flex-1 items-center gap-2">
+        <span className="truncate text-sm">{title}</span>
+        {a.missing && (
+          <span className="chip shrink-0 bg-critical/10 text-2xs text-critical-fg">missing</span>
+        )}
+        {a.late && (
+          <span className="chip shrink-0 bg-at-risk/10 text-2xs text-at-risk-fg">late</span>
+        )}
+        {a.score !== null && (
+          <span className="chip shrink-0 border border-on-track/30 bg-transparent text-2xs text-on-track-fg">
+            graded
+          </span>
+        )}
+        {a.excused && (
+          <span className="chip shrink-0 bg-fill-ghost text-2xs text-muted-foreground">excused</span>
+        )}
+        {flags.map((f) => (
+          <span
+            key={f}
+            className="chip shrink-0 border border-border/70 bg-transparent text-2xs text-muted-foreground"
+          >
+            {f}
+          </span>
+        ))}
+        {a.source !== "api" && (
+          <Badge variant="secondary" className="shrink-0 text-2xs">
+            {a.source}
+          </Badge>
+        )}
       </span>
       <span
         data-numeric
         className={cn(
-          "w-20 shrink-0 text-right font-mono text-sm tabular-nums",
+          "w-24 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums",
+          a.dueAt ? "text-muted-foreground" : "text-muted-foreground/50",
+        )}
+      >
+        {dueShort(a.dueAt)}
+      </span>
+      <ImpactBar
+        impactPct={a.impactPct}
+        tier={a.score !== null ? "later" : urgencyTier(state, a.dueAt)}
+        width={110}
+        className="hidden md:flex"
+      />
+      <span
+        data-numeric
+        className={cn(
+          "w-16 shrink-0 whitespace-nowrap text-right font-mono text-sm tabular-nums",
           a.score === null && "text-muted-foreground",
         )}
       >
@@ -367,22 +838,21 @@ function AssignmentRowItem({ a, onOpen }: { a: AssignmentDetail; onOpen: () => v
   );
 }
 
-/**
- * The "what do I need" panel (§4.3). Pick a target and a scope; the answer is
- * blunt on purpose — including the two edges (unreachable → ceiling,
- * already-locked → floor).
- */
+/* ── Solver ──────────────────────────────────────────────────────────────── */
+
 function SolverDialog({
   open,
   onOpenChange,
   courseId,
   defaultTargetPct,
+  maxPossiblePct,
   assignments,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseId: string;
   defaultTargetPct: number;
+  maxPossiblePct: number;
   assignments: AssignmentDetail[];
 }) {
   const [targetPct, setTargetPct] = useState(String(defaultTargetPct));
@@ -391,8 +861,7 @@ function SolverDialog({
 
   useEffect(() => {
     if (!open) return;
-    // Clearing the stale answer while the solver round-trips to Rust — an
-    // external-system sync, not a derivable value.
+    // Clearing the stale answer while the solver round-trips to Rust.
     // oxlint-disable-next-line set-state-in-effect
     setAnswer(null);
     const target = Number.parseFloat(targetPct);
@@ -433,7 +902,7 @@ function SolverDialog({
               <SelectItem value="everything">Average on everything left</SelectItem>
               {assignments.map((a) => (
                 <SelectItem key={a.id} value={a.id}>
-                  {a.name ?? "Untitled"}
+                  {stripShouting(a.name).title}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -441,6 +910,16 @@ function SolverDialog({
         </div>
 
         {answer && <SolverResult answer={answer} />}
+
+        {/* "Best still possible" lives here, with the decision — not spread
+            across the hero (§ design review). */}
+        <p className="text-2xs text-muted-foreground">
+          Best still possible in this course:{" "}
+          <span data-numeric className="font-mono tabular-nums text-foreground">
+            {maxPossiblePct.toFixed(1)}%
+          </span>{" "}
+          with perfect scores on everything remaining.
+        </p>
       </DialogContent>
     </Dialog>
   );
@@ -450,7 +929,7 @@ function SolverResult({ answer }: { answer: SolverAnswer }) {
   if (answer.outcome === "required") {
     return (
       <div className="rounded-xl bg-fill-ghost p-4">
-        <div className="font-mono text-3xl font-medium tabular-nums">
+        <div data-numeric className="font-mono text-3xl font-medium tabular-nums">
           {answer.pct.toFixed(1)}%
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -493,4 +972,20 @@ function SolverResult({ answer }: { answer: SolverAnswer }) {
       </p>
     </div>
   );
+}
+
+/** "First grades expected after Wed Sep 3" — from the earliest due date. */
+function firstDueLabel(assignments: AssignmentDetail[]): string | null {
+  const first = assignments
+    .map((a) => a.dueAt)
+    .filter((d): d is string => d !== null)
+    .sort()[0];
+  if (!first) return null;
+  const d = new Date(first);
+  if (Number.isNaN(d.getTime())) return null;
+  return `First graded work expected after ${d.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  })} — current and projected appear the moment a score lands.`;
 }

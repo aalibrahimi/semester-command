@@ -118,7 +118,7 @@ function CourseCard({ course: c, featured }: { course: CourseSummary; featured?:
         <CourseStatusDot status={c.status} emphasize className="mt-1.5" />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
-            <span className={cn("font-mono font-semibold tracking-tight", featured ? "text-lg" : "text-sm")}>
+            <span className={cn("font-semibold tracking-tight", featured ? "text-lg" : "text-sm")}>
               {label.code ?? label.title}
             </span>
             {label.term && (

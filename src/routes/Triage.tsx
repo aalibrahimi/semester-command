@@ -2,39 +2,42 @@
  * Triage — the default screen (§5, screen 1), as a bento dashboard.
  *
  * Called by: the router, at "/".
- * Calls: ipc triage_rows / set_estimate / calendar_items; useCourses.
+ * Calls: ipc triage_rows / set_estimate / calendar_items / debug_dump (the
+ * what-changed widget's source); useCourses; localPrefs (nicknames, done).
  *
  * The brief is still one sentence: open the laptop, look at the top-left
- * tile, start working. The bento grid exists to make the *rest* of the
- * picture — standings, the week, the counts — visible in the same viewport
- * without the hero losing primacy.
+ * tile, start working. Design-review refinements live here:
  *
- * Grid contract (xl, 4 columns):
+ * - Inline impact bars: fill = share of final grade, colored by urgency
+ *   tier. The bar compares; the mono number states.
+ * - Rank numbers only in the flat Ranked view — they are non-sequential
+ *   inside groups, and a non-sequential rank is noise.
+ * - Stat tiles are click-to-filter toggles on the queue.
+ * - Row hover reveals quick actions (open in Canvas, solver, mark done);
+ *   the estimate carries a dashed-underline edit affordance.
+ * - Keyboard: j/k move · e estimate · o open in Canvas · x done · Enter
+ *   opens the sheet.
+ * - Right rail: week timeline, workload-by-day, what-changed.
  *
- * ```
- * ┌────────────────────┬──────────┬──────────┐
- * │  UP NEXT (hero)    │ standings│  stats   │
- * │  2 × 2             │  1 col   │  stack   │
- * ├────────────────────┴───────┬──┴──────────┤
- * │  THE QUEUE (ranked list)   │ next 7 days │
- * │  3 cols                    │   1 col     │
- * └────────────────────────────┴─────────────┘
- * ```
- *
- * Below xl everything stacks full-width in priority order. Ranking still
- * happens in `src-tauri/src/triage.rs`, never here (§10).
+ * Ranking still happens in `src-tauri/src/triage.rs`, never here (§10).
+ * "Done" marks and nicknames are view state (localStorage) by design.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   CalendarClock,
+  Check,
   ChevronDown,
   CircleAlert,
+  Calculator,
+  ExternalLink,
   Inbox,
   ListChecks,
+  Sparkles,
   Timer,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -42,41 +45,42 @@ import { EmptyState } from "@/components/layout/EmptyState";
 import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
+import { ImpactBar } from "@/components/triage/ImpactBar";
+import { urgencyTier } from "@/lib/urgency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
-import { calendarItems, courseDetail, setEstimate, triageRows } from "@/lib/ipc";
+import { calendarItems, courseDetail, debugDump, setEstimate, triageRows } from "@/lib/ipc";
 import { minutes, pct, relativeDue } from "@/lib/format";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
-import { courseFull, courseShort } from "@/lib/courseLabel";
+import { courseShort } from "@/lib/courseLabel";
 import { chipStyle, tickStyle } from "@/lib/courseColor";
+import { setDone, useDoneSet, useNicknames } from "@/lib/localPrefs";
 import { cn } from "@/lib/utils";
-import type { AssignmentDetail, CalendarItem, TriageRow, TriageState } from "@/types";
+import type { AssignmentDetail, CalendarItem, TriageRow } from "@/types";
 
-const STATE_CHIP: Record<TriageState, { label: string; cls: string }> = {
-  missing: { label: "missing", cls: "bg-critical/10 text-critical-fg" },
-  overdue: { label: "overdue", cls: "bg-critical/10 text-critical-fg" },
-  open: { label: "not submitted", cls: "bg-fill-ghost text-muted-foreground" },
-};
+type QueueView = "ranked" | "course" | "due";
+const QUEUE_VIEW_KEY = "triage-queue-view";
+type TileFilter = null | "week" | "missing";
 
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
   const [week, setWeek] = useState<CalendarItem[]>([]);
   const [openAssignment, setOpenAssignment] = useState<AssignmentDetail | null>(null);
+  const [view, setView] = useState<QueueView>(() => {
+    const v = localStorage.getItem(QUEUE_VIEW_KEY);
+    return v === "course" || v === "due" ? v : "ranked";
+  });
+  const [filter, setFilter] = useState<TileFilter>(null);
+  const [selIdx, setSelIdx] = useState(0);
+  const [estimateEditId, setEstimateEditId] = useState<string | null>(null);
   const { courses, openTotal, dueThisWeek, loaded } = useCourses();
-
-  // Row click → the full assignment sheet (description, rubric, estimate),
-  // fetched lazily from the course's detail payload.
-  const openSheet = useCallback((row: TriageRow) => {
-    courseDetail(row.courseId)
-      .then((d) => {
-        const a = d.assignments.find((x) => x.id === row.assignmentId);
-        if (a) setOpenAssignment(a);
-        else toast.error("Could not load that assignment.");
-      })
-      .catch(() => toast.error("Could not load that assignment."));
-  }, []);
+  const nicknames = useNicknames();
+  const doneSet = useDoneSet();
+  const navigate = useNavigate();
+  // Captured once per mount so filters compute purely during render.
+  const [mountNow] = useState(() => Date.now());
 
   const refresh = useCallback(() => {
     triageRows()
@@ -102,10 +106,115 @@ export default function Triage() {
       .catch(() => {});
   }, [refresh]);
 
+  /** Nickname-aware short label for a course. */
+  const labelOf = useCallback(
+    (courseId: string, courseCode: string | null) =>
+      nicknames[courseId] ?? courseShort(courseCode),
+    [nicknames],
+  );
+
+  // Done marks and tile filters are view-layer subtraction, never mutation.
+  const visibleRows = useMemo(() => {
+    if (rows === null) return null;
+    let out = rows.filter((r) => !doneSet.has(r.assignmentId));
+    if (filter === "week") {
+      const horizon = mountNow + 7 * 86_400_000;
+      out = out.filter((r) => {
+        if (!r.dueAt) return false;
+        const t = new Date(r.dueAt).getTime();
+        return t < horizon;
+      });
+    } else if (filter === "missing") {
+      out = out.filter((r) => r.state === "missing");
+    }
+    return out;
+  }, [rows, doneSet, filter, mountNow]);
+
+  const pickView = (v: QueueView) => {
+    setView(v);
+    localStorage.setItem(QUEUE_VIEW_KEY, v);
+  };
+
+  /** Groups in display order — also the keyboard traversal order. */
+  const groups = useMemo(() => {
+    const queue = visibleRows?.slice(1) ?? [];
+    return buildGroups(queue, view, labelOf);
+  }, [visibleRows, view, labelOf]);
+
+  const displayOrder = useMemo(() => {
+    const flat = groups.flatMap((g) => g.rows);
+    return visibleRows && visibleRows.length > 0 ? [visibleRows[0], ...flat] : flat;
+  }, [groups, visibleRows]);
+
+  const openSheet = useCallback((row: TriageRow) => {
+    courseDetail(row.courseId)
+      .then((d) => {
+        const a = d.assignments.find((x) => x.id === row.assignmentId);
+        if (a) setOpenAssignment(a);
+        else toast.error("Could not load that assignment.");
+      })
+      .catch(() => toast.error("Could not load that assignment."));
+  }, []);
+
+  const markDone = useCallback((row: TriageRow) => {
+    setDone(row.assignmentId, true);
+    toast.success(`Done: ${row.name ?? "assignment"}`, {
+      action: { label: "Undo", onClick: () => setDone(row.assignmentId, false) },
+    });
+  }, []);
+
+  // Keyboard: j/k move · e estimate · o open · x done · Enter sheet. Dormant
+  // while typing anywhere or while the sheet is open.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (document.activeElement?.tagName ?? "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      if (openAssignment !== null) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const sel = displayOrder[selIdx];
+      switch (e.key) {
+        case "j":
+          e.preventDefault();
+          setSelIdx((i) => Math.min(displayOrder.length - 1, i + 1));
+          break;
+        case "k":
+          e.preventDefault();
+          setSelIdx((i) => Math.max(0, i - 1));
+          break;
+        case "e":
+          if (sel) {
+            e.preventDefault();
+            setEstimateEditId(sel.assignmentId);
+          }
+          break;
+        case "o":
+          if (sel?.htmlUrl) {
+            e.preventDefault();
+            void openUrl(sel.htmlUrl);
+          }
+          break;
+        case "x":
+          if (sel) {
+            e.preventDefault();
+            markDone(sel);
+          }
+          break;
+        case "Enter":
+          if (sel) {
+            e.preventDefault();
+            openSheet(sel);
+          }
+          break;
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [displayOrder, selIdx, openAssignment, markDone, openSheet]);
+
   const visible = courses.filter((c) => !c.hidden && c.gradeable);
   const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
 
-  if (rows === null || !loaded) {
+  if (visibleRows === null || !loaded) {
     return (
       <>
         <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
@@ -120,25 +229,35 @@ export default function Triage() {
     );
   }
 
-  if (rows.length === 0) {
+  if (visibleRows.length === 0) {
     return (
       <>
         <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
         <EmptyState
           icon={ListChecks}
-          title="Nothing to triage"
-          description="Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
+          title={filter ? "Nothing matches this filter" : "Nothing to triage"}
+          description={
+            filter
+              ? "Clear the stat-tile filter to see the whole queue."
+              : "Everything gradeable is submitted. Either you're ahead, or a sync is due — check the footer for when Canvas was last read."
+          }
           action={
-            <Button asChild variant="outline">
-              <Link to="/courses">See your courses</Link>
-            </Button>
+            filter ? (
+              <Button variant="outline" onClick={() => setFilter(null)}>
+                Clear filter
+              </Button>
+            ) : (
+              <Button asChild variant="outline">
+                <Link to="/courses">See your courses</Link>
+              </Button>
+            )
           }
         />
       </>
     );
   }
 
-  const [hero, ...queue] = rows;
+  const [hero, ...queue] = visibleRows;
 
   return (
     <>
@@ -146,17 +265,25 @@ export default function Triage() {
 
       <div className="mx-8 mb-8 grid grid-cols-1 gap-4 xl:grid-cols-4">
         {/* ── Hero: the one thing to start now ─────────────────────────── */}
-        <HeroTile row={hero} onEstimateSaved={refresh} />
+        <HeroTile
+          row={hero}
+          label={labelOf(hero.courseId, hero.courseCode)}
+          selected={selIdx === 0}
+          estimateEditId={estimateEditId}
+          onEstimateConsumed={() => setEstimateEditId(null)}
+          onEstimateSaved={refresh}
+          onDone={() => markDone(hero)}
+        />
 
         {/* ── Standings ────────────────────────────────────────────────── */}
-        <Tile label="Standings" icon={ListChecks} className="xl:row-span-1">
+        <Tile label="Standings" icon={ListChecks}>
           <div className="flex flex-col gap-2.5">
             {visible.map((c) => (
               <Link key={c.id} to={`/courses/${c.id}`} className="group">
                 <div className="flex items-center gap-2">
                   <CourseStatusDot status={c.status} />
-                  <span className="min-w-0 flex-1 truncate font-mono text-xs group-hover:underline">
-                    {courseShort(c.courseCode ?? c.name)}
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium group-hover:underline">
+                    {nicknames[c.id] ?? courseShort(c.courseCode ?? c.name)}
                   </span>
                   <span data-numeric className="font-mono text-xs tabular-nums text-muted-foreground">
                     {pct(c.grade.currentPct)}
@@ -176,33 +303,78 @@ export default function Triage() {
           </div>
         </Tile>
 
-        {/* ── Stat stack ───────────────────────────────────────────────── */}
+        {/* ── Stat tiles: click-to-filter toggles ──────────────────────── */}
         <div className="grid grid-cols-3 gap-4 xl:grid-cols-1">
-          <StatMini label="due this week" value={dueThisWeek} icon={CalendarClock} />
-          <StatMini label="open items" value={openTotal} icon={Inbox} />
+          <StatMini
+            label="due this week"
+            value={dueThisWeek}
+            icon={CalendarClock}
+            active={filter === "week"}
+            onClick={() => setFilter((f) => (f === "week" ? null : "week"))}
+          />
+          <StatMini
+            label="open items"
+            value={openTotal}
+            icon={Inbox}
+            active={filter === null}
+            onClick={() => setFilter(null)}
+          />
           <StatMini
             label="missing"
             value={missingTotal}
             icon={CircleAlert}
             tone={missingTotal > 0 ? "critical" : undefined}
+            active={filter === "missing"}
+            onClick={() => setFilter((f) => (f === "missing" ? null : "missing"))}
           />
         </div>
 
         {/* ── The queue ────────────────────────────────────────────────── */}
-        <QueueTile queue={queue} onEstimateSaved={refresh} onOpenAssignment={openSheet} />
-
-        {/* ── Next 7 days ──────────────────────────────────────────────── */}
-        <Tile label="Next 7 days" icon={CalendarClock}>
-          {week.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Nothing due in the next week.</p>
-          ) : (
-            <WeekAhead items={week} />
-          )}
+        <Tile
+          label={
+            filter
+              ? `Queue · filtered · ${queue.length} more`
+              : `Queue · ${queue.length} more`
+          }
+          icon={ListChecks}
+          className="xl:col-span-3"
+          padded={false}
+          actions={<ViewToggle view={view} onPick={pickView} />}
+        >
+          <QueueGroups
+            groups={groups}
+            showRanks={view === "ranked"}
+            rankOf={new Map(queue.map((r, i) => [r.assignmentId, i + 2]))}
+            selectedId={displayOrder[selIdx]?.assignmentId ?? null}
+            labelOf={labelOf}
+            grouped={view === "course"}
+            estimateEditId={estimateEditId}
+            onEstimateConsumed={() => setEstimateEditId(null)}
+            onEstimateSaved={refresh}
+            onOpen={openSheet}
+            onDone={markDone}
+            onSolver={(r) => navigate(`/courses/${r.courseId}?solver=1`)}
+          />
         </Tile>
+
+        {/* ── Right rail: week · workload · what changed ───────────────── */}
+        <div className="flex min-w-0 flex-col gap-4">
+          <Tile label="Next 7 days" icon={CalendarClock}>
+            {week.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Nothing due in the next week.</p>
+            ) : (
+              <WeekAhead items={week} labelOf={labelOf} />
+            )}
+          </Tile>
+          <Tile label="Workload by day" icon={Timer}>
+            <WorkloadByDay rows={visibleRows} />
+          </Tile>
+          <Tile label="What changed" icon={Sparkles}>
+            <WhatChanged labelOf={labelOf} />
+          </Tile>
+        </div>
       </div>
 
-      {/* One click from the queue to the full assignment: description,
-          rubric, estimate — without leaving the dashboard. */}
       <AssignmentSheet
         assignment={openAssignment}
         onOpenChange={(open) => !open && setOpenAssignment(null)}
@@ -212,89 +384,194 @@ export default function Triage() {
   );
 }
 
-/**
- * The week as an editorial timeline: a hairline spine threads the date
- * leaves top to bottom; each item ties its title to its course code with a
- * dotted leader (the table-of-contents idiom — the eye rides the dots), and
- * carries its due time. Leaf urgency has three tiers: today is solid amber,
- * tomorrow is amber-edged, the rest are quiet.
- */
-function WeekAhead({ items }: { items: CalendarItem[] }) {
-  const byDay = new Map<string, { date: Date; items: CalendarItem[] }>();
-  for (const item of items) {
-    const d = new Date(item.dueAt);
-    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    const bucket = byDay.get(key) ?? { date: d, items: [] };
-    bucket.items.push(item);
-    byDay.set(key, bucket);
+/* ── Grouping (display order = keyboard order) ───────────────────────────── */
+
+interface QueueGroup {
+  key: string;
+  heading: React.ReactNode;
+  rows: TriageRow[];
+}
+
+function buildGroups(
+  queue: TriageRow[],
+  view: QueueView,
+  labelOf: (courseId: string, courseCode: string | null) => string,
+): QueueGroup[] {
+  if (view === "ranked") return [{ key: "all", heading: null, rows: queue }];
+
+  if (view === "course") {
+    const byCourse = new Map<string, TriageRow[]>();
+    for (const r of queue) byCourse.set(r.courseId, [...(byCourse.get(r.courseId) ?? []), r]);
+    return [...byCourse.entries()].map(([courseId, rows]) => {
+      const nextDue = rows
+        .map((r) => r.dueAt)
+        .filter((d): d is string => d !== null)
+        .sort()[0];
+      return {
+        key: courseId,
+        heading: (
+          <span className="flex min-w-0 flex-1 items-center gap-2">
+            <span className="h-3 w-[3px] shrink-0 rounded-full" style={tickStyle(courseId)} />
+            <span className="truncate text-xs font-semibold text-foreground/90">
+              {labelOf(courseId, rows[0].courseCode)}
+            </span>
+            <span className="shrink-0 whitespace-nowrap text-2xs text-muted-foreground">
+              {rows.length} item{rows.length === 1 ? "" : "s"}
+              {nextDue && (
+                <>
+                  {" "}
+                  · next due{" "}
+                  <span data-numeric className="font-mono tabular-nums">
+                    {relativeDue(nextDue)}
+                  </span>
+                </>
+              )}
+            </span>
+          </span>
+        ),
+        rows,
+      };
+    });
   }
-  // Captured once per mount so render stays pure; a day boundary moving a
-  // few minutes late is invisible, a lint-flagged impure render is not.
-  const [todayKey] = useState(() => {
-    const n = new Date();
-    return `${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;
-  });
-  const [tomorrowKey] = useState(() => {
-    const n = new Date(Date.now() + 86_400_000);
-    return `${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;
-  });
+
+  // by due
+  const nowRef = new Date().setSeconds(0, 0);
+  const daysOf = (r: TriageRow): number | null => {
+    if (!r.dueAt) return null;
+    const t = new Date(r.dueAt).getTime();
+    return Number.isNaN(t) ? null : (t - nowRef) / 86_400_000;
+  };
+  const buckets = [
+    { key: "today", label: "Due today", test: (d: number | null) => d !== null && d <= 0.999 },
+    { key: "weekb", label: "This week", test: (d: number | null) => d !== null && d <= 7 },
+    { key: "later", label: "Further out", test: (d: number | null) => d !== null },
+    { key: "undated", label: "No due date", test: (d: number | null) => d === null },
+  ];
+  const used = new Set<string>();
+  const out: QueueGroup[] = [];
+  for (const b of buckets) {
+    const rows = queue
+      .filter((r) => !used.has(r.assignmentId) && b.test(daysOf(r)))
+      .sort((a, b2) => (a.dueAt ?? "9").localeCompare(b2.dueAt ?? "9"));
+    rows.forEach((r) => used.add(r.assignmentId));
+    if (rows.length > 0) {
+      out.push({
+        key: b.key,
+        heading: (
+          <span className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {b.label} · {rows.length}
+          </span>
+        ),
+        rows,
+      });
+    }
+  }
+  return out;
+}
+
+function ViewToggle({ view, onPick }: { view: QueueView; onPick: (v: QueueView) => void }) {
+  return (
+    <div className="flex items-center rounded-md border border-border/60 p-0.5">
+      {(
+        [
+          ["ranked", "Ranked"],
+          ["course", "By course"],
+          ["due", "By due"],
+        ] as [QueueView, string][]
+      ).map(([v, label]) => (
+        <button
+          key={v}
+          type="button"
+          onClick={() => onPick(v)}
+          className={cn(
+            "rounded px-2 py-0.5 text-2xs font-medium transition-colors duration-micro",
+            view === v
+              ? "bg-fill-ghost-selected text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function QueueGroups({
+  groups,
+  showRanks,
+  rankOf,
+  selectedId,
+  grouped,
+  labelOf,
+  estimateEditId,
+  onEstimateConsumed,
+  onEstimateSaved,
+  onOpen,
+  onDone,
+  onSolver,
+}: {
+  groups: QueueGroup[];
+  showRanks: boolean;
+  rankOf: Map<string, number>;
+  selectedId: string | null;
+  grouped: boolean;
+  labelOf: (courseId: string, courseCode: string | null) => string;
+  estimateEditId: string | null;
+  onEstimateConsumed: () => void;
+  onEstimateSaved: () => void;
+  onOpen: (r: TriageRow) => void;
+  onDone: (r: TriageRow) => void;
+  onSolver: (r: TriageRow) => void;
+}) {
+  const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(new Set());
+  const toggle = (key: string) =>
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   return (
-    <div className="relative flex flex-col gap-3">
-      {/* The spine. Runs behind the leaves; each leaf's opaque background
-          punches through it, which is what makes it read as a timeline. */}
-      <div aria-hidden className="absolute bottom-2 left-[17px] top-2 w-px bg-border" />
-
-      {[...byDay.entries()].map(([key, { date, items: dayItems }]) => {
-        const tier = key === todayKey ? "today" : key === tomorrowKey ? "soon" : "later";
+    <div className="flex flex-col">
+      {groups.map((g) => {
+        const isCollapsed = collapsedKeys.has(g.key);
         return (
-          <div key={key} className="relative flex gap-3">
-            {/* The date leaf. */}
-            <div
-              className={cn(
-                "z-10 flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg border leading-none",
-                tier === "today" && "border-at-risk/50 bg-at-risk/15 text-at-risk-fg",
-                tier === "soon" && "border-at-risk/40 bg-card text-at-risk-fg",
-                tier === "later" && "border-border bg-card text-muted-foreground",
-              )}
-            >
-              <span className="text-[9px] font-semibold uppercase tracking-wide">
-                {tier === "today"
-                  ? "now"
-                  : date.toLocaleDateString(undefined, { weekday: "short" })}
-              </span>
-              <span data-numeric className="font-mono text-sm font-semibold tabular-nums">
-                {date.getDate()}
-              </span>
-            </div>
-
-            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-              {dayItems.map((i) => (
-                <Link
-                  key={i.assignmentId}
-                  to={`/courses/${i.courseId}`}
-                  className="group flex items-baseline gap-2 rounded-md px-1 py-0.5 transition-colors duration-micro hover:bg-fill-ghost"
-                >
-                  <span className="min-w-0 shrink truncate text-xs text-foreground/90 group-hover:text-foreground">
-                    {i.name ?? "Untitled"}
-                  </span>
-                  {/* The leader: ties title to code across any width. */}
-                  <span
-                    aria-hidden
-                    className="min-w-3 flex-1 -translate-y-[3px] border-b border-dotted border-border group-hover:border-muted-foreground/50"
-                  />
-                  <span
-                    data-numeric
-                    className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/60"
-                  >
-                    {dueClock(i.dueAt)}
-                  </span>
-                  <span className="shrink-0 font-mono text-[10px] font-medium text-muted-foreground group-hover:text-foreground/80">
-                    {courseShort(i.courseCode)}
-                  </span>
-                </Link>
+          <div key={g.key}>
+            {g.heading && (
+              <button
+                type="button"
+                onClick={() => toggle(g.key)}
+                // Sticky: the group you're scrolled into stays named.
+                className="sticky top-0 z-10 flex w-full items-center gap-2 border-t border-border/60 bg-card px-4 py-1.5 text-left transition-colors duration-micro hover:bg-fill-ghost"
+              >
+                <ChevronDown
+                  className={cn(
+                    "h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-micro",
+                    isCollapsed && "-rotate-90",
+                  )}
+                />
+                {g.heading}
+              </button>
+            )}
+            {!isCollapsed &&
+              g.rows.map((row) => (
+                <QueueRow
+                  key={row.assignmentId}
+                  row={row}
+                  rank={showRanks ? (rankOf.get(row.assignmentId) ?? 0) : null}
+                  selected={row.assignmentId === selectedId}
+                  grouped={grouped}
+                  label={labelOf(row.courseId, row.courseCode)}
+                  estimateEditId={estimateEditId}
+                  onEstimateConsumed={onEstimateConsumed}
+                  onEstimateSaved={onEstimateSaved}
+                  onOpen={() => onOpen(row)}
+                  onDone={() => onDone(row)}
+                  onSolver={() => onSolver(row)}
+                />
               ))}
-            </div>
           </div>
         );
       })}
@@ -302,20 +579,8 @@ function WeekAhead({ items }: { items: CalendarItem[] }) {
   );
 }
 
-/** "11:59p" — the compact clock for agenda rows. Presentation only. */
-function dueClock(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const h = d.getHours();
-  const m = d.getMinutes();
-  const suffix = h >= 12 ? "p" : "a";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${String(m).padStart(2, "0")}${suffix}`;
-}
-
 /* ── Tiles ───────────────────────────────────────────────────────────────── */
 
-/** The shared bento tile: one shape, one border, one label style. */
 function Tile({
   label,
   icon: Icon,
@@ -329,7 +594,6 @@ function Tile({
   children: React.ReactNode;
   className?: string;
   padded?: boolean;
-  /** Right side of the header row — view toggles and the like. */
   actions?: React.ReactNode;
 }) {
   return (
@@ -340,12 +604,7 @@ function Tile({
         className,
       )}
     >
-      <div
-        className={cn(
-          "mb-2.5 flex items-center justify-between gap-2",
-          !padded && "px-4",
-        )}
-      >
+      <div className={cn("mb-2.5 flex items-center justify-between gap-2", !padded && "px-4")}>
         <h2 className="flex items-center gap-1.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
           <Icon className="h-3 w-3" />
           {label}
@@ -357,31 +616,57 @@ function Tile({
   );
 }
 
-/** Rank #1, given the room it deserves: this is the "start working" tile. */
-function HeroTile({ row, onEstimateSaved }: { row: TriageRow; onEstimateSaved: () => void }) {
-  const chip = STATE_CHIP[row.state];
+function HeroTile({
+  row,
+  label,
+  selected,
+  estimateEditId,
+  onEstimateConsumed,
+  onEstimateSaved,
+  onDone,
+}: {
+  row: TriageRow;
+  label: string;
+  selected: boolean;
+  estimateEditId: string | null;
+  onEstimateConsumed: () => void;
+  onEstimateSaved: () => void;
+  onDone: () => void;
+}) {
   const pinned = row.state !== "open";
-
   return (
     <section
       className={cn(
         "flex min-w-0 flex-col rounded-3xl border p-5 shadow-card xl:col-span-2",
         pinned ? "border-critical/40 bg-critical/5" : "border-brand/25 bg-brand/5",
+        selected && "ring-2 ring-ring",
       )}
     >
       <div className="flex items-center gap-2">
         <span className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
           Up next
         </span>
-        <span className={cn("chip text-2xs", chip.cls)}>{chip.label}</span>
+        {pinned && (
+          <span className="chip bg-critical/10 text-2xs text-critical-fg">
+            {row.state === "missing" ? "missing" : "overdue"}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={onDone}
+          title="Mark done (x)"
+          className="ml-auto rounded-md p-1 text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-on-track-fg"
+        >
+          <Check className="h-4 w-4" />
+        </button>
       </div>
 
       <h2 className="mt-2 font-display text-2xl font-semibold leading-snug">
-        {row.name ?? "Untitled"}
+        {stripShouting(row.name).title}
       </h2>
       <div className="mt-1 flex flex-wrap items-baseline gap-3 text-sm text-muted-foreground">
-        <Link to={`/courses/${row.courseId}`} className="hover:underline">
-          {courseFull(row.courseCode)}
+        <Link to={`/courses/${row.courseId}`} className="font-medium hover:underline">
+          {label}
         </Link>
         <span data-numeric className={cn("font-mono tabular-nums", pinned && "text-critical-fg")}>
           {relativeDue(row.dueAt)}
@@ -396,7 +681,13 @@ function HeroTile({ row, onEstimateSaved }: { row: TriageRow; onEstimateSaved: (
           <div className="text-2xs text-muted-foreground">of your final grade riding on this</div>
         </div>
         <div className="flex items-center gap-2">
-          <EstimateCell row={row} onSaved={onEstimateSaved} prominent />
+          <EstimateCell
+            row={row}
+            onSaved={onEstimateSaved}
+            prominent
+            forceEdit={estimateEditId === row.assignmentId}
+            onEditConsumed={onEstimateConsumed}
+          />
           <Button asChild size="sm">
             <Link to={`/courses/${row.courseId}`}>
               Open course <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
@@ -413,22 +704,31 @@ function StatMini({
   value,
   icon: Icon,
   tone,
+  active,
+  onClick,
 }: {
   label: string;
   value: number;
   icon: React.ComponentType<{ className?: string }>;
   tone?: "critical";
+  active?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
-        "flex min-w-0 flex-col justify-center rounded-3xl border border-border/60 bg-card px-4 py-3 shadow-card",
-        tone === "critical" && "border-critical/40",
+        "flex min-w-0 flex-col justify-center rounded-3xl border bg-card px-4 py-3 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40",
+        tone === "critical" ? "border-critical/40" : "border-border/60",
+        active && "border-brand/60 bg-brand/5",
       )}
+      title={active ? "Filtering the queue — click to clear" : "Click to filter the queue"}
     >
       <div className="flex items-center gap-1.5 text-2xs uppercase tracking-wider text-muted-foreground">
         <Icon className="h-3 w-3" />
         {label}
+        {active && <span className="ml-auto text-2xs normal-case text-brand-fg">filtering</span>}
       </div>
       <div
         data-numeric
@@ -439,223 +739,55 @@ function StatMini({
       >
         {value}
       </div>
-    </div>
+    </button>
   );
 }
 
-type QueueView = "ranked" | "course" | "due";
-const QUEUE_VIEW_KEY = "triage-queue-view";
+/* ── Queue row ───────────────────────────────────────────────────────────── */
 
-/**
- * The queue tile, with three lenses on the same rows:
- *   ranked — the pure priority order (the default and the point of triage)
- *   course — grouped per class, for "what do I owe CS-146" days
- *   due    — grouped by deadline bucket, for calendar-brain days
- * The lens is remembered. Rows keep their global rank number in every view,
- * so #4 is #4 no matter how the list is folded.
- */
-function QueueTile({
-  queue,
-  onEstimateSaved,
-  onOpenAssignment,
-}: {
-  queue: TriageRow[];
-  onEstimateSaved: () => void;
-  onOpenAssignment: (row: TriageRow) => void;
-}) {
-  const [view, setView] = useState<QueueView>(() => {
-    const v = localStorage.getItem(QUEUE_VIEW_KEY);
-    return v === "course" || v === "due" ? v : "ranked";
-  });
-  // Captured once per mount: bucket boundaries drifting a few minutes stale
-  // is invisible; an impure render is a lint error.
-  const [nowRef] = useState(() => Date.now());
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-  const pick = (v: QueueView) => {
-    setView(v);
-    localStorage.setItem(QUEUE_VIEW_KEY, v);
-  };
-  const toggleGroup = (key: string) =>
-    setCollapsed((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-
-  // Global rank = position in the ranked list, +2 because the hero is #1.
-  const rankOf = new Map(queue.map((r, i) => [r.assignmentId, i + 2]));
-
-  const groups: { key: string; heading: React.ReactNode; rows: TriageRow[] }[] = [];
-  if (view === "ranked") {
-    groups.push({ key: "all", heading: null, rows: queue });
-  } else if (view === "course") {
-    const byCourse = new Map<string, TriageRow[]>();
-    for (const r of queue) {
-      byCourse.set(r.courseId, [...(byCourse.get(r.courseId) ?? []), r]);
-    }
-    for (const [courseId, rows] of byCourse) {
-      // The header stat that's actually informative: the group's nearest
-      // deadline. (The old "% of grade at stake" summed to ~100 for every
-      // course at week one — true, and useless.)
-      const nextDue = rows
-        .map((r) => r.dueAt)
-        .filter((d): d is string => d !== null)
-        .sort()[0];
-      groups.push({
-        key: courseId,
-        heading: (
-          <span className="flex min-w-0 flex-1 items-center gap-2">
-            <span className="h-3 w-[3px] shrink-0 rounded-full" style={tickStyle(courseId)} />
-            <span className="truncate font-mono text-xs font-semibold text-foreground/90">
-              {courseFull(rows[0].courseCode)}
-            </span>
-            <span className="shrink-0 text-2xs text-muted-foreground">
-              {rows.length} item{rows.length === 1 ? "" : "s"}
-              {nextDue && (
-                <>
-                  {" "}
-                  · next due{" "}
-                  <span data-numeric className="font-mono tabular-nums">
-                    {relativeDue(nextDue)}
-                  </span>
-                </>
-              )}
-            </span>
-          </span>
-        ),
-        rows,
-      });
-    }
-  } else {
-    const buckets: { key: string; label: string; test: (days: number | null) => boolean }[] = [
-      { key: "today", label: "Due today", test: (d) => d !== null && d <= 0.999 },
-      { key: "week", label: "This week", test: (d) => d !== null && d <= 7 },
-      { key: "later", label: "Further out", test: (d) => d !== null },
-      { key: "undated", label: "No due date", test: (d) => d === null },
-    ];
-    const daysOf = (r: TriageRow): number | null => {
-      if (!r.dueAt) return null;
-      const t = new Date(r.dueAt).getTime();
-      return Number.isNaN(t) ? null : (t - nowRef) / 86_400_000;
-    };
-    const used = new Set<string>();
-    for (const b of buckets) {
-      const rows = queue.filter((r) => !used.has(r.assignmentId) && b.test(daysOf(r)));
-      rows.forEach((r) => used.add(r.assignmentId));
-      if (rows.length > 0) {
-        groups.push({
-          key: b.key,
-          heading: (
-            <span className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {b.label} · {rows.length}
-            </span>
-          ),
-          rows: rows.sort((a, b2) => (a.dueAt ?? "9") .localeCompare(b2.dueAt ?? "9")),
-        });
-      }
-    }
-  }
-
-  const toggle = (
-    <div className="flex items-center rounded-md border border-border/60 p-0.5">
-      {(
-        [
-          ["ranked", "Ranked"],
-          ["course", "By course"],
-          ["due", "By due"],
-        ] as [QueueView, string][]
-      ).map(([v, label]) => (
-        <button
-          key={v}
-          type="button"
-          onClick={() => pick(v)}
-          className={cn(
-            "rounded px-2 py-0.5 text-2xs font-medium transition-colors duration-micro",
-            view === v
-              ? "bg-fill-ghost-selected text-foreground"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-
-  return (
-    <Tile
-      label={`Queue · ${queue.length} more`}
-      icon={ListChecks}
-      className="xl:col-span-3"
-      padded={false}
-      actions={toggle}
-    >
-      <div className="flex flex-col">
-        {groups.map((g) => {
-          const isCollapsed = collapsed.has(g.key);
-          return (
-            <div key={g.key}>
-              {g.heading && (
-                <button
-                  type="button"
-                  onClick={() => toggleGroup(g.key)}
-                  className="flex w-full items-center gap-2 border-t border-border/60 bg-fill-ghost/40 px-4 py-1.5 text-left transition-colors duration-micro hover:bg-fill-ghost"
-                >
-                  <ChevronDown
-                    className={cn(
-                      "h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-micro",
-                      isCollapsed && "-rotate-90",
-                    )}
-                  />
-                  {g.heading}
-                </button>
-              )}
-              {!isCollapsed &&
-                g.rows.map((row) => (
-                  <QueueRow
-                    key={row.assignmentId}
-                    row={row}
-                    rank={rankOf.get(row.assignmentId) ?? 0}
-                    grouped={view === "course"}
-                    onEstimateSaved={onEstimateSaved}
-                    onOpen={() => onOpenAssignment(row)}
-                  />
-                ))}
-            </div>
-          );
-        })}
-        {queue.length === 0 && (
-          <p className="px-4 pb-4 text-xs text-muted-foreground">
-            Just the one item — clear it and you're done.
-          </p>
-        )}
-      </div>
-    </Tile>
-  );
+/** "[REQUIRED] Homework 1" → title without the shouting + the chip text. */
+function stripShouting(name: string | null): { title: string; flags: string[] } {
+  const raw = name ?? "Untitled";
+  const flags: string[] = [];
+  const title = raw
+    .replace(/\[([A-Z][A-Z !]{2,})\]/g, (_, f: string) => {
+      flags.push(f.trim().toLowerCase());
+      return "";
+    })
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  return { title: title || raw, flags };
 }
 
-/** One compact queue row. `layout` keeps reorders visible — that motion is
- *  information (§9.4). */
 function QueueRow({
   row,
   rank,
+  selected,
   grouped,
+  label,
+  estimateEditId,
+  onEstimateConsumed,
   onEstimateSaved,
   onOpen,
+  onDone,
+  onSolver,
 }: {
   row: TriageRow;
-  rank: number;
-  /** Inside a per-course group the course chip is the header's job. */
-  grouped?: boolean;
+  /** Null = ranks hidden in this view (non-sequential ranks are noise). */
+  rank: number | null;
+  selected: boolean;
+  grouped: boolean;
+  label: string;
+  estimateEditId: string | null;
+  onEstimateConsumed: () => void;
   onEstimateSaved: () => void;
   onOpen: () => void;
+  onDone: () => void;
+  onSolver: () => void;
 }) {
   const reduced = useReducedMotion();
   const pinned = row.state !== "open";
-  // "not submitted" is the DEFAULT state of a triage row — chipping it 20
-  // times per screen is noise. Only the exceptional states get a chip.
-  const chip = pinned ? STATE_CHIP[row.state] : null;
+  const { title, flags } = stripShouting(row.name);
 
   return (
     <motion.div
@@ -663,8 +795,9 @@ function QueueRow({
       transition={springy(reduced)}
       onClick={onOpen}
       className={cn(
-        "relative flex cursor-pointer items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
+        "group relative flex cursor-pointer items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
         pinned && "bg-critical/5",
+        selected && "bg-fill-ghost/60 ring-1 ring-inset ring-ring",
       )}
     >
       {/* Identity tick: which class, before you've read a word. */}
@@ -673,62 +806,144 @@ function QueueRow({
         className="absolute bottom-2 left-1.5 top-2 w-[3px] rounded-full"
         style={tickStyle(row.courseId)}
       />
-      <span
-        data-numeric
-        className="w-5 shrink-0 text-center font-mono text-xs tabular-nums text-muted-foreground"
-      >
-        {rank}
-      </span>
+      {rank !== null && (
+        <span
+          data-numeric
+          className="w-5 shrink-0 text-center font-mono text-xs tabular-nums text-muted-foreground"
+        >
+          {rank}
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm">{row.name ?? "Untitled"}</span>
-          {chip && <span className={cn("chip shrink-0 text-2xs", chip.cls)}>{chip.label}</span>}
+          <span className="truncate text-sm">{title}</span>
+          {/* Exceptions only: missing/overdue in signal red; shouting like
+              [REQUIRED] demoted to a quiet outline chip. */}
+          {pinned && (
+            <span className="chip shrink-0 bg-critical/10 text-2xs text-critical-fg">
+              {row.state === "missing" ? "missing" : "overdue"}
+            </span>
+          )}
+          {flags.map((f) => (
+            <span
+              key={f}
+              className="chip shrink-0 border border-border/70 bg-transparent text-2xs text-muted-foreground"
+            >
+              {f}
+            </span>
+          ))}
         </div>
         <div className="mt-0.5 flex items-center gap-2 text-2xs text-muted-foreground">
           {!grouped && (
             <Link
               to={`/courses/${row.courseId}`}
               onClick={(e) => e.stopPropagation()}
-              className="shrink-0 rounded px-1 font-mono font-medium text-foreground/80 hover:underline"
+              className="shrink-0 rounded px-1 font-medium text-foreground/80 hover:underline"
               style={chipStyle(row.courseId)}
             >
-              {courseShort(row.courseCode)}
+              {label}
             </Link>
           )}
-          <span data-numeric className={cn("font-mono", pinned && "text-critical-fg")}>
+          <span
+            data-numeric
+            className={cn("whitespace-nowrap font-mono tabular-nums", pinned && "text-critical-fg")}
+          >
             {row.dueAt ? relativeDue(row.dueAt) : "no due date"}
           </span>
         </div>
       </div>
-      <span
-        data-numeric
-        className={cn(
-          "w-20 shrink-0 text-right font-mono text-xs tabular-nums",
-          row.impactPct <= 0 && "text-muted-foreground/40",
-        )}
-      >
-        {row.impactPct.toFixed(1)}%
-      </span>
+
+      {/* The impact bar owns the row's dead middle space. */}
+      <ImpactBar
+        impactPct={row.impactPct}
+        tier={urgencyTier(row.state, row.dueAt)}
+        className="hidden md:flex"
+      />
+
       <span onClick={(e) => e.stopPropagation()}>
-        <EstimateCell row={row} onSaved={onEstimateSaved} />
+        <EstimateCell
+          row={row}
+          onSaved={onEstimateSaved}
+          forceEdit={estimateEditId === row.assignmentId}
+          onEditConsumed={onEstimateConsumed}
+        />
+      </span>
+
+      {/* Hover quick actions, floating over the estimate end of the row. */}
+      <span
+        onClick={(e) => e.stopPropagation()}
+        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5 rounded-md border border-border/60 bg-elevated p-0.5 opacity-0 shadow-card transition-opacity duration-micro group-hover:opacity-100"
+      >
+        {row.htmlUrl && (
+          <QuickAction title="Open in Canvas (o)" onClick={() => void openUrl(row.htmlUrl as string)}>
+            <ExternalLink className="h-3.5 w-3.5" />
+          </QuickAction>
+        )}
+        <QuickAction title="What do I need? (solver)" onClick={onSolver}>
+          <Calculator className="h-3.5 w-3.5" />
+        </QuickAction>
+        <QuickAction title="Mark done (x)" onClick={onDone} success>
+          <Check className="h-3.5 w-3.5" />
+        </QuickAction>
       </span>
     </motion.div>
   );
 }
 
-/** The inline-editable time estimate (§5) — minutes in, "1h 30m" out.
- *  Editing re-ranks the list: the estimate is the score's denominator. */
+function QuickAction({
+  title,
+  onClick,
+  success,
+  children,
+}: {
+  title: string;
+  onClick: () => void;
+  success?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={cn(
+        "rounded p-1.5 text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost",
+        success ? "hover:text-on-track-fg" : "hover:text-foreground",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Inline-editable estimate: dashed underline = "you can edit this". */
 function EstimateCell({
   row,
   onSaved,
   prominent,
+  forceEdit,
+  onEditConsumed,
 }: {
   row: TriageRow;
   onSaved: () => void;
   prominent?: boolean;
+  /** Keyboard 'e' lands here: start editing when true. */
+  forceEdit?: boolean;
+  onEditConsumed?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    if (forceEdit && !editing) {
+      // Synchronising with the keyboard layer: 'e' lands as a prop change
+      // and must open the editor.
+      // oxlint-disable-next-line set-state-in-effect
+      setValue(row.estMinutes?.toString() ?? "");
+      setEditing(true);
+      onEditConsumed?.();
+    }
+  }, [forceEdit, editing, row.estMinutes, onEditConsumed]);
 
   const save = () => {
     const trimmed = value.trim();
@@ -754,12 +969,12 @@ function EstimateCell({
           setEditing(true);
         }}
         className={cn(
-          "shrink-0 rounded-md text-right font-mono text-xs tabular-nums text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-foreground",
+          "shrink-0 rounded-md text-right font-mono text-xs tabular-nums text-muted-foreground underline decoration-border decoration-dashed underline-offset-4 transition-colors duration-micro hover:text-foreground hover:decoration-muted-foreground",
           prominent
-            ? "flex items-center gap-1 border border-border/60 px-2.5 py-1.5"
-            : "w-16 px-2 py-1",
+            ? "flex items-center gap-1 border border-border/60 px-2.5 py-1.5 no-underline"
+            : "w-14 px-1.5 py-1",
         )}
-        title="Your time estimate — click to edit"
+        title="Your time estimate — click to edit (e)"
       >
         {prominent && <Timer className="h-3 w-3" />}
         {minutes(row.estMinutes)}
@@ -777,7 +992,239 @@ function EstimateCell({
         if (e.key === "Escape") setEditing(false);
       }}
       placeholder="min"
-      className="w-16 shrink-0 rounded-md border border-brand bg-transparent px-2 py-1 text-right font-mono text-xs tabular-nums outline-none"
+      className="w-14 shrink-0 rounded-md border border-brand bg-transparent px-1.5 py-1 text-right font-mono text-xs tabular-nums outline-none"
     />
   );
+}
+
+/* ── Rail widgets ────────────────────────────────────────────────────────── */
+
+/**
+ * The week as an editorial timeline: hairline spine, date leaves, dotted
+ * leaders tying titles to course labels, due clocks.
+ */
+function WeekAhead({
+  items,
+  labelOf,
+}: {
+  items: CalendarItem[];
+  labelOf: (courseId: string, courseCode: string | null) => string;
+}) {
+  const byDay = new Map<string, { date: Date; items: CalendarItem[] }>();
+  for (const item of items) {
+    const d = new Date(item.dueAt);
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const bucket = byDay.get(key) ?? { date: d, items: [] };
+    bucket.items.push(item);
+    byDay.set(key, bucket);
+  }
+  const [todayKey] = useState(() => {
+    const n = new Date();
+    return `${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;
+  });
+  const [tomorrowKey] = useState(() => {
+    const n = new Date(Date.now() + 86_400_000);
+    return `${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;
+  });
+
+  return (
+    <div className="relative flex flex-col gap-3">
+      <div aria-hidden className="absolute bottom-2 left-[17px] top-2 w-px bg-border" />
+      {[...byDay.entries()].map(([key, { date, items: dayItems }]) => {
+        const tier = key === todayKey ? "today" : key === tomorrowKey ? "soon" : "later";
+        return (
+          <div key={key} className="relative flex gap-3">
+            <div
+              className={cn(
+                "z-10 flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg border leading-none",
+                tier === "today" && "border-at-risk/50 bg-at-risk/15 text-at-risk-fg",
+                tier === "soon" && "border-at-risk/40 bg-card text-at-risk-fg",
+                tier === "later" && "border-border bg-card text-muted-foreground",
+              )}
+            >
+              <span className="text-[9px] font-semibold uppercase tracking-wide">
+                {tier === "today" ? "now" : date.toLocaleDateString(undefined, { weekday: "short" })}
+              </span>
+              <span data-numeric className="font-mono text-sm font-semibold tabular-nums">
+                {date.getDate()}
+              </span>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+              {dayItems.map((i) => (
+                <Link
+                  key={i.assignmentId}
+                  to={`/courses/${i.courseId}`}
+                  className="group flex items-baseline gap-2 rounded-md px-1 py-0.5 transition-colors duration-micro hover:bg-fill-ghost"
+                >
+                  <span className="min-w-0 shrink truncate text-xs text-foreground/90 group-hover:text-foreground">
+                    {stripShouting(i.name).title}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="min-w-3 flex-1 -translate-y-[3px] border-b border-dotted border-border group-hover:border-muted-foreground/50"
+                  />
+                  <span
+                    data-numeric
+                    className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/60"
+                  >
+                    {dueClock(i.dueAt)}
+                  </span>
+                  <span className="shrink-0 text-[10px] font-medium text-muted-foreground group-hover:text-foreground/80">
+                    {labelOf(i.courseId, i.courseCode)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Estimated hours per day for the next 7 days — a linear bar per day, never
+ *  a donut (§5: one donut in the whole app, and it isn't here). */
+function WorkloadByDay({ rows }: { rows: TriageRow[] }) {
+  const [start] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  });
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const dayStart = start + i * 86_400_000;
+    const dayEnd = dayStart + 86_400_000;
+    const dayRows = rows.filter((r) => {
+      if (!r.dueAt) return false;
+      const t = new Date(r.dueAt).getTime();
+      return t >= dayStart && t < dayEnd;
+    });
+    const mins = dayRows.reduce((s, r) => s + (r.estMinutes ?? 60), 0);
+    const unestimated = dayRows.filter((r) => r.estMinutes === null).length;
+    return { date: new Date(dayStart), mins, count: dayRows.length, unestimated };
+  });
+  const maxMins = Math.max(60, ...days.map((d) => d.mins));
+  const anyUnestimated = days.some((d) => d.unestimated > 0);
+
+  if (days.every((d) => d.count === 0)) {
+    return <p className="text-xs text-muted-foreground">Nothing due in the next week.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {days.map((d) => (
+        <div key={d.date.toISOString()} className="flex items-center gap-2">
+          <span className="w-8 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {d.date.toLocaleDateString(undefined, { weekday: "short" })}
+          </span>
+          <span className="h-2 flex-1 overflow-hidden rounded-full bg-fill-ghost" aria-hidden>
+            <span
+              className={cn(
+                "block h-full rounded-full",
+                d.mins / 60 >= 4 ? "bg-at-risk/80" : "bg-brand/60",
+              )}
+              style={{ width: `${(d.mins / maxMins) * 100}%` }}
+            />
+          </span>
+          <span
+            data-numeric
+            className="w-12 shrink-0 whitespace-nowrap text-right font-mono text-2xs tabular-nums text-muted-foreground"
+          >
+            {d.count > 0 ? minutes(d.mins) : "—"}
+          </span>
+        </div>
+      ))}
+      {anyUnestimated && (
+        <p className="mt-1 text-2xs text-muted-foreground/70">
+          Unestimated items counted at 1h — add estimates to sharpen this.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Grades posted recently, with the score — sourced from the local DB dump
+ *  (already-synced data; nothing here re-fetches Canvas). */
+function WhatChanged({
+  labelOf,
+}: {
+  labelOf: (courseId: string, courseCode: string | null) => string;
+}) {
+  const [items, setItems] = useState<
+    { id: string; courseId: string; courseCode: string | null; name: string; text: string }[] | null
+  >(null);
+
+  useEffect(() => {
+    debugDump()
+      .then((d) => {
+        const cutoff = new Date(Date.now() - 10 * 86_400_000).toISOString();
+        const nameOf = new Map(d.assignments.map((a) => [a.id, a] as const));
+        const codeOf = new Map(d.courses.map((c) => [c.id, c.courseCode] as const));
+        const recent = d.submissions
+          .filter((s) => s.gradedAt !== null && s.gradedAt > cutoff && s.score !== null)
+          .sort((a, b) => (b.gradedAt ?? "").localeCompare(a.gradedAt ?? ""))
+          .slice(0, 8)
+          .flatMap((s) => {
+            const a = nameOf.get(s.assignmentId);
+            if (!a) return [];
+            return [
+              {
+                id: s.assignmentId,
+                courseId: a.courseId,
+                courseCode: codeOf.get(a.courseId) ?? null,
+                name: stripShouting(a.name).title,
+                text:
+                  a.pointsPossible !== null
+                    ? `${s.score}/${a.pointsPossible}`
+                    : String(s.score),
+              },
+            ];
+          });
+        setItems(recent);
+      })
+      .catch(() => setItems([]));
+  }, []);
+
+  if (items === null) return <Skeleton className="h-16 rounded-lg" />;
+  if (items.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        No grades posted in the last 10 days. When one lands, it shows here with the score.
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-1">
+      {items.map((i) => (
+        <Link
+          key={i.id}
+          to={`/courses/${i.courseId}`}
+          className="group flex items-baseline gap-2 rounded-md px-1 py-0.5 transition-colors duration-micro hover:bg-fill-ghost"
+        >
+          <span className="min-w-0 shrink truncate text-xs">{i.name}</span>
+          <span
+            aria-hidden
+            className="min-w-3 flex-1 -translate-y-[3px] border-b border-dotted border-border"
+          />
+          <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums">
+            {i.text}
+          </span>
+          <span className="shrink-0 text-[10px] font-medium text-muted-foreground">
+            {labelOf(i.courseId, i.courseCode)}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+/** "11:59p" — the compact clock for agenda rows. Presentation only. */
+function dueClock(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const h = d.getHours();
+  const m = d.getMinutes();
+  const suffix = h >= 12 ? "p" : "a";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")}${suffix}`;
 }

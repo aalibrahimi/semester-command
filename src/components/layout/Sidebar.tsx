@@ -42,6 +42,7 @@ import { parseCourseLabel } from "@/lib/courseLabel";
 import { openCanvasLogin } from "@/lib/ipc";
 import { useSync } from "@/hooks/useSync";
 import { useCourses } from "@/hooks/useCourses";
+import { useNicknames } from "@/lib/localPrefs";
 import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -67,6 +68,7 @@ export interface SidebarProps {
 export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { courses: allCourses, openTotal, dueThisWeek, loaded } = useCourses();
   const { status, isReconnectRequired } = useSync();
+  const nicknames = useNicknames();
   // Hidden courses live only in the Courses page's own section.
   const courses = allCourses.filter((c) => !c.hidden);
 
@@ -170,8 +172,8 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                     <CourseStatusDot status={c.status} emphasize={c.status === "critical"} />
                     {!collapsed && (
                       <span className="min-w-0 flex-1 leading-tight">
-                        <span className="block truncate font-mono text-xs font-semibold text-foreground/90">
-                          {parsed.code ?? parsed.title}
+                        <span className="block truncate text-xs font-semibold text-foreground/90">
+                          {nicknames[c.id] ?? parsed.code ?? parsed.title}
                         </span>
                         {parsed.code && parsed.title !== parsed.code && (
                           <span className="block truncate text-2xs text-muted-foreground">
