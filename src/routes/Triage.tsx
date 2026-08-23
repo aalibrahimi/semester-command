@@ -46,6 +46,8 @@ import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
 import { ImpactBar } from "@/components/triage/ImpactBar";
+import { Briefing } from "@/components/triage/Briefing";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { urgencyTier } from "@/lib/urgency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,7 +64,9 @@ import type { AssignmentDetail, CalendarItem, TriageRow } from "@/types";
 
 type QueueView = "ranked" | "course" | "due";
 const QUEUE_VIEW_KEY = "triage-queue-view";
+const LAYOUT_KEY = "triage-layout";
 type TileFilter = null | "week" | "missing";
+type Layout = "brief" | "board";
 
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
@@ -73,6 +77,9 @@ export default function Triage() {
     return v === "course" || v === "due" ? v : "ranked";
   });
   const [filter, setFilter] = useState<TileFilter>(null);
+  const [layout, setLayout] = useState<Layout>(() =>
+    localStorage.getItem(LAYOUT_KEY) === "board" ? "board" : "brief",
+  );
   const [selIdx, setSelIdx] = useState(0);
   const [estimateEditId, setEstimateEditId] = useState<string | null>(null);
   const { courses, openTotal, dueThisWeek, loaded } = useCourses();
@@ -135,6 +142,13 @@ export default function Triage() {
     localStorage.setItem(QUEUE_VIEW_KEY, v);
   };
 
+  const pickLayout = (l: Layout) => {
+    setLayout(l);
+    localStorage.setItem(LAYOUT_KEY, l);
+    // Stat-tile filters have no UI in the brief — never filter invisibly.
+    if (l === "brief") setFilter(null);
+  };
+
   /** Groups in display order — also the keyboard traversal order. */
   const groups = useMemo(() => {
     const queue = visibleRows?.slice(1) ?? [];
@@ -170,6 +184,8 @@ export default function Triage() {
       const tag = (document.activeElement?.tagName ?? "").toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select") return;
       if (openAssignment !== null) return;
+      // The brief has no selection cursor; j/k/e/o/x belong to the board.
+      if (layout !== "board") return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const sel = displayOrder[selIdx];
       switch (e.key) {
@@ -209,7 +225,7 @@ export default function Triage() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [displayOrder, selIdx, openAssignment, markDone, openSheet]);
+  }, [displayOrder, selIdx, openAssignment, markDone, openSheet, layout]);
 
   const visible = courses.filter((c) => !c.hidden && c.gradeable);
   const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
@@ -269,9 +285,52 @@ export default function Triage() {
 
   const [hero, ...queue] = visibleRows;
 
+  const layoutToggle = (
+    <Tabs value={layout} onValueChange={(v) => pickLayout(v === "board" ? "board" : "brief")}>
+      <TabsList className="h-8">
+        <TabsTrigger value="brief" className="text-xs">
+          Brief
+        </TabsTrigger>
+        <TabsTrigger value="board" className="text-xs">
+          Board
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
+
+  if (layout === "brief") {
+    return (
+      <>
+        <ScreenHeader
+          title="Triage"
+          subtitle="Your day, talked through."
+          actions={layoutToggle}
+        />
+        <Briefing
+          rows={visibleRows}
+          courses={visible}
+          openTotal={openTotal}
+          dueThisWeek={dueThisWeek}
+          labelOf={labelOf}
+          onOpen={openSheet}
+          onShowBoard={() => pickLayout("board")}
+        />
+        <AssignmentSheet
+          assignment={openAssignment}
+          onOpenChange={(open) => !open && setOpenAssignment(null)}
+          onChanged={refresh}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <ScreenHeader title="Triage" subtitle="Ranked by what it costs you to skip." />
+      <ScreenHeader
+        title="Triage"
+        subtitle="Ranked by what it costs you to skip."
+        actions={layoutToggle}
+      />
 
       <div className="mx-8 mb-8 grid grid-cols-1 gap-4 xl:grid-cols-4">
         {/* ── Hero: the one thing to start now ─────────────────────────── */}

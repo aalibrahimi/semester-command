@@ -57,6 +57,29 @@ export function noClassSpan(d: Date): AcademicSpan | null {
   return academicOn(d).find((s) => s.noClasses) ?? null;
 }
 
+/** Instruction spans, for "week N of M" context lines. */
+const INSTRUCTION: { start: string; end: string }[] = [
+  { start: "2026-08-19", end: "2026-12-07" },
+  { start: "2027-01-27", end: "2027-05-17" },
+];
+
+/** "Week 2 of 16" when `d` falls inside a semester's instruction window,
+ *  else null (breaks and finals aren't a numbered week of anything). */
+export function semesterWeekOf(d: Date): { week: number; total: number } | null {
+  const key = isoKey(d);
+  const span = INSTRUCTION.find((s) => s.start <= key && key <= s.end);
+  if (!span) return null;
+  const [sy, sm, sd] = span.start.split("-").map(Number);
+  const [ey, em, ed] = span.end.split("-").map(Number);
+  const startMs = new Date(sy, sm - 1, sd).getTime();
+  const endMs = new Date(ey, em - 1, ed).getTime();
+  const dayMs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  return {
+    week: Math.floor((dayMs - startMs) / (7 * 86_400_000)) + 1,
+    total: Math.ceil((endMs - startMs) / (7 * 86_400_000)) + 1,
+  };
+}
+
 /** Upcoming spans (starting today or later), soonest first, with a countdown.
  *  Spans already in progress count as starting "today". */
 export function upcomingAcademic(
