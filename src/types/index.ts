@@ -275,7 +275,16 @@ export interface FinanceSnapshot {
   awardsYearOffered: number;
   awardsYearAccepted: number;
   activity: FinanceActivityRow[];
-  findings: string[];
+  findings: FinanceFinding[];
+}
+
+export interface FinanceFinding {
+  /** Short bright headline — the claim. */
+  title: string;
+  /** The dimmed explanation under it. */
+  detail: string;
+  /** Colors the item: good news, needs action, urgent, or opportunity. */
+  tone?: "good" | "warn" | "urgent" | "info";
 }
 
 /** What a Tier 2 feed import did. */
