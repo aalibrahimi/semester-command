@@ -257,6 +257,15 @@ export interface FinanceActivityRow {
   term: string;
   kind: "charge" | "payment" | "refund";
   amount: number;
+  /** One muted line explaining what this item actually is. */
+  note?: string;
+}
+
+/** One bar in the aid-by-term comparison — the "where did my money go" chart. */
+export interface FinanceAidByTerm {
+  label: string;
+  amount: number;
+  tone?: "good" | "warn" | "urgent";
 }
 
 export interface FinanceSnapshot {
@@ -275,7 +284,43 @@ export interface FinanceSnapshot {
   awardsYearOffered: number;
   awardsYearAccepted: number;
   activity: FinanceActivityRow[];
+  aidByTerm?: FinanceAidByTerm[];
   findings: FinanceFinding[];
+  loans?: FinanceLoans;
+  tracking?: FinanceTrackingItem[];
+  fafsa?: FinanceFafsa;
+}
+
+/** The next FAFSA cycle — the one deadline that caused this year's mess. */
+export interface FinanceFafsa {
+  /** e.g. "2027–28". */
+  year: string;
+  /** "YYYY-MM-DD" the form opens. */
+  opens: string;
+  /** "YYYY-MM-DD" Cal Grant / CSAC priority deadline. */
+  priorityDeadline: string;
+  filed: boolean;
+}
+
+/** Existing federal loans, from studentaid.gov. */
+export interface FinanceLoans {
+  totalBalance: number;
+  principal: number;
+  interest: number;
+  count: number;
+  servicer: string;
+  rateRange: string;
+  status: string;
+  byYear: { year: string; amount: number }[];
+  asOf: string;
+}
+
+/** One line in the paper trail: what's been done, what's waiting. */
+export interface FinanceTrackingItem {
+  label: string;
+  detail?: string;
+  state: "done" | "pending" | "todo";
+  date?: string;
 }
 
 export interface FinanceFinding {
