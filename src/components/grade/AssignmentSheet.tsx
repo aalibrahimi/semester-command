@@ -68,7 +68,12 @@ function SheetBody({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
 
       {/* ── The numbers ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-2 py-3">
-        <Stat label="due" value={a.dueAt ? relativeDue(a.dueAt) : "no due date"} sub={a.dueAt ? dateTime(a.dueAt) : undefined} />
+        <Stat
+          label="due"
+          value={a.dueAt ? relativeDue(a.dueAt) : "no due date"}
+          sub={a.dueAt ? dateTime(a.dueAt) : undefined}
+          valueClass={dueTone(a)}
+        />
         <Stat label="score" value={points(a.score, a.pointsPossible)} sub={a.score === null ? "not graded" : a.submitted ? "graded" : undefined} />
         <Stat label="grade impact" value={`${a.impactPct.toFixed(1)}%`} sub="of your final grade" />
         <EstimateStat a={a} onChanged={onChanged} />
@@ -114,11 +119,35 @@ function SheetBody({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
   );
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+/** Urgency tone for the due tile: red past due, bright red inside 6h,
+ *  amber inside 72h — matching the board's temperature gradient. */
+function dueTone(a: AssignmentDetail): string | undefined {
+  if (a.score !== null || a.submitted || a.excused) return undefined;
+  if (!a.dueAt) return undefined;
+  const hoursLeft = (new Date(a.dueAt).getTime() - Date.now()) / 3_600_000;
+  if (a.missing || hoursLeft <= 0) return "text-critical-fg/80";
+  if (hoursLeft <= 6) return "text-critical-fg";
+  if (hoursLeft <= 72) return "text-at-risk-fg";
+  return undefined;
+}
+
+function Stat({
+  label,
+  value,
+  sub,
+  valueClass,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  valueClass?: string;
+}) {
   return (
     <div className="rounded-xl bg-fill-ghost/60 px-3 py-2">
       <div className="text-2xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div data-numeric className="font-mono text-sm font-medium tabular-nums">{value}</div>
+      <div data-numeric className={cn("font-mono text-sm font-medium tabular-nums", valueClass)}>
+        {value}
+      </div>
       {sub && <div className="text-2xs text-muted-foreground">{sub}</div>}
     </div>
   );

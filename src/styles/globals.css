@@ -56,13 +56,12 @@
     --text-muted: 161 161 170; /* #A1A1AA  zinc-400 */
 
     /* ---- Layer 1 · accent — interactive affordances only ----
-       --accent       the periwinkle itself; focus rings, active indicators.
-       --accent-solid darkened so a white button label clears 4.5:1. White on
-                      #7C6BFF is 3.89:1, which is the whole reason this exists.
-       --accent-fg    text-safe periwinkle, for links sitting on --bg. */
-    --accent: 124 107 255; /* #7C6BFF */
-    --accent-solid: 109 90 255; /* #6D5AFF  white label 4.61:1 */
-    --accent-fg: 126 109 255; /* #7E6DFF  5.00:1 on --bg */
+       --accent       the blue itself; focus rings, active indicators.
+       --accent-solid darkened so a white button label clears 4.5:1.
+       --accent-fg    text-safe blue, for links sitting on --bg. */
+    --accent: 59 130 246; /* #3B82F6 */
+    --accent-solid: 37 99 235; /* #2563EB */
+    --accent-fg: 77 148 255; /* #4D94FF */
 
     /* ---- Layer 1 · signal palette — grade risk, never decoration ----
        Two tiers per signal. The bare token is the vivid FILL (bars, dots,
@@ -132,10 +131,10 @@
     --text-muted: 98 106 126; /* #626A7E */
 
     /* ---- Layer 1 · accent ---- */
-    --accent: 124 107 255; /* #7C6BFF  ring 3.66:1 — clears the 3:1 that WCAG
+    --accent: 59 130 246; /* #3B82F6  ring — clears the 3:1 that WCAG
                                           1.4.11 asks of a non-text indicator */
-    --accent-solid: 109 90 255; /* #6D5AFF  white label 4.61:1 */
-    --accent-fg: 103 84 255; /* #6754FF  4.61:1 on --bg */
+    --accent-solid: 37 99 235; /* #2563EB */
+    --accent-fg: 37 99 235; /* #2563EB */
 
     /* ---- Layer 1 · signal palette ----
        This is the block §9.6 predicted would fail, and it does — twice over.
@@ -250,10 +249,54 @@
  * inside the AssignmentSheet without letting it shout — muted headings, brand
  * links, images that cannot overflow the panel.
  */
+/* Base body a step dimmer than pure foreground — a wall of uniform white is
+   what reads as unreadable; hierarchy comes back via font + color below. */
+.canvas-html {
+  color: rgb(var(--foreground) / 0.72);
+}
 .canvas-html a {
-  color: rgb(var(--brand-fg));
+  color: rgb(var(--accent-fg));
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+.canvas-html strong,
+.canvas-html b {
+  color: rgb(var(--foreground));
+  font-weight: 600;
+}
+/* Professors rarely use real <h*> tags — structure arrives as a bold run
+   opening a paragraph ("Directions:", "Canvas Profile:"). Treat those as
+   the headings they are: display face, accent color, a step larger.
+   Bold mid-sentence stays bright white. */
+.canvas-html p > strong:first-child,
+.canvas-html p > b:first-child {
+  font-family: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  color: rgb(var(--accent-fg));
+}
+/* Italics are almost always titles (documentaries, books) — the display
+   face marks them as names without adding another color. */
+.canvas-html em,
+.canvas-html i {
+  font-family: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  color: rgb(var(--foreground) / 0.92);
+}
+.canvas-html ul li::marker {
+  color: rgb(var(--accent-fg));
+}
+.canvas-html ol li::marker {
+  color: rgb(var(--muted-foreground));
+  font-variant-numeric: tabular-nums;
+}
+.canvas-html blockquote {
+  margin-block: 0.5rem;
+  border-left: 2px solid rgb(var(--accent) / 0.4);
+  padding-left: 0.75rem;
+  color: rgb(var(--muted-foreground));
+}
+.canvas-html hr {
+  margin-block: 0.75rem;
+  border-color: rgb(var(--border));
 }
 .canvas-html p,
 .canvas-html ul,
@@ -269,13 +312,22 @@
   list-style: decimal;
   padding-inline-start: 1.25rem;
 }
+/* Headings switch to the display face and pick up color — the same two
+   moves the rest of the app uses to mark structure. */
 .canvas-html h1,
 .canvas-html h2,
 .canvas-html h3,
 .canvas-html h4 {
   margin-block: 0.75rem 0.25rem;
+  font-family: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
+  color: rgb(var(--foreground));
+}
+.canvas-html h1,
+.canvas-html h2 {
+  font-size: 1rem;
+  color: rgb(var(--accent-fg));
 }
 .canvas-html img,
 .canvas-html video {

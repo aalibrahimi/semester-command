@@ -72,6 +72,9 @@ type Layout = "brief" | "board";
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
   const [week, setWeek] = useState<CalendarItem[]>([]);
+  // Unfiltered calendar items — standings needs submitted ones too, to show
+  // per-course "2 of 3 in" progress for the week.
+  const [allItems, setAllItems] = useState<CalendarItem[]>([]);
   const [openAssignment, setOpenAssignment] = useState<AssignmentDetail | null>(null);
   const [view, setView] = useState<QueueView>(() => {
     const v = localStorage.getItem(QUEUE_VIEW_KEY);
@@ -100,8 +103,9 @@ export default function Triage() {
     refresh();
     const now = Date.now();
     calendarItems()
-      .then((items) =>
-        setWeek(
+      .then((items) => {
+        setAllItems(items);
+        return setWeek(
           items
             .filter((i) => !i.submitted && !i.graded)
             .filter((i) => {
@@ -109,8 +113,8 @@ export default function Triage() {
               return t > now && t < now + 7 * 86_400_000;
             })
             .slice(0, 8),
-        ),
-      )
+        );
+      })
       .catch(() => {});
   }, [refresh]);
 
@@ -137,6 +141,26 @@ export default function Triage() {
     }
     return out;
   }, [rows, doneSet, filter, mountNow]);
+
+  // Per-course pulse for standings: of everything due this week (from the
+  // start of today), how much is already turned in. Submission state comes
+  // straight from Canvas data — nothing computed here but counting.
+  const weekProgress = useMemo(() => {
+    const startOfToday = new Date(mountNow);
+    startOfToday.setHours(0, 0, 0, 0);
+    const start = startOfToday.getTime();
+    const end = mountNow + 7 * 86_400_000;
+    const map = new Map<string, { total: number; done: number }>();
+    for (const i of allItems) {
+      const t = new Date(i.dueAt).getTime();
+      if (Number.isNaN(t) || t < start || t >= end) continue;
+      const cur = map.get(i.courseId) ?? { total: 0, done: 0 };
+      cur.total += 1;
+      if (i.submitted || i.graded) cur.done += 1;
+      map.set(i.courseId, cur);
+    }
+    return map;
+  }, [allItems, mountNow]);
 
   // The week's items regardless of the active tile filter — the hover
   // preview on "due this week" must show the same set its click filters to.
@@ -358,36 +382,140 @@ export default function Triage() {
         {/* ── Standings ────────────────────────────────────────────────── */}
         <Tile label="Standings" icon={ListChecks}>
           <div className="flex flex-col gap-2.5">
-            {visible.map((c) => (
-              <Link key={c.id} to={`/courses/${c.id}`} className="group">
-                <div className="flex items-center gap-2">
-                  <CourseStatusDot status={c.status} />
-                  <span className="min-w-0 flex-1 truncate text-xs font-medium group-hover:underline">
-                    {nicknames[c.id] ?? courseShort(c.courseCode ?? c.name)}
-                  </span>
-                  <span data-numeric className="font-mono text-xs tabular-nums text-muted-foreground">
-                    {c.grade.currentPct !== null ? pct(c.grade.currentPct) : `${c.openCount} open`}
-                  </span>
-                </div>
-                {c.grade.currentPct !== null ? (
-                  <GradeGapBar
-                    projectedPct={c.grade.projectedPct}
-                    maxPossiblePct={c.maxPossiblePct}
-                    targetPct={c.targetPct}
-                    floorPct={floorForCanvasCourse(c.courseCode)?.pct}
-                    status={c.status}
-                    size="compact"
-                    className="mt-1"
-                  />
+            {visible.map((c) => {
+              const wk = weekProgress.get(c.id);
+              const hasWeek = wk !== undefined && wk.total > 0;
+              const nextDue = nextDueOf(c.id);
+              const label = nicknames[c.id] ?? courseShort(c.courseCode ?? c.name);
+              // Everything still open in this course, for the hover panel —
+              // dated items first (soonest up), undated trailing.
+              const courseItems = (rows ?? [])
+                .filter((r) => r.courseId === c.id && !doneSet.has(r.assignmentId))
+                .sort((a, b) => (a.dueAt ?? "9999").localeCompare(b.dueAt ?? "9999"));
+
+              const rowBody =
+                c.grade.currentPct !== null ? (
+                  <Link to={`/courses/${c.id}`} className="group block">
+                    <div className="flex items-center gap-2">
+                      <CourseStatusDot status={c.status} />
+                      <span className="min-w-0 flex-1 truncate text-xs font-medium group-hover:underline">
+                        {label}
+                      </span>
+                      <span
+                        data-numeric
+                        className="font-mono text-xs tabular-nums text-muted-foreground"
+                      >
+                        {pct(c.grade.currentPct)}
+                      </span>
+                    </div>
+                    <GradeGapBar
+                      projectedPct={c.grade.projectedPct}
+                      maxPossiblePct={c.maxPossiblePct}
+                      targetPct={c.targetPct}
+                      floorPct={floorForCanvasCourse(c.courseCode)?.pct}
+                      status={c.status}
+                      size="compact"
+                      className="mt-1"
+                    />
+                  </Link>
                 ) : (
-                  /* No grades yet: a hatched bar with a dash says nothing —
-                     the next dated item is a fact worth the same pixels. */
-                  <p className="mt-0.5 truncate text-2xs text-muted-foreground">
-                    {nextDueOf(c.id) ? `next due ${dueShort(nextDueOf(c.id))}` : "nothing dated yet"}
-                  </p>
-                )}
-              </Link>
-            ))}
+                  /* Pre-grade: ONE aligned line per course — dot, name,
+                     dotted leader, week bar, fraction, next deadline. */
+                  <Link to={`/courses/${c.id}`} className="group flex items-center gap-2">
+                    <CourseStatusDot status={c.status} />
+                    <span className="min-w-0 shrink truncate text-xs font-medium group-hover:underline">
+                      {label}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="min-w-3 flex-1 -translate-y-[2px] border-b border-dotted border-border group-hover:border-muted-foreground/50"
+                    />
+                    {hasWeek && wk && (
+                      <>
+                        <span
+                          aria-hidden
+                          className="h-1 w-12 shrink-0 overflow-hidden rounded-full bg-fill-ghost"
+                        >
+                          <span
+                            className={cn(
+                              "block h-full rounded-full",
+                              wk.done === wk.total ? "bg-on-track/80" : "bg-brand/60",
+                            )}
+                            style={{ width: `${(wk.done / wk.total) * 100}%` }}
+                          />
+                        </span>
+                        <span
+                          data-numeric
+                          className={cn(
+                            "shrink-0 font-mono text-xs tabular-nums",
+                            wk.done === wk.total ? "text-on-track-fg" : "text-muted-foreground",
+                          )}
+                        >
+                          {wk.done}/{wk.total} in
+                        </span>
+                      </>
+                    )}
+                    <span
+                      data-numeric
+                      className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground/70"
+                    >
+                      {nextDue ? dueShort(nextDue) : "—"}
+                    </span>
+                    {c.missingCount > 0 && (
+                      <span className="shrink-0 text-2xs text-critical-fg">
+                        {c.missingCount} missing
+                      </span>
+                    )}
+                  </Link>
+                );
+
+              return (
+                <Tooltip key={c.id}>
+                  <TooltipTrigger asChild>
+                    <div>{rowBody}</div>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="w-80 p-3">
+                    <p className="mb-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {label} · open work
+                    </p>
+                    {courseItems.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        Nothing open — all caught up here.
+                      </p>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        {courseItems.slice(0, 10).map((r) => {
+                          const past =
+                            r.state !== "open" ||
+                            (r.dueAt !== null && new Date(r.dueAt).getTime() < mountNow);
+                          return (
+                            <div key={r.assignmentId} className="flex items-baseline gap-2">
+                              <span className="min-w-0 flex-1 truncate text-xs">
+                                {stripShouting(r.name).title}
+                              </span>
+                              <span
+                                data-numeric
+                                className={cn(
+                                  "shrink-0 font-mono text-2xs tabular-nums",
+                                  past ? "text-critical-fg" : "text-muted-foreground",
+                                )}
+                              >
+                                {r.dueAt ? dueShort(r.dueAt) : "no date"}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {courseItems.length > 10 && (
+                          <p className="mt-1 text-2xs text-muted-foreground/70">
+                            +{courseItems.length - 10} more — click through to the course
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
             {!anyGraded && visible.length > 0 && (
               <p className="mt-0.5 text-2xs text-muted-foreground/70">
                 No grades posted yet — standing bars appear as scores land.
