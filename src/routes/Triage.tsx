@@ -51,6 +51,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { urgencyTier } from "@/lib/urgency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
 import { calendarItems, courseDetail, debugDump, setEstimate, triageRows } from "@/lib/ipc";
@@ -136,6 +137,16 @@ export default function Triage() {
     }
     return out;
   }, [rows, doneSet, filter, mountNow]);
+
+  // The week's items regardless of the active tile filter — the hover
+  // preview on "due this week" must show the same set its click filters to.
+  const weekRows = useMemo(() => {
+    if (rows === null) return [];
+    const horizon = mountNow + 7 * 86_400_000;
+    return rows
+      .filter((r) => !doneSet.has(r.assignmentId))
+      .filter((r) => r.dueAt !== null && new Date(r.dueAt).getTime() < horizon);
+  }, [rows, doneSet, mountNow]);
 
   const pickView = (v: QueueView) => {
     setView(v);
@@ -387,14 +398,49 @@ export default function Triage() {
 
         {/* ── Stat tiles: click-to-filter toggles ──────────────────────── */}
         <div className="grid grid-cols-3 gap-4 xl:grid-cols-1">
-          <StatMini
-            label="due this week"
-            value={dueThisWeek}
-            icon={CalendarClock}
-            zeroLabel="nothing due this week"
-            active={filter === "week"}
-            onClick={() => setFilter((f) => (f === "week" ? null : "week"))}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="h-full min-w-0">
+                <StatMini
+                  label="due this week"
+                  value={dueThisWeek}
+                  icon={CalendarClock}
+                  zeroLabel="nothing due this week"
+                  active={filter === "week"}
+                  onClick={() => setFilter((f) => (f === "week" ? null : "week"))}
+                />
+              </div>
+            </TooltipTrigger>
+            {weekRows.length > 0 && (
+              <TooltipContent side="left" className="w-80 p-3">
+                <p className="mb-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Due this week
+                </p>
+                <div className="flex flex-col gap-1">
+                  {weekRows.slice(0, 12).map((r) => (
+                    <div key={r.assignmentId} className="flex items-baseline gap-2">
+                      <span className="min-w-0 flex-1 truncate text-xs">
+                        {stripShouting(r.name).title}
+                      </span>
+                      <span className="shrink-0 text-2xs text-muted-foreground">
+                        {labelOf(r.courseId, r.courseCode)}
+                      </span>
+                      <span
+                        data-numeric
+                        className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground"
+                      >
+                        {dueShort(r.dueAt)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 text-2xs text-muted-foreground/70">
+                  {weekRows.length > 12 && `+${weekRows.length - 12} more · `}click the tile to
+                  filter the queue
+                </p>
+              </TooltipContent>
+            )}
+          </Tooltip>
           <StatMini
             label="open items"
             value={openTotal}
@@ -815,7 +861,7 @@ function StatMini({
       <button
         type="button"
         onClick={onClick}
-        className="flex min-w-0 items-center gap-1.5 rounded-3xl border border-border/60 bg-card px-4 py-2.5 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40"
+        className="flex h-full w-full min-w-0 items-center gap-1.5 rounded-3xl border border-border/60 bg-card px-4 py-2.5 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40"
         title="Click to filter the queue"
       >
         <Check className="h-3 w-3 shrink-0 text-on-track-fg" />
@@ -828,7 +874,7 @@ function StatMini({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex min-w-0 flex-col justify-center rounded-3xl border bg-card px-4 py-3 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40",
+        "flex h-full w-full min-w-0 flex-col justify-center rounded-3xl border bg-card px-4 py-3 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40",
         tone === "critical" ? "border-critical/40" : "border-border/60",
         active && "border-brand/60 bg-brand/5",
       )}
