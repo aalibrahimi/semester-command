@@ -903,6 +903,19 @@ function QueueRow({
   const pinned = row.state !== "open";
   const { title, flags } = stripShouting(row.name);
 
+  // Urgency gradient, hottest first: overdue (dark red, says "overdue") →
+  // due within hours (bright red) → due within 72h (amber) → normal →
+  // far-off/undated (dimmed). Equal weight for everything reads as clutter.
+  const [nowMs] = useState(() => Date.now());
+  const hoursLeft =
+    row.dueAt !== null ? (new Date(row.dueAt).getTime() - nowMs) / 3_600_000 : null;
+  // Past-due counts even before Canvas flips the state to missing.
+  const overdue = pinned || (hoursLeft !== null && hoursLeft <= 0);
+  const imminent = !overdue && hoursLeft !== null && hoursLeft <= 6;
+  const soon = !overdue && !imminent && hoursLeft !== null && hoursLeft <= 72;
+  const dueToday = soon && (hoursLeft as number) <= 24;
+  const distant = !overdue && !imminent && !soon && (hoursLeft === null || hoursLeft > 7 * 24);
+
   return (
     <motion.div
       layout
@@ -910,7 +923,9 @@ function QueueRow({
       onClick={onOpen}
       className={cn(
         "group relative flex cursor-pointer items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
-        pinned && "bg-critical/5",
+        overdue && "bg-critical/10",
+        imminent && "bg-critical/[0.06]",
+        soon && "bg-at-risk/[0.05]",
         selected && "bg-fill-ghost/60 ring-1 ring-inset ring-ring",
       )}
     >
@@ -930,12 +945,22 @@ function QueueRow({
       )}
       <div className="min-w-0 shrink">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm">{title}</span>
+          <span className={cn("truncate text-sm", distant && "text-foreground/70")}>{title}</span>
           {/* Exceptions only: missing/overdue in signal red; shouting like
               [REQUIRED] demoted to a quiet outline chip. */}
-          {pinned && (
-            <span className="chip shrink-0 bg-critical/10 text-2xs text-critical-fg">
+          {overdue && (
+            <span className="chip shrink-0 bg-critical/25 text-2xs font-semibold text-critical-fg/90">
               {row.state === "missing" ? "missing" : "overdue"}
+            </span>
+          )}
+          {imminent && (
+            <span className="chip shrink-0 bg-critical/15 text-2xs font-semibold text-critical-fg">
+              due in {Math.max(1, Math.ceil(hoursLeft as number))}h
+            </span>
+          )}
+          {dueToday && (
+            <span className="chip shrink-0 bg-at-risk/15 text-2xs font-medium text-at-risk-fg">
+              due today
             </span>
           )}
           {flags.map((f) => (
@@ -960,7 +985,13 @@ function QueueRow({
           )}
           <span
             data-numeric
-            className={cn("whitespace-nowrap font-mono tabular-nums", pinned && "text-critical-fg")}
+            className={cn(
+              "whitespace-nowrap font-mono tabular-nums",
+              overdue && "font-medium text-critical-fg/75",
+              imminent && "font-semibold text-critical-fg",
+              soon && "font-medium text-at-risk-fg",
+              distant && "text-muted-foreground/50",
+            )}
           >
             {row.dueAt ? relativeDue(row.dueAt) : "no due date"}
           </span>
