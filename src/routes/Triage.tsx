@@ -52,7 +52,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
 import { calendarItems, courseDetail, debugDump, setEstimate, triageRows } from "@/lib/ipc";
-import { minutes, pct, relativeDue } from "@/lib/format";
+import { dueShort, minutes, pct, relativeDue } from "@/lib/format";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { courseShort } from "@/lib/courseLabel";
 import { chipStyle, tickStyle } from "@/lib/courseColor";
@@ -213,6 +213,16 @@ export default function Triage() {
 
   const visible = courses.filter((c) => !c.hidden && c.gradeable);
   const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
+  const anyGraded = visible.some((c) => c.grade.currentPct !== null);
+  const anyEstimates = (visibleRows ?? []).some((r) => r.estMinutes !== null);
+  // Pre-grade standings rows show the next dated item instead of a bar.
+  const nextDueOf = (courseId: string): string | null => {
+    const dues = (visibleRows ?? [])
+      .filter((r) => r.courseId === courseId && r.dueAt !== null)
+      .map((r) => r.dueAt as string)
+      .sort();
+    return dues[0] ?? null;
+  };
 
   if (visibleRows === null || !loaded) {
     return (
@@ -286,20 +296,33 @@ export default function Triage() {
                     {nicknames[c.id] ?? courseShort(c.courseCode ?? c.name)}
                   </span>
                   <span data-numeric className="font-mono text-xs tabular-nums text-muted-foreground">
-                    {pct(c.grade.currentPct)}
+                    {c.grade.currentPct !== null ? pct(c.grade.currentPct) : `${c.openCount} open`}
                   </span>
                 </div>
-                <GradeGapBar
-                  projectedPct={c.grade.projectedPct}
-                  maxPossiblePct={c.maxPossiblePct}
-                  targetPct={c.targetPct}
-                  floorPct={floorForCanvasCourse(c.courseCode)?.pct}
-                  status={c.status}
-                  size="compact"
-                  className="mt-1"
-                />
+                {c.grade.currentPct !== null ? (
+                  <GradeGapBar
+                    projectedPct={c.grade.projectedPct}
+                    maxPossiblePct={c.maxPossiblePct}
+                    targetPct={c.targetPct}
+                    floorPct={floorForCanvasCourse(c.courseCode)?.pct}
+                    status={c.status}
+                    size="compact"
+                    className="mt-1"
+                  />
+                ) : (
+                  /* No grades yet: a hatched bar with a dash says nothing —
+                     the next dated item is a fact worth the same pixels. */
+                  <p className="mt-0.5 truncate text-2xs text-muted-foreground">
+                    {nextDueOf(c.id) ? `next due ${dueShort(nextDueOf(c.id))}` : "nothing dated yet"}
+                  </p>
+                )}
               </Link>
             ))}
+            {!anyGraded && visible.length > 0 && (
+              <p className="mt-0.5 text-2xs text-muted-foreground/70">
+                No grades posted yet — standing bars appear as scores land.
+              </p>
+            )}
           </div>
         </Tile>
 
@@ -309,6 +332,7 @@ export default function Triage() {
             label="due this week"
             value={dueThisWeek}
             icon={CalendarClock}
+            zeroLabel="nothing due this week"
             active={filter === "week"}
             onClick={() => setFilter((f) => (f === "week" ? null : "week"))}
           />
@@ -324,6 +348,7 @@ export default function Triage() {
             value={missingTotal}
             icon={CircleAlert}
             tone={missingTotal > 0 ? "critical" : undefined}
+            zeroLabel="nothing missing"
             active={filter === "missing"}
             onClick={() => setFilter((f) => (f === "missing" ? null : "missing"))}
           />
@@ -333,8 +358,8 @@ export default function Triage() {
         <Tile
           label={
             filter
-              ? `Queue · filtered · ${queue.length} more`
-              : `Queue · ${queue.length} more`
+              ? `Queue · ${filter === "week" ? "due this week" : "missing"} only · ${queue.length} shown`
+              : `Queue · showing ${queue.length} of ${openTotal} open`
           }
           icon={ListChecks}
           className="xl:col-span-3"
@@ -343,6 +368,8 @@ export default function Triage() {
         >
           <QueueGroups
             groups={groups}
+            showEstimates={anyEstimates}
+            onEstimate={(r) => setEstimateEditId(r.assignmentId)}
             showRanks={view === "ranked"}
             rankOf={new Map(queue.map((r, i) => [r.assignmentId, i + 2]))}
             selectedId={displayOrder[selIdx]?.assignmentId ?? null}
@@ -499,6 +526,8 @@ function ViewToggle({ view, onPick }: { view: QueueView; onPick: (v: QueueView) 
 
 function QueueGroups({
   groups,
+  showEstimates,
+  onEstimate,
   showRanks,
   rankOf,
   selectedId,
@@ -512,6 +541,8 @@ function QueueGroups({
   onSolver,
 }: {
   groups: QueueGroup[];
+  showEstimates: boolean;
+  onEstimate: (r: TriageRow) => void;
   showRanks: boolean;
   rankOf: Map<string, number>;
   selectedId: string | null;
@@ -560,6 +591,8 @@ function QueueGroups({
                 <QueueRow
                   key={row.assignmentId}
                   row={row}
+                  showEstimate={showEstimates}
+                  onEstimate={() => onEstimate(row)}
                   rank={showRanks ? (rankOf.get(row.assignmentId) ?? 0) : null}
                   selected={row.assignmentId === selectedId}
                   grouped={grouped}
@@ -704,6 +737,7 @@ function StatMini({
   value,
   icon: Icon,
   tone,
+  zeroLabel,
   active,
   onClick,
 }: {
@@ -711,9 +745,25 @@ function StatMini({
   value: number;
   icon: React.ComponentType<{ className?: string }>;
   tone?: "critical";
+  /** When set, a zero renders as this quiet all-clear line instead of a
+   *  full tile — good news shouldn't weigh as much as open work. */
+  zeroLabel?: string;
   active?: boolean;
   onClick?: () => void;
 }) {
+  if (value === 0 && zeroLabel && !active) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex min-w-0 items-center gap-1.5 rounded-3xl border border-border/60 bg-card px-4 py-2.5 text-left shadow-card transition-colors duration-micro hover:border-muted-foreground/40"
+        title="Click to filter the queue"
+      >
+        <Check className="h-3 w-3 shrink-0 text-on-track-fg" />
+        <span className="truncate text-2xs text-muted-foreground">{zeroLabel}</span>
+      </button>
+    );
+  }
   return (
     <button
       type="button"
@@ -761,6 +811,8 @@ function stripShouting(name: string | null): { title: string; flags: string[] } 
 
 function QueueRow({
   row,
+  showEstimate,
+  onEstimate,
   rank,
   selected,
   grouped,
@@ -773,6 +825,9 @@ function QueueRow({
   onSolver,
 }: {
   row: TriageRow;
+  /** True once any row has an estimate — the column exists or it doesn't. */
+  showEstimate: boolean;
+  onEstimate: () => void;
   /** Null = ranks hidden in this view (non-sequential ranks are noise). */
   rank: number | null;
   selected: boolean;
@@ -814,7 +869,7 @@ function QueueRow({
           {rank}
         </span>
       )}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 shrink">
         <div className="flex items-center gap-2">
           <span className="truncate text-sm">{title}</span>
           {/* Exceptions only: missing/overdue in signal red; shouting like
@@ -853,21 +908,28 @@ function QueueRow({
         </div>
       </div>
 
-      {/* The impact bar owns the row's dead middle space. */}
+      {/* Dotted leader ties the title to its numbers — no dead gulf. */}
+      <span
+        aria-hidden
+        className="min-w-4 flex-1 self-center border-b border-dotted border-border/60"
+      />
+
       <ImpactBar
         impactPct={row.impactPct}
         tier={urgencyTier(row.state, row.dueAt)}
         className="hidden md:flex"
       />
 
-      <span onClick={(e) => e.stopPropagation()}>
-        <EstimateCell
-          row={row}
-          onSaved={onEstimateSaved}
-          forceEdit={estimateEditId === row.assignmentId}
-          onEditConsumed={onEstimateConsumed}
-        />
-      </span>
+      {(showEstimate || row.estMinutes !== null || estimateEditId === row.assignmentId) && (
+        <span onClick={(e) => e.stopPropagation()}>
+          <EstimateCell
+            row={row}
+            onSaved={onEstimateSaved}
+            forceEdit={estimateEditId === row.assignmentId}
+            onEditConsumed={onEstimateConsumed}
+          />
+        </span>
+      )}
 
       {/* Hover quick actions, floating over the estimate end of the row. */}
       <span
@@ -882,6 +944,11 @@ function QueueRow({
         <QuickAction title="What do I need? (solver)" onClick={onSolver}>
           <Calculator className="h-3.5 w-3.5" />
         </QuickAction>
+        {!showEstimate && row.estMinutes === null && (
+          <QuickAction title="Add time estimate (e)" onClick={onEstimate}>
+            <Timer className="h-3.5 w-3.5" />
+          </QuickAction>
+        )}
         <QuickAction title="Mark done (x)" onClick={onDone} success>
           <Check className="h-3.5 w-3.5" />
         </QuickAction>
@@ -977,7 +1044,7 @@ function EstimateCell({
         title="Your time estimate — click to edit (e)"
       >
         {prominent && <Timer className="h-3 w-3" />}
-        {minutes(row.estMinutes)}
+        {prominent && row.estMinutes === null ? "add estimate" : minutes(row.estMinutes)}
       </button>
     );
   }
@@ -1175,8 +1242,8 @@ function WhatChanged({
                 name: stripShouting(a.name).title,
                 text:
                   a.pointsPossible !== null
-                    ? `${s.score}/${a.pointsPossible}`
-                    : String(s.score),
+                    ? `scored ${s.score}/${a.pointsPossible}`
+                    : `scored ${s.score}`,
               },
             ];
           });

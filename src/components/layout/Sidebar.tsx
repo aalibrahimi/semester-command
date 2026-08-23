@@ -40,6 +40,7 @@ import { shortcut } from "@/lib/platform";
 import { sinceSync } from "@/lib/format";
 import { parseCourseLabel } from "@/lib/courseLabel";
 import { openCanvasLogin } from "@/lib/ipc";
+import { Fragment } from "react";
 import { useSync } from "@/hooks/useSync";
 import { useCourses } from "@/hooks/useCourses";
 import { useNicknames } from "@/lib/localPrefs";
@@ -69,8 +70,13 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { courses: allCourses, openTotal, dueThisWeek, loaded } = useCourses();
   const { status, isReconnectRequired } = useSync();
   const nicknames = useNicknames();
-  // Hidden courses live only in the Courses page's own section.
-  const courses = allCourses.filter((c) => !c.hidden);
+  // Hidden courses live only in the Courses page's own section. Real
+  // courses first; announcement/advising shells cluster under "Other" —
+  // nobody navigates to them with intent.
+  const courses = [...allCourses.filter((c) => !c.hidden)].sort(
+    (a, b) => Number(b.gradeable) - Number(a.gradeable),
+  );
+  const gradeableCount = courses.filter((c) => c.gradeable).length;
 
   // Zero-count badges render as no badge at all — a "0" chip is noise. Before
   // the first load counts stay null for the same reason.
@@ -152,7 +158,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
           )}
           {courses.length > 0 ? (
             <div className="flex flex-col gap-0.5">
-              {courses.map((c) => {
+              {courses.map((c, i) => {
                 const parsed = parseCourseLabel(c.courseCode ?? c.name ?? c.id);
                 const row = (
                   <NavLink
@@ -191,13 +197,23 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                 );
                 // Collapsed rail: the dot is the row; give it the course name
                 // on hover, since the dots are the reason the rail exists.
-                return collapsed ? (
-                  <Tooltip key={c.id}>
+                const rendered = collapsed ? (
+                  <Tooltip>
                     <TooltipTrigger asChild>{row}</TooltipTrigger>
                     <TooltipContent side="right">{parsed.code ?? parsed.title}</TooltipContent>
                   </Tooltip>
                 ) : (
                   row
+                );
+                return (
+                  <Fragment key={c.id}>
+                    {i === gradeableCount && !collapsed && (
+                      <h2 className="px-2 pb-1 pt-3 text-2xs font-medium uppercase tracking-wider text-muted-foreground/60">
+                        Other
+                      </h2>
+                    )}
+                    {rendered}
+                  </Fragment>
                 );
               })}
             </div>

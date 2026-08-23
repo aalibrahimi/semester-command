@@ -9,7 +9,8 @@
  * <Outlet />'s business.
  */
 import { useCallback, useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useSync } from "@/hooks/useSync";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
 import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ const DIGIT_ROUTES: Record<string, string> = {
 
 export function AppShell() {
   const navigate = useNavigate();
+  const { isReconnectRequired } = useSync();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === "1");
   const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -139,6 +141,22 @@ export function AppShell() {
             </Button>
           </div>
         </header>
+
+        {/* A dead session means every number on screen is going stale —
+            that earns a banner, not just the sidebar's footer line. */}
+        {isReconnectRequired && (
+          <div className="flex shrink-0 items-center gap-2 border-b border-critical/30 bg-critical/10 px-6 py-1.5 text-xs text-critical-fg">
+            <span className="min-w-0 truncate">
+              Canvas session expired — grades and due dates shown are from the last sync.
+            </span>
+            <Link
+              to="/settings"
+              className="ml-auto shrink-0 font-medium underline underline-offset-2"
+            >
+              Reconnect
+            </Link>
+          </div>
+        )}
 
         <main className="min-h-0 flex-1 overflow-y-auto">
           <Outlet />
