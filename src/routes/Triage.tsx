@@ -808,7 +808,7 @@ function QueueGroups({
                 type="button"
                 onClick={() => toggle(g.key)}
                 // Sticky: the group you're scrolled into stays named.
-                className="sticky top-0 z-10 flex w-full items-center gap-2 border-t border-border/60 bg-card px-4 py-1.5 text-left transition-colors duration-micro hover:bg-fill-ghost"
+                className="sticky top-0 z-10 flex w-full items-center gap-2 border-t border-border bg-elevated px-4 py-2 text-left transition-colors duration-micro hover:bg-fill-ghost"
               >
                 <ChevronDown
                   className={cn(
@@ -1078,12 +1078,12 @@ function QueueRow({
   const { title, flags } = stripShouting(row.name);
 
   // Urgency gradient, hottest first: overdue (dark red, says "overdue") →
-  // due within hours (bright red) → due within 72h (amber) → normal →
-  // far-off/undated (dimmed). Equal weight for everything reads as clutter.
+  // due within hours (bright red) → due within 72h (amber due text) →
+  // normal → far-off/undated (dimmed). Color lives in the text and chips,
+  // never in row washes — tinted rows over colored lines read as mud.
   const [nowMs] = useState(() => Date.now());
   const hoursLeft =
     row.dueAt !== null ? (new Date(row.dueAt).getTime() - nowMs) / 3_600_000 : null;
-  // Past-due counts even before Canvas flips the state to missing.
   const overdue = pinned || (hoursLeft !== null && hoursLeft <= 0);
   const imminent = !overdue && hoursLeft !== null && hoursLeft <= 6;
   const soon = !overdue && !imminent && hoursLeft !== null && hoursLeft <= 72;
@@ -1096,10 +1096,8 @@ function QueueRow({
       transition={springy(reduced)}
       onClick={onOpen}
       className={cn(
-        "group relative flex cursor-pointer items-center gap-3 border-t border-border/40 py-2 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
-        overdue && "bg-critical/10",
-        imminent && "bg-critical/[0.06]",
-        soon && "bg-at-risk/[0.05]",
+        "group relative flex cursor-pointer items-center gap-3 border-t border-border/60 py-2.5 pl-5 pr-4 transition-colors duration-micro hover:bg-fill-ghost/50",
+        overdue && "bg-critical/[0.07]",
         selected && "bg-fill-ghost/60 ring-1 ring-inset ring-ring",
       )}
     >
@@ -1117,66 +1115,59 @@ function QueueRow({
           {rank}
         </span>
       )}
-      <div className="min-w-0 shrink">
-        <div className="flex items-center gap-2">
-          <span className={cn("truncate text-sm", distant && "text-foreground/70")}>{title}</span>
-          {/* Exceptions only: missing/overdue in signal red; shouting like
-              [REQUIRED] demoted to a quiet outline chip. */}
-          {overdue && (
-            <span className="chip shrink-0 bg-critical/25 text-2xs font-semibold text-critical-fg/90">
-              {row.state === "missing" ? "missing" : "overdue"}
-            </span>
-          )}
-          {imminent && (
-            <span className="chip shrink-0 bg-critical/15 text-2xs font-semibold text-critical-fg">
-              due in {Math.max(1, Math.ceil(hoursLeft as number))}h
-            </span>
-          )}
-          {dueToday && (
-            <span className="chip shrink-0 bg-at-risk/15 text-2xs font-medium text-at-risk-fg">
-              due today
-            </span>
-          )}
-          {flags.map((f) => (
-            <span
-              key={f}
-              className="chip shrink-0 border border-border/70 bg-transparent text-2xs text-muted-foreground"
-            >
-              {f}
-            </span>
-          ))}
-        </div>
-        <div className="mt-0.5 flex items-center gap-2 text-2xs text-muted-foreground">
-          {!grouped && (
-            <Link
-              to={`/courses/${row.courseId}`}
-              onClick={(e) => e.stopPropagation()}
-              className="shrink-0 rounded px-1 font-medium text-foreground/80 hover:underline"
-              style={chipStyle(row.courseId)}
-            >
-              {label}
-            </Link>
-          )}
-          <span
-            data-numeric
-            className={cn(
-              "whitespace-nowrap font-mono tabular-nums",
-              overdue && "font-medium text-critical-fg/75",
-              imminent && "font-semibold text-critical-fg",
-              soon && "font-medium text-at-risk-fg",
-              distant && "text-muted-foreground/50",
-            )}
-          >
-            {row.dueAt ? relativeDue(row.dueAt) : "no due date"}
+
+      {/* One line: title + exception chips, then fixed columns. */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <span className={cn("truncate text-sm", distant && "text-foreground/70")}>{title}</span>
+        {overdue && (
+          <span className="chip shrink-0 bg-critical/25 text-2xs font-semibold text-critical-fg/90">
+            {row.state === "missing" ? "missing" : "overdue"}
           </span>
-        </div>
+        )}
+        {imminent && (
+          <span className="chip shrink-0 bg-critical/15 text-2xs font-semibold text-critical-fg">
+            due in {Math.max(1, Math.ceil(hoursLeft as number))}h
+          </span>
+        )}
+        {dueToday && (
+          <span className="chip shrink-0 bg-at-risk/15 text-2xs font-medium text-at-risk-fg">
+            due today
+          </span>
+        )}
+        {flags.map((f) => (
+          <span
+            key={f}
+            className="chip shrink-0 border border-border/70 bg-transparent text-2xs text-muted-foreground"
+          >
+            {f}
+          </span>
+        ))}
       </div>
 
-      {/* Dotted leader ties the title to its numbers — no dead gulf. */}
+      {!grouped && (
+        <Link
+          to={`/courses/${row.courseId}`}
+          onClick={(e) => e.stopPropagation()}
+          className="shrink-0 rounded px-1.5 py-0.5 text-2xs font-medium text-foreground/80 hover:underline"
+          style={chipStyle(row.courseId)}
+        >
+          {label}
+        </Link>
+      )}
+
       <span
-        aria-hidden
-        className="min-w-4 flex-1 self-center border-b border-dotted border-border/60"
-      />
+        data-numeric
+        title={row.dueAt ? undefined : "no due date"}
+        className={cn(
+          "w-16 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums text-muted-foreground",
+          overdue && "font-medium text-critical-fg/75",
+          imminent && "font-semibold text-critical-fg",
+          soon && "font-medium text-at-risk-fg",
+          distant && "text-muted-foreground/50",
+        )}
+      >
+        {row.dueAt ? relativeDue(row.dueAt) : "—"}
+      </span>
 
       <ImpactBar
         impactPct={row.impactPct}

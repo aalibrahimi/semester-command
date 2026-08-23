@@ -56,10 +56,12 @@ export function ImpactBar({
         data-numeric
         className={cn(
           "w-11 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums",
-          impactPct <= 0 ? "text-muted-foreground/40" : "text-muted-foreground",
+          impactPct <= 0.05 ? "text-muted-foreground/40" : "text-muted-foreground",
         )}
       >
-        {impactPct.toFixed(1)}%
+        {/* Zero impact is the absence of a fact — a dash, not "0.0%"
+            repeated down the column. */}
+        {impactPct > 0.05 ? `${impactPct.toFixed(1)}%` : "—"}
       </span>
     </span>
   );
