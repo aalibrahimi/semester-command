@@ -233,6 +233,51 @@ export interface SubmissionComment {
   createdAt: string | null;
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   Finances — a MySJSU snapshot (no API there; captured point-in-time and
+   rendered with its as-of date). Rust stores this as opaque JSON. */
+
+export interface FinanceCharge {
+  label: string;
+  amount: number;
+  dueDate: string | null;
+}
+
+export interface FinanceAward {
+  name: string;
+  category: string;
+  offered: number;
+  accepted: number;
+  disbDate: string | null;
+}
+
+export interface FinanceActivityRow {
+  date: string;
+  item: string;
+  term: string;
+  kind: "charge" | "payment" | "refund";
+  amount: number;
+}
+
+export interface FinanceSnapshot {
+  asOf: string;
+  source: string;
+  term: string;
+  dueNow: number;
+  futureDue: number;
+  pastDue: boolean;
+  dueDate: string | null;
+  holds: number;
+  todos: number;
+  charges: FinanceCharge[];
+  aidYear: string;
+  awards: FinanceAward[];
+  awardsYearOffered: number;
+  awardsYearAccepted: number;
+  activity: FinanceActivityRow[];
+  findings: string[];
+}
+
 /** What a Tier 2 feed import did. */
 export interface IcsSummary {
   assignments: number;

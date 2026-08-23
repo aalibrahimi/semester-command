@@ -25,6 +25,7 @@ import CourseDetail from "@/routes/CourseDetail";
 import Calendar from "@/routes/Calendar";
 import Contacts from "@/routes/Contacts";
 import Done from "@/routes/Done";
+import Finance from "@/routes/Finance";
 import Graduation from "@/routes/Graduation";
 import Syllabi from "@/routes/Syllabi";
 import Settings from "@/routes/Settings";
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="graduation" element={<Graduation />} />
               <Route path="contacts" element={<Contacts />} />
               <Route path="done" element={<Done />} />
+              <Route path="finance" element={<Finance />} />
               <Route path="settings" element={<Settings />} />
 
               {/* Stripped from release builds by the bundler, since the

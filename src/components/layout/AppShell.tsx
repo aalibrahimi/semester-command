@@ -37,6 +37,7 @@ const DIGIT_ROUTES: Record<string, string> = {
   "5": "/contacts",
   "6": "/graduation",
   "7": "/done",
+  "8": "/finance",
 };
 
 export function AppShell() {

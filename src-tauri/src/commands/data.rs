@@ -261,6 +261,51 @@ pub async fn fetch_submission_comments(
         .collect())
 }
 
+// ── Finance snapshot ─────────────────────────────────────────────────────────
+//
+// MySJSU (PeopleSoft) has no student API and sits behind SSO + Duo, so the
+// app cannot sync finances the way it syncs Canvas. Instead the Finance
+// screen renders a point-in-time snapshot captured by the user (or their
+// assistant reading the portal), stored as one JSON file in the app data
+// dir and always displayed with its as-of date. Schema lives in the
+// frontend's FinanceSnapshot type; Rust passes the JSON through untouched.
+
+fn finance_path(app: &AppHandle) -> Result<std::path::PathBuf, CommandError> {
+    Ok(app
+        .path()
+        .app_data_dir()
+        .map_err(|e| CommandError::storage(format!("No data dir: {e}")))?
+        .join("finance.json"))
+}
+
+/// The stored snapshot, or None before the first capture.
+#[tauri::command]
+pub async fn finance_snapshot(app: AppHandle) -> CommandResult<Option<serde_json::Value>> {
+    let path = finance_path(&app)?;
+    if !path.exists() {
+        return Ok(None);
+    }
+    let text = std::fs::read_to_string(&path)
+        .map_err(|e| CommandError::storage(format!("Could not read finance.json: {e}")))?;
+    let v = serde_json::from_str(&text)
+        .map_err(|e| CommandError::storage(format!("finance.json is not valid JSON: {e}")))?;
+    Ok(Some(v))
+}
+
+/// Replace the snapshot wholesale (each capture is complete on its own).
+#[tauri::command]
+pub async fn save_finance_snapshot(
+    app: AppHandle,
+    snapshot: serde_json::Value,
+) -> CommandResult<()> {
+    let path = finance_path(&app)?;
+    let text = serde_json::to_string_pretty(&snapshot)
+        .map_err(|e| CommandError::storage(format!("Snapshot not serializable: {e}")))?;
+    std::fs::write(&path, text)
+        .map_err(|e| CommandError::storage(format!("Could not write finance.json: {e}")))?;
+    Ok(())
+}
+
 // ── Weekly planner (migration 0009) ─────────────────────────────────────────
 
 /// Every planner block — the week view expands recurrence client-side.

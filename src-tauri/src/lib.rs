@@ -97,6 +97,8 @@ pub fn run() {
             commands::data::delete_planner_block,
             commands::data::detect_class_slots,
             commands::data::fetch_submission_comments,
+            commands::data::finance_snapshot,
+            commands::data::save_finance_snapshot,
             commands::data::list_instructors,
             commands::data::planner_blocks,
             commands::data::save_planner_block,

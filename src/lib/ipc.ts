@@ -34,6 +34,7 @@ import type {
   ThemeMode,
   TriageRow,
   SubmissionComment,
+  FinanceSnapshot,
 } from "@/types";
 
 /**
@@ -299,6 +300,17 @@ export async function submissionComments(
   assignmentId: string,
 ): Promise<SubmissionComment[]> {
   return call<SubmissionComment[]>("fetch_submission_comments", { courseId, assignmentId });
+}
+
+/** The stored MySJSU finance snapshot, or null before the first capture. */
+export async function financeSnapshot(): Promise<FinanceSnapshot | null> {
+  if (!IS_TAURI) return null;
+  return call<FinanceSnapshot | null>("finance_snapshot");
+}
+
+/** Replace the finance snapshot wholesale. */
+export async function saveFinanceSnapshot(snapshot: FinanceSnapshot): Promise<void> {
+  return call<void>("save_finance_snapshot", { snapshot });
 }
 
 /** Instructors across all courses. Outside Tauri: empty. */
