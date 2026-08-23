@@ -21,11 +21,13 @@ import type {
   CourseDetailPayload,
   Dashboard,
   DebugDump,
+  DetectResult,
   DebugOverview,
   HarvestReport,
   IcsSummary,
   CourseSyllabus,
   InstructorRow,
+  PlannerBlock,
   SolverAnswer,
   SyllabusFileRow,
   SyncStatus,
@@ -255,6 +257,38 @@ export async function triageRows(): Promise<TriageRow[]> {
 export async function calendarItems(): Promise<CalendarItem[]> {
   if (!IS_TAURI) return [];
   return call<CalendarItem[]>("calendar_items");
+}
+
+/** Propose class meeting slots from Canvas calendar events + syllabi. */
+export async function detectClassSlots(): Promise<DetectResult> {
+  return call<DetectResult>("detect_class_slots");
+}
+
+/** Every weekly-planner block. Outside Tauri: empty. */
+export async function plannerBlocks(): Promise<PlannerBlock[]> {
+  if (!IS_TAURI) return [];
+  return call<PlannerBlock[]>("planner_blocks");
+}
+
+/** Create (id undefined) or update one planner block. Resolves with its id. */
+export async function savePlannerBlock(block: {
+  id?: number;
+  kind: "class" | "event";
+  courseId?: string | null;
+  title: string;
+  location?: string | null;
+  weekday?: number | null;
+  date?: string | null;
+  startMin: number;
+  endMin: number;
+  note?: string | null;
+}): Promise<number> {
+  return call<number>("save_planner_block", block);
+}
+
+/** Delete one planner block. */
+export async function deletePlannerBlock(id: number): Promise<void> {
+  return call<void>("delete_planner_block", { id });
 }
 
 /** Instructors across all courses. Outside Tauri: empty. */

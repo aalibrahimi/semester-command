@@ -137,6 +137,25 @@ pub struct EstimateRow {
     pub my_note: Option<String>,
 }
 
+/// One weekly-planner block (migration 0009). Local-only.
+#[derive(Debug, Clone, FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlannerBlockRow {
+    pub id: i64,
+    /// 'class' | 'event'.
+    pub kind: String,
+    pub course_id: Option<String>,
+    pub title: String,
+    pub location: Option<String>,
+    /// 0 = Monday … 6 = Sunday for weekly blocks; NULL for one-offs.
+    pub weekday: Option<i64>,
+    /// 'YYYY-MM-DD' for one-off blocks; NULL for weekly.
+    pub date: Option<String>,
+    pub start_min: i64,
+    pub end_min: i64,
+    pub note: Option<String>,
+}
+
 #[derive(Debug, Clone, FromRow, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SyncLogRow {

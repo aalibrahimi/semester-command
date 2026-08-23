@@ -35,6 +35,7 @@ import { useCourses } from "@/hooks/useCourses";
 import { listInstructors, saveInstructorNote, setInstructorStarred, syllabi } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 import { courseFull } from "@/lib/courseLabel";
+import { extractFacts, type SyllabusFacts } from "@/lib/syllabusFacts";
 import type { CourseSyllabus, InstructorRow } from "@/types";
 
 export default function Contacts() {
@@ -56,10 +57,10 @@ export default function Contacts() {
   }, []);
 
   const extracted = useMemo(() => {
-    const map = new Map<string, ExtractedContact>();
+    const map = new Map<string, SyllabusFacts>();
     for (const c of syllabusData) {
       const text = c.files.map((f) => f.extractedText ?? "").join("\n");
-      if (text.trim()) map.set(c.courseId, extractContact(text));
+      if (text.trim()) map.set(c.courseId, extractFacts(text));
     }
     return map;
   }, [syllabusData]);
@@ -165,7 +166,7 @@ function ProfessorCard({
   onToggleStar,
 }: {
   person: InstructorRow;
-  info: ExtractedContact | undefined;
+  info: SyllabusFacts | undefined;
   onToggleStar: () => void;
 }) {
   const [note, setNote] = useState(p.officeHoursNote ?? "");
@@ -289,14 +290,8 @@ function StarButton({
 
 /* ── Syllabus mining ─────────────────────────────────────────────────────── */
 
-interface ExtractedContact {
-  emails: string[];
-  phones: string[];
-  officeHours: string | null;
-}
-
 /** Chips summarising what the syllabus revealed for this course. */
-function SyllabusContactChips({ info }: { info: ExtractedContact }) {
+function SyllabusContactChips({ info }: { info: SyllabusFacts }) {
   return (
     <span className="flex flex-wrap gap-1.5">
       {info.emails.slice(0, 2).map((e) => (
@@ -327,19 +322,3 @@ function SyllabusContactChips({ info }: { info: ExtractedContact }) {
   );
 }
 
-/** Plain-regex mining of the extracted syllabus text. Transparent by design:
- *  chips always say "(from syllabus)", never pretending Canvas confirmed. */
-function extractContact(text: string): ExtractedContact {
-  const emails = [...new Set(text.match(/[\w.+-]+@[\w-]+\.[\w.-]+[a-z]/gi) ?? [])].slice(0, 4);
-  const phones = [
-    ...new Set(text.match(/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/g) ?? []),
-  ].slice(0, 3);
-
-  // The office-hours sentence: first line mentioning it, trimmed to a chip.
-  const line = text
-    .split("\n")
-    .map((l) => l.trim())
-    .find((l) => /office\s*hours?/i.test(l) && l.length > 12 && l.length < 200);
-
-  return { emails, phones, officeHours: line ?? null };
-}

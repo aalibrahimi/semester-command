@@ -61,6 +61,7 @@ url = "2"
 icalendar = "0.17.6"
 pdf-extract = "0.12.0"
 tauri-plugin-dialog = "2.0.0-rc.8"
+regex = "1.13.1"
 
 # ── Platform-specific ───────────────────────────────────────────────────────
 

@@ -25,9 +25,10 @@
  * Every percentage came out of `grades.rs` (§10); this file arranges.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
+  BookOpen,
   Calculator,
   ChevronDown,
   Eye,
@@ -63,7 +64,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { courseDetail, setCourseHidden, setTarget, whatDoINeed } from "@/lib/ipc";
+import { courseDetail, setCourseHidden, setTarget, syllabi, whatDoINeed } from "@/lib/ipc";
+import { extractFacts } from "@/lib/syllabusFacts";
 import { announceCoursesChanged } from "@/hooks/useCourses";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { parseCourseLabel } from "@/lib/courseLabel";
@@ -73,9 +75,94 @@ import { cn } from "@/lib/utils";
 import type {
   AssignmentDetail,
   CourseDetailPayload,
+  CourseSyllabus,
   GroupDetail,
   SolverAnswer,
 } from "@/types";
+
+/** What the imported syllabus says about this course — office hours and
+ *  policies, mined by the shared parser so it matches Contacts word for
+ *  word. No syllabus yet → a pointer at the hub, because that one import
+ *  also unlocks class-time detection on the Calendar. */
+function SyllabusCard({ courseId }: { courseId: string }) {
+  const [syl, setSyl] = useState<CourseSyllabus | null | undefined>(undefined);
+
+  useEffect(() => {
+    let alive = true;
+    syllabi()
+      .then((all) => {
+        if (alive) setSyl(all.find((c) => c.courseId === courseId) ?? null);
+      })
+      .catch(() => {
+        if (alive) setSyl(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [courseId]);
+
+  if (syl === undefined) return null;
+
+  const files = syl?.files ?? [];
+  const text = files.map((f) => f.extractedText ?? "").join("\n");
+  const facts = text.trim() ? extractFacts(text) : null;
+
+  if (files.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border/60 px-4 py-3 text-xs text-muted-foreground">
+        <BookOpen className="mr-1.5 inline h-3.5 w-3.5 align-[-2px]" />
+        No syllabus imported for this course.{" "}
+        <Link to="/syllabi" className="font-medium text-brand-fg hover:underline">
+          Import it in the Syllabi hub
+        </Link>{" "}
+        to see office hours and late policies here — and to let the Calendar detect class
+        meeting times.
+      </div>
+    );
+  }
+
+  const rows: { label: string; value: string }[] = facts
+    ? [
+        facts.officeHours && { label: "Office hours", value: facts.officeHours },
+        facts.latePolicy && { label: "Late work", value: facts.latePolicy },
+        facts.makeupPolicy && { label: "Make-up", value: facts.makeupPolicy },
+      ].filter((r): r is { label: string; value: string } => Boolean(r))
+    : [];
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
+          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            From the syllabus
+          </h2>
+          <Link
+            to="/syllabi"
+            className="ml-auto text-2xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Open in Syllabi hub →
+          </Link>
+        </div>
+        {rows.length > 0 ? (
+          <dl className="flex flex-col gap-1.5">
+            {rows.map((r) => (
+              <div key={r.label} className="grid grid-cols-[92px_1fr] gap-2 text-xs">
+                <dt className="text-muted-foreground">{r.label}</dt>
+                <dd className="min-w-0">{r.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {files.length} document{files.length === 1 ? "" : "s"} stored, but no office-hours or
+            policy lines matched — search the full text in the Syllabi hub.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 /** Letter → percent for the target picker. Mirrors DEFAULT_SCALE in Rust. */
 const TARGETS: [string, number][] = [
@@ -365,6 +452,9 @@ export default function CourseDetail() {
           onClearFilter={() => setFilterGroupId(null)}
           onOpen={setOpenAssignmentId}
         />
+
+        {/* ── Syllabus knowledge (mined from imported documents) ────────── */}
+        <SyllabusCard courseId={s.id} />
       </div>
 
       <SolverDialog

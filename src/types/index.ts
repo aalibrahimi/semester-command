@@ -519,3 +519,43 @@ export interface DegreeAudit {
   generatedAt: string | null;
   truncatedRequirements: string[];
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Weekly planner (migration 0009) — mirror of PlannerBlockRow.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface PlannerBlock {
+  id: number;
+  /** 'class' (recurring course meeting) | 'event' (anything else). */
+  kind: "class" | "event";
+  courseId: string | null;
+  title: string;
+  location: string | null;
+  /** 0 = Monday … 6 = Sunday for weekly blocks; null for one-offs. */
+  weekday: number | null;
+  /** 'YYYY-MM-DD' for one-off blocks; null for weekly. */
+  date: string | null;
+  /** Minutes from midnight. */
+  startMin: number;
+  endMin: number;
+  note: string | null;
+}
+
+/** One proposed class meeting slot from detection (Canvas events or
+ *  syllabus text). Proposals only — the user confirms each. */
+export interface ClassSlotCandidate {
+  courseId: string;
+  courseCode: string | null;
+  weekday: number;
+  startMin: number;
+  endMin: number;
+  location: string | null;
+  source: "canvas" | "syllabus";
+  confidence: number;
+}
+
+export interface DetectResult {
+  candidates: ClassSlotCandidate[];
+  /** False when Canvas was unreachable — results are syllabus-only. */
+  canvasChecked: boolean;
+}

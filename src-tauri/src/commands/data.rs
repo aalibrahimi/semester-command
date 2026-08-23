@@ -188,6 +188,133 @@ pub async fn set_estimate(
         .map_err(storage_err)
 }
 
+// ── Class-slot detection (planner auto-populate) ────────────────────────────
+
+/// Propose class meeting slots from Canvas calendar events + syllabus text.
+/// Proposes only — the user confirms before anything becomes a block.
+#[tauri::command]
+pub async fn detect_class_slots(
+    app: AppHandle,
+) -> CommandResult<crate::class_slots::DetectResult> {
+    let db = db_of(&app);
+    let bundle = crate::commands::grades::load_bundle(&db)
+        .await
+        .map_err(storage_err)?;
+    let courses: Vec<(String, Option<String>)> = bundle
+        .courses
+        .iter()
+        .filter(|c| !bundle.is_hidden(&c.id))
+        .map(|c| (c.id.clone(), c.course_code.clone()))
+        .collect();
+    let client = app.state::<crate::commands::auth::AuthCtx>().client.clone();
+    Ok(crate::class_slots::detect(&db, &client, &courses).await)
+}
+
+// ── Weekly planner (migration 0009) ─────────────────────────────────────────
+
+/// Every planner block — the week view expands recurrence client-side.
+#[tauri::command]
+pub async fn planner_blocks(app: AppHandle) -> CommandResult<Vec<PlannerBlockRow>> {
+    let db = db_of(&app);
+    sqlx::query_as("SELECT * FROM planner_blocks ORDER BY start_min")
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)
+}
+
+/// Create (id: None) or update (id: Some) one block. Returns the row id.
+/// Exactly one of weekday/date must be set — the recurrence model.
+#[tauri::command]
+pub async fn save_planner_block(
+    app: AppHandle,
+    id: Option<i64>,
+    kind: String,
+    course_id: Option<String>,
+    title: String,
+    location: Option<String>,
+    weekday: Option<i64>,
+    date: Option<String>,
+    start_min: i64,
+    end_min: i64,
+    note: Option<String>,
+) -> CommandResult<i64> {
+    if !matches!(kind.as_str(), "class" | "event") {
+        return Err(CommandError::internal("Block kind must be 'class' or 'event'."));
+    }
+    if weekday.is_some() == date.is_some() {
+        return Err(CommandError::internal(
+            "A block repeats weekly (weekday) or happens once (date) — exactly one.",
+        ));
+    }
+    if let Some(w) = weekday {
+        if !(0..=6).contains(&w) {
+            return Err(CommandError::internal("Weekday must be 0 (Mon) to 6 (Sun)."));
+        }
+    }
+    if !(0..=1440).contains(&start_min) || !(0..=1440).contains(&end_min) || end_min <= start_min {
+        return Err(CommandError::internal("End time must come after start time."));
+    }
+    let title = title.trim().to_string();
+    if title.is_empty() {
+        return Err(CommandError::internal("Give the block a title."));
+    }
+
+    let db = db_of(&app);
+    match id {
+        Some(id) => {
+            sqlx::query(
+                "UPDATE planner_blocks SET kind=?1, course_id=?2, title=?3, location=?4,
+                 weekday=?5, date=?6, start_min=?7, end_min=?8, note=?9 WHERE id=?10",
+            )
+            .bind(&kind)
+            .bind(&course_id)
+            .bind(&title)
+            .bind(&location)
+            .bind(weekday)
+            .bind(&date)
+            .bind(start_min)
+            .bind(end_min)
+            .bind(&note)
+            .bind(id)
+            .execute(&db)
+            .await
+            .map_err(storage_err)?;
+            Ok(id)
+        }
+        None => {
+            let res = sqlx::query(
+                "INSERT INTO planner_blocks (kind, course_id, title, location, weekday, date,
+                 start_min, end_min, note) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)",
+            )
+            .bind(&kind)
+            .bind(&course_id)
+            .bind(&title)
+            .bind(&location)
+            .bind(weekday)
+            .bind(&date)
+            .bind(start_min)
+            .bind(end_min)
+            .bind(&note)
+            .execute(&db)
+            .await
+            .map_err(storage_err)?;
+            Ok(res.last_insert_rowid())
+        }
+    }
+}
+
+/// Delete one block. The dialog's Delete button; nothing cascades.
+#[tauri::command]
+pub async fn delete_planner_block(app: AppHandle, id: i64) -> CommandResult<()> {
+    let db = db_of(&app);
+    sqlx::query("DELETE FROM planner_blocks WHERE id = ?1")
+        .bind(id)
+        .execute(&db)
+        .await
+        .map_err(storage_err)?;
+    Ok(())
+}
+
 /// Write the semester `.ics` to a path the user picked in the save dialog.
 /// Returns how many events were written.
 #[tauri::command]

@@ -24,6 +24,7 @@
 //! frontend to hold a token, the feature is designed wrong.
 
 pub mod canvas;
+pub mod class_slots;
 pub mod commands;
 pub mod db;
 pub mod degree;
@@ -93,7 +94,11 @@ pub fn run() {
             commands::data::debug_dump,
             commands::data::debug_force_reconnect,
             commands::data::debug_overview,
+            commands::data::delete_planner_block,
+            commands::data::detect_class_slots,
             commands::data::list_instructors,
+            commands::data::planner_blocks,
+            commands::data::save_planner_block,
             commands::data::save_instructor_note,
             commands::data::save_manual_assignment,
             commands::data::save_manual_course,

@@ -24,7 +24,14 @@ import { EmptyState } from "@/components/layout/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchSyllabusFromCanvas, importSyllabusFile, syllabi } from "@/lib/ipc";
+import {
+  detectClassSlots,
+  fetchSyllabusFromCanvas,
+  importSyllabusFile,
+  plannerBlocks,
+  syllabi,
+} from "@/lib/ipc";
+import { newCandidates, resetAutoDetect } from "@/lib/classDetect";
 import { countMatches, sanitize } from "@/lib/canvasHtml";
 import { Highlighted } from "@/components/layout/Highlighted";
 import { cn } from "@/lib/utils";
@@ -42,6 +49,22 @@ const POLICY_CHIPS: { label: string; terms: string[] }[] = [
   { label: "Grading", terms: ["grading", "grade breakdown", "weight", "curve"] },
   { label: "Contact", terms: ["@sjsu.edu", "phone", "email me"] },
 ];
+
+/** Fresh syllabus text may name the class meeting pattern — check quietly,
+ *  and point at the Calendar when something new turned up. */
+function offerDetectedClassTimes() {
+  Promise.all([detectClassSlots(), plannerBlocks()])
+    .then(([r, blocks]) => {
+      const fresh = newCandidates(r.candidates, blocks);
+      if (fresh.length === 0) return;
+      resetAutoDetect();
+      toast.info(
+        `Found ${fresh.length} class meeting time${fresh.length === 1 ? "" : "s"} in this syllabus — open Calendar → Week to confirm them.`,
+        { duration: 8000 },
+      );
+    })
+    .catch(() => {});
+}
 
 export default function Syllabi() {
   const [courses, setCourses] = useState<CourseSyllabus[] | null>(null);
@@ -196,7 +219,10 @@ function SyllabusViewer({
             ? `Stored ${n} document${n === 1 ? "" : "s"} from Canvas.`
             : "Canvas has no visible syllabus files for this course — import it below.",
         );
-        if (n > 0) onChanged();
+        if (n > 0) {
+          onChanged();
+          offerDetectedClassTimes();
+        }
       })
       .catch(() => toast.error("Could not reach Canvas — check the connection."))
       .finally(() => setFetching(false));
@@ -216,6 +242,7 @@ function SyllabusViewer({
               : `Imported ${row.filename} — stored, but this format isn't text-searchable yet.`,
           );
           onChanged();
+          if (row.extractedText) offerDetectedClassTimes();
         })
         .catch((e: unknown) => toast.error(String((e as { message?: string })?.message ?? e)));
     });
