@@ -46,37 +46,47 @@ export const TERMS: GradTerm[] = [
 
 /** Default course → term slotting, with the short category the table shows. */
 const SLOTS: { code: string; term: string; category: string }[] = [
-  // Spring 2026
+  // Spring 2026 — done
   { code: "BUS3 186", term: "sp26", category: "GE · UD Area 4" },
   { code: "CS 22B", term: "sp26", category: "Major Elective" },
   { code: "LLD 100W", term: "sp26", category: "WID Requirement" },
   { code: "MATH 42", term: "sp26", category: "Major Prep · Gateway" },
   { code: "PHIL 134", term: "sp26", category: "GE UD-3 + Major Prep" },
-  // Summer 2026
-  { code: "MATH 31", term: "su26", category: "Major Prep · Retake" },
-  { code: "GE AREA 6", term: "su26", category: "GE · Ethnic Studies (1 of 13)" },
-  // Fall 2026
+  // Summer 2026 — nothing landed (the MATH 31 retake didn't happen here)
+  // Fall 2026 — what's actually enrolled: 6 courses, 18 units
   { code: "CS 146", term: "fa26", category: "CS Core · Gateway" },
   { code: "CS 154", term: "fa26", category: "CS Core" },
-  { code: "MATH 39", term: "fa26", category: "Major Prep" },
-  { code: "LING 111", term: "fa26", category: "LING Core" },
   { code: "HIST 15", term: "fa26", category: "American Institutions" },
-  // Spring 2027
-  { code: "CS 156", term: "sp27", category: "CS Core" },
-  { code: "MATH 161A", term: "sp27", category: "Major Prep" },
-  { code: "LING 112", term: "sp27", category: "LING Core" },
-  { code: "LING 115", term: "sp27", category: "LING Core · Unlocks NLP" },
-  { code: "LING 113", term: "sp27", category: "LING UD Choice" },
+  { code: "LING 112", term: "fa26", category: "LING Core" },
+  { code: "LING 115", term: "fa26", category: "LING Core" },
+  { code: "LING 124", term: "fa26", category: "LING Core" },
+  // Spring 2027 — the math-clearing term. No CS here.
+  { code: "MATH 31", term: "sp27", category: "Major Prep · Retake" },
+  { code: "MATH 39", term: "sp27", category: "Major Prep" },
+  { code: "LING 111", term: "sp27", category: "LING Core" },
+  { code: "GE AREA 6", term: "sp27", category: "GE · Ethnic Studies (1 of 13)" },
   // Summer 2027
+  { code: "MATH 161A", term: "su27", category: "Major Prep" },
   { code: "GE UD 2/5", term: "su27", category: "GE · UD Area 2/5 (1 of 48)" },
   { code: "LING 122", term: "su27", category: "LING UD Elective" },
-  // Fall 2027
+  // Fall 2027 — graduation
   { code: "CS 171", term: "fa27", category: "CS Core · Fall only" },
-  { code: "LING 124", term: "fa27", category: "LING Core · Fall only" },
+  { code: "CS 156", term: "fa27", category: "CS Core" },
+  { code: "LING 165", term: "fa27", category: "LING Capstone" },
+  { code: "LING 113", term: "fa27", category: "LING UD Choice" },
   { code: "CS 157A", term: "fa27", category: "CS UD Elective" },
-  // Spring 2028 — target
-  { code: "LING 165", term: "sp28", category: "LING Capstone" },
-  { code: "CS 133", term: "sp28", category: "CS Elective" },
+  // Spring 2028 — the fallback container. Intentionally empty: it holds
+  // nothing unless a course slips into it.
+];
+
+/** Courses deliberately parked OFF the timeline until an advisor answers the
+ *  question that would justify a slot. Rendered as a bin, never merged. */
+export const PENDING_ADVISOR: { code: string; reason: string }[] = [
+  {
+    code: "CS 133",
+    reason:
+      "Was filling a second major-elective slot the audit can't confirm exists — Major Electives demands 12 units but itemises only 6. Parked until an advisor itemises the block; placing it would assume the answer.",
+  },
 ];
 
 /** UI-only knowledge from the CWA plan: term stacks that reliably go wrong. */
@@ -111,12 +121,26 @@ export interface MergedTerm extends GradTerm {
   isCurrent: boolean;
 }
 
+/** One reason the plan, as scheduled, cannot deliver the target. */
+export interface PlanBreak {
+  kind: "after-target" | "prereq-order" | "unslotted";
+  code: string;
+  detail: string;
+}
+
 export interface MergedPlan {
   terms: MergedTerm[];
   currentTermId: string | null;
   unitTotals: { required: number; completed: number; inProgress: number; remaining: number };
   criticalLeft: string[];
-  transferredCount: number;
+  /** The term the plan is validated against — the audit's target when it
+   *  names a real term, else the first isTarget term (Fall 2027). */
+  primaryTargetId: string;
+  primaryTargetLabel: string;
+  /** Terms from the current one through the primary target, inclusive. */
+  semestersLeft: number;
+  /** Validator output — non-empty means the plan cannot deliver the target. */
+  breaks: PlanBreak[];
   /** Registrar says these are still owed AND their slot is already in the
    *  past — the "needs a new slot" strip. */
   overdue: PlanRow[];
@@ -217,6 +241,7 @@ export function mergePlan(
   overrides: GradOverride[],
   canvasCourses: CourseSummary[],
   requirements: RequirementStatus[],
+  targetTermLabel: string | null = null,
   now = new Date(),
 ): MergedPlan {
   const currentTermId = detectCurrentTermId(now);
@@ -339,6 +364,100 @@ export function mergePlan(
   const inProgress = all.filter((r) => r.status === "in_progress").reduce((s, r) => s + r.units, 0);
   const required = all.filter((r) => r.status !== "dropped").reduce((s, r) => s + r.units, 0);
 
+  // ── The validator ─────────────────────────────────────────────────────────
+  // Runs on EVERY plan mutation — mergePlan is recomputed whenever
+  // overrides, enrollment, registrar rows or the target term change, so a
+  // moved target can never dodge revalidation again. Fails loudly: breaks
+  // land in the console and surface as the badge count + red banner.
+  const primaryTarget =
+    TERMS.find((t) => t.label === targetTermLabel) ??
+    TERMS.find((t) => t.isTarget) ??
+    TERMS[TERMS.length - 1];
+  const targetIdx = TERMS.findIndex((t) => t.id === primaryTarget.id);
+  const breaks: PlanBreak[] = [];
+
+  const rowTermIdx = new Map<string, number>();
+  const statusByCode = new Map<string, GradStatus>();
+  for (const t of terms) {
+    for (const r of t.rows) {
+      rowTermIdx.set(r.code, termIdx.get(t.id) ?? 99);
+      statusByCode.set(r.code, r.status);
+    }
+  }
+
+  // 1 · No required course scheduled after the primary graduation term.
+  for (const t of terms) {
+    const idx = termIdx.get(t.id) ?? 99;
+    if (idx <= targetIdx) continue;
+    for (const r of t.rows) {
+      if (r.status === "passed" || r.status === "dropped") continue;
+      breaks.push({
+        kind: "after-target",
+        code: r.code,
+        detail: `${r.code} is scheduled ${t.label} — after the ${primaryTarget.label} graduation target.`,
+      });
+    }
+  }
+
+  // 2 · No course scheduled at or before its prereq. Only planned rows are
+  // scheduling decisions; enrolled/passed rows the registrar already admitted.
+  for (const t of terms) {
+    const idx = termIdx.get(t.id) ?? 99;
+    for (const r of t.rows) {
+      if (r.status !== "planned") continue;
+      for (const pre of COURSE_INTEL[r.code]?.prereqsRequired ?? []) {
+        if (pre in TRANSFERRED_OR_PRIOR) continue;
+        if (statusByCode.get(pre) === "passed") continue;
+        const preIdx = rowTermIdx.get(pre);
+        if (preIdx === undefined) {
+          breaks.push({
+            kind: "prereq-order",
+            code: r.code,
+            detail: `${r.code} (${t.label}) needs ${pre}, which is nowhere on the timeline.`,
+          });
+        } else if (preIdx >= idx) {
+          breaks.push({
+            kind: "prereq-order",
+            code: r.code,
+            detail: `${r.code} (${t.label}) is scheduled at or before its prereq ${pre} (${TERMS[preIdx]?.label ?? "?"}).`,
+          });
+        }
+      }
+    }
+  }
+
+  // 3 · No requirement block left unslotted: everything the registrar still
+  // counts against the degree must hold a live slot on the timeline.
+  const overdueCodes = new Set(overdue.map((r) => r.code));
+  for (const r of overdue) {
+    breaks.push({
+      kind: "unslotted",
+      code: r.code,
+      detail: `${r.code} is still owed but its slot (${TERMS.find((t) => t.id === r.plannedTerm)?.label ?? r.plannedTerm}) already ended — it needs a new term.`,
+    });
+  }
+  for (const req of requirements) {
+    if (req.status !== "error") continue;
+    const code = courseCodeForRequirement(req.title);
+    if (!code || overdueCodes.has(code)) continue;
+    if (!rowTermIdx.has(code)) {
+      breaks.push({
+        kind: "unslotted",
+        code,
+        detail: `"${req.title}" maps to ${code}, which has no slot on the timeline.`,
+      });
+    }
+  }
+
+  if (breaks.length > 0) {
+    console.error(
+      `[gradPlan] plan validation FAILED — ${breaks.length} break(s) against ${primaryTarget.label}:`,
+      breaks.map((b) => b.detail),
+    );
+  }
+
+  const currentOrFirst = currentIdx === -1 ? 0 : currentIdx;
+
   return {
     terms,
     currentTermId,
@@ -351,7 +470,10 @@ export function mergePlan(
     criticalLeft: all
       .filter((r) => r.critical && r.status !== "passed" && r.status !== "in_progress")
       .map((r) => r.code),
-    transferredCount: Object.keys(TRANSFERRED_OR_PRIOR).length,
+    primaryTargetId: primaryTarget.id,
+    primaryTargetLabel: primaryTarget.label,
+    semestersLeft: Math.max(0, targetIdx - currentOrFirst + 1),
+    breaks,
     overdue,
     registrarBacked,
   };

@@ -538,7 +538,9 @@ function BlockRow({
               <span className="font-semibold">
                 Advisor question: "Major Electives shows 12 units needed but the requirement list
                 only names two 3-unit courses — what fills the rest?"
-              </span>
+              </span>{" "}
+              Until it's answered, CS 133 sits in the timeline's "Pending advisor resolution"
+              bin instead of holding a slot the block may not have.
             </div>
           )}
           {block.note && (

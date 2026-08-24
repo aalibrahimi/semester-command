@@ -69,6 +69,7 @@ import {
 import {
   DANGER_PAIRS,
   mergePlan,
+  PENDING_ADVISOR,
   TERMS,
   type GradOverride,
   type GradStatus,
@@ -122,8 +123,11 @@ export default function Graduation() {
   }, [refresh]);
 
   const plan: MergedPlan | null = useMemo(
-    () => (overrides !== null && loaded ? mergePlan(overrides, courses, requirements) : null),
-    [overrides, courses, requirements, loaded],
+    () =>
+      overrides !== null && loaded
+        ? mergePlan(overrides, courses, requirements, audit?.targetTerm ?? null)
+        : null,
+    [overrides, courses, requirements, loaded, audit],
   );
 
   const statusOf = useCallback(
@@ -163,7 +167,8 @@ export default function Graduation() {
   const { unitTotals: u, criticalLeft } = plan;
   const anyFailed = plan.terms.flatMap((t) => t.rows).some((r) => r.status === "failed");
   const notApplied = audit?.header.graduationStatus?.toLowerCase() === "not applied";
-  const onTrack = !anyFailed;
+  const breakCount = plan.breaks.length;
+  const onTrack = !anyFailed && breakCount === 0;
 
   return (
     <div className="pb-16">
@@ -194,13 +199,11 @@ export default function Graduation() {
               <span className="inline-flex items-center gap-1.5">
                 <Target className="h-4 w-4" />
                 Target graduation:{" "}
-                <span className="font-semibold text-foreground">
-                  {audit?.targetTerm ?? "Fall 2027"}
-                </span>
-                <span className="text-muted-foreground/70">· fallback Spring 2028</span>
+                <span className="font-semibold text-foreground">{plan.primaryTargetLabel}</span>
+                {plan.primaryTargetLabel !== "Spring 2028" && (
+                  <span className="text-muted-foreground/70">· fallback Spring 2028</span>
+                )}
               </span>
-              <span className="text-muted-foreground/40">·</span>
-              <span>{plan.transferredCount} transfer credits banked</span>
             </div>
           </div>
 
@@ -227,7 +230,11 @@ export default function Graduation() {
                 )}
               />
             </span>
-            {onTrack ? "On Track" : "At Risk"}
+            {breakCount > 0
+              ? `${breakCount} plan break${breakCount === 1 ? "" : "s"}`
+              : onTrack
+                ? "On Track"
+                : "At Risk"}
           </div>
         </div>
 
@@ -290,15 +297,8 @@ export default function Graduation() {
             <Stat label="Completed" value={String(u.completed)} sub={`${u.inProgress} in progress`} />
             <Stat
               label="Semesters Left"
-              value={String(
-                plan.terms.filter(
-                  (t) =>
-                    plan.currentTermId === null ||
-                    plan.terms.findIndex((x) => x.id === t.id) >=
-                      plan.terms.findIndex((x) => x.id === plan.currentTermId),
-                ).length,
-              )}
-              sub="including current"
+              value={String(plan.semestersLeft)}
+              sub={`including current · to ${plan.primaryTargetLabel}`}
             />
             <Stat
               label="Critical Left"
@@ -353,6 +353,27 @@ export default function Graduation() {
           <Legend cls="bg-muted-foreground/30" label="Remaining" />
         </div>
       </motion.section>
+
+      {/* ═══ PLAN BREAKS — the validator, loudly ═════════════════ */}
+      {plan.breaks.length > 0 && (
+        <div className="mx-10 mb-6 border-l-[3px] border-critical/70 bg-critical/[0.05] py-3 pl-4 pr-3">
+          <div className="mb-1.5 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-critical-fg">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Plan validation failed — {plan.breaks.length} break
+            {plan.breaks.length === 1 ? "" : "s"} against {plan.primaryTargetLabel}
+          </div>
+          <ul className="flex flex-col gap-1">
+            {plan.breaks.map((b) => (
+              <li
+                key={`${b.kind}-${b.code}-${b.detail}`}
+                className="text-xs leading-relaxed text-foreground/85"
+              >
+                {b.detail}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* ═══ TAB STRIP — one page, three questions ════════════════════ */}
       <TabStrip active={tab} onChange={setTab} registrarBacked={plan.registrarBacked} />
@@ -506,6 +527,31 @@ export default function Graduation() {
             );
           })}
         </div>
+
+        {/* Parked, not planned: courses waiting on an advisor answer. */}
+        {PENDING_ADVISOR.length > 0 && (
+          <div className="mt-6 border-l-[3px] border-at-risk/70 bg-at-risk/[0.04] py-3 pl-4 pr-3">
+            <div className="mb-2 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-at-risk-fg">
+              <Info className="h-3.5 w-3.5" /> Pending advisor resolution — not on the timeline
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {PENDING_ADVISOR.map((pa) => (
+                <div key={pa.code} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <button
+                    type="button"
+                    onClick={() => setOpenCode(pa.code)}
+                    className="font-mono text-xs font-semibold hover:underline"
+                  >
+                    {pa.code}
+                  </button>
+                  <span className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
+                    {pa.reason}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </motion.section>
       )}
 

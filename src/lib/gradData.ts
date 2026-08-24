@@ -181,7 +181,7 @@ export const TRANSFERRED_OR_PRIOR: Record<string, string> = {
 export const CRITICAL_PATH_CODES = new Set([
   "MATH 42", "MATH 31",
   "CS 146", "CS 171",
-  "LING 111", "LING 124", "LING 165",
+  "LING 111", "LING 124",
 ]);
 
 // Helpers
@@ -942,28 +942,31 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     division: "Upper Division",
     geDesignation: "Major Requirement — LING Core CAPSTONE",
     department: ling,
-    offered: "Spring only",
-    minGrade: { value: "C-", severity: "strict", note: "Graduation anchor — Spring only." },
-    shortPurpose: "The capstone course. Final semester. Everything else protects this slot.",
+    offered: "Variable — check advisor",
+    minGrade: { value: "C-", severity: "strict", note: "Graduation-term course — verify the Fall 2027 offering early." },
+    shortPurpose: "The capstone course, scheduled in the Fall 2027 graduation term.",
     prereqChains: [
       { codes: ["LING 101", "LING 165"], label: "Enforced prereq — satisfied Fall 2025 (B+)" },
     ],
     prereqsRequired: ["LING 101"],
     recommendedPrep: ["LING 115", "LING 124"],
     unlocks: [],
-    criticalPath: true,
-    riskLevel: "CRITICAL",
-    delaysGraduation: "Missing Spring 2028 = Spring 2029 (Fall 2028 not offered) = full-year delay.",
+    criticalPath: false,
+    riskLevel: "MEDIUM",
+    delaysGraduation: "The prereq (LING 101) is done — the only risk is offering cadence. If no Fall 2027 section runs, this slips into the Spring 2028 fallback.",
     blockedDownstream: [],
     safeSwap: null,
     workload: "Heavy",
     leansOn: ["Programming", "Linguistics"],
     strengthAlignment: "Strong",
-    pairsWell: ["CS 133"],
+    pairsWell: ["CS 157A"],
     doNotPairWith: [],
-    pairingNote: "Final term — pairs with CS 133 (Data Viz). Both programming-forward, no chain risk left.",
+    pairingNote: "Graduation term — sits alongside CS 171, CS 156, LING 113 and CS 157A. Programming-forward, no chain risk left.",
+    extraRegFlags: [
+      { kind: "warn", text: "Older plan data listed LING 165 as Spring-only. The Fall 2027 slot assumes a fall section — confirm on the Fall 2027 schedule the day it posts; the Spring 2028 fallback absorbs it otherwise." },
+    ],
     advisorNote:
-      "Spring only. Nothing gates registration — LING 101 (the enforced prereq) is done with a B+. Protect the slot anyway: miss it and the next offering is a year out.",
+      "Nothing gates registration — LING 101 (the enforced prereq) is done with a B+. The open question is cadence: confirm a Fall 2027 section exists.",
   },
 
   "CS 133": {
@@ -991,6 +994,9 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     pairsWell: ["LING 165"],
     doNotPairWith: [],
     pairingNote: "Programming-forward — won't compete cognitively with NLP capstone.",
+    extraRegFlags: [
+      { kind: "warn", text: "Unscheduled — parked pending advisor resolution of the Major Electives block (12 units needed, only 6 itemised). Don't register until that block is itemised." },
+    ],
   },
 };
 
