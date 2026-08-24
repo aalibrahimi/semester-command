@@ -170,7 +170,7 @@ export const TRANSFERRED_OR_PRIOR: Record<string, string> = {
   "CS 46A":   "Intro to Programming (Transfer)",
   "CS 46B":   "Intro to Data Structures (Transfer)",
   "CS 22A":   "Computational Thinking (Transfer)",
-  "LING 101": "Introduction to Linguistics (Transfer — B+)",
+  "LING 101": "Introduction to Linguistics (Fall 2025 — B+)",
   "ENGL 2":   "Critical Thinking and Writing (Transfer — satisfies GE Area 1B)",
   "GE 1B":    "GE Area 1B satisfied via ENGL 2 transfer",
 };
@@ -181,7 +181,7 @@ export const TRANSFERRED_OR_PRIOR: Record<string, string> = {
 export const CRITICAL_PATH_CODES = new Set([
   "MATH 42", "MATH 31",
   "CS 146", "CS 171",
-  "LING 111", "LING 115", "LING 124", "LING 165",
+  "LING 111", "LING 124", "LING 165",
 ]);
 
 // Helpers
@@ -364,10 +364,10 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     fullName: "Calculus II",
     units: 4,
     division: "Lower Division",
-    geDesignation: "Major Preparation — CRITICAL",
+    geDesignation: "Major Preparation — 4-unit RETAKE · grade forgiveness eligible",
     department: math,
     offered: "Spring, Summer & Fall",
-    minGrade: { value: "C-", severity: "strict", note: "D/F/NC retake — must clear this attempt." },
+    minGrade: { value: "C-", severity: "strict", note: "Retake of a D — must clear this attempt. Grade forgiveness eligible: the new grade can replace the D in the SJSU GPA." },
     shortPurpose: "Gate for MATH 161A. Without it, MATH 161A (and graduation requirements) stall.",
     prereqChains: [{ codes: ["MATH 30", "MATH 31"] }],
     prereqsRequired: ["MATH 30"],
@@ -393,28 +393,29 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     doNotPairWith: ["MATH 39", "MATH 42", "CS 154", "MATH 161A"],
     pairingNote: "Take ALONE this summer. Compressed term + math + retake = no co-registration.",
     advisorNote:
-      "You have a D/F/NC history in this course. Do NOT pair with any other math or CS theory course. Take it alone in Summer 2026.",
+      "You have a D in this course. Register for the retake before the term's add/drop deadline and file for grade forgiveness — the new grade replaces the D in your SJSU GPA. Do NOT pair with any other math or CS theory course.",
   },
 
-  "AAS 1": {
-    code: "AAS 1",
-    fullName: "Introduction to Asian American Studies",
+  "GE AREA 6": {
+    code: "GE AREA 6",
+    fullName: "GE Area 6 — Ethnic Studies (any 1 of 13)",
     units: 3,
     division: "Lower Division",
     geDesignation: "GE: Area 6 — Ethnic Studies (C- minimum required by CSU policy)",
     department: ge,
-    // Audit listed AAS 1 under all terms; keep summer warning.
+    // A choice block, not a named course: MyProgress lists 13 eligible
+    // courses (AAS 1, AFAM 22/25/134/158/162, CCS 1/25, …). Any one fills it.
     offered: "Spring, Summer & Fall",
     minGrade: { value: "C-", severity: "standard" },
-    shortPurpose: "Satisfies the CSU Ethnic Studies requirement.",
+    shortPurpose: "A choice block — any one of the 13 eligible Ethnic Studies courses satisfies it. AAS 1 is just one option.",
     prereqChains: [],
     prereqsRequired: [],
     unlocks: [],
     criticalPath: false,
     riskLevel: "LOW",
-    delaysGraduation: "No delay — many Area 6 substitutes (AFAM 2A, MAS 10, NAS 1).",
+    delaysGraduation: "No delay — 13 eligible courses, offered every term.",
     blockedDownstream: [],
-    safeSwap: "Any other CSU Ethnic Studies course (AFAM 2A, MAS 10, NAS 1) — same Area 6 credit.",
+    safeSwap: "Any of the 13 eligible Area 6 courses (AAS 1, AFAM 22, AFAM 25, CCS 1, …) — pick whichever section fits the schedule.",
     workload: "Low-Medium",
     leansOn: ["Memorization", "Writing"],
     strengthAlignment: "Moderate",
@@ -422,7 +423,7 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     doNotPairWith: [],
     pairingNote: "Light enough to pair with a heavy summer math.",
     extraRegFlags: [
-      { kind: "warn", text: "Verify Summer 2026 section availability before relying on it." },
+      { kind: "warn", text: "Verify which of the 13 eligible courses actually runs a Summer 2026 section before relying on it." },
     ],
   },
 
@@ -723,23 +724,24 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     fullName: "Corpus Linguistics",
     units: 3,
     division: "Upper Division",
-    geDesignation: "Major Requirement — LING Core (TIME-SENSITIVE — unlocks NLP)",
+    geDesignation: "Major Requirement — LING Core",
     department: ling,
     offered: "Spring only",
-    minGrade: { value: "C-", severity: "strict", note: "Hard prereq for LING 165 (graduation anchor)." },
-    shortPurpose: "Direct prereq for LING 165 (Spring 2028 capstone). The Spring 2027 anchor.",
+    minGrade: { value: "C-", severity: "standard" },
+    shortPurpose: "Corpus methods core. Helpful background for LING 165 — NOT its prerequisite (that's LING 101, already done).",
     prereqChains: [
       { codes: ["LING 101", "LING 115"] },
       { codes: ["CS 22A", "LING 115"] },
     ],
     prereqsRequired: ["LING 101", "CS 22A"],
-    unlocks: [
-      { code: "LING 165", name: "Intro to Natural Language Processing", category: "LING Core — Capstone", flags: ["once-per-year", "critical-path"] },
+    unlocks: [],
+    recommendedPrepFor: [
+      { code: "LING 165", name: "Intro to Natural Language Processing", reason: "Corpus methods are the intended preparation for NLP — helpful, not registration-blocking. LING 165's enforced prereq is LING 101 (done Fall 2025, B+)." },
     ],
-    criticalPath: true,
-    riskLevel: "CRITICAL",
-    delaysGraduation: "Missing or failing slips LING 165 to Spring 2029 → graduation pushed a full year.",
-    blockedDownstream: ["LING 165"],
+    criticalPath: false,
+    riskLevel: "MEDIUM",
+    delaysGraduation: "Spring-only major requirement — a miss pushes it into a later spring's load. It does NOT gate LING 165.",
+    blockedDownstream: [],
     safeSwap: null,
     workload: "Medium",
     leansOn: ["Programming", "Linguistics"],
@@ -748,7 +750,7 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     doNotPairWith: ["MATH 161A"],
     pairingNote: "Programming + linguistics overlap with CS 156 — already separated by term planning.",
     advisorNote:
-      "Spring only. Must pass to unlock LING 165 in Spring 2028. Final-year graduation depends on this slot.",
+      "Spring only. A required LING core course — but per the audit it does not gate LING 165, whose enforced prereq (LING 101) is already done.",
   },
 
   "LING 113": {
@@ -779,25 +781,27 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
   },
 
   // ═══ SUMMER 2027 ════════════════════════════════════════════════
-  "ANTH 160": {
-    code: "ANTH 160",
-    fullName: "Mysteries of Ancient Civilizations",
+  "GE UD 2/5": {
+    code: "GE UD 2/5",
+    fullName: "GE UD Area 2/5 — Earth, Environment & Sustainability (any 1 of 48)",
     units: 3,
     division: "Upper Division",
     geDesignation: "GE: UD Area 2/5 — Earth, Environment & Sustainability",
     department: ge,
+    // A choice block: MyProgress lists 48 eligible courses (ANTH 160,
+    // ASTR 101, BIOL 100W/101/110, AMS 139, …). Any one fills it.
     offered: "Spring, Summer & Fall",
     minGrade: { value: "C-", severity: "standard" },
-    shortPurpose: "Closes the UD Area 2/5 graduation requirement.",
-    prereqChains: [{ codes: ["GE 1B", "ANTH 160"] }],
-    prereqsRequired: ["GE 1B"],
-    standingRequirement: "Junior standing",
+    shortPurpose: "A choice block — any one of the 48 eligible UD Area 2/5 courses satisfies it. ANTH 160 is just one option.",
+    prereqChains: [],
+    prereqsRequired: [],
+    standingRequirement: "Junior standing (typical for UD GE — verify per chosen course)",
     unlocks: [],
     criticalPath: false,
     riskLevel: "LOW",
-    delaysGraduation: "No delay — many UD Area 2/5 substitutes.",
+    delaysGraduation: "No delay — 48 eligible courses to choose from.",
     blockedDownstream: [],
-    safeSwap: "Any UD Area 2/5 GE works as substitute.",
+    safeSwap: "Any of the 48 eligible UD Area 2/5 courses (ANTH 160, ASTR 101, BIOL 101, …).",
     workload: "Low-Medium",
     leansOn: ["Memorization", "Writing"],
     strengthAlignment: "Moderate",
@@ -827,7 +831,7 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     workload: "Low-Medium",
     leansOn: ["Linguistics", "Writing"],
     strengthAlignment: "Strong",
-    pairsWell: ["ANTH 160"],
+    pairsWell: ["GE UD 2/5"],
     doNotPairWith: [],
     extraRegFlags: [
       { kind: "warn", text: "Verify Summer 2027 offering — listed Spring & Fall." },
@@ -942,10 +946,10 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     minGrade: { value: "C-", severity: "strict", note: "Graduation anchor — Spring only." },
     shortPurpose: "The capstone course. Final semester. Everything else protects this slot.",
     prereqChains: [
-      { codes: ["LING 101", "LING 165"] },
-      { codes: ["LING 115", "LING 165"], label: "Critical prereq chain" },
+      { codes: ["LING 101", "LING 165"], label: "Enforced prereq — satisfied Fall 2025 (B+)" },
     ],
-    prereqsRequired: ["LING 101", "LING 115"],
+    prereqsRequired: ["LING 101"],
+    recommendedPrep: ["LING 115", "LING 124"],
     unlocks: [],
     criticalPath: true,
     riskLevel: "CRITICAL",
@@ -959,7 +963,7 @@ export const COURSE_INTEL: Record<string, CourseIntel> = {
     doNotPairWith: [],
     pairingNote: "Final term — pairs with CS 133 (Data Viz). Both programming-forward, no chain risk left.",
     advisorNote:
-      "Spring only. The entire plan is built to protect this slot. If missed, graduation is Spring 2029 at earliest.",
+      "Spring only. Nothing gates registration — LING 101 (the enforced prereq) is done with a B+. Protect the slot anyway: miss it and the next offering is a year out.",
   },
 
   "CS 133": {

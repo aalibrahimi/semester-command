@@ -40,8 +40,8 @@ export const TERMS: GradTerm[] = [
   { id: "fa26", label: "Fall 2026", start: "2026-08-19", end: "2026-12-18" },
   { id: "sp27", label: "Spring 2027", start: "2027-01-20", end: "2027-05-21" },
   { id: "su27", label: "Summer 2027", start: "2027-06-01", end: "2027-08-10", tag: "Compressed term" },
-  { id: "fa27", label: "Fall 2027", start: "2027-08-18", end: "2027-12-17" },
-  { id: "sp28", label: "Spring 2028", start: "2028-01-19", end: "2028-05-19", isTarget: true },
+  { id: "fa27", label: "Fall 2027", start: "2027-08-18", end: "2027-12-17", isTarget: true, tag: "Primary target" },
+  { id: "sp28", label: "Spring 2028", start: "2028-01-19", end: "2028-05-19", isTarget: true, tag: "Fallback target" },
 ];
 
 /** Default course → term slotting, with the short category the table shows. */
@@ -54,7 +54,7 @@ const SLOTS: { code: string; term: string; category: string }[] = [
   { code: "PHIL 134", term: "sp26", category: "GE UD-3 + Major Prep" },
   // Summer 2026
   { code: "MATH 31", term: "su26", category: "Major Prep · Retake" },
-  { code: "AAS 1", term: "su26", category: "GE · Ethnic Studies" },
+  { code: "GE AREA 6", term: "su26", category: "GE · Ethnic Studies (1 of 13)" },
   // Fall 2026
   { code: "CS 146", term: "fa26", category: "CS Core · Gateway" },
   { code: "CS 154", term: "fa26", category: "CS Core" },
@@ -68,7 +68,7 @@ const SLOTS: { code: string; term: string; category: string }[] = [
   { code: "LING 115", term: "sp27", category: "LING Core · Unlocks NLP" },
   { code: "LING 113", term: "sp27", category: "LING UD Choice" },
   // Summer 2027
-  { code: "ANTH 160", term: "su27", category: "GE · UD Area 2/5" },
+  { code: "GE UD 2/5", term: "su27", category: "GE · UD Area 2/5 (1 of 48)" },
   { code: "LING 122", term: "su27", category: "LING UD Elective" },
   // Fall 2027
   { code: "CS 171", term: "fa27", category: "CS Core · Fall only" },
@@ -84,7 +84,7 @@ export const DANGER_PAIRS: { pair: string; why: string }[] = [
   { pair: "MATH 42 + MATH 31", why: "Two math-heavy courses overlapping. If MATH 42 isn't fully closed, Calc II's pace will compound the deficit." },
   { pair: "CS 146 + CS 154", why: "DS&A and Formal Languages are both proof-heavy CS gateway weed-outs. Stacking them is the standard SJSU GPA killer." },
   { pair: "CS 156 + MATH 161A", why: "AI sits on top of probability theory. Taking it the same term as the underlying stats course doubles workload on the same concepts." },
-  { pair: "LING 165 before LING 115 or 124", why: "NLP capstone depends on Corpus Linguistics and Speech Tech. Reordering breaks the prerequisite chain." },
+  { pair: "LING 165 without LING 115/124 background", why: "Not a prerequisite — the audit shows LING 165's enforced prereq is LING 101 (done Fall 2025, B+). But Corpus Linguistics and Speech Tech are the intended preparation: taking NLP cold raises workload, not eligibility." },
   { pair: "Two upper-div Math in summer", why: "Compressed summer terms move at 2× pace. Pairing 161A-tier math with anything quantitative is a forced W." },
   { pair: "LLD 100W + heavy STEM stack", why: "Writing-intensive (4–6 essays + revisions) does not cohabit with two CS cores." },
 ];
@@ -158,13 +158,13 @@ function canvasTermOf(courseCode: string | null): string | null {
  * Registrar requirement title → plan course code. `CSLN <CODE>` rows map
  * directly; GE/AI buckets map to the specific course the plan uses to fill
  * them. This mapping is how "GE: 6 Ethnic Studies — outstanding" becomes
- * "AAS 1 is still owed" on the timeline.
+ * "the Ethnic Studies block is still owed" on the timeline.
  */
 function courseCodeForRequirement(title: string): string | null {
   const csln = title.match(/^CSLN ([A-Z]+\d?) (\d{1,3}[A-Z]{0,2})$/);
   if (csln) return `${csln[1]} ${csln[2]}`;
-  if (/Ethnic Studies/i.test(title)) return "AAS 1";
-  if (/UD Area 2\/5/i.test(title)) return "ANTH 160";
+  if (/Ethnic Studies/i.test(title)) return "GE AREA 6";
+  if (/UD Area 2\/5/i.test(title)) return "GE UD 2/5";
   if (/UD Area 4/i.test(title)) return "BUS3 186";
   if (/AI US1/i.test(title)) return "HIST 15";
   if (/^WID: Computer Science/i.test(title)) return "LLD 100W";
@@ -211,7 +211,7 @@ export function detectCurrentTermId(now = new Date()): string | null {
  *   4. term position        (past = assumed passed, future = planned)
  *
  * The registrar layer is what stopped this screen assuming Summer 2026 went
- * to plan when MyProgress says MATH 31 and AAS 1 are still outstanding.
+ * to plan when MyProgress says MATH 31 and GE Area 6 are still outstanding.
  */
 export function mergePlan(
   overrides: GradOverride[],

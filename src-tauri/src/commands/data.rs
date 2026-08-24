@@ -464,6 +464,73 @@ pub async fn grad_requirement_statuses(app: AppHandle) -> CommandResult<Vec<Requ
         .map_err(storage_err)
 }
 
+/// One requirement block from the imported MyProgress audit, numbers and
+/// all. Mirrored as `DegreeBlock`. The block — not the course — is the unit
+/// of degree progress.
+#[derive(Debug, Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct DegreeBlockOut {
+    pub key: String,
+    pub title: String,
+    pub status: String,
+    pub note: Option<String>,
+    pub units_required: Option<f64>,
+    pub units_taken: Option<f64>,
+    pub units_needed: Option<f64>,
+    pub courses_required: Option<f64>,
+    pub courses_taken: Option<f64>,
+    pub courses_needed: Option<f64>,
+    pub gpa_required: Option<f64>,
+    pub gpa_actual: Option<f64>,
+    pub min_grade: Option<String>,
+    pub truncated_shown: Option<i64>,
+    pub truncated_total: Option<i64>,
+    pub position: i64,
+}
+
+/// One eligible course under a choice block. Mirrored as `DegreeBlockCourse`.
+#[derive(Debug, Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct DegreeBlockCourseOut {
+    pub requirement_key: String,
+    pub position: i64,
+    pub code: String,
+    pub description: Option<String>,
+    pub units: Option<f64>,
+    pub offered: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DegreeBlocksOut {
+    pub blocks: Vec<DegreeBlockOut>,
+    pub courses: Vec<DegreeBlockCourseOut>,
+}
+
+/// The full requirement-block table from the audit import — satisfied,
+/// in-progress, and open alike — plus each choice block's eligible courses.
+#[tauri::command]
+pub async fn degree_blocks(app: AppHandle) -> CommandResult<DegreeBlocksOut> {
+    let db = db_of(&app);
+    let blocks = sqlx::query_as(
+        "SELECT key, title, status, note, units_required, units_taken, units_needed,
+                courses_required, courses_taken, courses_needed, gpa_required, gpa_actual,
+                min_grade, truncated_shown, truncated_total, position
+         FROM degree_requirements ORDER BY position",
+    )
+    .fetch_all(&db)
+    .await
+    .map_err(storage_err)?;
+    let courses = sqlx::query_as(
+        "SELECT requirement_key, position, code, description, units, offered
+         FROM degree_requirement_courses ORDER BY requirement_key, position",
+    )
+    .fetch_all(&db)
+    .await
+    .map_err(storage_err)?;
+    Ok(DegreeBlocksOut { blocks, courses })
+}
+
 // ── Graduation plan overrides ───────────────────────────────────────────────
 
 /// One user override on the static degree plan. Mirrored as `GradOverride`.

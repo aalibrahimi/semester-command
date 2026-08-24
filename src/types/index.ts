@@ -630,6 +630,44 @@ export interface DegreeAudit {
   truncatedRequirements: string[];
 }
 
+/** One requirement block from the imported audit — mirror of DegreeBlockOut.
+ *  The block, not the course, is the unit of degree progress. */
+export interface DegreeBlock {
+  key: string;
+  title: string;
+  /** MyProgress vocabulary: 'taken' | 'enrolled' | 'error'. */
+  status: string;
+  note: string | null;
+  unitsRequired: number | null;
+  unitsTaken: number | null;
+  unitsNeeded: number | null;
+  coursesRequired: number | null;
+  coursesTaken: number | null;
+  coursesNeeded: number | null;
+  gpaRequired: number | null;
+  gpaActual: number | null;
+  minGrade: string | null;
+  /** For choice blocks MyProgress truncates: rows shown vs total eligible. */
+  truncatedShown: number | null;
+  truncatedTotal: number | null;
+  position: number;
+}
+
+/** One eligible course under a choice block — mirror of DegreeBlockCourseOut. */
+export interface DegreeBlockCourse {
+  requirementKey: string;
+  position: number;
+  code: string;
+  description: string | null;
+  units: number | null;
+  offered: string | null;
+}
+
+export interface DegreeBlocks {
+  blocks: DegreeBlock[];
+  courses: DegreeBlockCourse[];
+}
+
 /* ────────────────────────────────────────────────────────────────────────────
    Weekly planner (migration 0009) — mirror of PlannerBlockRow.
    ──────────────────────────────────────────────────────────────────────────── */

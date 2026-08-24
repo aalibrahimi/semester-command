@@ -40,10 +40,12 @@ import {
   Flame,
   GraduationCap,
   Info,
+  Layers,
   RotateCcw,
   Target,
 } from "lucide-react";
 import { toast } from "sonner";
+import { DegreeBlocksView } from "@/components/grade/DegreeBlocksView";
 import { GradCourseSheet } from "@/components/grade/GradCourseSheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,7 +92,7 @@ const STATUS_PILL: Record<GradStatus, { label: string; cls: string }> = {
  *  the automatic derivation (Canvas enrollment, term position) decides. */
 const CYCLE: (GradStatus | null)[] = [null, "passed", "failed", "dropped"];
 
-type GradTab = "timeline" | "registrar" | "risk";
+type GradTab = "timeline" | "blocks" | "registrar" | "risk";
 
 export default function Graduation() {
   const { courses, loaded } = useCourses();
@@ -193,8 +195,9 @@ export default function Graduation() {
                 <Target className="h-4 w-4" />
                 Target graduation:{" "}
                 <span className="font-semibold text-foreground">
-                  {audit?.targetTerm ?? "Spring 2028"}
+                  {audit?.targetTerm ?? "Fall 2027"}
                 </span>
+                <span className="text-muted-foreground/70">· fallback Spring 2028</span>
               </span>
               <span className="text-muted-foreground/40">·</span>
               <span>{plan.transferredCount} transfer credits banked</span>
@@ -454,7 +457,7 @@ export default function Graduation() {
                     {term.isCurrent
                       ? "Current term"
                       : term.isTarget
-                        ? "Target graduation"
+                        ? (term.tag ?? "Target graduation")
                         : term.tag}
                   </div>
                 )}
@@ -505,6 +508,9 @@ export default function Graduation() {
         </div>
       </motion.section>
       )}
+
+      {/* ═══ 4b · DEGREE BLOCKS TAB — the audit, block by block ═══ */}
+      {tab === "blocks" && <DegreeBlocksView plan={plan} audit={audit} />}
 
       {/* ═══ 5 · RISK & RULES TAB ═════════════════════════════════════ */}
       {tab === "risk" && (
@@ -653,6 +659,12 @@ function TabStrip({
       label: "Timeline",
       sub: "What to take · which semester",
       icon: <CalendarClock className="h-3.5 w-3.5" />,
+    },
+    {
+      id: "blocks",
+      label: "Degree Blocks",
+      sub: "Blocks · GPA · deadlines",
+      icon: <Layers className="h-3.5 w-3.5" />,
     },
     {
       id: "registrar",

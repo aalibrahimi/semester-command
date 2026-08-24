@@ -99,6 +99,7 @@ pub fn run() {
             commands::data::fetch_submission_comments,
             commands::data::finance_snapshot,
             commands::data::save_finance_snapshot,
+            commands::data::degree_blocks,
             commands::data::list_instructors,
             commands::data::planner_blocks,
             commands::data::save_planner_block,

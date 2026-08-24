@@ -35,6 +35,7 @@ import type {
   TriageRow,
   SubmissionComment,
   FinanceSnapshot,
+  DegreeBlocks,
 } from "@/types";
 
 /**
@@ -423,6 +424,15 @@ export async function debugForceReconnect(): Promise<void> {
 export async function getDegreeAudit(): Promise<DegreeAudit | null> {
   if (!IS_TAURI) return null;
   return call<DegreeAudit | null>("get_degree_audit");
+}
+
+/**
+ * Every requirement block from the imported audit plus each choice block's
+ * eligible-course list. Empty outside Tauri so `vite dev` renders the shell.
+ */
+export async function degreeBlocks(): Promise<DegreeBlocks> {
+  if (!IS_TAURI) return { blocks: [], courses: [] };
+  return call<DegreeBlocks>("degree_blocks");
 }
 
 /**
