@@ -20,7 +20,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 import { financeSnapshot } from "@/lib/ipc";
+import { termSlug } from "@/lib/termSlug";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { FinanceSnapshot } from "@/types";
 
@@ -110,8 +113,11 @@ function shortDate(iso: string | null): string {
 
 export default function Finance() {
   const [snap, setSnap] = useState<FinanceSnapshot | null | undefined>(undefined);
-  // Row notes are a reading mode, not furniture — toggleable.
-  const [explain, setExplain] = useState(true);
+  // Row notes are a reading mode, not furniture — off until asked for.
+  const [explain, setExplain] = useState(false);
+  // Findings are an accordion: headlines scan, details expand on click.
+  const [openFindings, setOpenFindings] = useState<Set<number>>(new Set());
+  const [showAllCharges, setShowAllCharges] = useState(false);
   // Which term groups are expanded; null = default (current term only).
   const [openTerms, setOpenTerms] = useState<Set<string> | null>(null);
   // Captured once per mount so the days-past math is pure during render.
@@ -248,32 +254,56 @@ export default function Finance() {
               <h2 className="flex items-center gap-1.5 text-2xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 <Sparkles className="h-3.5 w-3.5" /> What I found
               </h2>
-              <ol className="flex flex-col gap-3">
-                {snap.findings.map((f, i) => (
-                  <li
-                    key={f.title}
-                    className={cn(
-                      "flex gap-3 border-l-2 pl-3",
-                      TONE_BORDER[f.tone ?? "info"] ?? TONE_BORDER.info,
-                    )}
-                  >
-                    <span
-                      data-numeric
+              <ol className="flex flex-col gap-2">
+                {snap.findings.map((f, i) => {
+                  const open = openFindings.has(i);
+                  return (
+                    <li
+                      key={f.title}
                       className={cn(
-                        "shrink-0 font-mono text-[15px] tabular-nums",
-                        TONE_TEXT[f.tone ?? "info"] ?? TONE_TEXT.info,
+                        "border-l-2 pl-3",
+                        TONE_BORDER[f.tone ?? "info"] ?? TONE_BORDER.info,
                       )}
                     >
-                      {i + 1}.
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-[15px] font-medium leading-snug">{f.title}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        {f.detail}
-                      </p>
-                    </div>
-                  </li>
-                ))}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenFindings((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(i)) next.delete(i);
+                            else next.add(i);
+                            return next;
+                          })
+                        }
+                        className="flex w-full items-start gap-3 rounded-md py-0.5 text-left transition-colors duration-micro hover:bg-fill-ghost/40"
+                      >
+                        <span
+                          data-numeric
+                          className={cn(
+                            "shrink-0 font-mono text-[15px] tabular-nums",
+                            TONE_TEXT[f.tone ?? "info"] ?? TONE_TEXT.info,
+                          )}
+                        >
+                          {i + 1}.
+                        </span>
+                        <span className="min-w-0 flex-1 text-[15px] font-medium leading-snug">
+                          {f.title}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            "mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-micro",
+                            open && "rotate-180",
+                          )}
+                        />
+                      </button>
+                      {open && (
+                        <p className="mt-1 pl-7 text-sm leading-relaxed text-muted-foreground">
+                          {f.detail}
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
               </ol>
             </CardContent>
           </Card>
@@ -286,7 +316,7 @@ export default function Finance() {
                 <Receipt className="h-3.5 w-3.5" /> Charges · {snap.term}
               </h2>
               <div className="flex flex-col gap-1">
-                {snap.charges.map((c) => {
+                {(showAllCharges ? snap.charges : snap.charges.slice(0, 4)).map((c) => {
                   const max = Math.max(...snap.charges.map((x) => x.amount), 1);
                   return (
                     <div key={c.label} className="flex items-center gap-2 text-sm">
@@ -315,6 +345,25 @@ export default function Finance() {
                     </div>
                   );
                 })}
+                {snap.charges.length > 4 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllCharges((v) => !v)}
+                    className="flex items-baseline gap-2 rounded px-0.5 py-0.5 text-left text-2xs text-muted-foreground transition-colors duration-micro hover:text-foreground"
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "h-3 w-3 self-center transition-transform duration-micro",
+                        showAllCharges && "rotate-180",
+                      )}
+                    />
+                    {showAllCharges
+                      ? "show less"
+                      : `${snap.charges.length - 4} smaller fees · ${usd(
+                          snap.charges.slice(4).reduce((s2, c) => s2 + c.amount, 0),
+                        )}`}
+                  </button>
+                )}
                 <div className="mt-1 flex items-baseline gap-2 border-t border-border pt-2 text-base font-medium">
                   <span>Total{snap.dueDate ? ` · due ${shortDate(snap.dueDate)}` : ""}</span>
                   <span aria-hidden className="min-w-3 flex-1" />
@@ -400,52 +449,117 @@ export default function Finance() {
               </button>
             </div>
 
-            {/* The punchline chart: aid received per term. The missing
-                $2–3k isn't a mystery once these bars sit side by side. */}
-            {snap.aidByTerm && snap.aidByTerm.length > 0 && (
-              <div className="mb-4 flex flex-col gap-1.5 rounded-lg bg-fill-ghost/50 p-3">
-                <p className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Aid received, term by term
-                </p>
-                {(() => {
-                  const max = Math.max(...(snap.aidByTerm ?? []).map((t) => t.amount), 1);
-                  return (snap.aidByTerm ?? []).map((t) => (
-                    <div key={t.label} className="flex items-center gap-2 text-xs">
-                      <span className="w-40 shrink-0 truncate text-foreground/80">{t.label}</span>
-                      <span
+            {/* Column chart: aid per term (blue) beside what reached the
+                bank (green). Vertical columns, recessive gridlines, rounded
+                data-ends, per-column tooltips; palette CVD-validated on the
+                dark surface, identity carried by legend + labels too. */}
+            {(() => {
+              const order: string[] = [];
+              const byTerm = new Map<string, { aid: number; bank: number }>();
+              for (const r of snap.activity) {
+                if (!byTerm.has(r.term)) {
+                  byTerm.set(r.term, { aid: 0, bank: 0 });
+                  order.push(r.term);
+                }
+                const t = byTerm.get(r.term) as { aid: number; bank: number };
+                if (r.kind === "payment") t.aid += r.amount;
+                if (r.kind === "refund") t.bank += r.amount;
+              }
+              const cols = [...order].reverse().map((term) => {
+                const { aid, bank } = byTerm.get(term) as { aid: number; bank: number };
+                return { term, aid, bank: Math.min(bank, aid) };
+              });
+              const max = Math.max(...cols.map((c) => c.aid), 1);
+              const H = 120;
+              const BILLC = "#3B82F6";
+              const BANKC = "#1FA47B";
+              const gridVals = [max, max / 2];
+              return (
+                <div className="mb-4 flex flex-col gap-2 rounded-xl border border-border bg-fill-ghost/40 p-3.5">
+                  <p className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Aid received, term by term
+                  </p>
+                  <div className="relative" style={{ height: H + 34 }}>
+                    {/* recessive gridlines with $ labels */}
+                    {gridVals.map((v) => (
+                      <div
+                        key={v}
                         aria-hidden
-                        className="h-1.5 flex-1 overflow-hidden rounded-full bg-fill-ghost"
+                        className="absolute left-0 right-0 border-t border-border/40"
+                        style={{ top: H - (v / max) * H }}
                       >
                         <span
-                          className={cn(
-                            "block h-full rounded-full",
-                            t.tone === "urgent"
-                              ? "bg-critical/80"
-                              : t.tone === "warn"
-                                ? "bg-at-risk/80"
-                                : "bg-on-track/80",
-                          )}
-                          style={{ width: `${Math.max(2, (t.amount / max) * 100)}%` }}
-                        />
-                      </span>
-                      <span
-                        data-numeric
-                        className={cn(
-                          "w-20 shrink-0 text-right font-mono tabular-nums",
-                          t.tone === "urgent"
-                            ? "text-critical-fg"
-                            : t.tone === "warn"
-                              ? "text-at-risk-fg"
-                              : "text-on-track-fg",
-                        )}
-                      >
-                        {usd(t.amount)}
-                      </span>
+                          data-numeric
+                          className="absolute -top-2 right-0 font-mono text-[10px] tabular-nums text-muted-foreground/60"
+                        >
+                          {usd(v).replace(/\.00$/, "")}
+                        </span>
+                      </div>
+                    ))}
+                    <div
+                      aria-hidden
+                      className="absolute left-0 right-0 border-t border-border"
+                      style={{ top: H }}
+                    />
+                    <div className="absolute inset-x-0 top-0 flex items-end justify-around" style={{ height: H }}>
+                      {cols.map((c) => (
+                        <div key={c.term} className="flex h-full items-end gap-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                className="w-8 rounded-t"
+                                style={{
+                                  height: Math.max(3, (c.aid / max) * H),
+                                  background: BILLC,
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              {c.term}: {usd(c.aid)} aid received
+                            </TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                className="w-8 rounded-t"
+                                style={{
+                                  height: Math.max(c.bank > 0 ? 3 : 1, (c.bank / max) * H),
+                                  background: c.bank > 0 ? BANKC : "rgb(var(--border))",
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              {c.term}:{" "}
+                              {c.bank > 0
+                                ? `${usd(c.bank)} refunded to your bank`
+                                : "nothing reached your bank"}
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      ))}
                     </div>
-                  ));
-                })()}
-              </div>
-            )}
+                    <div className="absolute inset-x-0 flex justify-around" style={{ top: H + 6 }}>
+                      {cols.map((c) => (
+                        <span key={c.term} className="text-2xs text-muted-foreground">
+                          {c.term}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-2xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: BILLC }} />
+                      aid received
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: BANKC }} />
+                      reached your bank
+                    </span>
+                    <span className="ml-auto text-muted-foreground/60">hover a column</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="flex max-h-[440px] flex-col gap-4 overflow-y-auto pr-1.5">
               {(() => {
@@ -522,6 +636,13 @@ export default function Finance() {
                             </span>
                           )}
                         </span>
+                        <Link
+                          to={`/finance/${termSlug(term)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="shrink-0 text-2xs text-brand-fg hover:underline"
+                        >
+                          details →
+                        </Link>
                       </button>
                       {isOpen && (
                         <div className="flex flex-col gap-3 px-4 py-3.5">
@@ -602,26 +723,25 @@ export default function Finance() {
                 </span>
               </div>
               <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
-                <span>
-                  {usd(snap.loans.principal)} principal · {usd(snap.loans.interest)} accrued
-                  interest · {snap.loans.rateRange}
-                </span>
-                <span>servicer: {snap.loans.servicer}</span>
-                {snap.loans.byYear.map((y) => (
-                  <span key={y.year} className="flex items-baseline gap-2">
-                    <span>{y.year}</span>
-                    <span
-                      aria-hidden
-                      className="min-w-3 flex-1 -translate-y-[3px] border-b border-dotted border-border"
-                    />
-                    <span data-numeric className="font-mono tabular-nums">
-                      {usd(y.amount)}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-default underline decoration-border decoration-dashed underline-offset-4">
+                      {usd(snap.loans.principal)} principal · {usd(snap.loans.interest)} interest ·{" "}
+                      {snap.loans.rateRange}
                     </span>
-                  </span>
-                ))}
-                <span className="mt-1 text-2xs text-muted-foreground/70">
-                  Context for the accept/decline decision on this year's offered loans — as of{" "}
-                  {shortDate(snap.loans.asOf)}.
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="flex flex-col gap-1">
+                    <span>servicer: {snap.loans.servicer}</span>
+                    {snap.loans.byYear.map((y) => (
+                      <span key={y.year}>
+                        {y.year}: {usd(y.amount)}
+                      </span>
+                    ))}
+                    <span>as of {shortDate(snap.loans.asOf)}</span>
+                  </TooltipContent>
+                </Tooltip>
+                <span className="text-2xs text-muted-foreground/70">
+                  Context for this year's accept/decline loan decision.
                 </span>
               </div>
             </CardContent>
@@ -649,17 +769,30 @@ export default function Finance() {
                       />
                     )}
                     <div className="min-w-0">
-                      <p className="text-sm leading-snug">
-                        {t.label}
-                        {t.date && (
-                          <span className="ml-2 text-2xs text-muted-foreground">
-                            {shortDate(t.date)}
-                          </span>
-                        )}
-                      </p>
-                      {t.detail && (
-                        <p className="mt-0.5 text-2xs leading-snug text-muted-foreground">
-                          {t.detail}
+                      {t.detail ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="cursor-default text-sm leading-snug underline decoration-border decoration-dashed underline-offset-4">
+                              {t.label}
+                              {t.date && (
+                                <span className="ml-2 text-2xs text-muted-foreground no-underline">
+                                  {shortDate(t.date)}
+                                </span>
+                              )}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-96">
+                            {t.detail}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <p className="text-sm leading-snug">
+                          {t.label}
+                          {t.date && (
+                            <span className="ml-2 text-2xs text-muted-foreground">
+                              {shortDate(t.date)}
+                            </span>
+                          )}
                         </p>
                       )}
                     </div>

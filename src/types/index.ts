@@ -289,6 +289,9 @@ export interface FinanceSnapshot {
   loans?: FinanceLoans;
   tracking?: FinanceTrackingItem[];
   fafsa?: FinanceFafsa;
+  /** The portal date range the activity was captured over ("YYYY-MM-DD"). */
+  capturedFrom?: string;
+  capturedTo?: string;
 }
 
 /** The next FAFSA cycle — the one deadline that caused this year's mess. */
