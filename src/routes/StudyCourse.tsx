@@ -12,7 +12,7 @@
  */
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { AlertTriangle, ArrowLeft, BookOpen, Clock, Info, Presentation } from "lucide-react";
+import { AlertTriangle, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import { courseTick } from "./Study";
@@ -72,6 +72,11 @@ export default function StudyCourse() {
                       <span className="flex items-center gap-1 font-mono text-2xs text-muted-foreground">
                         <Clock className="h-3 w-3" /> {ch.minutes} min
                       </span>
+                      {ch.practice?.length ? (
+                        <span className="flex items-center gap-1 font-mono text-2xs text-brand-fg">
+                          <PencilLine className="h-3 w-3" /> {ch.practice.length} to do yourself
+                        </span>
+                      ) : null}
                     </div>
                     <div className="mt-0.5 text-base font-medium">{ch.title}</div>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{ch.goal}</p>

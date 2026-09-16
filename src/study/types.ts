@@ -75,6 +75,33 @@ export interface Chapter {
   /** Chapters this one assumes (slugs). Shown as "read first". */
   requires?: string[];
   sections: Section[];
+  /** "Do it yourself": hands-on problems with a hint ladder. Rendered after the sections. */
+  practice?: Exercise[];
+}
+
+/**
+ * One hands-on exercise. The reader works it on paper (or in a notebook) and
+ * opens hints one at a time. `hints` is a ladder in a fixed order:
+ *   [0] a nudge — where to start, without giving anything away
+ *   [1] the mistake most people make here, and how to notice it
+ *   [2] how to think about the problem — the frame, not the answer
+ * `solution` is the full worked answer; `why` says why this skill matters
+ * outside the exam. `choices` makes it a pick-one question: each wrong choice
+ * carries its own feedback (what that mistake reveals).
+ */
+export interface Exercise {
+  id: string;
+  title: string;
+  /** The task, in full. Inline markup allowed. */
+  prompt: string;
+  /** Optional code / data the task refers to. */
+  code?: string;
+  /** Pick-one variant. `answer` is the index of the right choice. */
+  choices?: { text: string; feedback: string }[];
+  answer?: number;
+  hints: [string, string, string];
+  solution: string[];
+  why: string;
 }
 
 export interface Deadline {

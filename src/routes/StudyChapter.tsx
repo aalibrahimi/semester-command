@@ -12,8 +12,9 @@
  */
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Clock, Presentation } from "lucide-react";
+import { ArrowLeft, Clock, PencilLine, Presentation } from "lucide-react";
 import { Blocks } from "@/components/study/Blocks";
+import { Practice } from "@/components/study/Practice";
 import { cn } from "@/lib/utils";
 import { blockAnchor, courseBySlug } from "@/study";
 
@@ -27,7 +28,8 @@ export default function StudyChapter() {
   // Scroll-spy on section headings.
   useEffect(() => {
     if (!chapter) return;
-    const els = chapter.sections.map((s) => document.getElementById(`sec-${s.id}`)).filter((e): e is HTMLElement => !!e);
+    const ids = [...chapter.sections.map((s) => s.id), ...(chapter.practice?.length ? ["diy"] : [])];
+    const els = ids.map((id) => document.getElementById(`sec-${id}`)).filter((e): e is HTMLElement => !!e);
     const io = new IntersectionObserver(
       (entries) => {
         const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -95,6 +97,21 @@ export default function StudyChapter() {
                 </button>
               </li>
             ))}
+            {chapter.practice?.length ? (
+              <li className="mt-2 border-t border-border/60 pt-2">
+                <button
+                  type="button"
+                  onClick={() => jump("diy")}
+                  className={cn(
+                    "flex w-full items-start gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-xs leading-snug transition-colors duration-micro",
+                    active === "diy" ? "bg-card font-medium text-foreground shadow-card" : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
+                  )}
+                >
+                  <PencilLine className={cn("mt-px h-3.5 w-4 shrink-0", active === "diy" ? "text-brand-fg" : "text-muted-foreground/60")} />
+                  <span>Do it yourself · {chapter.practice.length}</span>
+                </button>
+              </li>
+            ) : null}
           </ol>
         </div>
       </nav>
@@ -124,6 +141,16 @@ export default function StudyChapter() {
             <Blocks blocks={s.blocks} anchorFor={(b, bi) => blockAnchor(s.id, b, bi)} />
           </section>
         ))}
+
+        {chapter.practice?.length ? (
+          <section id="sec-diy" className="mb-14 scroll-mt-6">
+            <h2 className="mb-2 flex items-center gap-3 font-display text-xl font-semibold tracking-tight">
+              <PencilLine className="h-5 w-5 text-brand-fg" />
+              Do it yourself
+            </h2>
+            <Practice exercises={chapter.practice} scope={`${course.slug}/${chapter.slug}`} />
+          </section>
+        ) : null}
 
         <footer className="flex items-center gap-3 border-t border-border/60 pt-6">
           <Link to={`/study/${course.slug}`} className="text-xs text-muted-foreground hover:text-foreground">
