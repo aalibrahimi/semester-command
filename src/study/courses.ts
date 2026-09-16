@@ -1,6 +1,12 @@
 import type { Course } from "./types";
 import { cs146Notation } from "./chapters/cs146-00-notation";
+import { cs146Adts } from "./chapters/cs146-02-adts-insertion";
+import { cs146MergeSort } from "./chapters/cs146-04-mergesort";
 import { cs146Recurrences } from "./chapters/cs146-06-recurrences";
+import { cs146Heaps } from "./chapters/cs146-08-heaps";
+import { cs154Sets } from "./chapters/cs154-01-sets";
+import { cs154Languages } from "./chapters/cs154-03-languages";
+import { cs154Dfa } from "./chapters/cs154-05-dfa";
 import { hist15Constitution } from "./chapters/hist15-08-constitution";
 import { hist15Walker } from "./chapters/hist15-06-walker";
 import { hist15Market } from "./chapters/hist15-11-market";
@@ -64,13 +70,8 @@ export const courses: Course[] = [
       "Heap index formulas; trace heapify, buildHeap, heapSort, extract; buildHeap is O(n), heapSort O(1) space.",
       "(After Sep 21–Oct 5) partition trace, counting sort, hash collisions, BST delete, AVL rotations.",
     ],
-    chapters: [cs146Notation, cs146Recurrences],
+    chapters: [cs146Notation, cs146Adts, cs146MergeSort, cs146Recurrences, cs146Heaps],
     planned: [
-      { label: "Lecture 2", title: "ADTs: lists, stacks, queues" },
-      { label: "Lecture 3", title: "Loop invariants & insertion sort" },
-      { label: "Lecture 4", title: "Asymptotic notation" },
-      { label: "Lecture 5", title: "Divide & conquer, merge sort (+ Project 1)" },
-      { label: "Lecture 8", title: "Heaps, heap sort, priority queues" },
       { label: "Lecture 9", title: "Quicksort (Sep 21)" },
       { label: "Lecture 10", title: "Linear-time sorts (Sep 23)" },
       { label: "Lecture 11", title: "Hash tables (Sep 28)" },
@@ -113,13 +114,11 @@ export const courses: Course[] = [
       "Compute L₁L₂, Lⁿ, Lᴿ, L̄.",
       "Describe DFA structure and workflow; analyze a DFA into L(M); design a DFA with hell/heaven and every (state, symbol) covered.",
     ],
-    chapters: [],
+    chapters: [cs154Sets, cs154Languages, cs154Dfa],
     planned: [
-      { label: "Chapter 0", title: "Reading set-builder notation and λ vs ∅" },
-      { label: "Lessons 1–2", title: "Sets, power sets, Cartesian products, functions, graphs" },
-      { label: "Lessons 3–4", title: "Alphabets, strings, formal languages" },
-      { label: "Lessons 5–7", title: "DFA: structure, workflow, analyze, design, formal definition" },
-      { label: "Lessons 8–10", title: "NFA (Sep 21–28)" },
+      { label: "Lessons 8–10", title: "NFA, λ-transitions, subset construction (Sep 21–28)" },
+      { label: "Lesson 11", title: "Regular languages and closure (Sep 30)" },
+      { label: "Lessons 12–12.5", title: "Non-regular languages: the pumping lemma (Oct 5–7)" },
     ],
   },
   {
