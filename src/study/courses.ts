@@ -14,6 +14,10 @@ import { ling112Intro } from "./chapters/ling112-00-intro";
 import { ling112Categories } from "./chapters/ling112-02-categories";
 import { ling112Heads } from "./chapters/ling112-04-heads";
 import { ling112Constituents } from "./chapters/ling112-05-constituents";
+import { ling115Corpus } from "./chapters/ling115-01-corpus";
+import { ling115Regex } from "./chapters/ling115-04-regex";
+import { ling115Words } from "./chapters/ling115-05-words";
+import { ling115Annotation } from "./chapters/ling115-07-annotation-pos";
 import { ling124Waves } from "./chapters/ling124-00-waves";
 import { ling124Sampling } from "./chapters/ling124-03-sampling";
 import { ling124Complex } from "./chapters/ling124-04-complex";
@@ -278,12 +282,11 @@ export const courses: Course[] = [
       "Six annotation levels; datasheets; the data-linguist process.",
       "Parsing vs tagging; three ambiguity types; Brown vs PTB.",
     ],
-    chapters: [],
+    chapters: [ling115Corpus, ling115Regex, ling115Words, ling115Annotation],
     planned: [
-      { label: "Chapter 0", title: "Regex from zero (HW 1 lost points here)" },
-      { label: "Week 3", title: "What counts as a word: tokens, types, Heaps, TTR" },
-      { label: "Weeks 4–5", title: "Tokenization, normalization, annotation, POS tagging" },
-      { label: "Week 6", title: "Frequencies (Sep 22–24)" },
+      { label: "Week 6", title: "Frequencies: raw vs relative, Zipf's law, keyness (Sep 22–24)" },
+      { label: "Week 7", title: "Building an annotated dataset; annotation guidelines (Oct 1)" },
+      { label: "Week 8", title: "Collocations and concordances: KWIC, MI, t-score (Oct 6–8)" },
     ],
   },
 ];
