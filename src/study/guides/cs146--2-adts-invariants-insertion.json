@@ -1,0 +1,348 @@
+{
+  "id": "cs146/2-adts-invariants-insertion",
+  "course": "cs146",
+  "lessons": "Lectures 2–3",
+  "title": "ADTs, loop invariants, and insertion sort",
+  "summary": "Say what an ADT is and pick stack vs queue for a scenario; write an array stack and a circular queue; prove a loop correct with a three-part invariant; trace insertion sort the way Poon grades it and explain its best and worst case.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Lecture 2 (Aug 24) and Lecture 3 (Aug 26) slides, HW 2, HW 3, Project 1 Part 1.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why this course starts with 'what does it do', not 'how'",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The whole lecture in one idea** You can drive a car without knowing whether the engine is gas or electric. The pedals are a **contract**: press this, the car goes. An **Abstract Data Type** is a contract like that for data: it lists the operations you can do (push, pop, peek…) and what they promise, and says nothing about how they're built inside. The 'how' is the **implementation** — and the same contract can have several implementations with very different speeds. Almost every exam question in this course is, underneath, 'which contract does this problem need, and which implementation makes those operations cheap?'",
+          "id": "why.0"
+        },
+        {
+          "type": "trap",
+          "body": "**Poon's definition (reproduce it)** 'An abstract data type is a data type defined by its behavior — what it does — not its implementation — how it does it.' He wants that sentence, then an example. The pedal analogy is his.",
+          "source": "Exam",
+          "points": null,
+          "id": "why.1"
+        },
+        {
+          "type": "definition",
+          "term": "ADT · List · Stack · Queue",
+          "body": "**List**: a sequence you access by position (index). Operations: add, remove, get, size. **Stack**: last in, first out (LIFO). push, pop, peek, isEmpty. Plates in a cafeteria. **Queue**: first in, first out (FIFO). enqueue, dequeue, peek, isEmpty. A checkout line.",
+          "id": "why.2"
+        }
+      ]
+    },
+    {
+      "id": "stack",
+      "heading": "Stacks: LIFO, and what push/pop actually do",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Your browser's back button is a stack: every page you visit is pushed; Back pops. Undo is a stack. And the big one: **the call stack** — every time a function calls another, the new call is pushed on top; when it returns, it's popped. That's why recursion works at all, and why infinite recursion gives a 'stack overflow' error: the stack literally ran out of room.",
+          "id": "stack.0"
+        },
+        {
+          "type": "prose",
+          "md": "**An array stack, operation by operation**\n1. `[·, ·, ·, ·] — top = −1  (empty)` An array stack with room for 4. `top` is the index of the most recent item. −1 means nothing is there yet. Reading `a[top]` now would be an **underflow** error.\n2. `[5, ·, ·, ·] — push(5): top = 0` push(5): move `top` up by one, then write 5 there. Two steps, no loops, no matter how full the stack is — that's O(1).\n3. `[5, 9, ·, ·] — push(9): top = 1` push(9): same two steps. 9 sits on top of 5.\n4. `[5, 9, 2, ·] — push(2): top = 2` push(2). The last thing in is always at `a[top]`.\n5. `[5, 9, 2, ·] — peek() → 2` peek(): read `a[top]` and change nothing. Answer 2.\n6. `[5, 9, 2, ·] — pop() → 2, top = 1` pop(): read `a[top]` (2), then move `top` down. The 2 is still physically in the array, but nothing points at it — it's gone as far as the stack is concerned. The next push will overwrite it.\n7. `[5, 9, 2, ·] — pop() → 9, top = 0` pop() again gives 9. Last in, first out: we pushed 5, 9, 2 and got back 2, 9. That order reversal is the whole point of a stack.",
+          "id": "stack.1"
+        },
+        {
+          "type": "example",
+          "title": "Java, because that's what Poon's slides and Project 1 use. If you know JS/TS: `int[]` is a fixed-size array of ints, `public` is just visibility, and the semicolons are mandatory.",
+          "body": "public class ArrayStack {\n  private int[] a;\n  private int top = -1;              // index of the top item; -1 = empty\n\n  public ArrayStack(int capacity) { a = new int[capacity]; }\n\n  public void push(int x) {\n    if (top == a.length - 1) throw new RuntimeException(\"overflow\");\n    top++;\n    a[top] = x;\n  }\n  public int pop() {\n    if (top == -1) throw new RuntimeException(\"underflow\");\n    int x = a[top];\n    top--;\n    return x;\n  }\n  public int peek()      { return a[top]; }   // same check as pop\n  public boolean isEmpty() { return top == -1; }\n}",
+          "id": "stack.2"
+        },
+        {
+          "type": "prose",
+          "md": "A **linked list** version keeps the top as the head node. push: make a new node, point it at the old head, make it the head. pop: save the head's value, move head to head.next. Same four operations, same O(1) cost. Differences: no overflow (it grows as needed), no fixed capacity, but every node costs an extra pointer of memory and the nodes are scattered around memory instead of side by side. Underflow check becomes `head == null`.",
+          "id": "stack.3"
+        },
+        {
+          "type": "check",
+          "prompt": "You push 1, 2, 3, then pop once, then push 4. What does peek return, and what's the order the remaining items come out in?",
+          "answer": "peek → 4. Pops give 4, 2, 1. (3 was popped and is gone.)",
+          "sectionRef": "stack",
+          "id": "stack.4"
+        }
+      ]
+    },
+    {
+      "id": "queue",
+      "heading": "Queues: FIFO, and why the circular buffer exists",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Anything that must be served in arrival order: print jobs, the operating system deciding which program runs next, messages between servers, breadth-first search later in this course. The contract: **enqueue** at the back, **dequeue** from the front.",
+          "id": "queue.0"
+        },
+        {
+          "type": "prose",
+          "md": "**Why 'just use an array' is O(n)** Put the front at index 0. Dequeue removes index 0 — and now everything has to shift one slot left to keep the front at 0. For a queue of n items that's n copies for one removal: O(n). Poon calls this the naive array queue. The fix keeps two indexes, `head` and `tail`, and lets the data **wrap around** the end of the array.",
+          "id": "queue.1"
+        },
+        {
+          "type": "prose",
+          "md": "**The circular array queue, and the moment `%` matters**\n1. `[·, ·, ·, ·] — head = 0, tail = −1, size 0` A queue in an array of capacity 4. `head` is where the next dequeue reads; `tail` is where the last enqueue wrote.\n2. `[A, B, C, ·] — enqueue A, B, C → tail = 2` Three enqueues. Each one moves `tail` right by one and writes there. `head` still points at A, the oldest.\n3. `[A, B, C, ·] — dequeue() → A, head = 1` dequeue(): read `a[head]` (A) and move `head` right. Nothing shifts. The naive version would copy B and C one slot left — O(n) work for one removal. We just moved an index: O(1).\n4. `[·, B, C, D] — enqueue D → tail = 3` enqueue(D) fills the last slot. The array now looks full — but slot 0 is free. Without a trick, the next enqueue fails even though there's room.\n5. `[E, B, C, D] — enqueue E → tail = (3+1) % 4 = 0` The trick: `tail = (tail + 1) % capacity`. 4 % 4 = 0, so `tail` wraps around to slot 0 and E goes there. The queue order is still B, C, D, E — it just bends around the end of the array. That's why Poon's efficient queue uses modulo.",
+          "id": "queue.2"
+        },
+        {
+          "type": "example",
+          "title": "The `%` keeps head and tail inside 0..capacity−1. `size` tells full from empty (both have head == tail otherwise).",
+          "body": "public class ArrayQueue {\n  private int[] a; private int head = 0, tail = -1, size = 0;\n  public ArrayQueue(int capacity) { a = new int[capacity]; }\n\n  public void enqueue(int x) {\n    if (size == a.length) throw new RuntimeException(\"overflow\");\n    tail = (tail + 1) % a.length;    // wrap around\n    a[tail] = x; size++;\n  }\n  public int dequeue() {\n    if (size == 0) throw new RuntimeException(\"underflow\");\n    int x = a[head];\n    head = (head + 1) % a.length;    // wrap around\n    size--; return x;\n  }\n}",
+          "id": "queue.3"
+        },
+        {
+          "type": "trap",
+          "body": "**The linked-queue bug he calls out** A linked queue keeps `head` (front) and `tail` (back). When you dequeue the **last** item, head becomes null — and you must also set `tail = null`. Forget that and `tail` points at a node that no longer belongs to the queue; the next enqueue attaches to a ghost. He shows this on the slides; it's a likely 'what's wrong with this code' question.",
+          "source": "Exam material",
+          "points": null,
+          "id": "queue.4"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Array-based",
+            "Linked list"
+          ],
+          "rows": [
+            [
+              "Get item at index k",
+              "O(1) — like numbered lockers",
+              "O(n) — walk the train car by car"
+            ],
+            [
+              "Insert / delete in the middle",
+              "O(n) — shift everything after",
+              "O(1) if you're already holding the node"
+            ],
+            [
+              "Memory",
+              "Contiguous, cache-friendly",
+              "Extra pointer per node, scattered"
+            ],
+            [
+              "Growth",
+              "Fixed capacity; resize (usually double) when full",
+              "Grows one node at a time, no overflow"
+            ]
+          ],
+          "id": "queue.5"
+        },
+        {
+          "type": "example",
+          "title": "Picking the ADT from a story",
+          "body": "A single-lane tunnel. Scenario 1: cars leave in the order they entered. Scenario 2: the tunnel is blocked, so the last car in must back out first. Which ADT models each, and which operations are entering and leaving?\n\n1. Ask one question: does the *first* thing in leave first, or the *last*?\n2. Scenario 1: first in, first out → **Queue**. Entering = enqueue at the back. Leaving = dequeue from the front.\n3. Scenario 2: last in, first out → **Stack**. Entering = push. Backing out = pop — the most recently pushed car is the first one popped.",
+          "answer": "1: queue (enqueue/dequeue). 2: stack (push/pop).",
+          "id": "queue.6"
+        },
+        {
+          "type": "check",
+          "prompt": "Why does the efficient array queue use `% capacity`?",
+          "answer": "So head and tail wrap around to reuse the slots freed at the front. Without it, either the queue walks off the end of the array while empty slots sit unused at the front, or dequeue has to shift every element (O(n)). With it, both operations stay O(1).",
+          "sectionRef": "queue",
+          "id": "queue.7"
+        }
+      ]
+    },
+    {
+      "id": "invariants",
+      "heading": "Loop invariants: proving a loop is right",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Why anyone bothers** You can run a sort on a thousand arrays and it works every time. Does it work on the thousand-and-first? Testing can only show that bugs *are* there, never that they *aren't*. Poon's definition of **correct**: the algorithm terminates and produces the desired output for *every* valid input. To claim that, you need an argument, not a test. The argument for loops is the **loop invariant**.",
+          "id": "invariants.0"
+        },
+        {
+          "type": "definition",
+          "term": "Loop invariant",
+          "body": "A sentence about the loop's variables that is true every time the loop is about to check its condition — before the first iteration, between every pair of iterations, and after the last. It describes the *progress so far*, usually as a fact about the prefix the loop has already handled.",
+          "id": "invariants.1"
+        },
+        {
+          "type": "prose",
+          "md": "If you did the induction section of Chapter 0, you already know this proof shape. **Initialization** = base case: true before the first iteration. **Maintenance** = inductive step: if it's true before one iteration, the body keeps it true for the next. **Termination** = the conclusion: when the loop stops, the invariant plus the stopping condition give you the thing you wanted. Poon's analogy: a Lego tower where every layer built so far is stable and aligned — so the finished tower is too.",
+          "id": "invariants.2"
+        },
+        {
+          "type": "prose",
+          "md": "**HW 3 Problem 1: proving the sum loop**\n1. `sum = 0; i = 0;` HW 3 Problem 1's loop. Goal: prove that when it ends, `sum` is the total of A. First, find a sentence that is true every time the loop is *about to* check its condition.\n2. `sum = A[0] + A[1] + … + A[i−1]` The invariant. Notice it's about the *part done so far* (the first i elements), not about the whole array. That's the most common lost point: 'sum is the total of A' is only true at the very end, so it can't be an invariant.\n3. `sum of the first 0 elements = 0` Initialization: before the first iteration, i = 0. The sum of zero elements is 0, and `sum` is 0. True. (This is the base case of an induction proof wearing a different hat.)\n4. `assume sum = A[0..i−1] before an iteration` Maintenance: suppose the sentence is true at the start of some iteration. The body adds A[i], so sum now covers A[0..i]. Then i goes up by one, so 'the first i elements' now means exactly A[0..i]. The sentence is true again. (Inductive step.)\n5. `sum = A[0] + … + A[A.length − 1]` Termination: the loop stops when i = A.length. Plug that into the invariant: sum is the sum of the first A.length elements — all of them. That's exactly what we wanted to prove. (Conclusion.)",
+          "id": "invariants.3"
+        },
+        {
+          "type": "example",
+          "title": "Four sentences, always the same shape",
+          "body": "How do you write a loop-invariant answer so Poon gives full marks?\n\n1. **Invariant:** 'At the start of each iteration with index j, ⟨a property of the part already processed, a[0..j−1]⟩ holds.'\n2. **Initialization:** plug in the first value of j; the property is trivially true (empty or one-element prefix).\n3. **Maintenance:** assume it holds for j; show the loop body extends the property to j+1.\n4. **Termination:** plug in the final value of j; the property now covers the whole array, which is what you wanted.",
+          "id": "invariants.4"
+        },
+        {
+          "type": "trap",
+          "body": "**The most common lost point** Writing the invariant about the *whole* array ('the array is sorted') instead of the *prefix handled so far* ('a[0..j−1] is sorted'). An invariant has to be true in the middle of the loop, when the job is only partly done.",
+          "source": "Exam material",
+          "points": null,
+          "id": "invariants.5"
+        }
+      ]
+    },
+    {
+      "id": "insertion",
+      "heading": "Insertion sort",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The idea before the code** You're dealt cards one at a time. You hold the ones you have in sorted order. Each new card, you slide left past every bigger card until it fits, and drop it in. The cards in your hand are always sorted; the deck is the unsorted part. That's insertion sort: a **sorted prefix** that grows by one each round, and a **key** that walks left into its place.",
+          "id": "insertion.0"
+        },
+        {
+          "type": "prose",
+          "md": "**Insertion sort on [8, 5, 2, 6, 9] (HW 3 Problem 2)**\n1. `[8, 5, 2, 6, 9] — j = 1, key = 5` Start. The first element alone counts as 'sorted' (green). The key is the first unsorted element, 5. We'll walk it left until it's in place.\n2. `[8, 8, 2, 6, 9] — 8 > 5 → shift 8 right` Compare the key with the element to its left: 8 > 5, so copy 8 one slot to the right. There's now a 'hole' at index 0 (still showing the old 8).\n3. `[5, 8, 2, 6, 9] — drop key at index 0 · j = 2, key = 2` Nothing left to compare, so drop 5 into the hole. Sorted prefix is now [5, 8]. Next key: 2.\n4. `[5, 5, 8, 6, 9] — 8 > 2 shift, 5 > 2 shift` 8 > 2 → shift 8. Then 5 > 2 → shift 5. The hole has walked all the way to index 0.\n5. `[2, 5, 8, 6, 9] — drop key at index 0 · j = 3, key = 6` Drop 2 into the hole. Sorted prefix [2, 5, 8]. Next key: 6.\n6. `[2, 5, 8, 8, 9] — 8 > 6 shift · 5 > 6? no → stop` 8 > 6 → shift 8. Now compare 5 with 6: 5 is not greater, so **stop**. This early stop is what makes insertion sort fast on nearly-sorted input.\n7. `[2, 5, 6, 8, 9] — drop key at index 2 · j = 4, key = 9` Drop 6 into the hole at index 2. Sorted prefix [2, 5, 6, 8]. Last key: 9.\n8. `[2, 5, 6, 8, 9] — 8 > 9? no → zero shifts` 8 is not greater than 9, so zero shifts; 9 stays put. The loop has run out of keys. Every element is in the sorted prefix: [2, 5, 6, 8, 9]. That's HW 3 Problem 2's answer, and the trace format Poon grades: key, sorted prefix, array after each iteration.",
+          "id": "insertion.1"
+        },
+        {
+          "type": "example",
+          "title": "Line by line: `j` is the key's starting index; `i` walks left; the while loop shifts bigger elements right; the last line drops the key into the hole. Project 1 wants this exact algorithm with null / empty guards added.",
+          "body": "public static void insertionSort(int[] a) {\n  if (a == null || a.length < 2) return;      // Project 1 guard\n  for (int j = 1; j < a.length; j++) {\n    int key = a[j];\n    int i = j - 1;\n    while (i >= 0 && a[i] > key) {\n      a[i + 1] = a[i];      // shift the bigger element right\n      i = i - 1;\n    }\n    a[i + 1] = key;         // drop key into the hole\n  }\n}",
+          "id": "insertion.2"
+        },
+        {
+          "type": "prose",
+          "md": "Same algorithm you'd write in TypeScript with `let key = a[j]` — the differences are cosmetic: `int` instead of `let`, `a.length` is the same, `&&` is the same, and there's no `const`. One real difference: Java arrays are fixed size and `int[]` holds only ints, so there's no `.push()`; you index.",
+          "id": "insertion.3"
+        },
+        {
+          "type": "example",
+          "title": "The proof Poon shows",
+          "body": "Prove insertionSort is correct.\n\n1. Invariant: at the start of each iteration of the for loop, a[0..j−1] holds the elements that were originally in a[0..j−1], in sorted order.\n2. Initialization: j = 1, so a[0..0] is one element — trivially sorted.\n3. Maintenance: assume a[0..j−1] is sorted. The while loop shifts every element bigger than key one slot right and drops key just before them, so a[0..j] is the original elements of a[0..j], sorted. The invariant now holds for j+1.\n4. Termination: the loop ends when j = a.length. The invariant says a[0..a.length−1] — the whole array — is sorted. Done.",
+          "id": "insertion.4"
+        },
+        {
+          "type": "definition",
+          "term": "Best case — already sorted",
+          "body": "the while condition `a[i] > key` is false immediately every time, so the inner loop never runs. One comparison per key: **Ω(n)**.",
+          "id": "insertion.5"
+        },
+        {
+          "type": "definition",
+          "term": "Worst case — sorted backwards",
+          "body": "every key must walk past every earlier element. Shifts: 1 + 2 + 3 + … + (n−1) = n(n−1)/2 (Chapter 0's sum). That's about n²/2: **O(n²)**.",
+          "id": "insertion.6"
+        },
+        {
+          "type": "definition",
+          "term": "Duplicates",
+          "body": "(HW 3 Problem 3): the worst case stays O(n²). Because the test is strict (`>`), equal elements don't shift past each other — which is also why insertion sort is **stable**: equal items keep their original order.",
+          "id": "insertion.7"
+        },
+        {
+          "type": "prose",
+          "md": "**'Why would anyone use an O(n²) sort?' (slide 29 — a likely short answer)** Three reasons. (1) **Small arrays** (under ~20): tiny constant factors and cache-friendly memory beat merge sort. Real libraries switch to insertion sort for small pieces — that is exactly Project 1's hybrid sort. (2) **Nearly-sorted data**: close to O(n) because the inner loop stops early. (3) **Simple and stable.**",
+          "id": "insertion.8"
+        },
+        {
+          "type": "check",
+          "prompt": "Trace insertion sort on [4, 3, 2, 1]. How many shifts total, and what does that number tell you?",
+          "answer": "j=1 key 3: 1 shift → [3,4,2,1]. j=2 key 2: 2 shifts → [2,3,4,1]. j=3 key 1: 3 shifts → [1,2,3,4]. Total 1+2+3 = 6 = 4·3/2 = n(n−1)/2. Reverse order is the worst case: every key shifts past everything.",
+          "sectionRef": "insertion",
+          "id": "insertion.9"
+        },
+        {
+          "type": "check",
+          "prompt": "What input makes insertion sort fastest, and what makes it slowest? Give the growth for each.",
+          "answer": "Fastest: already sorted, Ω(n) — the inner loop condition fails at once. Slowest: sorted largest-to-smallest, O(n²) — every element shifts past all earlier ones.",
+          "sectionRef": "insertion",
+          "id": "insertion.10"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "stack-queue-story",
+      "title": "Which ADT?",
+      "prompt": "A text editor's undo feature. Every edit is recorded; pressing Undo reverses the most recent edit that hasn't been undone yet. Which ADT, which operations map to 'make an edit' and 'press Undo', and why not the other one?",
+      "choices": [
+        {
+          "text": "Queue — enqueue on edit, dequeue on undo",
+          "feedback": "A queue would undo the *oldest* edit first. Try it: edits A, B, C; dequeue gives A. That's not what Undo does."
+        },
+        {
+          "text": "Stack — push on edit, pop on undo",
+          "feedback": "Right. The most recent edit is the first one reversed: last in, first out."
+        },
+        {
+          "text": "List — add at index 0 on edit, get(size−1) on undo",
+          "feedback": "A list can be made to work, but you'd be reimplementing a stack with extra steps and an O(n) shift on every edit. Poon's point about ADTs: pick the contract that matches the behaviour."
+        }
+      ],
+      "answer": 1,
+      "hints": [
+        "Ask the one question: when you undo, do you reverse the *first* edit you ever made, or the *most recent* one?",
+        "Students often pick the structure they find more familiar rather than matching the *order* of removal. The only thing that decides stack vs queue is: first-in-first-out or last-in-first-out?",
+        "Say the scenario out loud as 'the ___ thing in is the ___ thing out'. Fill the blanks; that sentence names the ADT."
+      ],
+      "solution": [
+        "Undo reverses the most recent edit: last in, first out. That's a stack.",
+        "Make an edit = push(edit). Press Undo = pop() and reverse what it returns. Redo is a second stack: each undone edit is pushed there.",
+        "A queue would reverse the oldest edit first — wrong behaviour, not just slower."
+      ],
+      "why": "Undo/redo, the browser's back button, the call stack that runs every function you write, and matching brackets in a compiler are all stacks. Recognizing 'this is LIFO' in a story is a skill interviewers test directly."
+    },
+    {
+      "id": "circular-queue-trace",
+      "title": "Trace a circular queue",
+      "prompt": "Capacity 4, head = 0, tail = −1, size = 0. Run: enqueue(A), enqueue(B), enqueue(C), dequeue(), dequeue(), enqueue(D), enqueue(E), enqueue(F). After each operation write head, tail, size, and the array. Which enqueue wraps around, and what is `tail` right after it?",
+      "hints": [
+        "Keep a table with columns: op · array · head · tail · size. Fill one row per operation. Enqueue moves tail; dequeue moves head; both use `(x + 1) % 4`.",
+        "The usual slip is forgetting that dequeue does NOT clear or shift anything — it only moves `head`. The old value stays in the slot until something overwrites it.",
+        "Wraparound happens when tail is at index 3 and you enqueue: (3 + 1) % 4 = 0. Watch for the moment tail hits 3."
+      ],
+      "solution": [
+        "enqueue A: [A · · ·], head 0, tail 0, size 1. enqueue B: [A B · ·], tail 1, size 2. enqueue C: [A B C ·], tail 2, size 3.",
+        "dequeue → A: head 1, size 2. dequeue → B: head 2, size 1. (Slots 0 and 1 still hold A and B physically, but they're free.)",
+        "enqueue D: tail (2+1)%4 = 3, [A B C D], size 2. enqueue E: tail (3+1)%4 = **0** — wraps — [E B C D], size 3.",
+        "enqueue F: tail 1, [E F C D], size 4 — full. Queue order (from head): C, D, E, F.",
+        "The enqueue of E wraps; tail = 0 right after it."
+      ],
+      "why": "This exact structure is the ring buffer inside every keyboard driver, audio pipeline, and network card — a fixed block of memory reused forever with two indexes. If you ever write anything real-time, you'll write this."
+    },
+    {
+      "id": "invariant-max",
+      "title": "State and prove a loop invariant",
+      "prompt": "Write the loop invariant for this code and give Initialization, Maintenance, and Termination in Poon's four-sentence format.",
+      "code": "int best = a[0];\nfor (int i = 1; i < a.length; i++)\n  if (a[i] > best) best = a[i];",
+      "hints": [
+        "The invariant is a sentence about `best` and `i` that's true every time the loop is about to test `i < a.length`. What does `best` hold at that moment — in terms of i?",
+        "The classic mistake: 'best is the maximum of the array'. That's only true at the END. Mid-loop, best is the maximum of the part you've *seen*. Name that part using i.",
+        "Template: 'At the start of each iteration with index i, best = the maximum of a[0..i−1].' Now plug in i = 1 for initialization and i = a.length for termination."
+      ],
+      "solution": [
+        "Invariant: at the start of each iteration with index i, `best` equals the maximum of a[0..i−1].",
+        "Initialization: i = 1, so a[0..0] is just a[0], and best was set to a[0]. ✓",
+        "Maintenance: assume best = max of a[0..i−1]. The body compares a[i] to best and keeps the larger, so best = max of a[0..i]. Then i increments, so the invariant reads 'max of a[0..i−1]' again for the new i. ✓",
+        "Termination: the loop ends when i = a.length. The invariant says best = max of a[0..a.length−1] — the whole array. ✓"
+      ],
+      "why": "Every time you write a loop that accumulates something (a max, a sum, a running average, 'the best candidate so far'), the invariant is the sentence that tells you the loop is right — and it's the sentence you'll write in a code review comment when someone asks 'why does this work?'",
+      "sectionRef": "invariants"
+    },
+    {
+      "id": "insertion-trace",
+      "title": "Trace insertion sort",
+      "prompt": "Trace insertion sort on [6, 3, 7, 1, 5]. For each outer iteration write the key, the sorted prefix before the insert, the number of shifts, and the array after. Then: how many shifts total, and what input of length 5 would give the maximum possible?",
+      "hints": [
+        "Set up five rows, one per j from 1 to 4. The key is a[j]; the sorted prefix is a[0..j−1]; a shift happens every time the element left of the hole is bigger than the key.",
+        "The common mistake is counting comparisons instead of shifts, or forgetting that the loop stops at the first element that is NOT bigger than the key (the `>` is strict).",
+        "For the maximum: what arrangement forces every key to walk past every earlier element? Then use 1 + 2 + … + (n−1)."
+      ],
+      "solution": [
+        "j=1 key 3, prefix [6]: 6 > 3 → 1 shift → [3, 6, 7, 1, 5].",
+        "j=2 key 7, prefix [3, 6]: 6 > 7? no → 0 shifts → [3, 6, 7, 1, 5].",
+        "j=3 key 1, prefix [3, 6, 7]: 7, 6, 3 all bigger → 3 shifts → [1, 3, 6, 7, 5].",
+        "j=4 key 5, prefix [1, 3, 6, 7]: 7 > 5 shift, 6 > 5 shift, 3 > 5? no → 2 shifts → [1, 3, 5, 6, 7].",
+        "Total shifts: 1 + 0 + 3 + 2 = 6. Maximum for n = 5: reverse order [5, 4, 3, 2, 1] gives 1 + 2 + 3 + 4 = 10 = n(n−1)/2."
+      ],
+      "why": "Insertion sort is what real libraries run on small or nearly-sorted pieces (Python's sort, Java's, and your Project 1 hybrid). Knowing exactly what it does on a specific input is how you predict whether it'll be fast on *your* data.",
+      "sectionRef": "insertion"
+    }
+  ]
+}

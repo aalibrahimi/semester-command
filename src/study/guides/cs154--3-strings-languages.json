@@ -1,0 +1,351 @@
+{
+  "id": "cs154/3-strings-languages",
+  "course": "cs154",
+  "lessons": "Lessons 3–4",
+  "title": "Alphabets, strings, formal languages — and the notation that costs points",
+  "summary": "Define alphabet, string, language in Chen's words; compute lengths, exponents, reverses, prefixes; tell λ, ϕ, {λ} apart; translate English ↔ set-builder for 'at least / exactly / starts with' languages and their complements; compute L₁L₂ and Lⁿ with independent indices.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Lesson 3 (Aug 31) and Lesson 4 (Sep 2) slides + appendix, Assignment 2 and 3 solution keys.",
+  "requires": [
+    "cs154/1-sets-functions"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why 'language' means something strange here",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The idea** In this course a *language* is not English. It's a **set of strings** — any set of strings. {ab, aabb, aaabbb, …} is a language. Why care? Because every yes/no question about text can be rewritten as 'is this string in that set?' *Is this a valid email?* → is it in the set of valid emails. *Does this program compile?* → is it in the set of well-formed programs. So 'which languages can a machine recognize' is the same question as 'which problems can a machine solve'. Strings and languages are the vocabulary for asking that.",
+          "id": "why.0"
+        },
+        {
+          "type": "trap",
+          "body": "**The four branches (a 2-point question on Assignment 2)** The theory of computation has four branches: **Formal Languages**, **Automata**, **Computability**, **Complexity**. 0.5 points each. It will come back.",
+          "source": "Assignment 2",
+          "points": null,
+          "id": "why.1"
+        }
+      ]
+    },
+    {
+      "id": "strings",
+      "heading": "Alphabets and strings",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Alphabet Σ",
+          "body": "a **nonempty, finite set of symbols**. Symbols are indivisible. His 'celebrity alphabet' is Σ = {a, b}.",
+          "id": "strings.0"
+        },
+        {
+          "type": "definition",
+          "term": "String",
+          "body": "a **finite sequence of symbols from Σ**. It need not mean anything. Strings are named w (then u, v, then x, y, z).",
+          "id": "strings.1"
+        },
+        {
+          "type": "definition",
+          "term": "Length |w|",
+          "body": "the number of symbols. |babba| = 5.",
+          "id": "strings.2"
+        },
+        {
+          "type": "definition",
+          "term": "Empty string λ",
+          "body": "the string with zero symbols. |λ| = 0. λ can never be a *symbol* in an alphabet (λaabb would be ambiguous).",
+          "id": "strings.3"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Symbol",
+            "What it is",
+            "Size"
+          ],
+          "rows": [
+            [
+              "ϕ or { }",
+              "the empty **set** — a language with no strings",
+              "|ϕ| = 0"
+            ],
+            [
+              "λ",
+              "the empty **string** — a string with no symbols",
+              "|λ| = 0"
+            ],
+            [
+              "{λ}",
+              "a language with **one** string, the empty one",
+              "|{λ}| = 1"
+            ]
+          ],
+          "id": "strings.4"
+        },
+        {
+          "type": "prose",
+          "md": "**Exponent, the a⁰ trap, and reverse**\n1. `w³ = ?` **Exponent** on a string: wⁿ means n copies of w glued together (concatenated).\n2. `= ababab` Three copies of ab. Length multiplies: |wⁿ| = |w| · n.\n3. `(aaba)⁰ = λ` Zero copies is the string with no symbols: **λ** (lambda), the empty string. |λ| = 0. This is the string-world cousin of the empty set, and they are *not* the same thing.\n4. `the exponent applies only to the last symbol` Trap: without parentheses the exponent belongs to just the symbol before it. aaba⁰ = aab, but (aaba)⁰ = λ. Quiz question every year.\n5. `m a's, then m b's` The pattern you'll see most: aᵐbᵐ. Same count of a's and b's, all a's first. This is the shape of the 'celebrity language' in the next section.\n6. `(uv)ᴿ = vᴿ uᴿ` **Reverse** flips the order of symbols. Reversing a concatenation reverses each piece *and* swaps their order. A **palindrome** is a string with wᴿ = w (abba).",
+          "id": "strings.5"
+        },
+        {
+          "type": "definition",
+          "term": "Concatenation uv",
+          "body": "write u then v. |uv| = |u| + |v|. λ is the neutral element: λw = wλ = w.",
+          "id": "strings.6"
+        },
+        {
+          "type": "definition",
+          "term": "Substring",
+          "body": "a run of consecutive symbols. If w = uv, then u is a **prefix** and v a **suffix**. Both λ and w itself count as prefixes and suffixes.",
+          "id": "strings.7"
+        },
+        {
+          "type": "definition",
+          "term": "Σ∗",
+          "body": "(Sigma star): every string of zero or more symbols from Σ — including λ. **Σ⁺**: one or more — excluding λ. Both are infinite. Σ⁺ = Σ∗ − {λ}. Σ∗ is 'the universal language over Σ' — every language over Σ is a subset of it.",
+          "id": "strings.8"
+        },
+        {
+          "type": "example",
+          "title": "Listing every split",
+          "body": "List all (prefix, suffix) pairs of w = abaaba.\n\n1. A split is a place to cut. With 6 symbols there are 7 cut positions (before the first, between each pair, after the last).\n2. (λ, abaaba), (a, baaba), (ab, aaba), (aba, aba), (abaa, ba), (abaab, a), (abaaba, λ).\n3. Always |w| + 1 pairs. Don't forget the two ends.",
+          "id": "strings.9"
+        },
+        {
+          "type": "check",
+          "prompt": "Can these be alphabets: {a, 1}, { }, {ab}, {λ}?",
+          "answer": "{a, 1} yes. { } no — must be nonempty. {ab} yes — here 'ab' is one indivisible symbol. {λ} no — λ can't be a symbol.",
+          "sectionRef": "strings",
+          "id": "strings.10"
+        },
+        {
+          "type": "check",
+          "prompt": "|aλb| = ? (aba)⁰ = ? aba⁰ = ? λ⁰ = ?",
+          "answer": "2 (λ adds nothing). λ. ab (only the last a is raised to 0). λ.",
+          "sectionRef": "strings",
+          "id": "strings.11"
+        }
+      ]
+    },
+    {
+      "id": "languages",
+      "heading": "Formal languages",
+      "blocks": [
+        {
+          "type": "trap",
+          "body": "**♥ Definition (2 points on Assignment 2)** **A formal language over Σ is any subset of Σ∗.** A language is a set, so everything from Lesson 1 applies (union, complement, subset…). Named L. Two special ones: the **empty language** ϕ, and the **λ-language** {λ}.",
+          "source": "Assignment 2",
+          "points": null,
+          "id": "languages.0"
+        },
+        {
+          "type": "prose",
+          "md": "L = { aⁿbⁿ | n ≥ 0 } = {λ, ab, aabb, aaabbb, …}: some a's, then *the same number* of b's. Compare { aⁿbᵐ | n, m ≥ 0 }: any number of a's, then any number of b's — n and m are independent, so aab is in it but not in the first. That one letter of difference is the whole distinction between what a DFA can and cannot do (Lesson 12).",
+          "id": "languages.1"
+        },
+        {
+          "type": "prose",
+          "md": "**Concatenating and squaring languages**\n1. `L₁L₂ = ?` **Concatenation of languages**: L₁L₂ = { uv | u ∈ L₁, v ∈ L₂ } — take a string from L₁, then a string from L₂, glue them, and do that for *every* pair. It's a Cartesian product where you concatenate instead of making tuples.\n2. `[xm, xn] — x with each of L₂` x followed by m; x followed by n.\n3. `[xm, xn, ym, yn] — then y` y with each.\n4. `[xm, xn, ym, yn, zm, zn] — then z · 3 × 2 = 6 strings` L₁L₂ = {xm, xn, ym, yn, zm, zn}. Six strings, |L₁| · |L₂|. In general |L₁L₂| **≤** |L₁|·|L₂| — ≤, not =, because two different pairs can glue into the same string (a·ab = aa·b).\n5. `ϕL = Lϕ = ϕ      (like × 0: no strings to pick from)` Two special cases he asks about. Concatenating with the empty *language* gives the empty language — there's no string in ϕ to pick. Concatenating with {λ} — a language whose only string is the empty string — changes nothing.\n6. `L² = LL = { aⁿbⁿ aᵐbᵐ | n, m ≥ 0 }` **Exponent on a language** concatenates it with itself. The two copies choose their n *independently* — so the second copy needs its own variable m. aabb·ab ∈ L² with n = 2, m = 1. Also: L⁰ = {λ} for every L, even ϕ⁰ = {λ}.",
+          "id": "languages.2"
+        },
+        {
+          "type": "definition",
+          "term": "Reverse",
+          "body": "Lᴿ = { wᴿ | w ∈ L }. { aⁿbⁿ }ᴿ = { bⁿaⁿ }.",
+          "id": "languages.3"
+        },
+        {
+          "type": "definition",
+          "term": "Concatenation",
+          "body": "L₁L₂ = { uv | u ∈ L₁, v ∈ L₂ }. ϕL = ϕ. {λ}L = L.",
+          "id": "languages.4"
+        },
+        {
+          "type": "definition",
+          "term": "Exponent Lⁿ",
+          "body": "n copies concatenated, each with its own index. L⁰ = {λ}, even for ϕ.",
+          "id": "languages.5"
+        },
+        {
+          "type": "prose",
+          "md": "- Set operations as usual. **Complement** L̄ = Σ∗ − L — the universal set is Σ∗.",
+          "id": "languages.6"
+        },
+        {
+          "type": "check",
+          "prompt": "L = { cⁿdⁿ | n ≥ 0 }. Write L² and Lᴿ.",
+          "answer": "L² = { cⁿdⁿcᵐdᵐ | n, m ≥ 0 } (independent indices, not c²ⁿd²ⁿ). Lᴿ = { dⁿcⁿ | n ≥ 0 }.",
+          "sectionRef": "languages",
+          "id": "languages.7"
+        }
+      ]
+    },
+    {
+      "id": "patterns",
+      "heading": "English ↔ set-builder: the patterns he expects",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**How to write 'at least one a'** Assignment 3 asked for languages in set-builder and their complements, and the key wants specific shapes. The trick for all of them: describe the string as a *template* — some free stuff, the thing you require, more free stuff — where 'free stuff' is bⁿ (only b's) or w ∈ Σ∗ (anything). 'At least one a' becomes: any b's, then an a, then anything: { bⁿaw | n ≥ 0, w ∈ Σ∗ }. Once you see the template idea, the whole table writes itself.",
+          "id": "patterns.0"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "English",
+            "Set-builder",
+            "Complement"
+          ],
+          "rows": [
+            [
+              "at least one a",
+              "{ bⁿaw | n ≥ 0, w ∈ Σ∗ }",
+              "{ bⁿ | n ≥ 0 } — no a at all"
+            ],
+            [
+              "exactly one a",
+              "{ bⁿabᵐ | n, m ≥ 0 }",
+              "{ bⁿ | n ≥ 0 } ∪ { strings with ≥ 2 a's }"
+            ],
+            [
+              "starts with a",
+              "{ aw | w ∈ Σ∗ }",
+              "{λ} ∪ { bw | w ∈ Σ∗ }"
+            ],
+            [
+              "has prefix ab",
+              "{ abw | w ∈ Σ∗ }",
+              "{λ, a} ∪ { aaw | w ∈ Σ∗ } ∪ { bw | w ∈ Σ∗ }"
+            ],
+            [
+              "only a's (λ allowed)",
+              "{ aⁿ | n ≥ 0 }",
+              "strings containing at least one b"
+            ],
+            [
+              "at least n / at most n",
+              "≥ n / ≤ n",
+              "≤ n−1 / ≥ n+1"
+            ]
+          ],
+          "id": "patterns.1"
+        },
+        {
+          "type": "example",
+          "title": "Complement by asking 'how can a string fail?'",
+          "body": "L = { aⁿb | n ≥ 0 } over {a, b}: some a's then exactly one b at the end. Write L̄.\n\n1. A string is *not* in L in exactly two ways. Way 1: it has no b at all — just a's (including λ): { aⁿ | n ≥ 0 }.\n2. Way 2: it has a b, but the b isn't the last symbol — something follows it: { aⁿbw | n ≥ 0, w ∈ Σ⁺ }. (Σ⁺, not Σ∗, because if w were λ the string would be in L.)\n3. Union the two ways.",
+          "answer": "L̄ = { aⁿ | n ≥ 0 } ∪ { aⁿbw | n ≥ 0, w ∈ {a, b}⁺ }",
+          "id": "patterns.2"
+        },
+        {
+          "type": "prose",
+          "md": "**Assignment 2 Q12: roster form of { w@w | w ∈ {a,b}∗ }**\n1. `pattern: some string w, then @, then the SAME w again` Assignment 2 Q12: write this in roster form. Read the pattern first. The variable w appears twice, so both halves are identical.\n2. `w = λ  →  λ@λ = @` Smallest w first. w = λ (the empty string, allowed because of the ∗): λ@λ is just **@**. Note that the string is '@', not λ — the @ is always there. Including λ in the roster was a −0.5 deduction.\n3. `…` Length-2 w's, then it goes on forever. Infinite language, so the roster must end with '…' (−0.25 if missing).\n4. `L = { @, a@a, b@b, aa@aa, ab@ab, ba@ba, bb@bb, … }` The accepted answer. Deductions from the key: no braces −0.25 · no '…' −0.25 · λ included −0.5 · halves don't match (a@b) −1 · anything else −1.5.",
+          "id": "patterns.3"
+        },
+        {
+          "type": "check",
+          "prompt": "Over Σ = {a, b}, write 'more than one a' and its complement in set-builder.",
+          "answer": "L = { bⁿabᵐaw | n, m ≥ 0, w ∈ Σ∗ } (two a's guaranteed, anything after). Complement = zero or one a: { bⁿ | n ≥ 0 } ∪ { bⁿabᵐ | n, m ≥ 0 }.",
+          "sectionRef": "patterns",
+          "id": "patterns.4"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "heading": "The 12 notation rules (index-card material)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every one of these is a deduction from the Assignment 1–3 keys. Assignment 2 lost 7.5 of 24 points, almost all on these. Write them on a card and check every quiz answer against the card before submitting — it's the cheapest grade recovery in any of your classes.",
+          "id": "rules.0"
+        },
+        {
+          "type": "prose",
+          "md": "- **1.** Sets and languages get braces { }; tuples get parentheses ( ).\n- **2.** λ is the empty *string*; ϕ or { } is the empty *set*; {λ} is a language with one string.\n- **3.** In set-builder, comma = *and*. Write 'or' (or ∨) for or.\n- **4.** Always name the alphabet: 'over Σ = {a, b}'.\n- **5.** Roster form of an infinite language ends with '…'.\n- **6.** Strings are w, u, v; languages are L; alphabets are Σ.",
+          "id": "rules.1"
+        },
+        {
+          "type": "prose",
+          "md": "- **7.** Complement of a language means Σ∗ − L; you need Σ.\n- **8.** w⁰ = λ (a string), but L⁰ = {λ} (a language).\n- **9.** Exponents on languages create *independent* indices (n, m).\n- **10.** A ⊂ B (proper) requires A ≠ B; when in doubt, ⊆.\n- **11.** Roster elements separated by commas, inside one pair of braces.\n- **12.** Don't invent notation. If the slide wrote it a certain way, write it that way.",
+          "id": "rules.2"
+        },
+        {
+          "type": "prose",
+          "md": "**Lessons 3–4 in one breath.** Σ is a finite nonempty set of symbols; a string is a finite sequence of them; Σ∗ is all strings; a language is any subset of Σ∗. Strings concatenate, reverse, and take exponents (w⁰ = λ); languages do too (L⁰ = {λ}, independent indices). Complement is relative to Σ∗. Three empties: ϕ, λ, {λ}. Templates like bⁿaw turn English into set-builder.",
+          "id": "rules.3"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "string-ops",
+      "title": "String arithmetic",
+      "prompt": "Let u = ab, v = ba. Compute: (a) |uvu|, (b) (uv)ᴿ, (c) u³, (d) uv⁰, (e) (uv)⁰, (f) the number of (prefix, suffix) pairs of uvu.",
+      "hints": [
+        "Concatenate first, then apply the operation to the result. Write the actual strings out — don't do it symbolically.",
+        "(d) vs (e) is the aaba⁰ trap: without parentheses the exponent applies only to v. And in (f), λ and the whole string both count.",
+        "(b): reverse of a concatenation = reverse each part and swap the order. Check it by writing uv out and reading it backwards."
+      ],
+      "solution": [
+        "(a) uvu = abbaab, length 6.",
+        "(b) uv = abba; reversed = abba (it's a palindrome). Via the rule: vᴿuᴿ = ab·ba = abba ✓.",
+        "(c) u³ = ababab.",
+        "(d) uv⁰ = u·λ = ab. (e) (uv)⁰ = λ.",
+        "(f) |uvu| + 1 = 7 pairs."
+      ],
+      "why": "String operations are the primitives of every parser, every regex engine, and every 'does this input match this format' check. Getting the empty string right is what stops off-by-one bugs at the ends of inputs.",
+      "sectionRef": "strings"
+    },
+    {
+      "id": "english-to-builder",
+      "title": "English → set-builder, plus complements",
+      "prompt": "Over Σ = {a, b}, write in set-builder: (a) strings that end in b; (b) strings with exactly two a's; (c) strings of even length. Then write the complement of (a) and (b).",
+      "hints": [
+        "Use templates: 'free stuff' is w ∈ Σ∗ (anything) or bⁿ (only b's). Put the required part where it must be and free stuff around it.",
+        "Chen's deductions: missing 'over Σ', missing the condition on n, and — for (b) — forgetting that between and around the two a's there can be b's *but not a's*. { w a w a w | w ∈ Σ∗ } is wrong (the w's could contain a's).",
+        "For complements, ask 'how does a string fail?'. (a) fails if it's empty OR ends in a. (b) fails if it has fewer than 2 a's OR more than 2."
+      ],
+      "solution": [
+        "(a) { wb | w ∈ Σ∗ }. Complement: {λ} ∪ { wa | w ∈ Σ∗ }.",
+        "(b) { bⁿ a bᵐ a bᵏ | n, m, k ≥ 0 }. Complement: { bⁿ | n ≥ 0 } ∪ { bⁿ a bᵐ | n, m ≥ 0 } ∪ { w | w ∈ Σ∗, w has at least three a's } — or { bⁿabᵐabᵏaw | n,m,k ≥ 0, w ∈ Σ∗ } for the last piece.",
+        "(c) { w | w ∈ Σ∗, |w| is even } — or { uv | u, v ∈ Σ∗, |u| = |v| }. Note λ ∈ this set (length 0 is even)."
+      ],
+      "why": "Translating a plain-English requirement into a precise pattern — and then writing what *doesn't* match — is the core of writing validators, firewall rules, and test cases. The complement is the part people skip, and it's where the security holes are.",
+      "sectionRef": "strings"
+    },
+    {
+      "id": "roster-deductions",
+      "title": "Grade it like Chen",
+      "prompt": "A student answers the question 'Write L = { aⁿb | n ≥ 0 } in roster form' with: `(λ, b, ab, aab, aaab)`. List every deduction the key would take and write the correct answer.",
+      "choices": [
+        {
+          "text": "Only one thing is wrong: the brackets.",
+          "feedback": "The brackets are wrong, but keep looking — is λ actually in L? And is the language finite?"
+        },
+        {
+          "text": "Three things: brackets, λ shouldn't be there, and it's missing '…'.",
+          "feedback": "Right. Parentheses instead of braces (−0.25 to −0.5), λ included when n = 0 gives 'b' not λ (−0.5), and no '…' for an infinite language (−0.25)."
+        },
+        {
+          "text": "Nothing — λ is in L because n can be 0.",
+          "feedback": "n = 0 gives a⁰b = λb = b. The string is b, not λ. The b is always there."
+        }
+      ],
+      "answer": 1,
+      "hints": [
+        "Check three things every time: the brackets, whether the smallest element is right, and whether the list needs '…'.",
+        "The λ trap: a⁰ is λ, but a⁰b is b. Plug n = 0 in fully before writing the first element.",
+        "Chen's rule 5: roster form of an infinite language ends with '…'. Rule 1: sets get braces."
+      ],
+      "solution": [
+        "Brackets: a set needs { }, not ( ). Deduction.",
+        "First element: n = 0 → a⁰b = b, not λ. λ ∉ L. Deduction.",
+        "Infinite language, no '…'. Deduction.",
+        "Correct: L = { b, ab, aab, aaab, … }."
+      ],
+      "why": "Reading your own answer the way a strict grader would is a skill in itself — it's code review applied to yourself. In this class it's worth about a third of the points you've been losing."
+    }
+  ]
+}

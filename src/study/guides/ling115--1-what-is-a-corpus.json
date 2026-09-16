@@ -1,0 +1,157 @@
+{
+  "id": "ling115/1-what-is-a-corpus",
+  "course": "ling115",
+  "lessons": "Weeks 1–2",
+  "title": "What a corpus is, and what makes one good",
+  "summary": "Define corpus, representativeness, balance, and sampling frame; describe Brown, COCA, Switchboard, TIMIT, and the Penn Treebank in one line each; explain why a small balanced corpus can beat a huge web corpus.",
+  "estimatedMinutes": 30,
+  "sourceNote": "Syllabus, Grabowski (2023), Weisser (2015) ch. 3, Leech (2004); week 1–2 slides once the Syllabus Quiz unlocks them.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why not just use all the text on the internet?",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The idea** Suppose you want to know how 1960s American newspapers used the word *nuclear*. A trillion words of web text won't tell you — wrong decade, wrong register, unknown authors, duplicated spam, and no way to say what fraction is news. A **corpus** is the fix: a collection of texts chosen *on purpose*, so that what you count in the sample says something about the language you actually care about. The design questions — what population, what proportions, how sampled — are the whole discipline. Everything later (regex, tokens, tagging) is machinery for asking questions of a well-built corpus.",
+          "id": "why.0"
+        },
+        {
+          "type": "definition",
+          "term": "Corpus",
+          "body": "A large, principled, machine-readable collection of naturally occurring language, built to be representative of some language or variety, and used as the basis of linguistic analysis. Plural *corpora*.",
+          "id": "why.1"
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "heading": "Design vocabulary",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Population",
+          "body": "the language or variety you want to make claims about (edited American English published in 1961).",
+          "id": "design.0"
+        },
+        {
+          "type": "definition",
+          "term": "Sampling frame",
+          "body": "the concrete set of texts you're allowed to draw from to stand in for the population.",
+          "id": "design.1"
+        },
+        {
+          "type": "definition",
+          "term": "Representativeness",
+          "body": "how well the sample reflects the *variability* of the population — across text types, registers, speakers, time.",
+          "id": "design.2"
+        },
+        {
+          "type": "definition",
+          "term": "Balance",
+          "body": "whether the proportions of text types in the corpus match their (assumed) importance in the population. Brown: 500 samples across 15 genres, deliberately proportioned.",
+          "id": "design.3"
+        },
+        {
+          "type": "definition",
+          "term": "Reference vs monitor corpus",
+          "body": "a reference corpus is a fixed snapshot (Brown, 1961); a monitor corpus keeps growing (COCA).",
+          "id": "design.4"
+        },
+        {
+          "type": "definition",
+          "term": "Specialized, learner, parallel, spoken",
+          "body": "built for one domain, for learner language, for aligned translations, or from transcribed speech.",
+          "id": "design.5"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Corpus",
+            "Size",
+            "What it is"
+          ],
+          "rows": [
+            [
+              "Brown (1961)",
+              "~1M tokens",
+              "500 × ~2,000-word samples, 15 genres of edited American English; first machine-readable balanced corpus; POS-tagged; in NLTK"
+            ],
+            [
+              "COCA",
+              "1B+",
+              "Contemporary American English, 1990s on; spoken + written; monitor corpus; english-corpora.org"
+            ],
+            [
+              "Switchboard",
+              "2.4M",
+              "Telephone conversations; spoken"
+            ],
+            [
+              "TIMIT",
+              "—",
+              "Read speech with phone-level time alignment (LING 124 territory)"
+            ],
+            [
+              "Penn Treebank",
+              "—",
+              "Syntactically annotated Wall Street Journal text; the standard tagset"
+            ],
+            [
+              "Google N-grams",
+              "1T",
+              "Web-scale counts, no full texts"
+            ],
+            [
+              "Shakespeare",
+              "884K",
+              "Complete works; closed, historical"
+            ]
+          ],
+          "id": "design.6"
+        },
+        {
+          "type": "example",
+          "title": "Why Brown can beat the web",
+          "body": "Why might a 1-billion-word web corpus be *less* useful than the 1-million-word Brown Corpus for a question about 1960s written American English?\n\n1. Population match: Brown *is* edited 1961 American English; the web is mostly not.\n2. Balance: Brown's genre proportions are known and deliberate; the web's are unknown and skewed.\n3. Documentation: Brown's design is published; a web crawl has no datasheet (Lectures 7–8).\n4. Annotation: Brown is POS-tagged; a raw crawl isn't.\n5. Size helps only for rare phenomena — and only if the sample is of the right thing.",
+          "answer": "Representativeness, balance, documentation, and annotation beat raw size.",
+          "id": "design.7"
+        },
+        {
+          "type": "prose",
+          "md": "**Grabowski's question (a Reading Response option)** 'Statistician, programmer, data scientist — who is, or should be, a corpus linguist in the 2020s?' Kraus's answer across the semester: the linguist as **data architect** — someone who designs the dataset around the research question, rather than taking a dataset and asking what can be done with it.",
+          "id": "design.8"
+        },
+        {
+          "type": "check",
+          "prompt": "You want to study how teenagers use *like* in speech. Name the population, a plausible sampling frame, and one balance decision.",
+          "answer": "Population: spoken English of teenagers (say, 13–19, US, 2020s). Sampling frame: recorded conversations you can legally collect — e.g. consented recordings from several schools. Balance: equal proportions by age band, gender, and region, so no one group dominates the counts.",
+          "sectionRef": "design",
+          "id": "design.9"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "design-a-corpus",
+      "title": "Design a corpus for a question",
+      "prompt": "Research question: 'Do American political speeches use more first-person plural (*we, our*) now than in the 1960s?' Specify: the population, a sampling frame, two balance decisions, whether you need a reference or monitor corpus, and one thing your design cannot answer.",
+      "hints": [
+        "Work top-down: population = the language you're making a claim about (which speeches, which decades). Sampling frame = the concrete texts you can actually get. Balance = what proportions you'll hold constant so the comparison is fair.",
+        "The weak design compares 'all speeches I could find from each era'. That confounds the question with genre: if the 1960s sample is mostly inaugural addresses and the 2020s sample is mostly rally speeches, you've measured genre, not time.",
+        "Hold constant: speech type (say, State of the Union only), speaker role, and length or word count per decade. Then the one thing you can't answer: anything about speeches of a type you excluded, or about *why* the rate changed."
+      ],
+      "solution": [
+        "Population: transcribed American presidential speeches of a fixed type, 1960s vs 2020s.",
+        "Sampling frame: official transcripts (e.g. the American Presidency Project) of State of the Union addresses in each decade.",
+        "Balance: same speech type across decades; roughly equal word counts per decade; both parties represented in each.",
+        "Reference corpora — two fixed snapshots — since the question compares two periods, not a moving target.",
+        "Cannot answer: whether rally or campaign speeches changed, or why the pronoun rate moved. It's a description of a rate, not an explanation."
+      ],
+      "why": "Every data-science project that compares two groups fails or succeeds on this step, before any code runs. The 'linguist as data architect' is the person who notices the genre confound before the results are published.",
+      "sectionRef": "design"
+    }
+  ]
+}

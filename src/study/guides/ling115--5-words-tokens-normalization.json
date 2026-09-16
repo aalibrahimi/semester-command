@@ -1,0 +1,329 @@
+{
+  "id": "ling115/5-words-tokens-normalization",
+  "course": "ling115",
+  "lessons": "Lectures 5–6",
+  "title": "What counts as a word: tokens, types, TTR, tokenization, normalization",
+  "summary": "Distinguish lemma / wordform / type / token and compute TTR; explain Heaps' law and why TTR only compares equal-size texts; list where whitespace tokenization fails; reproduce the normalization table and give three examples of what cleaning erases.",
+  "estimatedMinutes": 55,
+  "sourceNote": "Lecture 5 (Sep 8) and Lecture 6 (Sep 10) slides, J&M ch. 2.1–2.6, chance quizzes.",
+  "requires": [
+    "ling115/4-regex"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why 'what is a word' is a real question",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Every technical choice is a linguistic claim** Before you can count words, you have to decide what a word is — and every answer erases something. Is *San Francisco* one word or two? Is *don't* one? Are *Apple* and *apple* the same? Kraus's line: **'Tokenization is an analytic decision, not a neutral preprocessing step.'** Her chance-quiz questions almost all have the same shape: *true or false about a definition*, then *give one example of what a choice preserves or erases*. This chapter is that answer bank.",
+          "id": "why.0"
+        }
+      ]
+    },
+    {
+      "id": "units",
+      "heading": "Lemma, wordform, type, token",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Lemma",
+          "body": "the dictionary headword — same stem, same part of speech, same basic sense. *cat* and *cats* are one lemma.",
+          "id": "units.0"
+        },
+        {
+          "type": "definition",
+          "term": "Wordform",
+          "body": "the fully inflected surface form. *cat* and *cats* are two wordforms.",
+          "id": "units.1"
+        },
+        {
+          "type": "definition",
+          "term": "Type",
+          "body": "a distinct element of the vocabulary V. Whether types are counted as lemmas or wordforms is a decision.",
+          "id": "units.2"
+        },
+        {
+          "type": "definition",
+          "term": "Token",
+          "body": "one instance of a type in running text. Counting tokens gives n, the text length.",
+          "id": "units.3"
+        },
+        {
+          "type": "definition",
+          "term": "Hapax legomena",
+          "body": "types that occur exactly once in a corpus. In natural text, roughly half the vocabulary is hapax.",
+          "id": "units.4"
+        },
+        {
+          "type": "prose",
+          "md": "**Counting types and tokens; computing TTR**\n1. `[a, rose, is, a, rose, is, a, rose] — 8 tokens` Gertrude Stein's line, split on spaces. Every word you can point at is a **token** — an instance. Count them: 8. (Kraus's slide counts the full 'a rose is a rose is a rose' line as 10 tokens with 'rose' at the start; the method is what matters.)\n2. `[a, rose, is, a, rose, is, a, rose] — type 1: a  (3 tokens)` Now count **types** — distinct words. 'a' appears three times but is one type.\n3. `[a, rose, is, a, rose, is, a, rose] — type 2: rose  (3 tokens)` 'rose': three tokens, one type.\n4. `[a, rose, is, a, rose, is, a, rose] — type 3: is  (2 tokens)` 'is': two tokens, one type. That's every word accounted for. **3 types, 8 tokens.**\n5. `= 3 / 8 = 0.375` **Type–token ratio.** Low TTR means lots of repetition; high TTR means varied vocabulary. Stein's line is deliberately repetitive. The first line of Wikipedia's 'Rose' article scores about 0.92 — almost every word is new.\n6. `Switchboard (2.4M tokens): 0.0083` Real corpora. Notice the pattern: **the bigger the corpus, the lower the TTR**. That's not because Google's English is boring. It's because vocabulary grows slower than text (next section), so tokens outrun types. TTR is only comparable between texts of similar size — Kraus's caveat about Alice vs Moby Dick.",
+          "id": "units.5"
+        },
+        {
+          "type": "example",
+          "title": "'they sat back on their San Francisco stoop and looked up at the stars and their'",
+          "body": "How many tokens, how many types?\n\n1. Split on spaces: 16 tokens. If *San Francisco* is one multi-word token: 15. Already a decision.\n2. Types: *and* appears twice, *their* twice. 16 − 2 = 14 types. Treat *San Francisco* as one: 13. Lemmatize *stars* → *star*, *looked* → *look*? Still 13 here (no collisions), but in a longer text lemmatizing shrinks V.\n3. There's no single right count. The right answer names the decisions: 'Sixteen tokens on whitespace, fourteen types as wordforms; fifteen and thirteen if multi-word place names are one token.'",
+          "id": "units.6"
+        },
+        {
+          "type": "check",
+          "prompt": "Compute TTR for 'the dog saw the other dog and the other dog saw the cat'.",
+          "answer": "13 tokens. Types: the, dog, saw, other, and, cat = 6. TTR = 6/13 ≈ 0.46.",
+          "sectionRef": "units",
+          "id": "units.7"
+        },
+        {
+          "type": "check",
+          "prompt": "Chance quiz: separate the morphemes in *rewriting* and *undermined*. And: T/F, hapax legomena are very common in corpora.",
+          "answer": "re-writ(e)-ing; under-mine-(e)d. True — around half of all types in a natural corpus occur once.",
+          "sectionRef": "units",
+          "id": "units.8"
+        }
+      ]
+    },
+    {
+      "id": "heaps",
+      "heading": "Heaps' law: why vocabulary grows slowly",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**V(n) = K·nᵝ, read slowly**\n1. `V(n) = K · n^β` **Heaps' law.** Read it as: 'vocabulary size is some constant times the token count raised to a power less than 1.' The power less than 1 is the whole message.\n2. `β ≈ 0.5:  double the text → ×2^0.5 ≈ ×1.4 the types` A power of 1 would mean every new chunk of text brings as many new words as the first chunk. A power around 0.5 (a square root) means new words come more and more slowly — you keep seeing the same common words, and only occasionally a new rare one.\n3. `n = 1,000     → V ≈ 30 · 1000^0.5 ≈ 950` With K = 30, β = 0.5: a thousand-fold increase in text gives roughly a thirty-fold increase in vocabulary. Diminishing returns for rare words — which is why a 1-million-word corpus like Brown already has most of the common vocabulary, and why hapax legomena (words seen once) are so common: the tail never fills in.\n4. `'dirty' data inflates V:` The catch: typos, stretched spellings, and case variants all look like new types to a computer. Whether they *are* new types is a decision — which is what the rest of this chapter is about.",
+          "id": "heaps.0"
+        },
+        {
+          "type": "trap",
+          "body": "**The TTR caveat (a likely midterm question)** Alice in Wonderland TTR ≈ 0.097; Moby Dick ≈ 0.080. That does **not** mean Melville had a smaller vocabulary. Moby Dick is about eight times longer, and by Heaps' law tokens grow faster than types, so its ratio *must* be lower. TTR only compares texts of similar length. To compare different lengths, use a fixed window (TTR over the first 10,000 tokens of each) or a size-corrected measure.",
+          "source": "Midterm",
+          "points": null,
+          "id": "heaps.1"
+        },
+        {
+          "type": "prose",
+          "md": "Frequency reveals things the words alone don't: register (formal text uses *however*; chat uses *lol*), speaker age, subject matter, dialect. A frequency list is the first thing a corpus linguist looks at — and every number in it depends on the tokenization and normalization decisions below.",
+          "id": "heaps.2"
+        }
+      ]
+    },
+    {
+      "id": "tokenization",
+      "heading": "Tokenization: where whitespace fails",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Tokenization",
+          "body": "Breaking a continuous stream of text into meaningful units (tokens). The questions to ask: where are the boundaries? what are the minimal units? what linguistic structure does this preserve or erase?",
+          "id": "tokenization.0"
+        },
+        {
+          "type": "definition",
+          "term": "Scripts without spaces.",
+          "body": "Chinese 姚明进入总决赛 — is that 3, 5, or 7 tokens? 'Tokenization requires a theory of wordhood.' Japanese mixes four writing systems and needs a lexicon-based segmenter; Thai, Burmese, Ge'ez similar.",
+          "id": "tokenization.1"
+        },
+        {
+          "type": "definition",
+          "term": "Compounds.",
+          "body": "German *Flughafensicherheitskontrolle* (airport security check) is one orthographic word and three or four lexical ones.",
+          "id": "tokenization.2"
+        },
+        {
+          "type": "definition",
+          "term": "Punctuation that carries meaning.",
+          "body": "*Ph.D.*, *W.H.O.* (one unit each); *$89.99* vs *$8999*; *1/25/2026*; URLs and emails. Strip punctuation and these change meaning or vanish.",
+          "id": "tokenization.3"
+        },
+        {
+          "type": "definition",
+          "term": "Clitics.",
+          "body": "*we're*, *I'm*, *don't*; French *j'ai*; Spanish *dámelo* (give-me-it). One word or two or three? NLTK splits *don't* into *do* + *n't*.",
+          "id": "tokenization.4"
+        },
+        {
+          "type": "definition",
+          "term": "Multi-word expressions.",
+          "body": "*New York City*, *father-in-law*, *back and forth*. NLTK splits them (MWETokenizer can rejoin from *your* list); spaCy splits, then recovers spans via named-entity recognition and noun chunks; Penn Treebank tags each piece and keeps the unit in the tree.",
+          "id": "tokenization.5"
+        },
+        {
+          "type": "check",
+          "prompt": "Chance quiz: T/F — it's fine to remove all punctuation when tokenizing, since punctuation doesn't tell you anything important.",
+          "answer": "False. Punctuation marks conventional units (Ph.D.), encodes magnitude and currency ($89.99), carries structure (dates, URLs), and delimits sentences. Removing it changes meaning before the analysis starts.",
+          "sectionRef": "tokenization",
+          "id": "tokenization.6"
+        }
+      ]
+    },
+    {
+      "id": "normalization",
+      "heading": "Normalization: what to standardize and what to keep",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Normalization",
+          "body": "Making different surface forms comparable by mapping them to a standard representation. 'Tokenization feeds normalization.' The question is never *whether* to normalize but *which variation is noise for your question and which variation is the data*.",
+          "id": "normalization.0"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Type of variation",
+            "Example",
+            "Treatment"
+          ],
+          "rows": [
+            [
+              "Noise",
+              "typos, stray punctuation, HTML tags",
+              "Remove / normalize"
+            ],
+            [
+              "Orthographic",
+              "color / colour, e-mail / email, st. / street",
+              "Normalize selectively"
+            ],
+            [
+              "Morphosyntactic",
+              "don't → do not, gonna → going to, yeah / yah / ya",
+              "Normalize selectively"
+            ],
+            [
+              "Sociolinguistic / register",
+              "lol, u vs you, texting shorthand",
+              "PRESERVE"
+            ],
+            [
+              "Dialect / regional",
+              "y'all, sittin, innit",
+              "PRESERVE"
+            ],
+            [
+              "Formatting / structural",
+              "#fyp, <body>, https://…",
+              "Normalize if it interferes"
+            ]
+          ],
+          "id": "normalization.1"
+        },
+        {
+          "type": "prose",
+          "md": "**Why the bottom rows say PRESERVE** The rows to normalize are variation that *doesn't correlate with anything linguistic* — a typo tells you nothing about the writer. The rows to preserve are variation that *is* linguistic evidence: register, dialect, identity. If your research question is about those, normalizing them away deletes your data. If it isn't, they're noise. The table isn't a rule; it's a way of asking 'what is my question?' before touching the text.",
+          "id": "normalization.2"
+        },
+        {
+          "type": "definition",
+          "term": "Removing emojis",
+          "body": "erases pragmatic cues: 'Excellent, another meeting 🙄' is sarcastic; without the emoji it's sincere.",
+          "id": "normalization.3"
+        },
+        {
+          "type": "definition",
+          "term": "Lowercasing",
+          "body": "erases proper-noun and category signals: *Apple* vs *apple*; German *Essen* (food, noun) vs *essen* (to eat, verb) — capitalization *is* the part of speech.",
+          "id": "normalization.4"
+        },
+        {
+          "type": "definition",
+          "term": "Spell-correcting / standardizing",
+          "body": "erases identity, dialect, expertise, play: 'yall be trippin lol' → 'you all are tripping' loses everything the writer chose.",
+          "id": "normalization.5"
+        },
+        {
+          "type": "definition",
+          "term": "Removing punctuation",
+          "body": "collapses *Ph.D.*, *$8.99*, sentence boundaries, *tl;dr*.",
+          "id": "normalization.6"
+        },
+        {
+          "type": "definition",
+          "term": "Expanding numbers",
+          "body": "is ambiguous: '1915 J St' — nineteen fifteen? one-nine-one-five? 'roll two sixty four sided dice' — 264? 2 × 64? 260 × 4?",
+          "id": "normalization.7"
+        },
+        {
+          "type": "definition",
+          "term": "Preprocessing vs annotation",
+          "body": "preprocessing is technical access (strip HTML, tokenize, split sentences); annotation is linguistic interpretation (POS tags, parses, sentiment). Next chapter.",
+          "id": "normalization.8"
+        },
+        {
+          "type": "definition",
+          "term": "Lossless vs lossy",
+          "body": "lossless shaping is reversible — the original is recoverable. Lossy is not — lowercasing, emoji removal, stemming all discard information for good. Prefer keeping the raw text and deriving normalized *views* of it.",
+          "id": "normalization.9"
+        },
+        {
+          "type": "check",
+          "prompt": "Chance quiz: give one example of how lowercasing or removing emojis can alter or erase linguistic information.",
+          "answer": "Lowercasing: *Apple* (company) → *apple* (fruit) loses the named-entity distinction; German *Essen/essen* loses noun vs verb. Emoji: 🙄 flips sincerity to sarcasm.",
+          "sectionRef": "normalization",
+          "id": "normalization.10"
+        },
+        {
+          "type": "check",
+          "prompt": "Is stemming lossy or lossless? Why does it matter for a dialect study?",
+          "answer": "Lossy — *running, runner, runs* → *run* can't be reversed. A dialect study needs surface forms (*sittin* vs *sitting*), so stemming or spell-normalizing would erase the very variable under study.",
+          "sectionRef": "normalization",
+          "id": "normalization.11"
+        },
+        {
+          "type": "prose",
+          "md": "**Lectures 5–6 in one paragraph.** Tokens are instances, types are distinct forms, lemmas are headwords; TTR = types/tokens and falls with length because vocabulary grows as K·nᵝ with β < 1 (Heaps). Whitespace tokenization fails on unspaced scripts, compounds, meaningful punctuation, clitics, and multi-word expressions. Normalize noise and orthography; preserve register and dialect. Every cleaning step is lossy or lossless, and every lossy step is a linguistic claim — name what it erases.",
+          "id": "normalization.12"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "count-and-decide",
+      "title": "Count tokens and types — then defend the count",
+      "prompt": "Text: `I can't believe it's already 5pm! I CAN'T. Time flies, doesn't it? #mood 😩` Give the token count and type count under (A) whitespace splitting with no changes and (B) NLTK-style tokenization with lowercasing. Then write two sentences on what (B) erased that a study of *register* would need.",
+      "hints": [
+        "For (A), just count space-separated chunks — punctuation stays attached ('5pm!' is one token). For (B), NLTK splits 'can't' into 'ca' + \"n't\", separates punctuation, and lowercasing merges 'I CAN'T' with 'I can't'.",
+        "The usual error is doing only one count and treating it as *the* answer. The exercise is about how the count *changes* with the decision, and being able to say by how much.",
+        "What does 'CAN'T' in capitals tell you that 'can't' doesn't? What does the emoji do to the sentence's tone? Those are the register signals lowercasing and emoji-stripping delete."
+      ],
+      "solution": [
+        "(A) Whitespace: I · can't · believe · it's · already · 5pm! · I · CAN'T. · Time · flies, · doesn't · it? · #mood · 😩 → 14 tokens. Only 'I' repeats exactly ('can't' and 'CAN'T.' differ in case and punctuation), so 13 types.",
+        "(B) NLTK + lowercase: i · ca · n't · believe · it · 's · already · 5pm · ! · i · ca · n't · . · time · flies · , · does · n't · it · ? · # · mood · 😩 → 23 tokens; types: i, ca, n't, believe, it, 's, already, 5pm, !, ., time, flies, ,, does, ?, #, mood, 😩 → 18 types.",
+        "TTR moves from 13/14 ≈ 0.93 to 18/23 ≈ 0.78 — from the decisions alone, not the text.",
+        "(B) erased emphasis (CAN'T vs can't — shouting is register), and stripping/separating the emoji loses the exasperated tone that flips the meaning of 'Time flies'. A register study needs both preserved."
+      ],
+      "why": "Two people can 'count the words' in the same text and get numbers 60% apart, both correct under their decisions. Reporting the decisions with the number is what makes a result reproducible — the whole point of documentation in Lectures 7–8.",
+      "sectionRef": "units"
+    },
+    {
+      "id": "ttr-trap",
+      "title": "The TTR comparison trap",
+      "prompt": "A classmate reports: 'Brown's *news* category has TTR 0.14 and *science fiction* has TTR 0.19, so sci-fi authors use a richer vocabulary.' Is the conclusion justified? What one fact would you need to check first, and what would you do instead?",
+      "choices": [
+        {
+          "text": "Yes — a higher TTR means more types per token, which is richer vocabulary by definition.",
+          "feedback": "That's the definition, but TTR falls with length (Heaps' law). If the two categories have different sizes, the comparison is meaningless."
+        },
+        {
+          "text": "Not yet — check the token counts of the two categories; if they differ, compare TTR on equal-size samples (e.g. the first 10,000 tokens of each).",
+          "feedback": "Right. Brown's news category is about 100k tokens and science fiction about 14k; the smaller one has a higher TTR almost automatically."
+        },
+        {
+          "text": "No — TTR can never be compared across texts.",
+          "feedback": "Too strong. It can be compared when the texts are the same length, or with a length-corrected measure."
+        }
+      ],
+      "answer": 1,
+      "hints": [
+        "Recall what happens to TTR as a text gets longer. Then ask: are the two categories the same length?",
+        "The reflex is to accept a number because it's a number. The chapter's caveat (Alice vs Moby Dick) is exactly this case.",
+        "The fix is mechanical: sample equal-size windows from each, or use a size-corrected measure, and *then* compare."
+      ],
+      "solution": [
+        "Not justified as stated. TTR decreases with text length because vocabulary grows as K·nᵝ with β < 1 — bigger corpus, lower ratio.",
+        "Check the token counts: in Brown, news ≈ 100,000 tokens, science fiction ≈ 14,000. The smaller category is expected to have a higher TTR regardless of style.",
+        "Instead: compute TTR on equal-size samples (first 10,000 tokens of each, or averaged over 10k windows), or use a length-corrected measure (MTLD, or a standardized TTR).",
+        "Then, if sci-fi is still higher, you can start to talk about vocabulary — and even then it's a claim about these texts, not about 'sci-fi authors'."
+      ],
+      "why": "Comparing rates across groups of different sizes is the most common statistical mistake in any field — from 'this city has more crime' to 'this model has more errors'. Heaps' law is just the linguistics version. Catching it is what 'quantitative literacy' means."
+    }
+  ]
+}

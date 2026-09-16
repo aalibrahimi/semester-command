@@ -1,0 +1,311 @@
+{
+  "id": "hist15/11-market-revolution",
+  "course": "hist15",
+  "lessons": "Ch. 11 + lectures",
+  "title": "The Market Revolution, Lowell, and Cherokee Removal",
+  "summary": "Explain what the market revolution was and name its parts; describe the Lowell system and why it ended; tell the Cherokee removal story with its four legal steps.",
+  "estimatedMinutes": 50,
+  "sourceNote": "The American Promise ch. 11, 'What economic developments reshaped the American economy after 1815?' (pp. 302–317, 320–322); the Sep 14 Market Revolution lecture/exercise; the Sep 16 Cherokee Removal lecture. This is Quiz #2 (10 MC, 20 min, due Oct 5).",
+  "requires": [],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "What 'market revolution' means",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Why the textbook uses this phrase, not 'industrial revolution'** In 1800 most American families grew or made most of what they used and bartered for the rest with neighbors. By 1840 most families sold something — wheat, cotton, cloth, their labor — for cash and bought what they needed from strangers far away. That shift, from local household economies to a national economy of cash and long-distance trade, is the **market revolution**. Factories are part of it but not the center; the center is that ordinary people started producing *for the market*. A quiz question asking for the best description wants that.",
+          "id": "why.0"
+        },
+        {
+          "type": "trap",
+          "body": "**The exercise she gave on Sep 14** The in-class exercise asked you to work from the assigned section and the lecture. Quiz #2 says it 'pertains to lecture content of the Market Revolution, Lowell Mills, and Cherokee removal' plus ch. 11 — so the three sections below are the three things the ten questions will be about.",
+          "source": "Quiz #2",
+          "points": null,
+          "id": "why.1"
+        }
+      ]
+    },
+    {
+      "id": "transport",
+      "heading": "The transportation revolution",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "A farmer in Ohio in 1815 couldn't sell wheat in New York — hauling it over the mountains cost more than the wheat was worth. Cut the cost of moving goods and every farm becomes a business. That is what happened between 1815 and 1840, in four waves.",
+          "id": "transport.0"
+        },
+        {
+          "type": "definition",
+          "term": "Turnpikes and roads",
+          "body": "(1790s–1820s): private toll roads; the federal **National Road** from Maryland west to Illinois, begun 1811.",
+          "id": "transport.1"
+        },
+        {
+          "type": "definition",
+          "term": "Steamboats",
+          "body": "Robert **Fulton**'s *Clermont* on the Hudson (1807). By the 1820s steamboats ran *up* the Mississippi and Ohio, making New Orleans the outlet for the whole interior. Upstream freight costs fell by 90%.",
+          "id": "transport.2"
+        },
+        {
+          "type": "definition",
+          "term": "Canals",
+          "body": "the **Erie Canal** (New York, finished **1825**, 363 miles from the Hudson to Lake Erie), built by the state under Governor DeWitt Clinton. It cut freight costs between Buffalo and New York City from $100 a ton to about $10 and made New York the nation's commercial capital. Other states rushed to copy it; many went broke.",
+          "id": "transport.3"
+        },
+        {
+          "type": "definition",
+          "term": "Railroads",
+          "body": "the Baltimore & Ohio (1830) was the first; by 1840 there were 3,000 miles of track, mostly in the Northeast. Railroads didn't freeze in winter and didn't need a river.",
+          "id": "transport.4"
+        },
+        {
+          "type": "prose",
+          "md": "The federal government's role was contested: Madison vetoed a federal canal bill (1817) as unconstitutional, so states and private companies built most of it — which is why the 'internal improvements' question becomes a party issue (Whigs for, Democrats against). The Supreme Court did help: *Gibbons v. Ogden* (1824) struck down a state steamboat monopoly and gave Congress control over interstate commerce.",
+          "id": "transport.5"
+        }
+      ]
+    },
+    {
+      "id": "factories",
+      "heading": "Factories and the Lowell system",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Samuel Slater**, an English mechanic who memorized the design of British spinning machines (exporting them was illegal), built the first American water-powered textile mill at Pawtucket, Rhode Island, in **1790**. Slater's mills spun thread and hired whole families, children included. The bigger step came from **Francis Cabot Lowell**, a Boston merchant who toured British mills in 1810, memorized the power loom, and in **1813** opened the Boston Manufacturing Company at Waltham — the first mill in the world to take raw cotton in one end and finished cloth out the other. After his death his partners built a whole planned city on the Merrimack River and named it **Lowell, Massachusetts** (1820s).",
+          "id": "factories.0"
+        },
+        {
+          "type": "prose",
+          "md": "Lowell's founders needed a workforce and didn't want an English-style permanent factory class. Their answer: recruit **young, unmarried women from New England farms** — daughters with nothing to do at home now that cloth was cheaper to buy than make. The mills offered wages (higher than domestic service), company **boardinghouses** with matrons, curfews, mandatory church, and a respectable reputation, so farm families would send their daughters. The women worked twelve to thirteen hours a day, six days a week, typically for a few years before marrying. Some published a literary magazine, the ***Lowell Offering***. To visitors like Charles Dickens (1842), Lowell looked like the humane alternative to Manchester.",
+          "id": "factories.1"
+        },
+        {
+          "type": "prose",
+          "md": "In the 1830s competition drove owners to cut wages and speed up the machines. The women organized: 'turn-outs' (strikes) in **1834** and **1836**, and in the 1840s the Lowell Female Labor Reform Association petitioned for a ten-hour day. The owners' response was to replace them. From the mid-1840s **Irish immigrant families**, fleeing the famine, took the jobs at lower pay, and the boardinghouse experiment ended. Lowell became the ordinary factory town its founders had tried to avoid.",
+          "id": "factories.2"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Slater / Rhode Island",
+            "Lowell / Waltham"
+          ],
+          "rows": [
+            [
+              "Product",
+              "Thread (spinning only)",
+              "Finished cloth (spinning + weaving)"
+            ],
+            [
+              "Scale",
+              "Small mills",
+              "Large integrated factories, corporate ownership"
+            ],
+            [
+              "Workers",
+              "Whole families, incl. children",
+              "Young single women, later Irish families"
+            ],
+            [
+              "Housing",
+              "Family cottages",
+              "Company boardinghouses with rules"
+            ]
+          ],
+          "id": "factories.3"
+        },
+        {
+          "type": "check",
+          "prompt": "Why did Lowell's owners recruit farm daughters specifically, and what replaced them?",
+          "answer": "They were an available, inexpensive, temporary, 'respectable' workforce — the boardinghouse system reassured families — and they wouldn't form a permanent working class. Wage cuts led to strikes in 1834 and 1836; in the 1840s Irish immigrant labor replaced them.",
+          "sectionRef": "factories",
+          "id": "factories.4"
+        }
+      ]
+    },
+    {
+      "id": "economy",
+      "heading": "Banks, credit, cotton, and the social effects",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "A market economy runs on credit. The **Second Bank of the United States** (chartered **1816**) tried to discipline the hundreds of state banks issuing their own paper money. When it tightened credit in 1819 after a land-speculation boom, the result was the **Panic of 1819** — the first modern depression, with foreclosures across the West and lasting hatred of the Bank (Andrew Jackson's). The **Panic of 1837** repeated the pattern on a larger scale.",
+          "id": "economy.0"
+        },
+        {
+          "type": "prose",
+          "md": "The market revolution was not a Northern story. Eli Whitney's **cotton gin** (1793) made short-staple cotton profitable; cotton became the nation's biggest export; Northern mills spun Southern cotton grown by enslaved labor; Western farms fed the mills' workers. The textbook's point: the same economic transformation that built Lowell made slavery *more* entrenched and more valuable, which is why the 1830s abolitionists (Walker, Garrison) faced a slavery that was expanding, not fading.",
+          "id": "economy.1"
+        },
+        {
+          "type": "definition",
+          "term": "Wage labor",
+          "body": "for the first time large numbers of Americans worked for someone else for cash — the start of a working class.",
+          "id": "economy.2"
+        },
+        {
+          "type": "definition",
+          "term": "Separate spheres",
+          "body": "as work moved out of the home, the middle-class ideal split into men in the 'public' world of work and women in the 'private' home — the cult of domesticity.",
+          "id": "economy.3"
+        },
+        {
+          "type": "definition",
+          "term": "A middle class",
+          "body": "clerks, shopkeepers, professionals — defined by respectability, education, and consumer goods.",
+          "id": "economy.4"
+        },
+        {
+          "type": "definition",
+          "term": "Reform and revival",
+          "body": "the **Second Great Awakening** (Charles Finney's revivals in the 'burned-over district' along the Erie Canal) preached that people could perfect themselves and society — feeding temperance, abolition, and women's rights, which are the next three lectures.",
+          "id": "economy.5"
+        }
+      ]
+    },
+    {
+      "id": "cherokee",
+      "heading": "Cherokee Removal (the Sep 16 lecture)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Why the textbook puts Indian removal next to the market revolution** Because it's the same story from the other side: cotton land. The market revolution made Georgia's and Alabama's land enormously valuable for cotton, and the Cherokee were sitting on it.",
+          "id": "cherokee.0"
+        },
+        {
+          "type": "prose",
+          "md": "The **Cherokee** of north Georgia had done exactly what Jefferson's policy asked Native nations to do: they farmed, built roads and schools, some owned enslaved people, **Sequoyah** invented a written syllabary (1821), they published a bilingual newspaper (the ***Cherokee Phoenix***, 1828), and in **1827** they adopted a written constitution modeled on the U.S. one, declaring themselves a sovereign nation. Georgia's answer was to declare that constitution void and extend state law over Cherokee land. Then, in 1829, **gold** was found at Dahlonega.",
+          "id": "cherokee.1"
+        },
+        {
+          "type": "definition",
+          "term": "Indian Removal Act (1830)",
+          "body": "Andrew Jackson's signature policy, passed narrowly. It authorized the president to exchange lands west of the Mississippi for Native lands in the East and to pay for the move. 'Voluntary' on paper.",
+          "id": "cherokee.2"
+        },
+        {
+          "type": "definition",
+          "term": "Worcester v. Georgia (1832)",
+          "body": "Chief Justice **John Marshall** ruled that the Cherokee Nation was 'a distinct community' in which 'the laws of Georgia can have no force' — only the federal government could deal with Indian nations. Jackson refused to enforce it (the line 'John Marshall has made his decision; now let him enforce it' is probably apocryphal but captures his position).",
+          "id": "cherokee.3"
+        },
+        {
+          "type": "definition",
+          "term": "Treaty of New Echota (1835)",
+          "body": "a small faction (the 'Treaty Party' — **Major Ridge**, John Ridge, **Elias Boudinot**) signed away all Cherokee land for $5 million and land in Indian Territory. The elected government under Principal Chief **John Ross** protested; nearly 16,000 Cherokee signed a petition against it. The Senate ratified it by one vote.",
+          "id": "cherokee.4"
+        },
+        {
+          "type": "definition",
+          "term": "The Trail of Tears (1838–39)",
+          "body": "General **Winfield Scott** and 7,000 troops rounded the Cherokee into stockades and marched them roughly 1,000 miles to present-day Oklahoma. Of about 16,000, roughly **4,000 died** of disease, exposure, and starvation. The Treaty Party leaders were assassinated in 1839 by Ross supporters.",
+          "id": "cherokee.5"
+        },
+        {
+          "type": "prose",
+          "md": "The other 'Five Civilized Tribes' — Choctaw, Chickasaw, Creek, Seminole — were removed in the same decade; the Seminole fought a seven-year war in Florida rather than go. The lecture title is 'Cherokee Removal' because the Cherokee case is the one where every argument the United States made for civilizing Native people was met, and the removal happened anyway.",
+          "id": "cherokee.6"
+        },
+        {
+          "type": "check",
+          "prompt": "What did Worcester v. Georgia decide, and why didn't it save the Cherokee?",
+          "answer": "That the Cherokee Nation was a distinct political community where Georgia's laws had no force — only the federal government could deal with it. It didn't matter because President Jackson declined to enforce the ruling, and removal proceeded through the Treaty of New Echota (1835) and the Trail of Tears (1838–39).",
+          "sectionRef": "cherokee",
+          "id": "cherokee.7"
+        },
+        {
+          "type": "check",
+          "prompt": "Put these in order: Trail of Tears, Indian Removal Act, Worcester v. Georgia, Treaty of New Echota, Cherokee constitution.",
+          "answer": "Cherokee constitution (1827) → Indian Removal Act (1830) → Worcester v. Georgia (1832) → Treaty of New Echota (1835) → Trail of Tears (1838–39).",
+          "sectionRef": "cherokee",
+          "id": "cherokee.8"
+        }
+      ]
+    },
+    {
+      "id": "quiz",
+      "heading": "Quiz #2 rehearsal",
+      "blocks": [
+        {
+          "type": "check",
+          "prompt": "Which project most reduced the cost of moving goods between the Great Lakes and New York City, and when was it finished?",
+          "answer": "The Erie Canal, 1825.",
+          "sectionRef": "quiz",
+          "id": "quiz.0"
+        },
+        {
+          "type": "check",
+          "prompt": "The 'market revolution' is best described as…",
+          "answer": "The shift from local, household and barter economies to a national economy in which people produced for sale and bought what they needed with cash — enabled by transportation, credit, and factories.",
+          "sectionRef": "quiz",
+          "id": "quiz.1"
+        },
+        {
+          "type": "check",
+          "prompt": "Who built the first integrated cotton mill (raw cotton to finished cloth) in the United States?",
+          "answer": "Francis Cabot Lowell's Boston Manufacturing Company at Waltham, 1813.",
+          "sectionRef": "quiz",
+          "id": "quiz.2"
+        },
+        {
+          "type": "check",
+          "prompt": "The Lowell Offering was…",
+          "answer": "A literary magazine written and published by the women who worked in the Lowell mills.",
+          "sectionRef": "quiz",
+          "id": "quiz.3"
+        },
+        {
+          "type": "check",
+          "prompt": "Which president signed the Indian Removal Act?",
+          "answer": "Andrew Jackson, 1830.",
+          "sectionRef": "quiz",
+          "id": "quiz.4"
+        },
+        {
+          "type": "check",
+          "prompt": "The Treaty of New Echota was controversial because…",
+          "answer": "It was signed by a small unauthorized faction (the Treaty Party) rather than the elected Cherokee government under John Ross, which protested with a petition of nearly 16,000 signatures.",
+          "sectionRef": "quiz",
+          "id": "quiz.5"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "four-steps",
+      "title": "Cherokee removal: the four legal steps, in your own words",
+      "prompt": "Write the removal story as four dated steps — each a sentence naming the actor, the action, and what it changed — then one sentence on why the Supreme Court's ruling didn't stop it.",
+      "hints": [
+        "The four steps are in the chapter: the Cherokee constitution, the Indian Removal Act, Worcester v. Georgia, and the Treaty of New Echota, then the Trail of Tears as the outcome. Put a year on each.",
+        "The common error is treating Worcester v. Georgia as a defeat for the Cherokee. They *won* the case. The point is that winning in court changed nothing on the ground — which is the sentence the question is really asking for.",
+        "Actor · action · change: 'In 1830, Congress passed the Indian Removal Act, which authorized the president to negotiate removal treaties.' Same shape for each."
+      ],
+      "solution": [
+        "1827: The Cherokee Nation adopted a written constitution modeled on the U.S. one, asserting itself as a sovereign nation within Georgia's borders — which Georgia refused to accept.",
+        "1830: Congress passed the Indian Removal Act, signed by Jackson, authorizing removal treaties that would exchange eastern lands for territory west of the Mississippi.",
+        "1832: In Worcester v. Georgia the Supreme Court (Marshall) ruled that Georgia's laws had no force in Cherokee territory — only the federal government could deal with the Nation.",
+        "1835: A small unauthorized faction (the Treaty Party) signed the Treaty of New Echota ceding all Cherokee land; the elected government under John Ross protested with nearly 16,000 signatures, and the Senate ratified it anyway.",
+        "The ruling didn't stop removal because the president declined to enforce it: a court decision without executive enforcement is words. The result was the Trail of Tears, 1838–39."
+      ],
+      "why": "'Who enforces it?' is the question behind every court ruling, treaty, and law — and this is the textbook case of the answer being 'no one'. It comes up again in Reconstruction, in civil rights, and in every present-day story where a ruling is ignored."
+    },
+    {
+      "id": "lowell-why",
+      "title": "Explain a system, then explain why it ended",
+      "prompt": "In one paragraph: what was the Lowell system (who worked, under what arrangement, why those workers), and in a second paragraph, the two-step reason it ended. Name at least one date in each paragraph.",
+      "hints": [
+        "Paragraph 1 needs: the Boston Manufacturing Company (Waltham 1813, Lowell 1820s), the integrated mill, young farm women, boardinghouses with supervision, and the owners' reasons for that workforce.",
+        "The usual thin answer says 'conditions were bad so it ended'. The chapter gives a *mechanism*: wage cuts → strikes (1834, 1836) → owners find a workforce that can't leave → Irish immigrants in the 1840s.",
+        "Second paragraph shape: cause (falling cloth prices → wage cuts) → response (the women organized) → owners' counter-move (replace them with families who needed the wages permanently)."
+      ],
+      "solution": [
+        "The Lowell system was the labor arrangement of the first integrated textile mills (Francis Cabot Lowell's Boston Manufacturing Company, Waltham 1813; Lowell, Mass. from the 1820s): young unmarried women from New England farms lived in company boardinghouses under matrons, curfews, and church attendance, working long shifts for wages. Owners chose them because they were available, cheap, temporary, and — with the boardinghouse system — 'respectable' enough that families would send them, and because they would not form a permanent working class.",
+        "It ended in two steps. First, competition and falling cloth prices led owners to cut wages and speed up work; the women struck in 1834 and 1836 and published their case (the Lowell Offering shows the culture that made organizing possible). Second, rather than restore wages, owners turned in the 1840s to Irish immigrant families who needed the jobs permanently and could not go home to the farm — ending the 'mill girl' era."
+      ],
+      "why": "This is the first American version of a pattern that repeats in every industry: a workforce chosen because it seems temporary and compliant, organizing when squeezed, and being replaced. Recognizing the pattern is what lets you read today's labor news historically."
+    }
+  ]
+}

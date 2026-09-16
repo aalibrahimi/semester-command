@@ -1,0 +1,254 @@
+{
+  "id": "ling112/5-constituency-tests",
+  "course": "ling112",
+  "lessons": "Week 5",
+  "title": "Constituent structure and constituency tests",
+  "summary": "Given any sentence, find its constituents and PROVE each one with a named test — substitution, movement, or fragment answer — and use the tests to pull apart a structurally ambiguous sentence.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Week 5 handout (Constituent structure), TrevTutor 'Constituents and Constituency Tests', the Sep 15 and 17 classes. Quiz 2 covers this.",
+  "requires": [
+    "ling112/4-heads-dependents"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "What a constituent is",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Which groups of words are real?** Week 4 said sentences are built from phrases. But look at 'Several large books fell to the ground with a loud thud' and ask: is 'books fell' a phrase? Is 'to the ground'? Is 'ground with'? You can't tell by looking — every adjacent pair of words *looks* like a group. You need a way to test whether a string of words actually behaves as one unit. That test-based notion is what a constituent is.",
+          "id": "why.0"
+        },
+        {
+          "type": "definition",
+          "term": "Constituent",
+          "body": "Any linguistic expression that behaves as a syntactic unit. A single word is trivially a constituent; the tests are for multi-word strings. **Constituency tests** are diagnostics: substitution, movement, and fragment answer. Not every constituent passes every test — 'you may need to try multiple tests before you find one that works' — but a string that passes *any* test is a constituent.",
+          "id": "why.1"
+        },
+        {
+          "type": "prose",
+          "md": "The logic is the same as Week 2's: we defined categories by distribution, not meaning. Now we define units by *behavior*, not by looks. If a string can be replaced by one word, moved as a block, or stand alone as an answer, the grammar is treating it as one thing.",
+          "id": "why.2"
+        }
+      ]
+    },
+    {
+      "id": "sub",
+      "heading": "Test 1 · Substitution with a pro-form",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "If the string is a…",
+            "It can be replaced by",
+            "Example"
+          ],
+          "rows": [
+            [
+              "NP (noun phrase)",
+              "she, he, they, them, it, something",
+              "[the evidence] → it"
+            ],
+            [
+              "N (N-bar: noun + its dependents, minus D)",
+              "one(s), thing(s)",
+              "those tall [spies in the garden] → those tall ones"
+            ],
+            [
+              "V / VP (verb + its dependents)",
+              "do so (too), did so (too)",
+              "will [stash the evidence] → will do so"
+            ],
+            [
+              "PP (prepositional phrase)",
+              "here, there, then",
+              "[in the garden] → there; [after midnight] → then"
+            ]
+          ],
+          "id": "sub.0"
+        },
+        {
+          "type": "prose",
+          "md": "**Running substitution on handout (3)**\n1. `Those tall spies in the garden will quickly stash the evidence after midnight.` Handout sentence (3). First test: substitution. We try to replace a string with a single pro-form. If a pro-form fits, the string is a unit.\n2. `[Those tall spies in the garden] → They will quickly stash the evidence after midnight.  ✓ NP` 'They' replaces the whole subject. A pronoun stands in for a noun phrase, so 'those tall spies in the garden' is an NP constituent — including the PP inside it.\n3. `those tall [spies in the garden] → those tall ones  ✓ N-bar` 'ones' replaces 'spies in the garden' but leaves 'those tall' outside. That smaller unit — a noun with its complements/adjuncts but without the determiner — is what she calls an N (N-bar) constituent.\n4. `[in the garden] → there  ✓ PP` 'there' replaces 'in the garden'. Pro-form for a place PP.\n5. `will [quickly stash the evidence after midnight] → will do so  ✓ VP` 'do so' replaces everything after the modal 'will'. That's the verb phrase — the verb with all its dependents. Note: 'do so' also works for 'stash the evidence after midnight' without 'quickly': adverbs attach to the VP, so both are VPs.\n6. `[the evidence] → it  ✓ NP` 'it' replaces 'the evidence'. Another NP.\n7. `[after midnight] → then  ✓ PP` 'then' replaces 'after midnight'. Time PP.\n8. `[spies in] → ???  ✗   [stash the] → ???  ✗   [evidence after] → ???  ✗` No pro-form stands for 'spies in', 'stash the', or 'evidence after'. They aren't units. Substitution fails, and — spoiler — so will every other test.",
+          "id": "sub.1"
+        },
+        {
+          "type": "prose",
+          "md": "**The 'ones' trap** 'ones' replaces the noun and everything attached to it *except the determiner*: 'those tall ones' works, but '*ones in the garden' for 'those tall spies in the garden' does not. That's why she distinguishes NP (with D) from N-bar (without). It's also the first sign that 'tall' and 'in the garden' attach at a level below the determiner — which becomes X-bar theory in Week 7.",
+          "id": "sub.2"
+        }
+      ]
+    },
+    {
+      "id": "move",
+      "heading": "Test 2 · Movement",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Move the string somewhere else in the sentence. If the result is grammatical, the string traveled as a unit — which means it *is* a unit. Two ways to move things in English:",
+          "id": "move.0"
+        },
+        {
+          "type": "definition",
+          "term": "Topicalization",
+          "body": "put the string at the front: 'The evidence, those tall spies will quickly stash after midnight.' ✓ (NP). 'After midnight, those tall spies will stash the evidence.' ✓ (PP). '*Stash the, those spies will evidence after midnight.' ✗",
+          "id": "move.1"
+        },
+        {
+          "type": "definition",
+          "term": "It-clefting",
+          "body": "'It's X that/who Y': 'It's the evidence that those spies will stash after midnight.' ✓. 'It's after midnight that they'll stash it.' ✓. 'It's in the garden that the spies are.' ✓ (PP). '*It's spies in that those tall the garden will…' ✗",
+          "id": "move.2"
+        },
+        {
+          "type": "prose",
+          "md": "**A failed movement test proves nothing** Handout: 'Some constituents are too deeply embedded within other constituents to undergo movement.' '*The garden, those tall spies in will stash the evidence' fails — but 'the garden' IS a constituent (substitution: 'in it'). Movement can only give you a yes. If it says no, try another test before concluding anything.",
+          "id": "move.3"
+        }
+      ]
+    },
+    {
+      "id": "frag",
+      "heading": "Test 3 · Fragment answer",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Ask a wh-question about the sentence. If the string can be the whole answer, standing alone, it's a constituent — because only units can be pronounced in isolation.",
+          "id": "frag.0"
+        },
+        {
+          "type": "example",
+          "title": "Question → fragment",
+          "body": "Those tall spies in the garden will quickly stash the evidence after midnight.\n\n1. Who will stash the evidence? — 'Those tall spies in the garden.' ✓ NP\n2. Where are the spies? — 'In the garden.' ✓ PP\n3. What will they stash? — 'The evidence.' ✓ NP\n4. When? — 'After midnight.' ✓ PP\n5. What will they do? — 'Quickly stash the evidence after midnight.' ✓ VP (and 'Stash the evidence after midnight.' ✓ — the smaller VP)\n6. *'Stash the.' — no question has that answer. ✗",
+          "id": "frag.1"
+        }
+      ]
+    },
+    {
+      "id": "ambig",
+      "heading": "Structural ambiguity: the tests pull two structures apart",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "'The thief tripped that unlucky man with a cane.' Two meanings: the thief used a cane, or the man carries a cane. Chapter 0 showed these as two trees. Now you can *prove* both trees exist with tests — each reading passes a test the other fails.",
+          "id": "ambig.0"
+        },
+        {
+          "type": "example",
+          "title": "'with a cane' attaches to the verb",
+          "body": "Show 'with a cane' is a separate constituent from the NP.\n\n1. Cleft: 'It's with a cane that the thief tripped that unlucky man.' ✓ — the PP moved away from 'man', so it wasn't inside the NP.\n2. Substitution: 'The thief tripped him with a cane.' ✓ — 'him' replaces 'that unlucky man' and leaves 'with a cane' behind.\n3. Do-so: 'The thief tripped that unlucky man with a cane, and the burglar did so with a rope.' ✓ — 'did so' = 'tripped that unlucky man', and the instrument is outside it.",
+          "id": "ambig.1"
+        },
+        {
+          "type": "example",
+          "title": "'with a cane' attaches to the noun",
+          "body": "Show 'that unlucky man with a cane' is one NP.\n\n1. Substitution: 'The thief tripped him.' ✓ where 'him' = 'that unlucky man with a cane' — the whole thing, cane included.\n2. Fragment: 'Who did the thief trip?' — 'That unlucky man with a cane.' ✓\n3. Topicalization: 'That unlucky man with a cane, the thief tripped.' ✓ — the PP moved along with the NP, so it's inside it.",
+          "answer": "Same string, two constituent structures. Each test result is evidence for one of them.",
+          "id": "ambig.2"
+        }
+      ]
+    },
+    {
+      "id": "finite",
+      "heading": "The finiteness note (handout (8)–(9))",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "'Farah **will submit** the assignment' — the VP after the modal is **non-finite** (no tense on 'submit'). Substitution: 'Farah will do so.' ✓ Fragment: 'What will Farah do? — Submit the assignment.' ✓ Clean.",
+          "id": "finite.0"
+        },
+        {
+          "type": "prose",
+          "md": "'Farah **submitted** the assignment' — the VP is **finite** (tense is on the verb). Substitution needs do-support to carry the tense: 'Farah did so.' ✓ Fragment answer: 'What did Farah do? — *Submitted the assignment' is marginal; the natural fragment is 'Submit the assignment', with the tense stripped. Her point: some tests interact with tense, so say which kind of VP you're testing.",
+          "id": "finite.1"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "heading": "Practice (handout (4)–(6)) — this is Quiz 2 territory",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**What she asks** 'Identify all syntactic categories. Identify constituents in each sentence, using each type of constituency test (substitution, movement, fragment answer) at least once.' So a full answer = labels + at least three constituents, each with a named test and the actual test sentence written out.",
+          "id": "practice.0"
+        },
+        {
+          "type": "example",
+          "title": "That officer from the precinct sauntered away very slowly.",
+          "body": "Categories, then three constituents with three different tests.\n\n1. Categories: That D · officer N · from P · the D · precinct N · sauntered V · away Adv (particle) · very Adv · slowly Adv.\n2. Substitution: [That officer from the precinct] → 'He sauntered away very slowly.' ✓ NP.\n3. Movement (cleft): [very slowly] → 'It was very slowly that that officer sauntered away.' ✓ AdvP.\n4. Fragment: 'What did the officer do?' — [Sauntered away very slowly.] ✓ VP.\n5. Bonus: [from the precinct] → 'It's from the precinct that the officer is' / fragment 'From where?' — 'From the precinct.' ✓ PP.",
+          "id": "practice.1"
+        },
+        {
+          "type": "example",
+          "title": "I will invest in some cryptocurrency to fund my globe-trotting lifestyle.",
+          "body": "Three constituents, three tests.\n\n1. Categories: I N · will Mod · invest V · in P · some D · cryptocurrency N · to T · fund V · my D · globe-trotting Adj · lifestyle N.\n2. Substitution (do so): 'I will [do so] to fund my lifestyle.' ✓ → 'invest in some cryptocurrency' is a VP.\n3. Movement (cleft): 'It's to fund my globe-trotting lifestyle that I will invest in some cryptocurrency.' ✓ → the purpose clause is a constituent (an adjunct).\n4. Fragment: 'In what will you invest?' — 'In some cryptocurrency.' ✓ PP.\n5. Substitution: [my globe-trotting lifestyle] → 'to fund it' ✓ NP.",
+          "id": "practice.2"
+        },
+        {
+          "type": "example",
+          "title": "Lee paraded his favorite new motorbikes around town.",
+          "body": "Is 'motorbikes around town' a constituent?\n\n1. Try substitution: 'them' replaces 'his favorite new motorbikes' — 'Lee paraded them around town' ✓ — but that leaves 'around town' outside. No pro-form covers 'motorbikes around town' alone.\n2. Try movement: '*Motorbikes around town, Lee paraded his favorite new.' ✗\n3. Try fragment: 'What did Lee parade?' — 'His favorite new motorbikes.' ✓ — the answer stops before 'around town'. '*Motorbikes around town' is not an answer to any question.\n4. Conclusion: 'motorbikes around town' is NOT a constituent. 'around town' is a PP adjunct of the verb ('It's around town that Lee paraded them' ✓), sister to the object NP, not inside it. Compare reading A of the cane sentence.",
+          "id": "practice.3"
+        },
+        {
+          "type": "check",
+          "prompt": "'The spies hid in the garden.' Prove 'in the garden' is a constituent three ways.",
+          "answer": "Substitution: 'The spies hid there.' Cleft: 'It's in the garden that the spies hid.' Fragment: 'Where did the spies hide?' — 'In the garden.'",
+          "sectionRef": "practice",
+          "id": "practice.4"
+        },
+        {
+          "type": "check",
+          "prompt": "Is 'hid in' a constituent?",
+          "answer": "No. No pro-form ('*The spies did-so the garden'), can't move ('*Hid in, the spies the garden'), can't answer a question. The verb and the preposition belong to different phrases: 'in' heads the PP 'in the garden', which is a dependent of 'hid'.",
+          "sectionRef": "practice",
+          "id": "practice.5"
+        },
+        {
+          "type": "definition",
+          "term": "The three tests, in one line each",
+          "body": "**Substitution**: replace the string with one pro-form (pronoun / one(s) / do so / there, then). **Movement**: topicalize it or cleft it ('It's X that…'). **Fragment answer**: let it answer a wh-question alone. Pass any one → constituent. Fail one → try another.",
+          "id": "practice.6"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "prove-three-ways",
+      "title": "Prove a constituent three ways",
+      "prompt": "'The children found a wallet under the old bridge.' Prove that *under the old bridge* is a constituent using all three tests, writing out the actual test sentence for each. Then show that *a wallet under* is NOT one.",
+      "hints": [
+        "Substitution: find one pro-form that replaces the whole string ('there' for places). Movement: front it, or cleft it ('It was ___ that…'). Fragment: ask a question the string alone can answer.",
+        "The mistake is describing the tests instead of running them. Write the real sentence and mark it ✓ or *. A test you didn't write out isn't evidence.",
+        "For the non-constituent, show at least one test *failing* with an asterisked sentence. One clean failure is enough, but showing two is stronger."
+      ],
+      "solution": [
+        "Substitution: 'The children found a wallet *there*.' ✓",
+        "Movement (fronting): '*Under the old bridge*, the children found a wallet.' ✓ Cleft: 'It was under the old bridge that the children found a wallet.' ✓",
+        "Fragment: 'Where did the children find a wallet?' — 'Under the old bridge.' ✓",
+        "*a wallet under*: no pro-form replaces it ('✱The children found it the old bridge'); can't move ('✱A wallet under, the children found the old bridge'); can't answer a question. Not a constituent — it straddles the NP and the PP."
+      ],
+      "why": "Constituency tests are how syntacticians settle arguments without appealing to intuition alone, and they're the reasoning behind every bracket in a treebank. They're also the oral exam's core: the examiner wants to see you *run* the test, not name it.",
+      "sectionRef": "why"
+    },
+    {
+      "id": "ambiguity",
+      "title": "Pull apart a structural ambiguity",
+      "prompt": "'She watched the man with the binoculars.' Give the two meanings, then use one constituency test to show which structure each meaning has — a test that succeeds under one reading and fails under the other.",
+      "hints": [
+        "Meaning 1: she used the binoculars. Meaning 2: the man had them. The question is whether 'with the binoculars' groups with 'the man' (inside the NP) or with 'watched' (a separate phrase in the VP).",
+        "The error is picking a test that gives the same result for both readings. Substitution of the NP with a pronoun is the sharp one: if 'him' replaces 'the man with the binoculars', the PP was inside the NP.",
+        "Try: 'She watched him.' Under which reading does 'him' still mean 'the man with the binoculars'? Then try fronting the PP: 'With the binoculars, she watched the man' — which reading survives?"
+      ],
+      "solution": [
+        "Reading A (instrument): she used binoculars to watch. Reading B (modifier): the man who had binoculars.",
+        "Pronoun substitution: 'She watched him' can mean B ('him' = the man with the binoculars) — so under B, [the man with the binoculars] is one NP constituent. Under A the PP isn't part of 'him'.",
+        "PP fronting: 'With the binoculars, she watched the man' has only reading A — so under A, [with the binoculars] is a separate VP-level constituent that can move; under B it's stuck inside the NP.",
+        "Two structures: A = watched [the man] [with the binoculars]; B = watched [the man [with the binoculars]]."
+      ],
+      "why": "PP-attachment ambiguity is the single most common structural ambiguity in English and one of the hardest problems in parsing — every NLP system gets some of these wrong. Knowing how the tests separate the readings is how you'd debug one."
+    }
+  ]
+}

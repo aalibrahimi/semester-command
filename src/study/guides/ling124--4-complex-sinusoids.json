@@ -1,0 +1,172 @@
+{
+  "id": "ling124/4-complex-sinusoids",
+  "course": "ling124",
+  "lessons": "Day 4",
+  "title": "Complex numbers and complex sinusoids",
+  "summary": "Read a complex number in rectangular, polar and exponential form; find its magnitude, angle and conjugate; see a complex sinusoid as a rotating point; and explain why a real cosine is half a positive-frequency spinner plus half a negative-frequency one.",
+  "estimatedMinutes": 60,
+  "sourceNote": "complex_sinusoids.pdf (Koo's note), the Day 4 slides, Lab 3 Q5–Q20.",
+  "requires": [
+    "ling124/0-reading-a-wave"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why this course needs a made-up number",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Why complex numbers** Chapter 0 said a sinusoid is a rotating point seen from the side. The cosine is its x-coordinate; the sine is its y-coordinate. Tracking a point on a plane means tracking two numbers at once. Complex numbers are the trick that packs two numbers into one so you can write the *whole rotating point* as one symbol — and then the formulas for Fourier analysis become one line instead of two. Koo's note: 'a single complex sinusoid captures both the cosine and sine waves at the same time.' That's the entire reason j exists in this course.",
+          "id": "why.0"
+        },
+        {
+          "type": "prose",
+          "md": "So don't think of j as 'the square root of −1' (true, but unhelpful). Think of it as **the label for the vertical axis**. A complex number x + jy is the point (x, y). That's it.",
+          "id": "why.1"
+        }
+      ]
+    },
+    {
+      "id": "numbers",
+      "heading": "Complex numbers: three ways to write one point",
+      "blocks": [
+        {
+          "type": "example",
+          "title": "Same point, three notations. Rectangular says where; polar/exponential say how far and which direction. Koo uses j (engineers) where mathematicians use i.",
+          "body": "rectangular:   z = x + jy                    x = Re(z),  y = Im(z)\npolar (trig):  z = r (cos θ + j sin θ)        r = |z| = √(x² + y²),   θ = ∠z = atan2(y, x)\nexponential:   z = r · e^{jθ}                 Euler:  e^{jθ} = cos θ + j sin θ",
+          "id": "numbers.0"
+        },
+        {
+          "type": "prose",
+          "md": "*(figure)* z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis.",
+          "id": "numbers.1"
+        },
+        {
+          "type": "prose",
+          "md": "**Taking apart z = 1/2 + j√3/2 (Lab 3 Q5–Q8)**\n1. `z = 1/2 + j·(√3/2)` Lab 3 Q5–Q8. One complex number, taken apart. A complex number is a point (or an arrow from the origin) on a plane.\n2. `real part  Re(z) = 1/2        →  x-coordinate` The number without j is the real part. Plot it on the horizontal axis.\n3. `imag part  Im(z) = √3/2       →  y-coordinate` The number multiplying j is the imaginary part. Plot it on the vertical axis. So z is the point (1/2, √3/2).\n4. `magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1` Magnitude = length of the arrow from the origin = Pythagoras. Here it's exactly 1 — the point sits on the unit circle. (Lab 3 Q7: red = 1, blue = 1.)\n5. `angle      ∠z = atan2(y, x) = 60° = π/3` Angle = the direction of the arrow, counterclockwise from the positive real axis. The point (1/2, √3/2) is (cos 60°, sin 60°), so the angle is 60° = π/3. (Q8.)\n6. `conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)` The conjugate keeps the real part and flips the sign of the imaginary part. Geometrically: mirror the arrow across the horizontal axis.\n7. `|z̄| = 1,  ∠z̄ = −π/3` Mirroring doesn't change length, and it negates the angle. |z̄| = 1, ∠z̄ = −60°. (Q8: red = 60°, blue = −60°.)",
+          "id": "numbers.2"
+        },
+        {
+          "type": "prose",
+          "md": "e^{jθ} = cos θ + j sin θ. Read it as: *the point on the unit circle at angle θ*. That's all. The exponential form r·e^{jθ} is then 'a point at distance r and angle θ' — the polar form written compactly. Why an exponential? Because exponentials multiply by adding exponents (e^a·e^b = e^{a+b}), which will let us pull frequency and phase apart in a moment. You don't need to know why Euler's formula is true for this course; you need to be able to translate it.",
+          "id": "numbers.3"
+        },
+        {
+          "type": "check",
+          "prompt": "Convert 3·e^{jπ/2} to rectangular form, and write −2 in exponential form.",
+          "answer": "3(cos π/2 + j sin π/2) = 3(0 + j·1) = 3j. −2 has length 2 and points along the negative real axis (angle π): 2·e^{jπ}.",
+          "sectionRef": "numbers",
+          "id": "numbers.4"
+        },
+        {
+          "type": "check",
+          "prompt": "What is the magnitude of 3 + 4j, and its conjugate?",
+          "answer": "|3 + 4j| = √(9 + 16) = 5. Conjugate: 3 − 4j (same magnitude 5, angle negated).",
+          "sectionRef": "numbers",
+          "id": "numbers.5"
+        }
+      ]
+    },
+    {
+      "id": "spinner",
+      "heading": "Complex sinusoids: the rotating point itself",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Take z = r·e^{jθ} and let θ increase. The point goes around a circle of radius r, counterclockwise. That moving point is a **complex sinusoid**: z(θ) = r·e^{jθ} = r(cos θ + j sin θ). Its real part traces a cosine, its imaginary part traces a sine. One object, both waves. (Lab 3 Q9–Q10: plotted against θ it's a helix; θ from 0 to 8π = four full circles.)",
+          "id": "spinner.0"
+        },
+        {
+          "type": "prose",
+          "md": "- z̄(θ) = r·e^{−jθ} = r(cos θ − j sin θ) = r(cos(−θ) + j sin(−θ)) — same circle, **clockwise** (Q11: 'spirals clockwise').\n- Add them: z + z̄ = 2r·cos θ. The imaginary parts cancel; you're left with a real cosine along the real axis (Q12, Q16).\n- Subtract them: z − z̄ = 2jr·sin θ — a sine along the imaginary axis (Q13).\n- So **r·cos θ = (r·e^{jθ} + r·e^{−jθ}) / 2**. A real cosine is the average of a counterclockwise spinner and a clockwise one.",
+          "id": "spinner.1"
+        },
+        {
+          "type": "example",
+          "title": "Substitute θ = 2πFt + ϕ, exactly as in Chapter 0. Then split the exponent with the product rule of exponents.",
+          "body": "z(t) = r · e^{j(2πFt + ϕ)}\n     = r · e^{jϕ} · e^{j2πFt}         (e^{a+b} = e^a · e^b)\n     = X · e^{j2πFt}                  where  X = r·e^{jϕ}\nX is the COMPLEX AMPLITUDE (a \"phasor\"):  |X| = r = amplitude,  ∠X = ϕ = phase\nThe frequency lives in e^{j2πFt}; the amplitude AND phase live together in one complex number X.\nconjugate:  z̄(t) = X̄ · e^{−j2πFt}      (negative frequency, conjugate amplitude)",
+          "id": "spinner.2"
+        },
+        {
+          "type": "prose",
+          "md": "**Why this matters for every later lab** In Fourier analysis, each frequency gets ONE complex number X. Its magnitude is 'how much of this frequency' and its angle is 'what phase'. That's why Lab 4 asked for X₁ and got 'j' as an answer, and why a magnitude spectrum plots |X| and a phase spectrum plots ∠X. If you can read |X| and ∠X off a complex number, you can read a spectrum.",
+          "id": "spinner.3"
+        },
+        {
+          "type": "example",
+          "title": "A real cosine as two spinners",
+          "body": "Show A·cos(2πFt + ϕ) = X_F·e^{j2πFt} + X̄_F·e^{−j2πFt}, and say what X_F is.\n\n1. Start from r·cos(θ) = (z + z̄)/2 with θ = 2πFt + ϕ and r = A.\n2. Write z(t) = X·e^{j2πFt} and z̄(t) = X̄·e^{−j2πFt}, where X = A·e^{jϕ}.\n3. So A·cos(2πFt + ϕ) = (X·e^{j2πFt} + X̄·e^{−j2πFt}) / 2.\n4. Define X_F = X/2. Halving a complex number halves its length and leaves its angle alone.\n5. Therefore **|X_F| = A/2** and **∠X_F = ϕ**. A real cosine of amplitude A shows up in a two-sided spectrum as two lines, at +F and −F, each of height A/2, with phases ϕ and −ϕ.",
+          "answer": "|X_F| = A/2, ∠X_F = ϕ",
+          "id": "spinner.4"
+        },
+        {
+          "type": "example",
+          "title": "Dials on a complex sinusoid",
+          "body": "x(t) = A·e^{j(2πFt + ϕ)}, plotted as a spiral in 3D (time, real, imaginary).\n\n1. Q14: double the frequency of e^{j2π·20·t} → e^{j2π·40·t}. Same spiral, twice as many turns per second.\n2. Q16: e^{j2πFt} + e^{−j2πFt} = 2cos(2πFt). Two opposite spinners sum to a real cosine.\n3. Q17: A = 10 instead of 1 → the spiral traces a circle of radius 10. Amplitude is the radius.\n4. Q18: ϕ = π instead of 0 → the point starts on the opposite side of the circle: a half-cycle head start.\n5. Q19: A is the **magnitude** of the vector, ϕ is its **angle**.\n6. Q20: given X = A·e^{jϕ} numerically (e.g. 4·e^{jπ/2}), read A = 4 from the coefficient and ϕ = π/2 from the exponent.",
+          "id": "spinner.5"
+        }
+      ]
+    },
+    {
+      "id": "def",
+      "heading": "Compressed form",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Complex number",
+          "body": "z = x + jy is the point (x, y). |z| = √(x² + y²) is its length; ∠z = atan2(y, x) is its angle; z̄ = x − jy is its mirror across the real axis. Euler: e^{jθ} = cos θ + j sin θ, so z = |z|·e^{j∠z}.",
+          "id": "def.0"
+        },
+        {
+          "type": "definition",
+          "term": "Complex sinusoid and complex amplitude",
+          "body": "z(t) = X·e^{j2πFt} is a point circling at F rotations per second; X = A·e^{jϕ} carries amplitude (|X|) and phase (∠X). A real cosine is (z + z̄)/2, so it appears at both +F and −F with half the amplitude at each.",
+          "id": "def.1"
+        },
+        {
+          "type": "check",
+          "prompt": "A spectrum shows X = 0.354 − 0.354j at 2 Hz. What's the amplitude and phase of the cosine at 2 Hz?",
+          "answer": "|X| = √(0.354² + 0.354²) = 0.5, so the cosine's amplitude is 2·0.5 = 1. ∠X = atan2(−0.354, 0.354) = −π/4, so the phase is −π/4. (This is the k = −2 line of the Day 5 slides' example.)",
+          "sectionRef": "def",
+          "id": "def.2"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "three-forms",
+      "title": "One point, three spellings",
+      "prompt": "z = −3 + 3j. Write |z|, the angle θ (radians, exact), the polar form, the exponential form, and the conjugate z∗. Then: what is z · z∗?",
+      "hints": [
+        "Plot it: real part −3 (left), imaginary part 3 (up). Magnitude is the distance from the origin — Pythagoras. Angle is measured counterclockwise from the positive real axis.",
+        "The classic error is θ = arctan(3/−3) = −π/4. That's the angle for +3 − 3j (fourth quadrant). Your point is in the *second* quadrant; add π: θ = 3π/4.",
+        "Conjugate flips the sign of the imaginary part. z·z∗ always equals |z|² — check your magnitude with it."
+      ],
+      "solution": [
+        "|z| = √(9 + 9) = √18 = 3√2 ≈ 4.24.",
+        "θ = 3π/4 (135°): second quadrant, 45° above the negative real axis.",
+        "Polar: 3√2·(cos 3π/4 + j sin 3π/4). Exponential: 3√2·e^(j3π/4).",
+        "z∗ = −3 − 3j. z·z∗ = (−3)² + 3² = 18 = |z|². ✓"
+      ],
+      "why": "Every value in a spectrum is a complex number, and 'magnitude and angle' is how you read it: magnitude is how loud that frequency is, angle is its phase. Get the quadrant wrong and your phase is off by 180° — which is the difference between a sound and its exact cancellation."
+    },
+    {
+      "id": "spinner",
+      "title": "Why a cosine is two spinners",
+      "prompt": "Starting from Euler's formula e^(jθ) = cos θ + j sin θ, show in three lines that cos θ = (e^(jθ) + e^(−jθ))/2. Then say what this means for the spectrum of a real cosine at 100 Hz.",
+      "hints": [
+        "Write Euler's formula twice: once for θ, once for −θ. Remember cos(−θ) = cos θ and sin(−θ) = −sin θ.",
+        "The mistake is trying to solve for cos by dividing. Instead, *add* the two equations — the j sin terms cancel.",
+        "e^(jθ) with θ = 2π·100·t is a point spinning counterclockwise at 100 Hz. e^(−jθ) spins clockwise — that's a *negative* frequency, −100 Hz. Half of each."
+      ],
+      "solution": [
+        "e^(jθ) = cos θ + j sin θ and e^(−jθ) = cos θ − j sin θ.",
+        "Add them: e^(jθ) + e^(−jθ) = 2 cos θ.",
+        "Divide by 2: cos θ = (e^(jθ) + e^(−jθ))/2.",
+        "So a real 100 Hz cosine is half a spinner at +100 Hz plus half a spinner at −100 Hz. Its spectrum has two lines, at +100 and −100 Hz, each of height A/2. That's why Fourier spectra are symmetric for real signals."
+      ],
+      "why": "This one identity is why every FFT plot of a real signal has a mirror image, why 'negative frequency' is a real thing engineers say, and why the DFT of an N-point real signal only has N/2 useful bins. Once you see the two spinners, the rest of the course stops being mysterious."
+    }
+  ]
+}

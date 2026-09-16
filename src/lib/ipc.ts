@@ -14,6 +14,7 @@
  * needs plus a sync-status read the shell footer renders.
  */
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
+import type { ReviewRecord, SectionRecord, SectionStatus } from "@/study/mastery";
 import type {
   AuthStatus,
   DegreeAudit,
@@ -446,4 +447,37 @@ export async function importMyProgress(text: string): Promise<DegreeAudit> {
 /** Set the graduation term the audit is measured against, e.g. "Fall 2027". */
 export async function setTargetTerm(term: string): Promise<void> {
   await call<void>("set_target_term", { term });
+}
+
+/* ── Study mastery (migration 0010) ─────────────────────────────────────── */
+
+interface StudyMasteryPayload {
+  guideId: string;
+  sections: SectionRecord[];
+  reviews: ReviewRecord[];
+}
+
+/** Everything the store holds for one guide. Rows absent = unread / unseen. */
+export async function studyMastery(guideId: string): Promise<StudyMasteryPayload> {
+  if (!IS_TAURI) return { guideId, sections: [], reviews: [] };
+  return call<StudyMasteryPayload>("study_mastery", { guideId });
+}
+
+/** Section rows across every guide, for index-page progress. */
+export async function studySectionsAll(): Promise<SectionRecord[]> {
+  if (!IS_TAURI) return [];
+  return call<SectionRecord[]>("study_sections_all");
+}
+
+export async function setStudySection(guideId: string, sectionId: string, status: SectionStatus): Promise<SectionRecord> {
+  return call<SectionRecord>("set_study_section", { guideId, sectionId, status });
+}
+
+export async function saveStudyScratch(guideId: string, sectionId: string, scratch: string | null): Promise<SectionRecord> {
+  return call<SectionRecord>("save_study_scratch", { guideId, sectionId, scratch });
+}
+
+/** Store an SM-2 record the webview computed; echoes it back. */
+export async function recordStudyReview(review: ReviewRecord): Promise<ReviewRecord> {
+  return call<ReviewRecord>("record_study_review", { review });
 }
