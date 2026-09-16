@@ -20,6 +20,7 @@ import {
   ClipboardList,
   GraduationCap,
   ListChecks,
+  NotebookPen,
   RefreshCw,
   Settings,
   Users,
@@ -108,6 +109,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <BookOpen className="mr-2 h-4 w-4" />
             Syllabi
             <CommandShortcut>{shortcut("4")}</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go("/study")}>
+            <NotebookPen className="mr-2 h-4 w-4" />
+            Study
+            <CommandShortcut>{shortcut("9")}</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go("/contacts")}>
             <Users className="mr-2 h-4 w-4" />

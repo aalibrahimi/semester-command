@@ -34,6 +34,7 @@ import {
   GraduationCap,
   ListChecks,
   Loader2,
+  NotebookPen,
   Settings as SettingsIcon,
   Users,
 } from "lucide-react";
@@ -87,6 +88,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
     { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
     { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },
+    { to: "/study", label: "Study", icon: NotebookPen, digit: "9", count: null },
     { to: "/contacts", label: "Contacts", icon: Users, digit: "5", count: null },
     { to: "/done", label: "Done", icon: CheckCheck, digit: "7", count: null },
     { to: "/finance", label: "Finances", icon: Landmark, digit: "8", count: null },

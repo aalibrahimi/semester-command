@@ -77,3 +77,5 @@ cookies.json
 
 # Test and coverage output
 /coverage/
+_to_delete/
+Claude outputs/
