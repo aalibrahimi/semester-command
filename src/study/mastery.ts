@@ -97,7 +97,7 @@ function subscribe(cb: () => void) {
 /** Live view of one guide's mastery. Loads on first use. */
 export function useMastery(guideId: string): GuideMastery {
   const m = useSyncExternalStore(subscribe, () => snapshot(guideId));
-  if (!m.loaded) void ensureLoaded(guideId);
+  if (!m.loaded && guideId) void ensureLoaded(guideId);
   return m;
 }
 
