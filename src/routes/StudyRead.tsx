@@ -208,9 +208,19 @@ export default function StudyRead() {
   const idx = Math.max(0, sections.findIndex((s) => s.id === wanted));
   const section = sections[idx];
 
+  // Arriving from Recall / Map: scroll to the block and flash it; otherwise start at the top.
   useEffect(() => {
-    document.querySelector("main")?.scrollTo({ top: 0 });
-  }, [section?.id]);
+    const at = params.get("at");
+    const el = at ? document.getElementById(at) : null;
+    if (!el) {
+      document.querySelector("main")?.scrollTo({ top: 0 });
+      return;
+    }
+    el.scrollIntoView({ block: "center" });
+    el.classList.add("ring-2", "ring-brand", "rounded-lg");
+    const t = setTimeout(() => el.classList.remove("ring-2", "ring-brand", "rounded-lg"), 1800);
+    return () => clearTimeout(t);
+  }, [section?.id, params]);
 
   if (!course) return <Navigate to="/study" replace />;
   if (!guide || !section) return <Navigate to={`/study/${course.slug}`} replace />;

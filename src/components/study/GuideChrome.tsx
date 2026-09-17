@@ -19,7 +19,7 @@ export type GuideView = "read" | "recall" | "cheatsheet" | "map";
 
 const VIEWS: { key: GuideView; label: string; ready: boolean; path: string }[] = [
   { key: "read", label: "Read", ready: true, path: "" },
-  { key: "recall", label: "Recall", ready: false, path: "/recall" },
+  { key: "recall", label: "Recall", ready: true, path: "/recall" },
   { key: "cheatsheet", label: "Cheat sheet", ready: true, path: "/cheatsheet" },
   { key: "map", label: "Map", ready: false, path: "/map" },
 ];

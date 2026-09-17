@@ -137,37 +137,42 @@ export async function saveScratch(guideId: string, sectionId: string, scratch: s
 }
 
 /**
- * SM-2, the plain version. grade: 0 Again · 1 Hard · 2 Good · 3 Easy.
+ * SM-2, the plain version, with Anki-style first steps for a card that has
+ * no successful repetition yet. grade: 0 Again · 1 Hard · 2 Good · 3 Easy.
  * "Missed" in the Read view is grade 0, "Knew it" is grade 2.
+ * Intervals are in days; sub-day steps are fractions (1 min = 1/1440).
  */
+const MIN = 1 / 1440;
 export function nextReview(prev: ReviewRecord | undefined, guideId: string, itemId: string, grade: 0 | 1 | 2 | 3, now = new Date()): ReviewRecord {
   const r: ReviewRecord = prev ?? { guideId, itemId, lastSeen: null, misses: 0, nextDue: null, ease: 2.5, intervalDays: 0, reps: 0 };
   let { ease, intervalDays, reps, misses } = r;
   if (grade === 0) {
     misses += 1;
     reps = 0;
-    intervalDays = 0; // back in today's queue
+    intervalDays = 1 * MIN; // back in the queue almost at once
     ease = Math.max(1.3, ease - 0.2);
+  } else if (reps === 0) {
+    // Learning steps: Hard 10 min, Good 1 day, Easy 4 days.
+    intervalDays = grade === 1 ? 10 * MIN : grade === 2 ? 1 : 4;
+    if (grade !== 1) reps = 1;
+    if (grade === 3) ease = Math.min(3.0, ease + 0.15);
   } else {
     // SM-2 quality q ∈ {3,4,5} for Hard/Good/Easy.
     const q = grade + 2;
-    if (reps === 0) intervalDays = 1;
-    else if (reps === 1) intervalDays = 6;
-    else intervalDays = Math.round(intervalDays * ease);
+    intervalDays = reps === 1 ? 6 : Math.round(intervalDays * ease);
     if (grade === 1) intervalDays = Math.max(1, Math.round(intervalDays * 0.5));
     if (grade === 3) intervalDays = Math.round(intervalDays * 1.3);
     reps += 1;
     ease = Math.max(1.3, ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)));
   }
-  const due = new Date(now);
-  if (intervalDays === 0) due.setMinutes(due.getMinutes() + 10);
-  else due.setDate(due.getDate() + intervalDays);
+  const due = new Date(now.getTime() + intervalDays * 86_400_000);
   return { guideId, itemId, lastSeen: now.toISOString(), misses, nextDue: due.toISOString(), ease: Number(ease.toFixed(3)), intervalDays, reps };
 }
 
 /** The interval each grade would give — for the labels on the four buttons. */
 export function previewIntervals(prev: ReviewRecord | undefined, guideId: string, itemId: string): Record<0 | 1 | 2 | 3, number> {
-  return { 0: 0, 1: nextReview(prev, guideId, itemId, 1).intervalDays, 2: nextReview(prev, guideId, itemId, 2).intervalDays, 3: nextReview(prev, guideId, itemId, 3).intervalDays };
+  const at = (g: 0 | 1 | 2 | 3) => nextReview(prev, guideId, itemId, g).intervalDays;
+  return { 0: at(0), 1: at(1), 2: at(2), 3: at(3) };
 }
 
 export async function recordReview(guideId: string, itemId: string, grade: 0 | 1 | 2 | 3): Promise<ReviewRecord> {
