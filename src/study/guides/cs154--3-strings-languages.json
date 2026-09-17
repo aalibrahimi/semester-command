@@ -448,14 +448,76 @@
           "id": "rules.d1750f47"
         },
         {
-          "type": "prose",
-          "md": "- **1.** Sets and languages get braces { }; tuples get parentheses ( ).\n- **2.** λ is the empty *string*; ϕ or { } is the empty *set*; {λ} is a language with one string.\n- **3.** In set-builder, comma = *and*. Write 'or' (or ∨) for or.\n- **4.** Always name the alphabet: 'over Σ = {a, b}'.\n- **5.** Roster form of an infinite language ends with '…'.\n- **6.** Strings are w, u, v; languages are L; alphabets are Σ.",
-          "id": "rules.e28ef924"
+          "type": "definition",
+          "term": "Rule 1",
+          "body": "Sets and languages get braces { }; tuples get parentheses ( ).",
+          "id": "rules.2d74e7f1"
         },
         {
-          "type": "prose",
-          "md": "- **7.** Complement of a language means Σ∗ − L; you need Σ.\n- **8.** w⁰ = λ (a string), but L⁰ = {λ} (a language).\n- **9.** Exponents on languages create *independent* indices (n, m).\n- **10.** A ⊂ B (proper) requires A ≠ B; when in doubt, ⊆.\n- **11.** Roster elements separated by commas, inside one pair of braces.\n- **12.** Don't invent notation. If the slide wrote it a certain way, write it that way.",
-          "id": "rules.b69bd9b8"
+          "type": "definition",
+          "term": "Rule 2",
+          "body": "λ is the empty *string*; ϕ or { } is the empty *set*; {λ} is a language with one string.",
+          "id": "rules.2a74e338"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 3",
+          "body": "In set-builder, comma = *and*. Write 'or' (or ∨) for or.",
+          "id": "rules.2b74e4cb"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 4",
+          "body": "Always name the alphabet: 'over Σ = {a, b}'.",
+          "id": "rules.3074ecaa"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 5",
+          "body": "Roster form of an infinite language ends with '…'.",
+          "id": "rules.3174ee3d"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 6",
+          "body": "Strings are w, u, v; languages are L; alphabets are Σ.",
+          "id": "rules.2e74e984"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 7",
+          "body": "Complement of a language means Σ∗ − L; you need Σ.",
+          "id": "rules.2f74eb17"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 8",
+          "body": "w⁰ = λ (a string), but L⁰ = {λ} (a language).",
+          "id": "rules.2474d9c6"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 9",
+          "body": "Exponents on languages create *independent* indices (n, m).",
+          "id": "rules.2574db59"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 10",
+          "body": "A ⊂ B (proper) requires A ≠ B; when in doubt, ⊆.",
+          "id": "rules.5008d4d3"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 11",
+          "body": "Roster elements separated by commas, inside one pair of braces.",
+          "id": "rules.4f08d340"
+        },
+        {
+          "type": "definition",
+          "term": "Rule 12",
+          "body": "Don't invent notation. If the slide wrote it a certain way, write it that way.",
+          "id": "rules.5208d7f9"
         },
         {
           "type": "prose",

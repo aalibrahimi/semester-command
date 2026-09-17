@@ -51,6 +51,10 @@ export interface MigrationReport {
 const BOLD_LEAD = /^(?:[♥]\s*)?\*\*([^*]+)\*\*\s*(?:(\S{1,12}):\s*)?[:—–-]?\s*(.+)$/s;
 /** A bold lead that is only a number or bullet ("**1.**", "**(a)**") is emphasis, not a term. */
 const NOT_A_TERM = /^[\d\s.()a-z]{0,4}$|^[\d.]+$/;
+/** Sections whose numbered items are rules to drill (each becomes a definition). */
+const RULES_HEADING = /\b(rules?|notation)\b/i;
+/** "**3.** text" or "3. text" — the number, then the rest. */
+const NUMBERED_ITEM = /^(?:\*\*)?(\d+)\.(?:\*\*)?\s+(.+)$/s;
 /** `def` blocks that are chapter summaries, not terms ("Heap in one paragraph"). */
 const SUMMARY_TERM = /\bin one (breath|paragraph|sentence)$/i;
 
@@ -127,7 +131,21 @@ export function chapterToGuide(course: Course, chapter: Chapter, report?: Migrat
           break;
         case "list": {
           const rest: string[] = [];
+          const rulesSection = RULES_HEADING.test(sec.title);
+          let ruleN = 0;
           for (const item of b.items) {
+            // In a "rules" / "notation" section, every numbered item is a rule worth a card:
+            // term = its bold lead if it has a real one, otherwise "Rule n".
+            const numbered = NUMBERED_ITEM.exec(item.trim());
+            if (rulesSection && numbered) {
+              ruleN = Number(numbered[1]) || ruleN + 1;
+              const restText = numbered[2].trim();
+              const lead = BOLD_LEAD.exec(restText);
+              const term = lead && !NOT_A_TERM.test(lead[1].trim()) ? tidy(lead[1]) : `Rule ${ruleN}`;
+              const body = lead && term !== `Rule ${ruleN}` ? lead[3].trim() : restText;
+              push({ type: "definition", term, body });
+              continue;
+            }
             const m = BOLD_LEAD.exec(item.trim());
             if (m && m[1].length <= 60 && !NOT_A_TERM.test(m[1].trim())) {
               // "**Alphabet** Σ: …" → term "Alphabet Σ"; the symbol belongs to the term.

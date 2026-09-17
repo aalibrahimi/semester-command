@@ -1,6 +1,6 @@
 # Guide migration report
 
-24 guides · blocks: prose 233 · definition 213 · table 32 · example 80 · trap 26 · check 108 · stepper 40 · figure 13
+24 guides · blocks: prose 231 · definition 225 · table 32 · example 80 · trap 26 · check 108 · stepper 40 · figure 13
 
 ## Left as prose (13)
 
