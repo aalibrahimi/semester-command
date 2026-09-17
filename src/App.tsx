@@ -31,9 +31,8 @@ import Graduation from "@/routes/Graduation";
 import Syllabi from "@/routes/Syllabi";
 import Study from "@/routes/Study";
 import StudyCourse from "@/routes/StudyCourse";
-import StudyChapter from "@/routes/StudyChapter";
 import StudyRead from "@/routes/StudyRead";
-import { legacyStudyViewer } from "@/lib/flags";
+import StudyCheatSheet from "@/routes/StudyCheatSheet";
 import StudySlides from "@/routes/StudySlides";
 import Settings from "@/routes/Settings";
 import DevTokens from "@/routes/DevTokens";
@@ -56,7 +55,8 @@ export default function App() {
               <Route path="syllabi" element={<Syllabi />} />
               <Route path="study" element={<Study />} />
               <Route path="study/:course" element={<StudyCourse />} />
-              <Route path="study/:course/:chapter" element={legacyStudyViewer() ? <StudyChapter /> : <StudyRead />} />
+              <Route path="study/:course/:chapter" element={<StudyRead />} />
+              <Route path="study/:course/:chapter/cheatsheet" element={<StudyCheatSheet />} />
               <Route path="study/:course/:chapter/slides" element={<StudySlides />} />
               <Route path="graduation" element={<Graduation />} />
               <Route path="contacts" element={<Contacts />} />

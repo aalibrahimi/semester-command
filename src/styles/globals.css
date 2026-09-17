@@ -350,3 +350,31 @@
   font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
 }
+
+/* ── Cheat sheet print (StudyCheatSheet) ─────────────────────────────────
+   The platform print path: hide the app shell, show only the grid, force
+   white paper / black ink regardless of theme. Tiles keep their borders. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .cheatsheet-print-root,
+  .cheatsheet-print-root * {
+    visibility: visible;
+  }
+  .cheatsheet-print-root {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+  .cheatsheet-print-root * {
+    color: #000 !important;
+    background: transparent !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+  }
+  .cheatsheet-print-root [aria-hidden="true"] {
+    display: none !important;
+  }
+}

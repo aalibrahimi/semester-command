@@ -1,9 +1,7 @@
 /**
  * StudyRead — the Read view of a guide (wireframe A): one section per screen.
  *
- * Route: /study/:course/:chapter (?s=<sectionId>). Route-level switch in
- * App.tsx falls back to the legacy StudyChapter when the `legacyStudy` flag
- * is set (src/lib/flags.ts) — delete both once Phase 1 is accepted.
+ * Route: /study/:course/:chapter (?s=<sectionId>).
  *
  * Called by: the router, StudyCourse ("Read"), later the Map's "Read §n".
  * Calls: study/loadGuides, study/mastery (the one store), GuideBlocks,
@@ -19,6 +17,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Circle, PencilLine, Presentation, X } from "lucide-react";
 import { GuideBlocks } from "@/components/study/GuideBlocks";
+import { GuideTopRow } from "@/components/study/GuideChrome";
 import { Inline } from "@/components/study/Blocks";
 import { Practice } from "@/components/study/Practice";
 import { cn } from "@/lib/utils";
@@ -42,39 +41,6 @@ const SEG: Record<SectionStatus, string> = {
 
 function MasteryDot({ status, className }: { status: SectionStatus; className?: string }) {
   return <span aria-hidden className={cn("inline-block h-2.5 w-2.5 shrink-0 rounded-full border-[1.5px]", DOT[status], className)} />;
-}
-
-/* ── View tab strip (Read enabled; the rest land in Phases 2–4) ─────────── */
-
-const VIEWS = [
-  { key: "read", label: "Read", ready: true },
-  { key: "recall", label: "Recall", ready: false },
-  { key: "cheatsheet", label: "Cheat sheet", ready: false },
-  { key: "map", label: "Map", ready: false },
-] as const;
-
-function ViewTabs({ active }: { active: (typeof VIEWS)[number]["key"] }) {
-  return (
-    <div role="tablist" aria-label="Guide views" className="flex items-center gap-0.5 rounded-lg border border-border bg-fill-ghost/40 p-0.5">
-      {VIEWS.map((v) => (
-        <button
-          key={v.key}
-          type="button"
-          role="tab"
-          aria-selected={v.key === active}
-          disabled={!v.ready}
-          title={v.ready ? undefined : "Coming in a later phase"}
-          className={cn(
-            "rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-micro",
-            v.key === active ? "bg-card text-foreground shadow-card" : "text-muted-foreground",
-            !v.ready && "cursor-not-allowed opacity-50",
-          )}
-        >
-          {v.label}
-        </button>
-      ))}
-    </div>
-  );
 }
 
 /* ── Right rail: Test me ────────────────────────────────────────────────── */
@@ -256,8 +222,9 @@ export default function StudyRead() {
   const status = sectionStatus(mastery, section.id);
   const remaining = sections.slice(idx).length;
   const minsLeft = Math.max(1, Math.round((guide.estimatedMinutes * remaining) / sections.length));
-  const exercises = guide.exercises.filter((e) => e.sectionRef === section.id);
   const isLast = idx === sections.length - 1;
+  // Exercises drill their matched section; ones the migration couldn't place land on the last section.
+  const exercises = guide.exercises.filter((e) => e.sectionRef === section.id || (isLast && !sections.some((s) => s.id === e.sectionRef)));
 
   const markAndAdvance = async (next: SectionStatus) => {
     await setSectionStatus(guide.id, section.id, next);
@@ -269,22 +236,19 @@ export default function StudyRead() {
     <div className="mx-auto flex w-full max-w-[1280px] flex-col px-6 pb-16 pt-4">
       {/* ── Top bar ───────────────────────────────────────────────────── */}
       <header className="mb-6 flex flex-col gap-3 border-b border-border/60 pb-4">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <Link to={`/study/${course.slug}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-3.5 w-3.5" /> {course.code}
-          </Link>
-          <div className="min-w-0 flex-1">
-            <span className="mr-2 font-mono text-2xs text-muted-foreground">{guide.lessons}</span>
-            <span className="font-display text-base font-semibold tracking-tight">{guide.title}</span>
-          </div>
-          <ViewTabs active="read" />
-          <Link
-            to={`/study/${course.slug}/${guide.id.split("/")[1]}/slides`}
-            className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-fill-ghost"
-          >
-            <Presentation className="h-3.5 w-3.5" /> Play as slides
-          </Link>
-        </div>
+        <GuideTopRow
+          guide={guide}
+          courseCode={course.code}
+          active="read"
+          right={
+            <Link
+              to={`/study/${guide.id}/slides`}
+              className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-fill-ghost"
+            >
+              <Presentation className="h-3.5 w-3.5" /> Play as slides
+            </Link>
+          }
+        />
         <div className="flex items-center gap-4">
           <div role="progressbar" aria-label="Section progress" aria-valuemin={1} aria-valuemax={sections.length} aria-valuenow={idx + 1} className="flex flex-1 gap-1">
             {sections.map((s, i) => (
@@ -305,7 +269,7 @@ export default function StudyRead() {
 
       <div className="flex gap-8">
         {/* ── Left rail ───────────────────────────────────────────────── */}
-        <nav aria-label="Sections" className="hidden w-[210px] shrink-0 lg:block">
+        <nav aria-label="Sections" className="hidden w-[260px] shrink-0 lg:block">
           <div className="sticky top-4">
             <ol className="flex flex-col gap-px">
               {sections.map((s, i) => {
@@ -396,7 +360,7 @@ export default function StudyRead() {
         </article>
 
         {/* ── Right rail ──────────────────────────────────────────────── */}
-        <aside className="hidden w-[280px] shrink-0 xl:block">
+        <aside className="hidden w-[320px] shrink-0 xl:block">
           <div className="sticky top-4 flex flex-col gap-5">
             <TestMe guide={guide} section={section} mastery={mastery} />
             <Scratchpad guide={guide} section={section} mastery={mastery} />

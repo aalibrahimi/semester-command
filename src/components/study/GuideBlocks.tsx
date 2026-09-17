@@ -13,7 +13,7 @@
  *   check       not rendered here — the right rail's "Test me" owns checks
  *
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
- * Consecutive definition/example cards are laid out in a two-column grid.
+ * Consecutive definition/trap cards are laid out in a two-column grid.
  */
 import type { ReactNode } from "react";
 import { AlertOctagon, HelpCircle } from "lucide-react";
@@ -183,11 +183,12 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
   }
 }
 
-const CARD_TYPES = new Set<GuideBlock["type"]>(["definition", "example"]);
+const CARD_TYPES = new Set<GuideBlock["type"]>(["definition", "trap"]);
 
 /**
  * A section's blocks with reading rhythm. Runs of two or more definition /
- * example cards become a two-column grid; everything else stacks.
+ * trap cards become a two-column grid (the wireframe pairs a definition with
+ * the section's trap); examples and everything else stack full-width.
  */
 export function GuideBlocks({ blocks }: { blocks: GuideBlock[] }) {
   const groups: GuideBlock[][] = [];
