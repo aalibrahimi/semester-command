@@ -16,14 +16,15 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The problem** A real sound wave is **continuous in time** (it has a value at every instant, infinitely many) and **continuous in amplitude** (any pressure, infinitely fine). A computer stores a finite list of finite-precision numbers. So two things have to be made discrete: *when* we look (sampling) and *how precisely* we record what we see (quantization). Everything in this chapter is the consequence of those two compromises.",
-          "id": "why.0"
+          "id": "why.5c837ae4"
         },
         {
           "type": "definition",
           "term": "Sampling · quantization",
           "body": "**Sampling**: continuous time → a discrete sequence of time points, taken at regular intervals. **Quantization**: continuous amplitude → a discrete set of allowed amplitude levels.",
-          "id": "why.1"
+          "id": "why.a980a911"
         }
       ]
     },
@@ -35,36 +36,112 @@
           "type": "definition",
           "term": "Sampling interval Tₛ",
           "body": "the time between samples, in seconds.",
-          "id": "sampling.0"
+          "id": "sampling.5adc0ca3"
         },
         {
           "type": "definition",
           "term": "Sampling frequency (rate) Fₛ",
           "body": "samples per second, in Hz. **Fₛ = 1/Tₛ**.",
-          "id": "sampling.1"
+          "id": "sampling.f66a5f97"
         },
         {
           "type": "prose",
           "md": "- CD audio: Fₛ = 44,100 Hz. Speech corpora: often 16,000 Hz or 8,000 Hz (telephone).",
-          "id": "sampling.2"
+          "id": "sampling.93f582ea"
         },
         {
-          "type": "prose",
-          "md": "**Sampling cos(10πt) at two rates (the slides' example)**\n1. `[x(t) = cos(10πt)] — = cos(2π·5·t): a 5 Hz cosine` The signal. First rewrite 10π as 2π·5 so you can read the frequency: F = 5 Hz, period T = 0.2 s.\n2. `[1, -1, 1, -1, 1, -1] — Fₛ = 10 Hz, Tₛ = 0.1 s → t = 0, 0.1, 0.2, …` Sample at Fₛ = 10 Hz: a sample every 0.1 s. x[n] = cos(2π·5·n/10) = cos(πn) = 1, −1, 1, −1… Two samples per cycle. You can barely tell it's a cosine — it looks like a square wave.\n3. `[1, 0.809, 0.309, -0.309, -0.809, -1, -0.809, -0.309, 0.309, 0.809, 1] — Fₛ = 50 Hz, Tₛ = 0.02 s` Sample at Fₛ = 50 Hz: a sample every 0.02 s. x[n] = cos(2π·5·n/50) = cos(πn/5). Ten samples per cycle. Now it clearly traces the cosine. More samples per second = better approximation. (Lab 2 Q9.)\n4. `[x[n] = x(n·Tₛ) = x(n/Fₛ)] — samples in T seconds = T · Fₛ` The general formula. Sample n is taken at time n·Tₛ. Over T seconds you get T·Fₛ samples. Fₛ = 1/Tₛ.",
-          "id": "sampling.3"
+          "type": "stepper",
+          "title": "Sampling cos(10πt) at two rates (the slides' example)",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                "x(t) = cos(10πt)"
+              ],
+              "hl": [
+                0
+              ],
+              "note": "= cos(2π·5·t): a 5 Hz cosine",
+              "caption": "The signal. First rewrite 10π as 2π·5 so you can read the frequency: F = 5 Hz, period T = 0.2 s."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                -1,
+                1,
+                -1,
+                1,
+                -1
+              ],
+              "hl": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "note": "Fₛ = 10 Hz, Tₛ = 0.1 s → t = 0, 0.1, 0.2, …",
+              "caption": "Sample at Fₛ = 10 Hz: a sample every 0.1 s. x[n] = cos(2π·5·n/10) = cos(πn) = 1, −1, 1, −1… Two samples per cycle. You can barely tell it's a cosine — it looks like a square wave."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                0.809,
+                0.309,
+                -0.309,
+                -0.809,
+                -1,
+                -0.809,
+                -0.309,
+                0.309,
+                0.809,
+                1
+              ],
+              "hl": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "note": "Fₛ = 50 Hz, Tₛ = 0.02 s",
+              "caption": "Sample at Fₛ = 50 Hz: a sample every 0.02 s. x[n] = cos(2π·5·n/50) = cos(πn/5). Ten samples per cycle. Now it clearly traces the cosine. More samples per second = better approximation. (Lab 2 Q9.)"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "x[n] = x(n·Tₛ) = x(n/Fₛ)"
+              ],
+              "done": [
+                0
+              ],
+              "note": "samples in T seconds = T · Fₛ",
+              "caption": "The general formula. Sample n is taken at time n·Tₛ. Over T seconds you get T·Fₛ samples. Fₛ = 1/Tₛ."
+            }
+          ],
+          "id": "sampling.d9938e02"
         },
         {
           "type": "example",
           "title": "Replace t with n/Fₛ. Everything else in the wave formula stays put.",
           "body": "x[n] = x(n · Tₛ) = x(n / Fₛ)             n = 0, 1, 2, …\nso for x(t) = A·cos(2πFt + ϕ):\nx[n] = A·cos(2πF·n/Fₛ + ϕ)\nnumber of samples in T seconds = T · Fₛ    (4 s at 100 Hz → 400 samples)\nLab 2: x[3] is taken at t = 3·Tₛ; with Tₛ = 0.005 s that's t = 0.015 s",
-          "id": "sampling.4"
+          "id": "sampling.9bebadb5"
         },
         {
           "type": "trap",
           "body": "**Lab 2 Q9 — the one that was marked wrong** 'How do we approximate x(t) better?' Only two things help: a **higher Fₛ** or, equivalently, a **shorter Tₛ** (same thing said twice). Changing the total duration T does nothing for the approximation — it just gives you more or fewer samples of the same quality. The four correct boxes were: higher Fₛ, shorter Tₛ; the T options were distractors.",
           "source": "Lab 2 Q9",
           "points": null,
-          "id": "sampling.5"
+          "id": "sampling.e4426b94"
         }
       ]
     },
@@ -75,14 +152,14 @@
         {
           "type": "prose",
           "md": "Choose a set of allowed amplitude levels and snap every sample to the closest one — in Koo's convention, 'closest' means the highest level that doesn't exceed the value. The number of levels is the **resolution**. Levels are indexed by integers and stored in bits, so the count is a power of 2: **3 bits → 2³ = 8 levels (0–7); 5 bits → 32; 8 bits → 256; 16 bits → 65,536** (CD quality). More bits = finer steps = less rounding error (quantization noise).",
-          "id": "quant.0"
+          "id": "quant.2f493a22"
         },
         {
           "type": "check",
           "prompt": "A recording is 12-bit at 16 kHz. How many amplitude levels, and how many samples in 2.5 seconds?",
           "answer": "2¹² = 4,096 levels. 2.5 × 16,000 = 40,000 samples.",
           "sectionRef": "quant",
-          "id": "quant.1"
+          "id": "quant.761b41a5"
         }
       ]
     },
@@ -92,76 +169,79 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**Why it exists** In old films, wagon wheels seem to spin backward. The camera takes 24 pictures a second; if a spoke rotates almost a full turn between frames, it looks like it barely moved backward. Sampling a sound does the same thing: a high frequency, sampled too slowly, produces exactly the same list of numbers as some lower frequency. Those two frequencies are **aliases** of each other, and once you've sampled, you cannot tell them apart.",
-          "id": "alias.0"
+          "id": "alias.db99a3a5"
         },
         {
           "type": "example",
           "title": "The proof, one line at a time",
           "body": "Show that cos(2πFt) and cos(2π(F + Fₛ)t) give identical samples at rate Fₛ.\n\n1. Samples are taken at t = n/Fₛ. So the samples of the second wave are cos(2π(F + Fₛ)·n/Fₛ).\n2. Distribute: cos(2πF·n/Fₛ + 2πFₛ·n/Fₛ) = cos(2πF·n/Fₛ + 2πn).\n3. 2πn is a whole number of full turns. Cosine is 2π-periodic, so cos(x + 2πn) = cos(x).\n4. Therefore = cos(2πF·n/Fₛ) — exactly the samples of the first wave. Adding Fₛ to the frequency changes nothing after sampling.",
-          "id": "alias.1"
+          "id": "alias.bb57a437"
         },
         {
           "type": "definition",
           "term": "−F",
           "body": "because cosine is even, cos(2π·F·t) = cos(2π·(−F)·t). A negative frequency is just the point going around the circle the other way; its shadow is identical.",
-          "id": "alias.2"
+          "id": "alias.96ff7e10"
         },
         {
           "type": "definition",
           "term": "F ± k·Fₛ",
           "body": "for any integer k: adding or subtracting whole multiples of the sampling rate (the proof above).",
-          "id": "alias.3"
+          "id": "alias.3dfe5d2a"
         },
         {
           "type": "definition",
           "term": "−F ± k·Fₛ",
           "body": "combine the two.",
-          "id": "alias.4"
+          "id": "alias.af1817cc"
         },
         {
           "type": "prose",
           "md": "- So the aliases of F sampled at Fₛ are: …, −F − Fₛ, −F, −F + Fₛ, F, F + Fₛ, F + 2Fₛ, … and −F + 2Fₛ, etc.",
-          "id": "alias.5"
+          "id": "alias.985d7d45"
         },
         {
           "type": "example",
           "title": "Fₛ = 1000 Hz, frequencies 0 to 1000",
           "body": "Find the alias pairs and the pattern.\n\n1. Aliases of F include −F + Fₛ = 1000 − F. So 100 Hz pairs with 900, 200 with 800, 300 with 700, 400 with 600, and 0 with 1000.\n2. Pattern (Q13, Q15): **F₂ = Fₛ − F₁**. The pairs are mirror images around Fₛ/2 = 500 Hz.\n3. 500 Hz pairs with itself. That's the edge — the Nyquist frequency (Q11, Q14).",
           "answer": "F₂ = Fₛ − F₁; Nyquist = Fₛ/2 = 500 Hz",
-          "id": "alias.6"
+          "id": "alias.18b97226"
         },
         {
           "type": "example",
           "title": "Why Fₛ/2 is the limit",
           "body": "We want a range 0 to F_max with no aliases inside it. How high can F_max be?\n\n1. F must be below Fₛ, because 0 and Fₛ are aliases — if the range reached Fₛ, the very first alias would be inside it.\n2. Among the aliases of a frequency F, the one that could fall below Fₛ is −F + Fₛ. It must not land inside the range, i.e. it must not be below F.\n3. Require −F + Fₛ ≥ F. Rearrange: Fₛ ≥ 2F, so **F ≤ Fₛ/2**.\n4. So the alias-free range is 0 to Fₛ/2. That upper limit is the **Nyquist frequency**. To represent frequencies up to F, sample at least at 2F.",
           "answer": "Nyquist = Fₛ/2",
-          "id": "alias.7"
+          "id": "alias.736d8955"
         },
         {
-          "type": "prose",
-          "md": "*(figure)* With Fₛ = 1000 Hz: every frequency above 500 folds back onto its mirror image below 500. 900 Hz is indistinguishable from 100 Hz after sampling.",
-          "id": "alias.8"
+          "type": "figure",
+          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"30\" y1=\"70\" x2=\"530\" y2=\"70\" opacity=\".5\"/>\n<line x1=\"30\" y1=\"65\" x2=\"30\" y2=\"75\" opacity=\".6\"/><text x=\"22\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">0</text><line x1=\"80\" y1=\"65\" x2=\"80\" y2=\"75\" opacity=\".6\"/><text x=\"72\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">100</text><line x1=\"130\" y1=\"65\" x2=\"130\" y2=\"75\" opacity=\".6\"/><text x=\"122\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">200</text><line x1=\"180\" y1=\"65\" x2=\"180\" y2=\"75\" opacity=\".6\"/><text x=\"172\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">300</text><line x1=\"230\" y1=\"65\" x2=\"230\" y2=\"75\" opacity=\".6\"/><text x=\"222\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">400</text><line x1=\"280\" y1=\"65\" x2=\"280\" y2=\"75\" opacity=\".6\"/><text x=\"272\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">500</text><line x1=\"330\" y1=\"65\" x2=\"330\" y2=\"75\" opacity=\".6\"/><text x=\"322\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">600</text><line x1=\"380\" y1=\"65\" x2=\"380\" y2=\"75\" opacity=\".6\"/><text x=\"372\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">700</text><line x1=\"430\" y1=\"65\" x2=\"430\" y2=\"75\" opacity=\".6\"/><text x=\"422\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">800</text><line x1=\"480\" y1=\"65\" x2=\"480\" y2=\"75\" opacity=\".6\"/><text x=\"472\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">900</text><line x1=\"530\" y1=\"65\" x2=\"530\" y2=\"75\" opacity=\".6\"/><text x=\"522\" y=\"92\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">1000</text>\n<line x1=\"280\" y1=\"20\" x2=\"280\" y2=\"100\" stroke=\"rgb(59 130 246)\" stroke-dasharray=\"4 3\"/><text x=\"240\" y=\"15\" fill=\"rgb(59 130 246)\" stroke=\"none\">Nyquist Fₛ/2</text>\n<path d=\"M80 62 Q 280 25 480 62\" fill=\"none\" stroke=\"rgb(59 130 246)\" opacity=\".7\"/><path d=\"M130 62 Q 280 25 430 62\" fill=\"none\" stroke=\"rgb(59 130 246)\" opacity=\".7\"/><path d=\"M180 62 Q 280 25 380 62\" fill=\"none\" stroke=\"rgb(59 130 246)\" opacity=\".7\"/><path d=\"M230 62 Q 280 25 330 62\" fill=\"none\" stroke=\"rgb(59 130 246)\" opacity=\".7\"/>\n</g>",
+          "viewBox": "0 0 560 120",
+          "caption": "With Fₛ = 1000 Hz: every frequency above 500 folds back onto its mirror image below 500. 900 Hz is indistinguishable from 100 Hz after sampling.",
+          "id": "alias.7e7ed04d"
         },
         {
           "type": "definition",
           "term": "Aliasing · Nyquist frequency",
           "body": "Sampling at Fₛ makes F indistinguishable from −F and from F ± kFₛ (and −F ± kFₛ). The alias-free band is 0 to **Fₛ/2**, the Nyquist frequency. To capture frequencies up to F, sample at Fₛ ≥ 2F. (Speech at 16 kHz captures up to 8 kHz; telephone 8 kHz captures up to 4 kHz — which is why phones sound dull.)",
-          "id": "alias.9"
+          "id": "alias.fea99706"
         },
         {
           "type": "check",
           "prompt": "A 7 kHz tone is sampled at 10 kHz. What frequency will it appear to be?",
           "answer": "Its alias −7 + 10 = 3 kHz. It folds back to 3 kHz (mirror of 7 around Nyquist = 5).",
           "sectionRef": "alias",
-          "id": "alias.10"
+          "id": "alias.c8300872"
         },
         {
           "type": "check",
           "prompt": "Lab 2 Q14: what's the Nyquist frequency in terms of Fₛ, and why does the answer 'Fₛ − F' appear as a choice?",
           "answer": "Nyquist = Fₛ/2. 'Fₛ − F' is the *alias* of F, not the Nyquist frequency — it's the Q15 answer (F₂ = Fₛ − F₁), planted as a distractor in Q14.",
           "sectionRef": "alias",
-          "id": "alias.11"
+          "id": "alias.980ff6d0"
         }
       ]
     }

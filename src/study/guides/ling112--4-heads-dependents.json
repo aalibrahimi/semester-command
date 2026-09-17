@@ -16,25 +16,26 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**What 'several large books' is** Week 2 gave you categories for words. But 'several large books' behaves like one thing — it can be a subject, you can replace all three words with 'they'. What category is the *group*? The answer: a group takes its category from one word inside it. 'Several large books' is about books, and it's a noun-ish thing (a noun phrase), because **books** is its **head**. Take away 'several' or 'large' and you still have a books-phrase; take away 'books' and you have nothing.",
-          "id": "why.0"
+          "id": "why.5a5dd6bf"
         },
         {
           "type": "definition",
           "term": "Head and dependent",
           "body": "A **phrase** is a unit built from a head and its dependents. The **head** determines the syntactic category and core meaning of the phrase — exactly one per phrase. **Dependents** are the other elements, which contribute to the meaning.",
-          "id": "why.1"
+          "id": "why.f491c1d8"
         },
         {
           "type": "example",
           "title": "Five phrases",
           "body": "Find the one word that gives each phrase its category.\n\n1. several large **books** — NP. It's about books; 'several' and 'large' modify.\n2. **with** a loud thud — PP. The preposition is the head: the phrase does what a preposition does (relates something to the verb), and 'with' selects the NP.\n3. our **request** for privacy — NP. 'For privacy' tells you what kind of request.\n4. **yawned** loudly — VP. 'Loudly' modifies the yawning.\n5. a huge **dinner** of very round red berries — NP. The whole thing is a dinner; 'of very round red berries' is a PP inside it, headed by 'of', with its own NP headed by 'berries'.",
-          "id": "why.2"
+          "id": "why.cddf12e8"
         },
         {
           "type": "prose",
           "md": "Two facts from the handout. **Heads pick the category of their dependents**: 'the loud yawn' ✓ / '*the loudly yawn' ✗ — the noun 'yawn' takes an adjective; 'loudly yawned' ✓ / '*loud yawned' ✗ — the verb takes an adverb. **Heads can also pick the meaning**: 'The speaker informed the audience' ✓ but '#The earthquake informed the audience' — grammatical, but 'inform' wants a dependent that can intend to inform. The `#` marks that.",
-          "id": "why.3"
+          "id": "why.22ce94ba"
         }
       ]
     },
@@ -45,13 +46,13 @@
         {
           "type": "prose",
           "md": "'[The bear] yawned [loudly]' — delete 'loudly' and it's fine; delete 'the bear' and it isn't (*'Yawned loudly' as a sentence). '[The bear] [slowly] savored [the berries]' — delete 'slowly', fine; delete 'the berries', *'The bear savored' is broken. '[The bear] gave [me] [a huge fright] [last weekend]' — 'last weekend' can go; 'me' and 'a huge fright' cannot.",
-          "id": "args.0"
+          "id": "args.86e2e463"
         },
         {
           "type": "definition",
           "term": "Argument vs adjunct",
           "body": "**Arguments** are the obligatory dependents of a predicate — the participants the verb's meaning requires. Verbs differ in how many they take (their argument structure: yawn 1, savor 2, give 3). **Adjuncts** are optional dependents — anything you can drop.",
-          "id": "args.1"
+          "id": "args.9e4a62df"
         }
       ]
     },
@@ -62,7 +63,7 @@
         {
           "type": "prose",
           "md": "'Argument' is about the verb's meaning. **Complement** is the syntactic version: a dependent the head *selects*, sitting right next to it. Most complements are arguments and vice versa, with one big exception the handout flags: **subjects are arguments but NOT complements** — they sit on the other side of the verb and behave differently (you'll see why when trees arrive in Week 6).",
-          "id": "comp.0"
+          "id": "comp.46a67817"
         },
         {
           "type": "table",
@@ -93,25 +94,25 @@
               "No — attaches to almost any head of that type"
             ]
           ],
-          "id": "comp.1"
+          "id": "comp.9f06f131"
         },
         {
           "type": "example",
           "title": "Six phrases",
           "body": "For each, what is the complement and its category?\n\n1. **into** [the house] — complement NP. A preposition always takes exactly one NP complement.\n2. **drafted** [a new screenplay] — complement NP. Drop it: *'She drafted' is odd; 'draft' selects an object.\n3. **set** [the packages] [on that shelf] — TWO complements, NP and PP. 'Set' requires both: *'set the packages' is incomplete.\n4. **wondered** [whether she left] — complement is a clause (CP) introduced by the complementizer 'whether'. 'Wonder' selects a question-clause.\n5. **resorted** [to his back-up plan] — complement PP, and 'resort' selects specifically 'to' (*'resorted with'). Selection of the exact preposition = complement.\n6. **fond** [of classical music] — complement PP of the adjective. 'Fond' requires 'of' (*'fond' alone is odd as a predicate: *'She is fond').",
-          "id": "comp.2"
+          "id": "comp.f8ae541b"
         },
         {
           "type": "example",
           "title": "Sorting both",
           "body": "For each bolded head, which dependents are complements and which adjuncts?\n\n1. quietly **serenaded** his beloved in the garden with a guitar — complement: NP 'his beloved' (obligatory, adjacent, selected). Adjuncts: AdvP 'quietly', PP 'in the garden', PP 'with a guitar' — all droppable, stackable, movable ('In the garden, he quietly serenaded his beloved').\n2. repeatedly **glanced** at the clock nervously before noon — complement: PP 'at the clock' (glance selects 'at'). Adjuncts: 'repeatedly', 'nervously', 'before noon'.\n3. unbelievably wealthy **relatives** of mine — complement: PP 'of mine' (the noun 'relative' wants a possessor). Adjunct: AdjP 'unbelievably wealthy'.\n4. extremely **proud** of each student — complement: PP 'of each student' (proud selects 'of'). Adjunct: 'extremely'.",
           "answer": "Complements hug the head and are limited; adjuncts stack and float.",
-          "id": "comp.3"
+          "id": "comp.447fad83"
         },
         {
           "type": "prose",
           "md": "'What position(s) can complements appear in relative to the head? What about adjuncts?' In English, complements come **immediately after** the head (V–NP, P–NP, Adj–PP, N–PP). Adjuncts can come **before or after** and outside the complement: 'quietly serenaded [his beloved] in the garden' — adjunct, head, complement, adjunct. That asymmetry is the whole reason X-bar theory (Week 7) puts complements as sisters of the head and adjuncts one level up.",
-          "id": "comp.4"
+          "id": "comp.62066a5e"
         }
       ]
     },
@@ -122,33 +123,133 @@
         {
           "type": "prose",
           "md": "An arrow goes **from head to dependent**. A head may have many arrows out; every word has at most one arrow in. The word with no arrow in is the root — the head of the whole sentence, which is the main verb. Constituency trees (Week 6) are the other way of drawing the same facts.",
-          "id": "dep.0"
+          "id": "dep.840fa536"
         },
         {
-          "type": "prose",
-          "md": "**Handout (8), drawn as arrows**\n1. `Several large books fell to the ground with a loud thud.` Handout (8). We'll draw the dependency diagram as a list of arrows, head → dependent. Every word gets exactly one head, except the root.\n2. `fell → books        (the subject depends on the verb)` The head of the whole sentence is the main verb 'fell'. Its first dependent is the subject NP, whose head is 'books'.\n3. `fell → to           (PP 'to the ground' depends on the verb)` 'to the ground' is a prepositional phrase. The head of a PP is the preposition, so the arrow from 'fell' lands on 'to', not on 'ground'.\n4. `fell → with         (PP 'with a loud thud' depends on the verb)` Same for 'with a loud thud': 'fell' → 'with'. Both PPs are optional — the sentence is fine without them — so both are adjuncts of the verb.\n5. `books → several, books → large` Inside the subject: 'several' (D) and 'large' (Adj) both depend on 'books'. A head can have many dependents.\n6. `to → ground,  ground → the` 'to' has one dependent, 'ground' — its complement (a preposition must have an NP). And 'ground' has 'the'. A dependent can itself be a head.\n7. `with → thud,  thud → a,  thud → loud` 'with' → 'thud', and 'thud' → 'a', 'loud'. Ten words, nine arrows, one root. Her note: a dependency diagram is a connected directed acyclic graph with maximum in-degree 1 — every word has one incoming arrow except the root.",
-          "id": "dep.1"
+          "type": "stepper",
+          "title": "Handout (8), drawn as arrows",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 0,
+              "caption": "Handout (8). We'll draw the dependency diagram as a list of arrows, head → dependent. Every word gets exactly one head, except the root."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 1,
+              "caption": "The head of the whole sentence is the main verb 'fell'. Its first dependent is the subject NP, whose head is 'books'."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 2,
+              "caption": "'to the ground' is a prepositional phrase. The head of a PP is the preposition, so the arrow from 'fell' lands on 'to', not on 'ground'."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 3,
+              "caption": "Same for 'with a loud thud': 'fell' → 'with'. Both PPs are optional — the sentence is fine without them — so both are adjuncts of the verb."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 4,
+              "caption": "Inside the subject: 'several' (D) and 'large' (Adj) both depend on 'books'. A head can have many dependents."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 5,
+              "caption": "'to' has one dependent, 'ground' — its complement (a preposition must have an NP). And 'ground' has 'the'. A dependent can itself be a head."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Several large books fell to the ground with a loud thud.",
+                "fell → books        (the subject depends on the verb)",
+                "fell → to           (PP 'to the ground' depends on the verb)",
+                "fell → with         (PP 'with a loud thud' depends on the verb)",
+                "books → several, books → large",
+                "to → ground,  ground → the",
+                "with → thud,  thud → a,  thud → loud"
+              ],
+              "active": 6,
+              "caption": "'with' → 'thud', and 'thud' → 'a', 'loud'. Ten words, nine arrows, one root. Her note: a dependency diagram is a connected directed acyclic graph with maximum in-degree 1 — every word has one incoming arrow except the root."
+            }
+          ],
+          "id": "dep.ff373928"
         },
         {
           "type": "check",
           "prompt": "Handout (7a): 'a huge fright'. Draw the arrows.",
           "answer": "fright → a; fright → huge. Head: fright (N). Two dependents, both adjuncts/modifiers of the noun.",
           "sectionRef": "dep",
-          "id": "dep.2"
+          "id": "dep.f746f8ba"
         },
         {
           "type": "check",
           "prompt": "Handout (7c): 'in the middle of the night'.",
           "answer": "in → middle; middle → the; middle → of; of → night; night → the. Head of the whole phrase: 'in' (it's a PP). 'of the night' is a PP complement of the noun 'middle'.",
           "sectionRef": "dep",
-          "id": "dep.3"
+          "id": "dep.91bafb7e"
         },
         {
           "type": "check",
           "prompt": "Handout (10): 'The brown bear slowly savored a huge dinner of very round red berries.' What is the root and what are its direct dependents?",
           "answer": "Root: savored. Dependents of savored: bear (subject; bear → the, brown), slowly (adjunct), dinner (complement; dinner → a, huge, of; of → berries; berries → round (→ very), red).",
           "sectionRef": "dep",
-          "id": "dep.4"
+          "id": "dep.1f0e0c7f"
         }
       ]
     },
@@ -160,7 +261,7 @@
           "type": "definition",
           "term": "Head directionality",
           "body": "The order of head and complement. **Head-initial**: head before complement (English, Spanish, Tagalog, Arabic). **Head-final**: head after complement (Japanese, Hindi/Urdu, Turkish). SVO is one head-initial pattern (V before its object); SOV is head-final. Subjects are not complements, so they don't count.",
-          "id": "dir.0"
+          "id": "dir.726b5ab6"
         },
         {
           "type": "table",
@@ -190,19 +291,19 @@
               "ṣūrat-u [rōbōt-in] (picture of-robot — the genitive follows)"
             ]
           ],
-          "id": "dir.1"
+          "id": "dir.0546d5e4"
         },
         {
           "type": "prose",
           "md": "The point for the oral exam: directionality is *consistent* within a language. Japanese puts every head last — verb after object, postposition after noun, noun after its PP. English and Arabic put every head first. Once you know a language's setting from one pair, you can predict the others. That's what 'parameter' means.",
-          "id": "dir.2"
+          "id": "dir.055c8ac2"
         },
         {
           "type": "check",
           "prompt": "Korean is SOV with postpositions (handout Week 1: 'bang-eseo', room-in). Predict: does the noun come before or after its PP complement?",
           "answer": "After. Korean is head-final throughout, so 'picture of a robot' will be [robot-of] picture, like Japanese.",
           "sectionRef": "dir",
-          "id": "dir.3"
+          "id": "dir.03a29e6a"
         }
       ]
     },
@@ -213,7 +314,7 @@
         {
           "type": "prose",
           "md": "- Definition: phrases are built from one head plus dependents; the head fixes the category and core meaning.\n- Why it matters: it explains why 'several large books' acts like a noun, and why heads restrict what they combine with (*the loudly yawn).\n- Two kinds of dependent: complements (selected, limited, adjacent, usually obligatory) vs adjuncts (optional, unlimited, movable). Give 'fond of music' vs 'quietly serenaded … in the garden'.\n- The one exception to remember: subjects are arguments but not complements.\n- Cross-linguistic hook: head directionality — English/Arabic head-initial, Japanese head-final, with one glossed pair each.\n- Live problem: 'Take this sentence, find the head of each phrase, and sort the dependents' — narrate each test as you apply it.",
-          "id": "oral.0"
+          "id": "oral.cc21516a"
         }
       ]
     }

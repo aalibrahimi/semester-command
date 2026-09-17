@@ -14,14 +14,15 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The idea** Suppose you want to know how 1960s American newspapers used the word *nuclear*. A trillion words of web text won't tell you — wrong decade, wrong register, unknown authors, duplicated spam, and no way to say what fraction is news. A **corpus** is the fix: a collection of texts chosen *on purpose*, so that what you count in the sample says something about the language you actually care about. The design questions — what population, what proportions, how sampled — are the whole discipline. Everything later (regex, tokens, tagging) is machinery for asking questions of a well-built corpus.",
-          "id": "why.0"
+          "id": "why.c64e6387"
         },
         {
           "type": "definition",
           "term": "Corpus",
           "body": "A large, principled, machine-readable collection of naturally occurring language, built to be representative of some language or variety, and used as the basis of linguistic analysis. Plural *corpora*.",
-          "id": "why.1"
+          "id": "why.6d281e74"
         }
       ]
     },
@@ -33,37 +34,37 @@
           "type": "definition",
           "term": "Population",
           "body": "the language or variety you want to make claims about (edited American English published in 1961).",
-          "id": "design.0"
+          "id": "design.5c8de75f"
         },
         {
           "type": "definition",
           "term": "Sampling frame",
           "body": "the concrete set of texts you're allowed to draw from to stand in for the population.",
-          "id": "design.1"
+          "id": "design.9a50dd44"
         },
         {
           "type": "definition",
           "term": "Representativeness",
           "body": "how well the sample reflects the *variability* of the population — across text types, registers, speakers, time.",
-          "id": "design.2"
+          "id": "design.bb220096"
         },
         {
           "type": "definition",
           "term": "Balance",
           "body": "whether the proportions of text types in the corpus match their (assumed) importance in the population. Brown: 500 samples across 15 genres, deliberately proportioned.",
-          "id": "design.3"
+          "id": "design.8c9983e4"
         },
         {
           "type": "definition",
           "term": "Reference vs monitor corpus",
           "body": "a reference corpus is a fixed snapshot (Brown, 1961); a monitor corpus keeps growing (COCA).",
-          "id": "design.4"
+          "id": "design.acf2277e"
         },
         {
           "type": "definition",
           "term": "Specialized, learner, parallel, spoken",
           "body": "built for one domain, for learner language, for aligned translations, or from transcribed speech.",
-          "id": "design.5"
+          "id": "design.826ce993"
         },
         {
           "type": "table",
@@ -109,26 +110,26 @@
               "Complete works; closed, historical"
             ]
           ],
-          "id": "design.6"
+          "id": "design.57d489cf"
         },
         {
           "type": "example",
           "title": "Why Brown can beat the web",
           "body": "Why might a 1-billion-word web corpus be *less* useful than the 1-million-word Brown Corpus for a question about 1960s written American English?\n\n1. Population match: Brown *is* edited 1961 American English; the web is mostly not.\n2. Balance: Brown's genre proportions are known and deliberate; the web's are unknown and skewed.\n3. Documentation: Brown's design is published; a web crawl has no datasheet (Lectures 7–8).\n4. Annotation: Brown is POS-tagged; a raw crawl isn't.\n5. Size helps only for rare phenomena — and only if the sample is of the right thing.",
           "answer": "Representativeness, balance, documentation, and annotation beat raw size.",
-          "id": "design.7"
+          "id": "design.b21a3e7a"
         },
         {
           "type": "prose",
           "md": "**Grabowski's question (a Reading Response option)** 'Statistician, programmer, data scientist — who is, or should be, a corpus linguist in the 2020s?' Kraus's answer across the semester: the linguist as **data architect** — someone who designs the dataset around the research question, rather than taking a dataset and asking what can be done with it.",
-          "id": "design.8"
+          "id": "design.24fde324"
         },
         {
           "type": "check",
           "prompt": "You want to study how teenagers use *like* in speech. Name the population, a plausible sampling frame, and one balance decision.",
           "answer": "Population: spoken English of teenagers (say, 13–19, US, 2020s). Sampling frame: recorded conversations you can legally collect — e.g. consented recordings from several schools. Balance: equal proportions by age band, gender, and region, so no one group dominates the counts.",
           "sectionRef": "design",
-          "id": "design.9"
+          "id": "design.b0cbb17d"
         }
       ]
     }

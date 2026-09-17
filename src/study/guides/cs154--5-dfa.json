@@ -16,38 +16,39 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The idea** Imagine the simplest possible machine that reads a string and answers **yes or no**. It reads one symbol at a time, left to right, never going back. It has no notepad, no counter, no memory of what it read — except for one thing: *which of a handful of states it's currently in*. Each symbol it reads moves it from its current state to another, following fixed rules. When the string runs out, it looks at which state it's standing in: if that's one of the marked 'yes' states, the answer is yes. That's a **deterministic finite automaton**. It's the weakest machine in the course, and the point of Lessons 5–7 is to see exactly what such a thing can and can't do.",
-          "id": "why.0"
+          "id": "why.49847f0d"
         },
         {
           "type": "prose",
           "md": "The set of strings a machine says yes to is its **language**, L(M). So 'what can a DFA do' really means 'which languages can a DFA recognize'. A DFA for the language {strings that start with a} is a machine that says yes to exactly those strings. Designing a DFA = building a yes/no machine for a given language. Analyzing a DFA = figuring out which language a given machine says yes to.",
-          "id": "why.1"
+          "id": "why.afd56430"
         },
         {
           "type": "definition",
           "term": "Automaton",
           "body": "a mathematical model of a computation device (plural *automata*). An imaginary model used to solve real problems.",
-          "id": "why.2"
+          "id": "why.9ec44296"
         },
         {
           "type": "definition",
           "term": "Associated language L(M)",
           "body": "the set of all strings that automaton M accepts. w ∈ L(M) means M accepts w; w ∉ L(M) means M rejects w.",
-          "id": "why.3"
+          "id": "why.bd0881aa"
         },
         {
           "type": "definition",
           "term": "DFA",
           "body": "= **Deterministic Finite Automaton**. *Finite*: the number of states is finite. *Deterministic*: from every state, every symbol leads to exactly one next state (Lesson 7).",
-          "id": "why.4"
+          "id": "why.eb2cc34d"
         },
         {
           "type": "trap",
           "body": "**Chen's template — he will reuse it for NFA, PDA, and TM** Every machine class gets the same seven-part treatment: (1) justification and name, (2) structure, (3) workflow — start configuration, each timeframe, halting, accept/reject, (4) examples — in action, analyze, design, (5) formal definition, (6) power versus the previous class, (7) what's next. Learn this order once and every later lesson is familiar.",
           "source": "Exam",
           "points": null,
-          "id": "why.5"
+          "id": "why.66ef8d33"
         }
       ]
     },
@@ -59,31 +60,33 @@
           "type": "definition",
           "term": "Input tape",
           "body": "a row of cells, one symbol each. Bounded on the left, unbounded on the right. Read-only. A **read head** (cursor) reads one symbol and moves right, *consuming* it — it never moves back. The tape can signal end-of-input.",
-          "id": "structure.0"
+          "id": "structure.37eff56c"
         },
         {
           "type": "definition",
           "term": "Control unit",
           "body": "the 'brain', drawn as a directed graph (Lesson 2). Vertices are **states** — finitely many. Exactly one **initial state**, marked with a triangle (the *name* q₀ doesn't make a state initial; the triangle does). Zero or more **accepting** (final) states, drawn as double circles. The initial state may also be accepting. Edges are **transitions**, labelled with the symbol that triggers them; 'a, b' on one edge means a *or* b.",
-          "id": "structure.1"
+          "id": "structure.6492fb5d"
         },
         {
           "type": "definition",
           "term": "Result",
           "body": "Accept or Reject. Nothing else.",
-          "id": "structure.2"
+          "id": "structure.f6b49799"
         },
         {
-          "type": "prose",
-          "md": "*(figure)* Five states. Triangle = initial (q0). Double circle = accepting (q3). q4 is the trap: every arrow into it stays there. Only the walk a, b, b from q0 reaches q3.",
-          "id": "structure.3"
+          "type": "figure",
+          "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M80 90 Q 119 90 158 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"119\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M200 90 Q 239 90 278 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"239\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M320 90 Q 359 90 398 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"359\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M77.88854381999832 98.94427190999916 Q 149.10557280900008 134.55278640450004 220.32260179800184 170.16130089900093\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"144.6334368540005\" y=\"147.4970583144992\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M191.0940039245046 106.64100588675687 Q 209.4452998037748 134.16794970566215 227.79659568304496 161.69489352456745\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"201.12479686039634\" y=\"143.71495166791445\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M288.9059960754954 106.64100588675687 Q 270.5547001962252 134.16794970566215 252.20340431695504 161.69489352456745\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"262.2341972528468\" y=\"132.62094774340986\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M402.1114561800017 98.94427190999916 Q 330.8944271909999 134.55278640450004 259.67739820199813 170.16130089900093\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"326.4222912360003\" y=\"129.60851449450087\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M230 198 C 214 234, 266 234, 250 198\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"240\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M14 80 L14 100 L38 90 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"60\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"60\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"180\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"180\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text><circle cx=\"300\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"300\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q2</text><circle cx=\"420\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"420\" cy=\"90\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"420\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q3</text><circle cx=\"240\" cy=\"180\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"240\" y=\"184\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q4</text></g>",
+          "viewBox": "0 0 480 270",
+          "caption": "Five states. Triangle = initial (q0). Double circle = accepting (q3). q4 is the trap: every arrow into it stays there. Only the walk a, b, b from q0 reaches q3.",
+          "id": "structure.b0da62dc"
         },
         {
           "type": "check",
           "prompt": "True or false (Lesson 5 exercises): a DFA must have at least one accepting state. A state named q₀ is the initial state. A timeframe is one second. 'a, b' on an edge means a or b.",
           "answer": "False — zero or more; with none it accepts nothing. False — the triangle marks it, not the name. False — the clock speed is irrelevant. True.",
           "sectionRef": "structure",
-          "id": "structure.4"
+          "id": "structure.c7b6dd63"
         }
       ]
     },
@@ -92,32 +95,101 @@
       "heading": "Workflow: running the machine",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Tracing abb (accept) and aba (reject) through the {abb} DFA**\n1. `state: q0  (initial)` **Start configuration.** The string abb sits on the tape, the cursor is on the leftmost cell, the control unit is in the initial state q0, and the result is Reject until proven otherwise. Every DFA run starts exactly like this.\n2. `read a · (q0, a) → q1` One transition: read the symbol under the cursor (a), look up the pair (current state, symbol) = (q0, a), move to the state it gives (q1), and **consume** the symbol — the cursor moves right. It never moves left.\n3. `read b · (q1, b) → q2` Read b. (q1, b) → q2. Cursor right.\n4. `read b · (q2, b) → q3` Read the last b. (q2, b) → q3. The cursor is now past the end: **all symbols consumed**, so the machine **halts**.\n5. `result: ACCEPT` Accept needs both: consumed everything *and* ended in an accepting (double-circle) state. Both true. abb ∈ L(M).\n6. `t3: (q2, a) → q4` Same machine, input aba. The third symbol is an a, and (q2, a) sends us to q4 — the **trap**. q4 loops on everything and isn't accepting, so once you're in, you're done: reject. Note the machine still consumed every symbol; it rejected because of *where it ended*, not because it got stuck.",
-          "id": "workflow.0"
+          "type": "stepper",
+          "title": "Tracing abb (accept) and aba (reject) through the {abb} DFA",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "timeframe 0",
+                "tape:  [a] b  b      cursor on the first cell",
+                "state: q0  (initial)",
+                "result: Reject"
+              ],
+              "active": 2,
+              "caption": "**Start configuration.** The string abb sits on the tape, the cursor is on the leftmost cell, the control unit is in the initial state q0, and the result is Reject until proven otherwise. Every DFA run starts exactly like this."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "timeframe 1",
+                "read a · (q0, a) → q1",
+                "tape:   a [b] b",
+                "state: q1"
+              ],
+              "active": 1,
+              "caption": "One transition: read the symbol under the cursor (a), look up the pair (current state, symbol) = (q0, a), move to the state it gives (q1), and **consume** the symbol — the cursor moves right. It never moves left."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "timeframe 2",
+                "read b · (q1, b) → q2",
+                "tape:   a  b [b]",
+                "state: q2"
+              ],
+              "active": 1,
+              "caption": "Read b. (q1, b) → q2. Cursor right."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "timeframe 3",
+                "read b · (q2, b) → q3",
+                "tape:   a  b  b [ ]",
+                "state: q3  — accepting"
+              ],
+              "active": 1,
+              "caption": "Read the last b. (q2, b) → q3. The cursor is now past the end: **all symbols consumed**, so the machine **halts**."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "halted: all symbols consumed  ✓",
+                "in an accepting state (q3)?  ✓",
+                "result: ACCEPT",
+                "abb ∈ L(M)"
+              ],
+              "active": 2,
+              "caption": "Accept needs both: consumed everything *and* ended in an accepting (double-circle) state. Both true. abb ∈ L(M)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "now run  a b a",
+                "t1: (q0, a) → q1",
+                "t2: (q1, b) → q2",
+                "t3: (q2, a) → q4",
+                "halted, in q4 — not accepting → REJECT"
+              ],
+              "active": 3,
+              "caption": "Same machine, input aba. The third symbol is an a, and (q2, a) sends us to q4 — the **trap**. q4 loops on everything and isn't accepting, so once you're in, you're done: reject. Note the machine still consumed every symbol; it rejected because of *where it ended*, not because it got stuck."
+            }
+          ],
+          "id": "workflow.e80c596e"
         },
         {
           "type": "definition",
           "term": "Start configuration",
           "body": "clock at timeframe 0; input string on the tape with the cursor on the leftmost cell; control unit in the initial state; result = Reject.",
-          "id": "workflow.1"
+          "id": "workflow.bd1ca9be"
         },
         {
           "type": "definition",
           "term": "Each timeframe, one transition",
           "body": "read the current symbol; IF (current state, current symbol) THEN move to the next state AND consume the symbol (cursor right).",
-          "id": "workflow.2"
+          "id": "workflow.abb427e0"
         },
         {
           "type": "prose",
           "md": "- ♥ A DFA **halts** iff all input symbols are consumed. (c ⟺ h)\n- ♥ A DFA **accepts** a string iff it halts with all symbols consumed AND it is in an accepting state. ((c ∧ f) ⟺ a)\n- ♥ A DFA **rejects** iff at least one symbol is not consumed OR it is not in an accepting state. ((¬c ∨ ¬f) ⟺ ¬a — De Morgan applied to the line above.)",
-          "id": "workflow.3"
+          "id": "workflow.9194e48d"
         },
         {
           "type": "definition",
           "term": "Configuration",
           "body": "A snapshot at one timeframe: tape contents and cursor position, current state, the timeframe number, current result. From a configuration you can continue the run without knowing anything else. Chen builds every later machine (NFA, PDA, TM) by changing what goes in the configuration — so this word matters more than it looks.",
-          "id": "workflow.4"
+          "id": "workflow.365e4fd2"
         }
       ]
     },
@@ -128,37 +200,39 @@
         {
           "type": "prose",
           "md": "To read a language off a diagram: start at the initial state and follow every walk that ends in an accepting state without falling into a trap. Each such walk is a family of strings; loops give you exponents. In the {abb} machine, the only walk to q3 is a, b, b, so L(M) = {abb}. If q3 looped on a and b, the language would be { abbw | w ∈ Σ∗ }.",
-          "id": "analyze.0"
+          "id": "analyze.d6e7dfc3"
         },
         {
           "type": "definition",
           "term": "Trap",
           "body": "('hell', black hole): a non-accepting state whose every transition loops back to itself. Once in, never out. Used to reject the strings in L̄. Chen: 'the CS equivalent of Go to hell!'",
-          "id": "analyze.1"
+          "id": "analyze.0d9826f3"
         },
         {
           "type": "definition",
           "term": "'Heaven'",
           "body": "an accepting state that loops on everything — accepts whatever reaches it. Used for 'anything after this is fine'.",
-          "id": "analyze.2"
+          "id": "analyze.6fea696b"
         },
         {
           "type": "definition",
           "term": "Complement DFA",
           "body": "to recognize L̄ from a DFA for L, **swap** accepting and non-accepting states. This works only because a DFA is total — every string ends in exactly one state, so flipping the labels flips every answer.",
-          "id": "analyze.3"
+          "id": "analyze.2f16225d"
         },
         {
-          "type": "prose",
-          "md": "*(figure)* Two states; a toggles between them, b changes nothing. The initial state is accepting because λ has zero a's — and zero is even. No trap needed: every string over {a, b} has either an even or an odd count.",
-          "id": "analyze.4"
+          "type": "figure",
+          "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M90 100 Q 149 78 208 100\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"149\" y=\"92\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M210 100 Q 151 122 92 100\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"151\" y=\"116\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M60 82 C 44 46, 96 46, 80 82\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"70\" y=\"50\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M220 82 C 204 46, 256 46, 240 82\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"230\" y=\"50\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M24 90 L24 110 L48 100 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"70\" cy=\"100\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"70\" cy=\"100\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"70\" y=\"104\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"230\" cy=\"100\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"230\" y=\"104\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text></g>",
+          "viewBox": "0 0 300 170",
+          "caption": "Two states; a toggles between them, b changes nothing. The initial state is accepting because λ has zero a's — and zero is even. No trap needed: every string over {a, b} has either an even or an odd count.",
+          "id": "analyze.f8a1c60f"
         },
         {
           "type": "check",
           "prompt": "In the even-a's machine, what's L(M) in set-builder, and what does swapping the accepting states give you?",
           "answer": "L(M) = { w ∈ {a,b}∗ | the number of a's in w is even }. Swapping makes q1 accepting and q0 not: odd number of a's — the complement.",
           "sectionRef": "analyze",
-          "id": "analyze.5"
+          "id": "analyze.5de13164"
         }
       ]
     },
@@ -167,46 +241,110 @@
       "heading": "Design: given L, build M",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Designing 'starts with a' in six steps**\n1. `L = { aw | w ∈ Σ∗ }  over Σ = {a, b}` **Step 1: write L and L̄ in set-builder before drawing anything.** Strings that start with a. The complement — what to *reject* — is the empty string plus everything that starts with b. Knowing the reject side is half the machine.\n2. `spine: q0 —a→ q1` **Step 2: draw the spine** — the walk that accepts strings in L. One a gets us to q1; after that, anything goes, so q1 loops on both symbols and is accepting.\n3. `send it to a trap: q0 —b→ q2, q2 loops on a, b, not accepting` **Step 3: send everything else to the trap.** From q0, a b means the string starts with b — no later symbol can fix that. So b goes to a non-accepting state that loops forever. Chen calls it 'hell'.\n4. `so q0 must NOT be accepting` **Step 4: check λ.** The empty string ends the run in q0 with nothing read. λ isn't in L, so q0 stays non-accepting. (If L contained λ, the initial state would have to be accepting.)\n5. `every (state, symbol) has exactly one arrow?` **Step 5: totality check.** Every state must have exactly one outgoing arrow per symbol. Missing arrows are the number-one bug in student DFAs; JFLAP won't warn you.\n6. `test from Σ∗ only:` **Step 6: test** with strings from L, strings from L̄, and λ — never with symbols outside Σ. Chen's two ways to break a design: a string from L that's rejected, or a string from L̄ that's accepted. If neither exists among your tests, submit. (You can never *prove* it by testing — Σ∗ is infinite.)",
-          "id": "design.0"
+          "type": "stepper",
+          "title": "Designing 'starts with a' in six steps",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "L = { aw | w ∈ Σ∗ }  over Σ = {a, b}",
+                "L̄ = {λ} ∪ { bw | w ∈ Σ∗ }"
+              ],
+              "active": 0,
+              "caption": "**Step 1: write L and L̄ in set-builder before drawing anything.** Strings that start with a. The complement — what to *reject* — is the empty string plus everything that starts with b. Knowing the reject side is half the machine."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "spine: q0 —a→ q1",
+                "q1 is accepting (we've seen the a)",
+                "q1 loops on a, b (anything after is fine)"
+              ],
+              "active": 0,
+              "caption": "**Step 2: draw the spine** — the walk that accepts strings in L. One a gets us to q1; after that, anything goes, so q1 loops on both symbols and is accepting."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "q0 on b → ?",
+                "a string starting with b can never recover",
+                "send it to a trap: q0 —b→ q2, q2 loops on a, b, not accepting"
+              ],
+              "active": 2,
+              "caption": "**Step 3: send everything else to the trap.** From q0, a b means the string starts with b — no later symbol can fix that. So b goes to a non-accepting state that loops forever. Chen calls it 'hell'."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "is λ ∈ L?  no — λ doesn't start with a",
+                "so q0 must NOT be accepting"
+              ],
+              "active": 1,
+              "caption": "**Step 4: check λ.** The empty string ends the run in q0 with nothing read. λ isn't in L, so q0 stays non-accepting. (If L contained λ, the initial state would have to be accepting.)"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "every (state, symbol) has exactly one arrow?",
+                "q0: a→q1, b→q2 ✓",
+                "q1: a→q1, b→q1 ✓",
+                "q2: a→q2, b→q2 ✓"
+              ],
+              "active": 0,
+              "caption": "**Step 5: totality check.** Every state must have exactly one outgoing arrow per symbol. Missing arrows are the number-one bug in student DFAs; JFLAP won't warn you."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "test from Σ∗ only:",
+                "a → q1 accept ✓   ab → q1 accept ✓",
+                "b → q2 reject ✓   λ → q0 reject ✓",
+                "ba → q2 reject ✓"
+              ],
+              "active": 0,
+              "caption": "**Step 6: test** with strings from L, strings from L̄, and λ — never with symbols outside Σ. Chen's two ways to break a design: a string from L that's rejected, or a string from L̄ that's accepted. If neither exists among your tests, submit. (You can never *prove* it by testing — Σ∗ is infinite.)"
+            }
+          ],
+          "id": "design.2697f08c"
         },
         {
-          "type": "prose",
-          "md": "*(figure)* L = { aw | w ∈ Σ∗ }. q1 is heaven; q2 is hell. Every state has one a-arrow and one b-arrow.",
-          "id": "design.1"
+          "type": "figure",
+          "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M79.55604828154819 85.80941822538253 Q 129.02219758592258 75.20952908873087 178.48834689029698 64.60963995207922\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"131.1174884732313\" y=\"88.98755322950497\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M78.38290060036115 97.87838597158336 Q 129.08085496998194 119.60608070142084 179.77880933960273 141.33377543125832\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"125.14166198419026\" y=\"132.7975310016014\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M190 42 C 174 6, 226 6, 210 42\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"200\" y=\"10\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M190 132 C 174 96, 226 96, 210 132\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"200\" y=\"100\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M14 80 L14 100 L38 90 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"60\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"60\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"200\" cy=\"60\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"200\" cy=\"60\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"200\" y=\"64\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text><circle cx=\"200\" cy=\"150\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"200\" y=\"154\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q2</text></g>",
+          "viewBox": "0 0 360 190",
+          "caption": "L = { aw | w ∈ Σ∗ }. q1 is heaven; q2 is hell. Every state has one a-arrow and one b-arrow.",
+          "id": "design.b95fc263"
         },
         {
           "type": "example",
           "title": "Seven small languages over Σ = {a, b}",
           "body": "Describe the DFA for each.\n\n1. **L = ϕ**: one non-accepting state looping on a, b (all hell). **L = Σ∗**: one accepting state looping on a, b (all heaven).\n2. **L = {λ}**: q0 accepting; any symbol → hell. **L = Σ⁺**: q0 non-accepting → q1 accepting on a or b; q1 loops.\n3. **L = {a}**: q0 —a→ q1 (accepting); q0 —b→ hell; q1 —a, b→ hell.\n4. **L = { aw | w ∈ Σ⁺ }** (starts with a, at least 2 symbols): like 'starts with a' but q1 is *not* accepting; q1 —a, b→ q2 accepting, q2 loops. The string 'a' alone must be rejected.\n5. **L = { aⁿ | n ≥ 0 }**: q0 accepting, loops on a; b → hell. For n ≥ 1: q0 non-accepting —a→ q1 accepting (loops on a); b → hell from both.\n6. **Even number of a's**: the two-state toggle above.",
-          "id": "design.2"
+          "id": "design.c7b4191e"
         },
         {
           "type": "trap",
           "body": "**The two bugs that lose the most points** (1) A missing arrow: some state has no transition for some symbol. A DFA must be total. Check every state against every symbol before you finish. (2) Forgetting λ: if λ ∈ L, the initial state must be accepting; if λ ∉ L, it must not be. Always test λ explicitly.",
           "source": "Exam material",
           "points": null,
-          "id": "design.3"
+          "id": "design.16f0d182"
         },
         {
           "type": "prose",
           "md": "- JFLAP7.1.jar from the course home page. Finite Automaton → draw states with the state tool; right-click a state to set Initial or Final.\n- Each transition is **one symbol**. For 'a or b', add two transitions between the same states — JFLAP stacks the labels.\n- Input → Multiple Run lets you test a batch of strings at once. Test strings from L, strings from L̄, and λ (leave the input empty).\n- Undo is unreliable; save often.",
-          "id": "design.4"
+          "id": "design.e5515ae5"
         },
         {
           "type": "check",
           "prompt": "Assignment 3 style: design a DFA for L = { (ba)ⁿ | n ≥ 0 } over {a, b}, and describe the DFA for L̄.",
           "answer": "q0 (initial, accepting) —b→ q1 —a→ q0. q0 —a→ hell; q1 —b→ hell; hell loops on a, b. Accepts λ, ba, baba, … For L̄: swap — q1 and hell become accepting, q0 becomes non-accepting.",
           "sectionRef": "design",
-          "id": "design.5"
+          "id": "design.5c80f3a2"
         },
         {
           "type": "check",
           "prompt": "Over Σ = {1}: strings with an even number of 1's. Set-builder and DFA.",
           "answer": "L = { 1ⁿ | n even } = { 1²ᵏ | k ≥ 0 }. q0 (initial, accepting) —1→ q1 —1→ q0. No trap needed — every string over {1} has even or odd length.",
           "sectionRef": "design",
-          "id": "design.6"
+          "id": "design.f6666702"
         }
       ]
     },
@@ -215,29 +353,109 @@
       "heading": "The formal definition (Lesson 7)",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**M = (Q, Σ, δ, q₀, F), one component at a time**\n1. `M = (Q, Σ, δ, q₀, F)` The formal definition is a 5-tuple. Every piece is something from Lessons 1–2. Read it one component at a time.\n2. `Q = {q0, q1, q2, q3, q4}` **Q**: the states — a finite set (that's the 'Finite' in DFA).\n3. `Σ = {a, b}` **Σ**: the alphabet, a nonempty finite set of symbols (Lesson 3).\n4. `δ : Q × Σ → Q` **δ**: the transition function. Domain Q × Σ — the Cartesian product of states and symbols (Lesson 2). Range Q. **Total**: defined for every pair — that's what 'Deterministic' means: from any state, on any symbol, exactly one next state. The arrows in the picture are δ drawn.\n5. `δ as a table:` Chen also writes δ as a table: rows are states, columns are symbols, each cell is the next state. Every cell filled = total. This is the same information as the diagram, and he may ask for either form.\n6. `q₀ ∈ Q` **q₀**: the initial state, a member of Q. Exactly one. It's marked by the triangle, not by its name — a state called q₀ isn't initial unless it has the triangle.\n7. `F ⊆ Q,  F = {q3}` **F**: the accepting states, a subset of Q. Zero or more (a DFA with F = ϕ accepts nothing). Double circles in the picture.\n8. `M = ({q0,q1,q2,q3,q4}, {a,b}, δ, q0, {q3})` All together. When he asks 'give the formal definition of this DFA', this line plus the δ table is the full answer.",
-          "id": "formal.0"
+          "type": "stepper",
+          "title": "M = (Q, Σ, δ, q₀, F), one component at a time",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "M = (Q, Σ, δ, q₀, F)",
+                "five things, in this order, in parentheses"
+              ],
+              "active": 0,
+              "caption": "The formal definition is a 5-tuple. Every piece is something from Lessons 1–2. Read it one component at a time."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Q = {q0, q1, q2, q3, q4}",
+                "the finite set of STATES"
+              ],
+              "active": 0,
+              "caption": "**Q**: the states — a finite set (that's the 'Finite' in DFA)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Σ = {a, b}",
+                "the input ALPHABET"
+              ],
+              "active": 0,
+              "caption": "**Σ**: the alphabet, a nonempty finite set of symbols (Lesson 3)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "δ : Q × Σ → Q",
+                "a TOTAL function: (state, symbol) ↦ next state"
+              ],
+              "active": 0,
+              "caption": "**δ**: the transition function. Domain Q × Σ — the Cartesian product of states and symbols (Lesson 2). Range Q. **Total**: defined for every pair — that's what 'Deterministic' means: from any state, on any symbol, exactly one next state. The arrows in the picture are δ drawn."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "δ as a table:",
+                "      a    b",
+                "q0   q1   q4",
+                "q1   q4   q2",
+                "q2   q4   q3",
+                "q3   q4   q4",
+                "q4   q4   q4"
+              ],
+              "active": 0,
+              "caption": "Chen also writes δ as a table: rows are states, columns are symbols, each cell is the next state. Every cell filled = total. This is the same information as the diagram, and he may ask for either form."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "q₀ ∈ Q",
+                "the INITIAL state — exactly one"
+              ],
+              "active": 0,
+              "caption": "**q₀**: the initial state, a member of Q. Exactly one. It's marked by the triangle, not by its name — a state called q₀ isn't initial unless it has the triangle."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "F ⊆ Q,  F = {q3}",
+                "the set of ACCEPTING (final) states — zero or more"
+              ],
+              "active": 0,
+              "caption": "**F**: the accepting states, a subset of Q. Zero or more (a DFA with F = ϕ accepts nothing). Double circles in the picture."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "M = ({q0,q1,q2,q3,q4}, {a,b}, δ, q0, {q3})",
+                "L(M) = {abb}"
+              ],
+              "active": 0,
+              "caption": "All together. When he asks 'give the formal definition of this DFA', this line plus the δ table is the full answer."
+            }
+          ],
+          "id": "formal.43469063"
         },
         {
           "type": "prose",
+          "label": "why",
           "md": "**Determinism** From Lesson 2: a **total** function has an output for every domain element. δ's domain is Q × Σ — every (state, symbol) pair — so a total δ means the machine always knows exactly one next state. No choices, no dead ends: that's *deterministic*. Lesson 8 will relax this: an NFA's δ maps to a *set* of states (range 2^Q, the power set from Lesson 2) and may be undefined for some pairs. Every piece of the definition is a knob Chen will turn later.",
-          "id": "formal.1"
+          "id": "formal.be03aa9b"
         },
         {
           "type": "prose",
           "md": "It can't. The input string is by definition in Σ∗. Asking what a DFA over {a, b} does on 'abc' is a category error, not a hard case — which is why the design steps say to test only with strings from Σ∗.",
-          "id": "formal.2"
+          "id": "formal.70c77022"
         },
         {
           "type": "prose",
           "md": "A DFA has no memory beyond its current state, and it has finitely many states. So it can't count without bound. Try to design a DFA for the celebrity language { aⁿbⁿ | n ≥ 0 }: you'd need to remember how many a's you saw, for *any* n, with a fixed number of states — impossible. Lesson 12 proves that (the pumping lemma). Every later machine class exists to add a kind of memory the DFA lacks.",
-          "id": "formal.3"
+          "id": "formal.1fbe2ced"
         },
         {
           "type": "prose",
           "md": "**DFA in one paragraph.** M = (Q, Σ, δ, q₀, F): finite states, an alphabet, a total transition function Q × Σ → Q, one initial state, a set of accepting states. Run: start in q₀ on the leftmost symbol; each step reads a symbol, follows δ, consumes it; halt when all symbols are consumed; accept iff halted in F. L(M) is the set of accepted strings. Analyze by following accepting walks; design by writing L and L̄, drawing the spine, sending the rest to a trap, checking λ and totality; complement by swapping accepting states.",
-          "id": "formal.4"
+          "id": "formal.4a851387"
         }
       ]
     }

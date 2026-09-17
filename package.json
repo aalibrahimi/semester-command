@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run migrate:guides",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
@@ -13,9 +14,11 @@
     "typecheck": "tsc -b",
     "lint": "oxlint",
     "check:tokens": "node scripts/check-tokens.mjs",
+    "migrate:guides": "tsx scripts/migrate-guides.ts",
+    "check:guides": "tsx scripts/migrate-guides.ts --check",
     "check:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml --check && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings",
     "test": "cargo test --manifest-path src-tauri/Cargo.toml",
-    "verify": "npm run typecheck && npm run lint && npm run check:tokens && npm run test"
+    "verify": "npm run typecheck && npm run lint && npm run check:tokens && npm run check:guides && npm run test"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
@@ -60,6 +63,7 @@
     "postcss": "^8.5.26",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.0"
   },

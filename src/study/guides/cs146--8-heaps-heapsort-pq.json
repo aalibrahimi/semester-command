@@ -17,19 +17,20 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The problem a heap solves** An emergency room doesn't serve patients in arrival order (a queue) or most-recent-first (a stack). It serves the **most urgent** next, and new patients keep arriving with their own urgency. You need two operations, over and over: *add a thing with a priority* and *take out the most important thing*. A sorted list makes 'take the max' O(1) but 'add' O(n) (shift everything). An unsorted list makes 'add' O(1) but 'take the max' O(n) (scan everything). A **heap** gets both down to O(log n) by keeping things only *partly* sorted: just enough to know the max instantly.",
-          "id": "why.0"
+          "id": "why.2eea517f"
         },
         {
           "type": "definition",
           "term": "Binary max-heap",
           "body": "A **complete** binary tree (every level full except possibly the last, which fills left to right) where **every parent ≥ its children**. Consequence: the maximum is always at the root. A **min-heap** flips the inequality; the minimum is at the root. Lecture 8 uses max-heaps throughout.",
-          "id": "why.1"
+          "id": "why.ab815064"
         },
         {
           "type": "prose",
           "md": "A heap does not say the left child is smaller than the right. It does not say the array is sorted. It does not let you find the second-largest quickly without extracting the first. The only promise is the one line: parent ≥ children, on every edge. Everything else follows from that plus the complete shape.",
-          "id": "why.2"
+          "id": "why.10745185"
         }
       ]
     },
@@ -38,28 +39,161 @@
       "heading": "The array IS the tree",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Reading [16, 14, 10, 8, 7, 9, 3, 2, 4, 1] as a tree**\n1. `[16, 14, 10, 8, 7, 9, 3, 2, 4, 1] — index 0 = the root` A heap is stored as a plain array. Index 0 is the top of the tree (the **root**). There are no pointers — the tree shape is implied by the indexes.\n2. `16 / 14 10` Index 0's children are indexes 1 and 2. In general, **left child of i = 2i + 1**, **right child = 2i + 2**. Check: 2·0+1 = 1, 2·0+2 = 2.\n3. `16 / 14 10 / 8 7 9 3` Index 1 (14) has children 2·1+1 = 3 and 2·1+2 = 4: that's 8 and 7. Index 2 (10) has children 5 and 6: 9 and 3. Poon's slide uses exactly this example.\n4. `16 / 14 10 / 8 7 9 3 / 2 4 1` Index 3 (8) has children 7 and 8: 2 and 4. Index 4 (7) has child 9: just 1 (its right child would be index 10, past the end). The last row fills left to right with no gaps — that's what **complete** means.\n5. `16 / 14 10 / 8 7 9 3 / 2 4 1` Going the other way: **parent of i = ⌊(i − 1) / 2⌋**. Parent of index 9 is ⌊8/2⌋ = 4 (the 7). Parent of index 6 is ⌊5/2⌋ = 2 (the 10). And look at the values: every parent is ≥ both its children. That's the **max-heap property**.",
-          "id": "array.0"
+          "type": "stepper",
+          "title": "Reading [16, 14, 10, 8, 7, 9, 3, 2, 4, 1] as a tree",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                16,
+                14,
+                10,
+                8,
+                7,
+                9,
+                3,
+                2,
+                4,
+                1
+              ],
+              "hl": [
+                0
+              ],
+              "note": "index 0 = the root",
+              "caption": "A heap is stored as a plain array. Index 0 is the top of the tree (the **root**). There are no pointers — the tree shape is implied by the indexes."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ]
+                }
+              ],
+              "caption": "Index 0's children are indexes 1 and 2. In general, **left child of i = 2i + 1**, **right child = 2i + 2**. Check: 2·0+1 = 1, 2·0+2 = 2."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7",
+                    "9",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "Index 1 (14) has children 2·1+1 = 3 and 2·1+2 = 4: that's 8 and 7. Index 2 (10) has children 5 and 6: 9 and 3. Poon's slide uses exactly this example."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7",
+                    "9",
+                    "3"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "4",
+                    "1"
+                  ]
+                }
+              ],
+              "caption": "Index 3 (8) has children 7 and 8: 2 and 4. Index 4 (7) has child 9: just 1 (its right child would be index 10, past the end). The last row fills left to right with no gaps — that's what **complete** means."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7",
+                    "9",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "4",
+                    "1"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "Going the other way: **parent of i = ⌊(i − 1) / 2⌋**. Parent of index 9 is ⌊8/2⌋ = 4 (the 7). Parent of index 6 is ⌊5/2⌋ = 2 (the 10). And look at the values: every parent is ≥ both its children. That's the **max-heap property**."
+            }
+          ],
+          "id": "array.ba542557"
         },
         {
           "type": "trap",
           "body": "**Index formulas — 0-based, memorize** Left child of i: **2i + 1**. Right child: **2i + 2**. Parent: **⌊(i − 1) / 2⌋**. First leaf: **⌊n / 2⌋** (every index from there on has no children). He uses 0-based indexing; CLRS uses 1-based (2i, 2i+1, ⌊i/2⌋) — don't mix them on the exam.",
           "source": "Exam",
           "points": "−1",
-          "id": "array.1"
+          "id": "array.21d9fd73"
         },
         {
           "type": "prose",
+          "label": "why",
           "md": "**Why there are no pointers** Because the tree is complete, reading it level by level, left to right, gives one unbroken run of nodes with no holes. So position-in-that-reading *is* the array index, and the arithmetic above recovers the shape. No pointers means no extra memory per node and no chasing references around memory — the heap is one contiguous block.",
-          "id": "array.2"
+          "id": "array.8dc69dc7"
         },
         {
           "type": "check",
           "prompt": "In an array of 12 elements, what are the children of index 4, the parent of index 11, and which indexes are leaves?",
           "answer": "Children of 4: 9 and 10. Parent of 11: ⌊10/2⌋ = 5. Leaves: ⌊12/2⌋ = 6 onward, i.e. indexes 6–11.",
           "sectionRef": "array",
-          "id": "array.3"
+          "id": "array.ac7097a9"
         }
       ]
     },
@@ -68,25 +202,192 @@
       "heading": "heapify: fix one node by letting it sink",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**heapify(a, 1): the 4 sinks to where it belongs**\n1. `16 / 4 10 / 14 7 9 3 / 2 8 1` One thing is wrong here: the 4 at index 1 is smaller than its children 14 and 7. Everything below it is fine. heapify(a, 1) fixes exactly this one violation by letting the 4 sink.\n2. `16 / 4 10 / 14 7 9 3 / 2 8 1` Step 1: find the largest of the node and its two children. 4 vs 14 vs 7 → 14 (index 3). It's not the node itself, so we swap.\n3. `16 / 14 10 / 4 7 9 3 / 2 8 1` After the swap, 14 is up where it belongs. But the 4 is now at index 3, and it might be smaller than *its* children. So heapify calls itself on index 3.\n4. `16 / 14 10 / 4 7 9 3 / 2 8 1` heapify(a, 3): 4 vs children 2 (index 7) and 8 (index 8). Largest is 8. Swap.\n5. `16 / 14 10 / 8 7 9 3 / 2 4 1` heapify(a, 8): index 8 has no children (2·8+1 = 17 is past the end). Nothing to compare — stop. The 4 sank two levels and the tree is a heap again. Array: [16, 14, 10, 8, 7, 9, 3, 2, 4, 1].",
-          "id": "heapify.0"
+          "type": "stepper",
+          "title": "heapify(a, 1): the 4 sinks to where it belongs",
+          "frames": [
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "10"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "7",
+                    "9",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "8",
+                    "1"
+                  ]
+                }
+              ],
+              "caption": "One thing is wrong here: the 4 at index 1 is smaller than its children 14 and 7. Everything below it is fine. heapify(a, 1) fixes exactly this one violation by letting the 4 sink."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "7",
+                    "9",
+                    "3"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "8",
+                    "1"
+                  ]
+                }
+              ],
+              "caption": "Step 1: find the largest of the node and its two children. 4 vs 14 vs 7 → 14 (index 3). It's not the node itself, so we swap."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "7",
+                    "9",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "8",
+                    "1"
+                  ]
+                }
+              ],
+              "caption": "After the swap, 14 is up where it belongs. But the 4 is now at index 3, and it might be smaller than *its* children. So heapify calls itself on index 3."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "7",
+                    "9",
+                    "3"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "8",
+                    "1"
+                  ]
+                }
+              ],
+              "caption": "heapify(a, 3): 4 vs children 2 (index 7) and 8 (index 8). Largest is 8. Swap."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "16"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "14",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7",
+                    "9",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "4",
+                    "1"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "heapify(a, 8): index 8 has no children (2·8+1 = 17 is past the end). Nothing to compare — stop. The 4 sank two levels and the tree is a heap again. Array: [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]."
+            }
+          ],
+          "id": "heapify.19183fb7"
         },
         {
           "type": "example",
           "title": "`n` is the heap size — which may be smaller than a.length during heapSort. The recursion follows the sinking element down.",
           "body": "static void heapify(int[] a, int i, int n) {\n  int l = 2 * i + 1, r = 2 * i + 2, largest = i;\n  if (l < n && a[l] > a[largest]) largest = l;\n  if (r < n && a[r] > a[largest]) largest = r;\n  if (largest != i) {\n    int t = a[i]; a[i] = a[largest]; a[largest] = t;   // swap\n    heapify(a, largest, n);                            // keep sinking\n  }\n}",
-          "id": "heapify.1"
+          "id": "heapify.dd46ea30"
         },
         {
           "type": "prose",
           "md": "heapify assumes the two subtrees *below* i are already valid heaps; it only fixes i itself. Each call does a constant amount of work and moves one level down, so it makes at most (height of the tree) calls. A complete tree with n nodes has height ⌊log₂ n⌋ (Chapter 0: halving). **heapify is O(log n).**",
-          "id": "heapify.2"
+          "id": "heapify.8ed46de0"
         },
         {
           "type": "prose",
           "md": "**Slide 21, 'Common misconception'** heapify does NOT sort the array, and it does NOT build a heap from scratch. It repairs a *single* out-of-place value at node i, trusting that everything below is already a heap. Poon put this on its own slide; expect a true/false or short answer on it.",
-          "id": "heapify.3"
+          "id": "heapify.0836576b"
         }
       ]
     },
@@ -95,27 +396,185 @@
       "heading": "buildHeap: any array → a heap, in O(n)",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**HW 8 Problem 1: buildHeap on [1, 2, 3, 4, 5, 6, 7]**\n1. `1 / 2 3 / 4 5 6 7` [1, 2, 3, 4, 5, 6, 7] drawn as a tree. Is it a max-heap? No — the root 1 is smaller than its children (and so is every other parent). HW 8 Problem 1 asks you to fix it with buildHeap.\n2. `1 / 2 3 / 4 5 6 7` n = 7. The first leaf is at index ⌊7/2⌋ = 3. Indexes 3, 4, 5, 6 (values 4, 5, 6, 7) are leaves — one-node heaps, already fine. So we only call heapify on indexes 2, 1, 0, in that order: **bottom-up**.\n3. `1 / 2 7 / 4 5 6 3` heapify(2): 3 vs children 6, 7 → largest is 7. Swap. Array: [1, 2, 7, 4, 5, 6, 3].\n4. `1 / 5 7 / 4 2 6 3` heapify(1): 2 vs children 4, 5 → largest is 5. Swap. Array: [1, 5, 7, 4, 2, 6, 3].\n5. `7 / 5 1 / 4 2 6 3` heapify(0): 1 vs children 5, 7 → largest is 7. Swap. Now the 1 is at index 2 — and its children are 6 and 3. Not done: heapify recurses on index 2.\n6. `7 / 5 6 / 4 2 1 3` heapify(2): 1 vs 6, 3 → swap with 6. The 1 is now a leaf. Every parent ≥ its children: a max-heap. **Answer: [7, 5, 6, 4, 2, 1, 3].**",
-          "id": "build.0"
+          "type": "stepper",
+          "title": "HW 8 Problem 1: buildHeap on [1, 2, 3, 4, 5, 6, 7]",
+          "frames": [
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "1"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ]
+                }
+              ],
+              "caption": "[1, 2, 3, 4, 5, 6, 7] drawn as a tree. Is it a max-heap? No — the root 1 is smaller than its children (and so is every other parent). HW 8 Problem 1 asks you to fix it with buildHeap."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "1"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "n = 7. The first leaf is at index ⌊7/2⌋ = 3. Indexes 3, 4, 5, 6 (values 4, 5, 6, 7) are leaves — one-node heaps, already fine. So we only call heapify on indexes 2, 1, 0, in that order: **bottom-up**."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "1"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "7"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "5",
+                    "6",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "heapify(2): 3 vs children 6, 7 → largest is 7. Swap. Array: [1, 2, 7, 4, 5, 6, 3]."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "1"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "7"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "2",
+                    "6",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "heapify(1): 2 vs children 4, 5 → largest is 5. Swap. Array: [1, 5, 7, 4, 2, 6, 3]."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "7"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "1"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "2",
+                    "6",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "heapify(0): 1 vs children 5, 7 → largest is 7. Swap. Now the 1 is at index 2 — and its children are 6 and 3. Not done: heapify recurses on index 2."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "7"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "6"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "4",
+                    "2",
+                    "1",
+                    "3"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "heapify(2): 1 vs 6, 3 → swap with 6. The 1 is now a leaf. Every parent ≥ its children: a max-heap. **Answer: [7, 5, 6, 4, 2, 1, 3].**"
+            }
+          ],
+          "id": "build.05ecee39"
         },
         {
           "type": "example",
           "title": "Start at the last non-leaf and walk toward the root, heapifying each. Going bottom-up is what guarantees heapify's precondition: by the time we reach i, both of its subtrees have already been fixed.",
           "body": "static void buildHeap(int[] a) {\n  int n = a.length;\n  for (int i = n / 2 - 1; i >= 0; i--)   // last non-leaf down to root\n    heapify(a, i, n);\n}",
-          "id": "build.1"
+          "id": "build.65254e16"
         },
         {
           "type": "prose",
+          "label": "why",
           "md": "**The non-obvious runtime** There are about n/2 calls to heapify, each 'O(log n)', so the lazy answer is O(n log n). But most of those calls are cheap. Half the nodes are leaves (cost 0 — we skip them). A quarter sit one level up and can sink at most 1 step. An eighth can sink at most 2. Add it up: n/4·1 + n/8·2 + n/16·3 + … — a series whose sum is about n, not n log n. Poon states O(n) on slide 25; the sentence to say is **'most nodes are near the bottom, so most heapify calls are short.'**",
-          "id": "build.2"
+          "id": "build.b46411c6"
         },
         {
           "type": "check",
           "prompt": "buildHeap on [3, 9, 2, 1, 4, 5]. Which indexes get heapified, in what order, and what's the result?",
           "answer": "n = 6, so i = 2, 1, 0. heapify(2): 2 vs child 5 → [3,9,5,1,4,2]. heapify(1): 9 vs 1, 4 → fine. heapify(0): 3 vs 9, 5 → swap with 9 → [9,3,5,1,4,2]; then 3 vs 1, 4 → swap with 4 → [9,4,5,1,3,2].",
           "sectionRef": "build",
-          "id": "build.3"
+          "id": "build.f145741f"
         }
       ]
     },
@@ -125,19 +584,168 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**Max at the root, so pull it out repeatedly** If the max is always at index 0, sorting is: swap the max to the end of the array, pretend the array is one shorter, fix the root, repeat. Each round places one element in its final spot from the right. After n rounds the array is sorted ascending — and it never needed a second array.",
-          "id": "sort.0"
+          "id": "sort.6731c5df"
         },
         {
-          "type": "prose",
-          "md": "**heapSort on [7, 5, 6, 4, 2, 1, 3]**\n1. `[7, 5, 6, 4, 2, 1, 3] — a max-heap; the max is at index 0` heapSort starts from a max-heap (buildHeap gave us this). The biggest element is at the root, index 0. We know where it belongs: the very end.\n2. `[3, 5, 6, 4, 2, 1, 7] — swap a[0] ↔ a[6]; heap is now a[0..5]` Swap the root with the last element. 7 is now in its final position (green) and is no longer part of the heap. But the 3 at the root breaks the heap property — so heapify(0) on the smaller heap a[0..5].\n3. `[6, 5, 3, 4, 2, 1, 7] — heapify(0) on 6 elements` heapify: 3 vs 5, 6 → swap with 6; then 3 vs child 1 → fine. Root is the max of what's left. Repeat.\n4. `[5, 4, 3, 1, 2, 6, 7] — swap a[0] ↔ a[5], heapify(0) on 5` Swap 6 to index 5; heapify the 1: 1 vs 5, 3 → swap with 5; 1 vs 4, 2 → swap with 4. Two sorted at the end.\n5. `[4, 2, 3, 1, 5, 6, 7] — swap, heapify(0) on 4` Swap 5 to index 4; heapify the 2: 2 vs 4, 3 → swap with 4; 2 vs 1 → fine.\n6. `[3, 2, 1, 4, 5, 6, 7] — swap, heapify(0) on 3` Swap 4 to index 3; heapify the 1: 1 vs 2, 3 → swap with 3.\n7. `[1, 2, 3, 4, 5, 6, 7] — two more rounds` Swap 3 out, heapify (2 vs 1 → swap); swap 2 out; one element left is trivially sorted. **[1, 2, 3, 4, 5, 6, 7]**. Everything happened inside the one array — no temp array. That's why heap sort is O(1) extra space.",
-          "id": "sort.1"
+          "type": "stepper",
+          "title": "heapSort on [7, 5, 6, 4, 2, 1, 3]",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                7,
+                5,
+                6,
+                4,
+                2,
+                1,
+                3
+              ],
+              "hl": [
+                0
+              ],
+              "note": "a max-heap; the max is at index 0",
+              "caption": "heapSort starts from a max-heap (buildHeap gave us this). The biggest element is at the root, index 0. We know where it belongs: the very end."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                5,
+                6,
+                4,
+                2,
+                1,
+                7
+              ],
+              "hl": [
+                0
+              ],
+              "done": [
+                6
+              ],
+              "note": "swap a[0] ↔ a[6]; heap is now a[0..5]",
+              "caption": "Swap the root with the last element. 7 is now in its final position (green) and is no longer part of the heap. But the 3 at the root breaks the heap property — so heapify(0) on the smaller heap a[0..5]."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                6,
+                5,
+                3,
+                4,
+                2,
+                1,
+                7
+              ],
+              "hl": [
+                0
+              ],
+              "done": [
+                6
+              ],
+              "note": "heapify(0) on 6 elements",
+              "caption": "heapify: 3 vs 5, 6 → swap with 6; then 3 vs child 1 → fine. Root is the max of what's left. Repeat."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                5,
+                4,
+                3,
+                1,
+                2,
+                6,
+                7
+              ],
+              "hl": [
+                0
+              ],
+              "done": [
+                5,
+                6
+              ],
+              "note": "swap a[0] ↔ a[5], heapify(0) on 5",
+              "caption": "Swap 6 to index 5; heapify the 1: 1 vs 5, 3 → swap with 5; 1 vs 4, 2 → swap with 4. Two sorted at the end."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                4,
+                2,
+                3,
+                1,
+                5,
+                6,
+                7
+              ],
+              "hl": [
+                0
+              ],
+              "done": [
+                4,
+                5,
+                6
+              ],
+              "note": "swap, heapify(0) on 4",
+              "caption": "Swap 5 to index 4; heapify the 2: 2 vs 4, 3 → swap with 4; 2 vs 1 → fine."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                2,
+                1,
+                4,
+                5,
+                6,
+                7
+              ],
+              "hl": [
+                0
+              ],
+              "done": [
+                3,
+                4,
+                5,
+                6
+              ],
+              "note": "swap, heapify(0) on 3",
+              "caption": "Swap 4 to index 3; heapify the 1: 1 vs 2, 3 → swap with 3."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "note": "two more rounds",
+              "caption": "Swap 3 out, heapify (2 vs 1 → swap); swap 2 out; one element left is trivially sorted. **[1, 2, 3, 4, 5, 6, 7]**. Everything happened inside the one array — no temp array. That's why heap sort is O(1) extra space."
+            }
+          ],
+          "id": "sort.6df53f6f"
         },
         {
           "type": "example",
           "title": "buildHeap once, then n rounds of swap + heapify with a shrinking heap size.",
           "body": "static void heapSort(int[] a) {\n  buildHeap(a);                              // O(n)\n  for (int end = a.length - 1; end > 0; end--) {\n    int t = a[0]; a[0] = a[end]; a[end] = t; // max → its final slot\n    heapify(a, 0, end);                      // heap is now a[0..end-1]; O(log n)\n  }\n}",
-          "id": "sort.2"
+          "id": "sort.cf39e00d"
         },
         {
           "type": "table",
@@ -163,7 +771,7 @@
               "Memory-limited or embedded systems: guaranteed O(n log n) with no extra array"
             ]
           ],
-          "id": "sort.3"
+          "id": "sort.f73ecf5a"
         },
         {
           "type": "table",
@@ -199,14 +807,14 @@
               "no"
             ]
           ],
-          "id": "sort.4"
+          "id": "sort.edbcfdeb"
         },
         {
           "type": "check",
           "prompt": "Why is merge sort O(n) space while heap sort is O(1)?",
           "answer": "Merge needs a temporary array so it doesn't overwrite unread elements while merging. Heap sort only ever swaps two positions inside the input array.",
           "sectionRef": "sort",
-          "id": "sort.5"
+          "id": "sort.5522be6a"
         }
       ]
     },
@@ -217,72 +825,248 @@
         {
           "type": "prose",
           "md": "Lectures 2–3: an ADT is the contract, the implementation is the machinery. **Priority queue** is the contract: insert(x with a priority), extract the highest priority, peek, isEmpty. **Heap** is the machinery that makes each of those O(log n) or better. On an exam, 'priority queue' is the answer to *which ADT*, 'heap' is the answer to *how*.",
-          "id": "pq.0"
+          "id": "pq.9f932aa8"
         },
         {
-          "type": "prose",
-          "md": "**extract() on [9, 8, 7, 5, 3, 2] (slides 41–42)**\n1. `9 / 8 7 / 5 3 2` extract(): return the max, which is always the root — 9. Now there's a hole at the top.\n2. `2 / 8 7 / 5 3` Fill the hole with the **last** element (2) and shrink the size by one. This keeps the tree complete. But 2 is almost certainly too small for the root — so heapify(0).\n3. `8 / 2 7 / 5 3` heapify(0): 2 vs 8, 7 → swap with 8. Recurse on index 1.\n4. `8 / 5 7 / 2 3` heapify(1): 2 vs 5, 3 → swap with 5. The 2 is a leaf now. Heap restored: [8, 5, 7, 2, 3]. Cost: one path down the tree, O(log n).",
-          "id": "pq.1"
+          "type": "stepper",
+          "title": "extract() on [9, 8, 7, 5, 3, 2] (slides 41–42)",
+          "frames": [
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "9"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "3",
+                    "2"
+                  ]
+                }
+              ],
+              "caption": "extract(): return the max, which is always the root — 9. Now there's a hole at the top."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "2"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "8",
+                    "7"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "Fill the hole with the **last** element (2) and shrink the size by one. This keeps the tree complete. But 2 is almost certainly too small for the root — so heapify(0)."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "8"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "7"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "3"
+                  ]
+                }
+              ],
+              "caption": "heapify(0): 2 vs 8, 7 → swap with 8. Recurse on index 1."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "8"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "7"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "heapify(1): 2 vs 5, 3 → swap with 5. The 2 is a leaf now. Heap restored: [8, 5, 7, 2, 3]. Cost: one path down the tree, O(log n)."
+            }
+          ],
+          "id": "pq.5c99bf5c"
         },
         {
-          "type": "prose",
-          "md": "**insert(): trickle up**\n1. `8 / 5 7 / 2 3 9` insert(9) into [8, 5, 7, 2, 3]: put the new element in the first empty slot — index 5, the end of the array — so the tree stays complete. Then compare it with its parent.\n2. `8 / 5 9 / 2 3 7` Parent of index 5 is ⌊4/2⌋ = 2, value 7. 7 < 9, so swap them. Now compare 9 with its new parent, the root 8. 8 < 9 → swap again.\n3. `9 / 5 8 / 2 3 7` 9 is the new root. This is **trickle up** (heapify is trickle *down*). At most one swap per level, so insert is O(log n).",
-          "id": "pq.2"
+          "type": "stepper",
+          "title": "insert(): trickle up",
+          "frames": [
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "8"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "7"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3",
+                    "9"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "insert(9) into [8, 5, 7, 2, 3]: put the new element in the first empty slot — index 5, the end of the array — so the tree stays complete. Then compare it with its parent."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "8"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "9"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3",
+                    "7"
+                  ]
+                }
+              ],
+              "caption": "Parent of index 5 is ⌊4/2⌋ = 2, value 7. 7 < 9, so swap them. Now compare 9 with its new parent, the root 8. 8 < 9 → swap again."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "9"
+                  ],
+                  "hl": true
+                },
+                {
+                  "nodes": [
+                    "5",
+                    "8"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "2",
+                    "3",
+                    "7"
+                  ]
+                }
+              ],
+              "caption": "9 is the new root. This is **trickle up** (heapify is trickle *down*). At most one swap per level, so insert is O(log n)."
+            }
+          ],
+          "id": "pq.8a6187f5"
         },
         {
           "type": "definition",
           "term": "insert(x)",
           "body": "append at the end (keeps the tree complete), then swap upward with the parent while parent < x. **O(log n)** — one path up.",
-          "id": "pq.3"
+          "id": "pq.103c5a1c"
         },
         {
           "type": "definition",
           "term": "extract()",
           "body": "save a[0]; move the last element to a[0]; shrink; heapify(0). **O(log n)** — one path down.",
-          "id": "pq.4"
+          "id": "pq.65330476"
         },
         {
           "type": "definition",
           "term": "peek()",
           "body": "return a[0]. **O(1)**.",
-          "id": "pq.5"
+          "id": "pq.6e4f2044"
         },
         {
           "type": "definition",
           "term": "isEmpty()",
           "body": "size == 0. **O(1)**.",
-          "id": "pq.6"
+          "id": "pq.09b9242e"
         },
         {
           "type": "definition",
           "term": "buildHeap",
           "body": "from a batch of n items: **O(n)** — cheaper than n inserts (n log n).",
-          "id": "pq.7"
+          "id": "pq.a7767966"
         },
         {
           "type": "definition",
           "term": "update / decreaseKey",
           "body": "'future lecture' — it's what Dijkstra's algorithm needs.",
-          "id": "pq.8"
+          "id": "pq.de86babf"
         },
         {
           "type": "example",
           "title": "Picking the structure from a story",
           "body": "Tasks with priorities arrive continuously; the system must always work on the highest-priority task next. Which structure, which operations, what cost?\n\n1. 'Arrive continuously' → we need cheap insert. 'Highest priority next' → we need cheap take-the-max. That pair is the priority queue ADT.\n2. Implement it as a **max-heap**: insert is O(log n), extract-max is O(log n).\n3. If a batch of tasks exists at startup, buildHeap them in O(n) instead of inserting one at a time.",
           "answer": "Priority queue via max-heap; insert + extract, both O(log n)",
-          "id": "pq.9"
+          "id": "pq.de946a7f"
         },
         {
           "type": "check",
           "prompt": "Max-heap vs min-heap — and give a real use for a min-heap.",
           "answer": "Max-heap: parent ≥ children, root is the max. Min-heap: parent ≤ children, root is the min. Min-heap uses: Dijkstra's shortest path (always take the closest unvisited vertex), event simulation ordered by earliest time, merging k sorted lists.",
           "sectionRef": "pq",
-          "id": "pq.10"
+          "id": "pq.12f48a27"
         },
         {
           "type": "prose",
           "md": "**Heap in one paragraph.** A complete binary tree in an array (children 2i+1, 2i+2; parent ⌊(i−1)/2⌋) with parent ≥ children. heapify(i) sinks one node, O(log n). buildHeap runs heapify from ⌊n/2⌋−1 down to 0, O(n). heapSort = buildHeap + n rounds of swap-to-end + heapify(0), O(n log n) time, O(1) space, unstable. A heap implements the priority-queue ADT with insert and extract in O(log n).",
-          "id": "pq.11"
+          "id": "pq.eac2b35e"
         }
       ]
     }

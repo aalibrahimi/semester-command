@@ -14,15 +14,16 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The plan behind the preliminaries** CS 154 asks a strange question: *what can a machine compute at all?* To answer it, Chen replaces real computers with mathematical toys — automata — and every toy is defined as a handful of sets and one function between them. A DFA (Lesson 5) is literally (Q, Σ, δ, q₀, F): a set of states, a set of symbols, a function, a state, and a subset. So Lessons 1–2 aren't a review; they're the parts list. Everything below reappears as a piece of a machine.",
-          "id": "why.0"
+          "id": "why.3692bb5d"
         },
         {
           "type": "trap",
           "body": "**How Chen grades — read this before anything else** From the syllabus: **'Only use the notations mentioned in the class. Different notation(s) considered as wrong answer(s).'** From the Assignment 1 key: −0.5 for any notation error, −1 for an answer that's wrong but makes sense, −1.5 for major mistakes. Definitions marked ♥ on the slides must be reproduced almost word for word: 'a function where all of its domain elements are defined' was accepted; 'all domains are defined' was marked wrong. This chapter tells you which sentences those are.",
           "source": "Assignment 1",
           "points": "−0.5",
-          "id": "why.1"
+          "id": "why.97629bad"
         }
       ]
     },
@@ -31,28 +32,96 @@
       "heading": "Reading { … | … } — the notation that was costing you points",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Reading { 3n | 0 ≤ n ≤ 6 } symbol by symbol**\n1. `{  3n  |  0 ≤ n ≤ 6  }` Set-builder notation. It looks like a formula; it's actually a *recipe for listing elements*. Read it in three parts: the braces, the left side, the right side.\n2. `the braces say: this is a SET` Curly braces always mean 'a set'. Whatever is inside is a description of which elements belong. (Round brackets would mean something else — an ordered tuple. Chen takes 0.5 off for mixing them up.)\n3. `the LEFT side is the shape of each element` Left of the bar `|` is a **pattern**: what every element looks like. Here each element is '3 times n' for some n. The bar itself reads as **'such that'** or **'where'**.\n4. `the RIGHT side says which n are allowed` Right of the bar is the **condition**: which values of the variable you're allowed to plug into the pattern. Here n runs from 0 to 6. (Chen's default: variables are natural numbers, and 0 counts as natural.)\n5. `n = 0 → 3·0 = 0` Now run the recipe: plug in every allowed n and collect the results.\n6. `= { 0, 3, 6, 9, 12, 15, 18 }` That's the set — written out in **roster** form. Same set, two spellings. Set-builder is just shorter when the list would be long or infinite: { 3n | n ≥ 0 } is every multiple of 3, forever, and you couldn't list that.\n7. `comma = AND` One more convention that costs points: in the condition, a **comma means 'and'**. x ≥ 1 *and* x ≤ 5. If you mean 'or', you must write 'or' (or ∨) explicitly.",
-          "id": "reading.0"
+          "type": "stepper",
+          "title": "Reading { 3n | 0 ≤ n ≤ 6 } symbol by symbol",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "{  3n  |  0 ≤ n ≤ 6  }"
+              ],
+              "active": 0,
+              "caption": "Set-builder notation. It looks like a formula; it's actually a *recipe for listing elements*. Read it in three parts: the braces, the left side, the right side."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "{ … }",
+                "the braces say: this is a SET"
+              ],
+              "active": 1,
+              "caption": "Curly braces always mean 'a set'. Whatever is inside is a description of which elements belong. (Round brackets would mean something else — an ordered tuple. Chen takes 0.5 off for mixing them up.)"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "3n  |",
+                "the LEFT side is the shape of each element"
+              ],
+              "active": 1,
+              "caption": "Left of the bar `|` is a **pattern**: what every element looks like. Here each element is '3 times n' for some n. The bar itself reads as **'such that'** or **'where'**."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "|  0 ≤ n ≤ 6",
+                "the RIGHT side says which n are allowed"
+              ],
+              "active": 1,
+              "caption": "Right of the bar is the **condition**: which values of the variable you're allowed to plug into the pattern. Here n runs from 0 to 6. (Chen's default: variables are natural numbers, and 0 counts as natural.)"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "n = 0 → 3·0 = 0",
+                "n = 1 → 3·1 = 3",
+                "n = 2 → 3·2 = 6",
+                "…",
+                "n = 6 → 3·6 = 18"
+              ],
+              "active": 0,
+              "caption": "Now run the recipe: plug in every allowed n and collect the results."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "{ 3n | 0 ≤ n ≤ 6 }",
+                "= { 0, 3, 6, 9, 12, 15, 18 }"
+              ],
+              "active": 1,
+              "caption": "That's the set — written out in **roster** form. Same set, two spellings. Set-builder is just shorter when the list would be long or infinite: { 3n | n ≥ 0 } is every multiple of 3, forever, and you couldn't list that."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "{ x | x ≥ 1, x ≤ 5 }",
+                "comma = AND",
+                "= { 1, 2, 3, 4, 5 }"
+              ],
+              "active": 1,
+              "caption": "One more convention that costs points: in the condition, a **comma means 'and'**. x ≥ 1 *and* x ≤ 5. If you mean 'or', you must write 'or' (or ∨) explicitly."
+            }
+          ],
+          "id": "reading.45de1622"
         },
         {
           "type": "definition",
           "term": "Set-builder notation",
           "body": "{ pattern | condition }. Read the bar as **'such that'**. The set contains every value the pattern produces for every variable value the condition allows. Comma in the condition = **and**. The other two ways to write a set: **roster** — {0, 3, 6, …} with '…' when the pattern is obvious — and a **Venn diagram**.",
-          "id": "reading.1"
+          "id": "reading.4b2d07ec"
         },
         {
           "type": "example",
           "title": "Writing B = {0, 3, 6, 9, 12, 15, 18} and X = {0, 3, 6, 9, …}",
           "body": "Give both in set-builder form and say whether each is finite.\n\n1. Find the pattern: every element is a multiple of 3. So the left side is 3n.\n2. Find the range of n. For B, n goes 0 to 6: B = { 3n | 0 ≤ n ≤ 6 }. Finite, |B| = 7.\n3. For X the '…' means it never stops: X = { 3n | n ≥ 0 }. Infinite.\n4. You may write n ∈ ℕ in the condition, but Chen's default universal set for variables is the natural numbers, so it can be left out.",
-          "id": "reading.2"
+          "id": "reading.a4967fc2"
         },
         {
           "type": "check",
           "prompt": "List the elements of { 2n + 1 | 0 ≤ n ≤ 3 }, and write {1, 4, 9, 16, …} in set-builder.",
           "answer": "{1, 3, 5, 7}. Squares: { n² | n ≥ 1 }.",
           "sectionRef": "reading",
-          "id": "reading.3"
+          "id": "reading.86159143"
         }
       ]
     },
@@ -64,85 +133,85 @@
           "type": "definition",
           "term": "Set",
           "body": "a collection of objects (its elements or members). Order does not matter and repeats don't count: {3, 4, 1, 3, 2} = {1, 2, 3, 4}. A **list** is the ordered version — a different concept.",
-          "id": "sets.0"
+          "id": "sets.42d00510"
         },
         {
           "type": "definition",
           "term": "Cardinality |A|",
           "body": "the number of elements. |{1, 3, 1, 6, 5}| = 4 (the repeated 1 counts once).",
-          "id": "sets.1"
+          "id": "sets.8b1e5e49"
         },
         {
           "type": "definition",
           "term": "Empty set",
           "body": "{ } or ϕ (phi). |ϕ| = 0.",
-          "id": "sets.2"
+          "id": "sets.09f34f81"
         },
         {
           "type": "definition",
           "term": "Finite set",
           "body": "a set whose size is a natural number. (0 is natural here, so ϕ is finite.) ♥ **Infinite set**: a set whose size cannot be expressed by a natural number, e.g. ℕ = {0, 1, 2, …}.",
-          "id": "sets.3"
+          "id": "sets.3bf54903"
         },
         {
           "type": "definition",
           "term": "Universal set U",
           "body": "the set of all possible elements under consideration — the rectangle in a Venn diagram.",
-          "id": "sets.4"
+          "id": "sets.5b82846a"
         },
         {
           "type": "definition",
           "term": "Complement",
           "body": "Ā = { x | x ∈ U, x ∉ A }: everything in U that's not in A. You cannot take a complement without knowing U.",
-          "id": "sets.5"
+          "id": "sets.1a9d6b90"
         },
         {
           "type": "trap",
           "body": "**ϕ versus {ϕ} — a favorite trick question** ϕ is the empty set: nothing inside, |ϕ| = 0. {ϕ} is a set with **one** element, and that element happens to be the empty set: |{ϕ}| = 1. A box with nothing in it versus a box containing an empty box. In Lesson 3 a third thing joins them — λ, the empty *string* — and telling all three apart is worth points on every quiz.",
           "source": "Quiz",
           "points": null,
-          "id": "sets.6"
+          "id": "sets.9696dc88"
         },
         {
           "type": "definition",
           "term": "Intersecting",
           "body": "sets share at least one element; **disjoint** sets share none.",
-          "id": "sets.7"
+          "id": "sets.25c54e43"
         },
         {
           "type": "definition",
           "term": "Subset",
           "body": "A ⊆ B: every element of A is also in B. **Proper subset** A ⊂ B: A ⊆ B *and* A ≠ B. If A = {2, 5, 3} and B = {3, 5, 2}, then A ⊆ B is right and A ⊂ B is **wrong** — they're equal.",
-          "id": "sets.8"
+          "id": "sets.43d6b292"
         },
         {
           "type": "definition",
           "term": "Equal",
           "body": "A = B exactly when A ⊆ B and B ⊆ A.",
-          "id": "sets.9"
+          "id": "sets.d2b9f6d8"
         },
         {
           "type": "prose",
           "md": "- Element to set: x ∈ A (is in), x ∉ A (is not in).",
-          "id": "sets.10"
+          "id": "sets.46fc475c"
         },
         {
           "type": "definition",
           "term": "De Morgan",
           "body": "the complement of A ∩ B is Ā ∪ B̄; the complement of A ∪ B is Ā ∩ B̄. (Flip the operation, complement each part.)",
-          "id": "sets.11"
+          "id": "sets.329fd1cd"
         },
         {
           "type": "prose",
           "md": "- Union A ∪ B = { x | x ∈ A or x ∈ B }. Intersection A ∩ B = { x | x ∈ A, x ∈ B }. Difference A − B = { x | x ∈ A, x ∉ B }. Complement Ā = U − A.\n- Union and intersection are commutative, associative, distributive. Difference is none of those (A − B ≠ B − A).\n- Identity A ∪ ϕ = A, A ∩ U = A. Domination A ∪ U = U, A ∩ ϕ = ϕ. Idempotent A ∪ A = A. Complement A ∪ Ā = U, A ∩ Ā = ϕ. Double complement gives A back.",
-          "id": "sets.12"
+          "id": "sets.4f4e515a"
         },
         {
           "type": "check",
           "prompt": "Is {ϕ} the empty set? Is ϕ ⊆ {1, 2}? Is {1, 2} ⊂ {1, 2}?",
           "answer": "No — it has one element. Yes — the empty set is a subset of everything. No — proper subset requires the sets to differ; {1, 2} ⊆ {1, 2} is the correct statement.",
           "sectionRef": "sets",
-          "id": "sets.13"
+          "id": "sets.cb6accf1"
         }
       ]
     },
@@ -151,34 +220,116 @@
       "heading": "Power set: the set of all subsets",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Building 2ᴬ for A = {a, b}**\n1. `[a, b] — A = {a, b}` The **power set** of A, written 2ᴬ, is the set of *all subsets* of A. Let's list them for A = {a, b} by asking, for each element, 'in or out?'\n2. `[ϕ] — a out, b out` Both out: the empty set ϕ. Yes, ϕ is a subset of every set — it's always in the power set.\n3. `[ϕ, {a}] — a in, b out` Just a.\n4. `[ϕ, {a}, {b}] — a out, b in` Just b.\n5. `[ϕ, {a}, {b}, {a, b}] — a in, b in` Both in: A itself. Every set is a subset of itself.\n6. `[2ᴬ = { ϕ, {a}, {b}, {a, b} }] — |2ᴬ| = 2² = 4` Written out with **outer braces** (it's a set) and **inner braces** (each element is itself a set). Two elements, each in-or-out, gives 2 × 2 = 4 subsets. In general |2ᴬ| = 2^|A| — which is exactly why it's called 2ᴬ.",
-          "id": "power.0"
+          "type": "stepper",
+          "title": "Building 2ᴬ for A = {a, b}",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                "a",
+                "b"
+              ],
+              "hl": [
+                0,
+                1
+              ],
+              "note": "A = {a, b}",
+              "caption": "The **power set** of A, written 2ᴬ, is the set of *all subsets* of A. Let's list them for A = {a, b} by asking, for each element, 'in or out?'"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "ϕ"
+              ],
+              "done": [
+                0
+              ],
+              "note": "a out, b out",
+              "caption": "Both out: the empty set ϕ. Yes, ϕ is a subset of every set — it's always in the power set."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "ϕ",
+                "{a}"
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "note": "a in, b out",
+              "caption": "Just a."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "ϕ",
+                "{a}",
+                "{b}"
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "note": "a out, b in",
+              "caption": "Just b."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "ϕ",
+                "{a}",
+                "{b}",
+                "{a, b}"
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "note": "a in, b in",
+              "caption": "Both in: A itself. Every set is a subset of itself."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "2ᴬ = { ϕ, {a}, {b}, {a, b} }"
+              ],
+              "done": [
+                0
+              ],
+              "note": "|2ᴬ| = 2² = 4",
+              "caption": "Written out with **outer braces** (it's a set) and **inner braces** (each element is itself a set). Two elements, each in-or-out, gives 2 × 2 = 4 subsets. In general |2ᴬ| = 2^|A| — which is exactly why it's called 2ᴬ."
+            }
+          ],
+          "id": "power.634042cf"
         },
         {
           "type": "definition",
           "term": "Power set 2ᴬ",
           "body": "2ᴬ = { X | X ⊆ A }, the set of all subsets of A. |2ᴬ| = 2^|A|. Always includes ϕ and A itself.",
-          "id": "power.1"
+          "id": "power.7128c4b5"
         },
         {
           "type": "trap",
           "body": "**Assignment 1 Q12 — the deductions** Power set of {c, d} must be written **{ϕ, {c}, {d}, {c, d}}∗*: outer braces *and* inner braces. Marked down: round brackets instead of braces; writing {ϕ} when you mean the empty set as an element (that's a set containing the empty set, a different thing). Spelling out 'phi' is accepted.",
           "source": "Assignment 1 Q12",
           "points": null,
-          "id": "power.2"
+          "id": "power.5bee0a43"
         },
         {
           "type": "prose",
           "md": "In Lesson 8, a nondeterministic automaton's transition function will map to a *set of states* rather than a single state. Its range is 2^Q — the power set of the state set. When Chen asks 'what is the range of δ for an NFA', this is the answer, and this is where he taught it.",
-          "id": "power.3"
+          "id": "power.88c9b179"
         },
         {
           "type": "check",
           "prompt": "Write 2ᴬ for A = {1, 2, 3}. How many elements should it have before you start?",
           "answer": "2³ = 8: { ϕ, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3} }.",
           "sectionRef": "power",
-          "id": "power.4"
+          "id": "power.7fbb74b4"
         }
       ]
     },
@@ -188,26 +339,103 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**Where pairs come from** A DFA's brain makes a decision from two things at once: *which state am I in* and *which symbol did I just read*. A decision that depends on two inputs is a function of the **pair** (state, symbol). The Cartesian product is how you build the set of all such pairs — so the transition function has a domain to be defined on.",
-          "id": "product.0"
+          "id": "product.002df2a4"
         },
         {
-          "type": "prose",
-          "md": "**Assignment 1 Q16: Q × (Σ ∪ {λ})**\n1. `find Q × (Σ ∪ {λ})` Assignment 1 Q16. Two sets, and a product of them. First simplify the thing in parentheses.\n2. `= {x, y, λ}` Union: everything in either set. Three elements now. (λ is the empty string — a symbol-like thing you'll meet properly in Lesson 3. Here it's just a third element.)\n3. `= every (element of Q, element of the other) pair` **Cartesian product** A × B: the set of all ordered pairs (a, b) with a from A and b from B. Order matters inside the pair — (m, x) and (x, m) are different, and only the first belongs here.\n4. `[(m, x), (m, y), (m, λ)] — m paired with each` Take m, pair it with each of x, y, λ. Three pairs.\n5. `[(m, x), (m, y), (m, λ), (n, x), (n, y), (n, λ)] — then n with each` Take n, same thing. Three more.\n6. `{ (m,x), (m,y), (m,λ), (n,x), (n,y), (n,λ) }` The answer: outer **braces** (a set), each element in **parentheses** (an ordered pair). |A × B| = |A| · |B| — always check your count. Chen's key: writing 'lambda' in words is fine; wrong brackets are −0.5.",
-          "id": "product.1"
+          "type": "stepper",
+          "title": "Assignment 1 Q16: Q × (Σ ∪ {λ})",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Q = {m, n}",
+                "Σ = {x, y}",
+                "find Q × (Σ ∪ {λ})"
+              ],
+              "active": 2,
+              "caption": "Assignment 1 Q16. Two sets, and a product of them. First simplify the thing in parentheses."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Σ ∪ {λ} = {x, y} ∪ {λ}",
+                "= {x, y, λ}"
+              ],
+              "active": 1,
+              "caption": "Union: everything in either set. Three elements now. (λ is the empty string — a symbol-like thing you'll meet properly in Lesson 3. Here it's just a third element.)"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Q × {x, y, λ}",
+                "= every (element of Q, element of the other) pair",
+                "first from Q, second from {x, y, λ}"
+              ],
+              "active": 1,
+              "caption": "**Cartesian product** A × B: the set of all ordered pairs (a, b) with a from A and b from B. Order matters inside the pair — (m, x) and (x, m) are different, and only the first belongs here."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "(m, x)",
+                "(m, y)",
+                "(m, λ)"
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "note": "m paired with each",
+              "caption": "Take m, pair it with each of x, y, λ. Three pairs."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "(m, x)",
+                "(m, y)",
+                "(m, λ)",
+                "(n, x)",
+                "(n, y)",
+                "(n, λ)"
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "note": "then n with each",
+              "caption": "Take n, same thing. Three more."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "{ (m,x), (m,y), (m,λ), (n,x), (n,y), (n,λ) }",
+                "size check: |Q| · |Σ ∪ {λ}| = 2 · 3 = 6  ✓"
+              ],
+              "active": 0,
+              "caption": "The answer: outer **braces** (a set), each element in **parentheses** (an ordered pair). |A × B| = |A| · |B| — always check your count. Chen's key: writing 'lambda' in words is fine; wrong brackets are −0.5."
+            }
+          ],
+          "id": "product.eefb210c"
         },
         {
           "type": "definition",
           "term": "Cartesian product A × B",
           "body": "{ (a, b) | a ∈ A, b ∈ B }: every ordered pair with first part from A and second from B. |A × B| = |A|·|B|. A × ϕ = ϕ. **Not commutative** — A × B ≠ B × A unless A = B or one is empty, because pairs are ordered. Extends to more sets: Q × Σ × Γ is a set of 3-tuples.",
-          "id": "product.2"
+          "id": "product.cbc233f5"
         },
         {
           "type": "check",
           "prompt": "A = {1, 2}, B = {p}. Write A × B and B × A. Are they equal?",
           "answer": "A × B = {(1, p), (2, p)}. B × A = {(p, 1), (p, 2)}. Not equal — (1, p) ≠ (p, 1).",
           "sectionRef": "product",
-          "id": "product.3"
+          "id": "product.ef3faaec"
         }
       ]
     },
@@ -218,31 +446,31 @@
         {
           "type": "prose",
           "md": "f : D → R takes each element of the **domain** D to **one** element of the **range** R. One input, at most one output — that's the rule. Several inputs may share an output (f(1) = f(2) = 5 is fine); one input may not have two outputs. You can write a function as algebra (f(x) = 2x), as arrows in a diagram, or as a set of ordered pairs (input, output) — and that set of pairs is a subset of D × R. That's the link to the Cartesian product.",
-          "id": "functions.0"
+          "id": "functions.394cff89"
         },
         {
           "type": "prose",
           "md": "**♥ Total and partial — the exact wording** **Total function**: a function where **all elements of its domain are defined**. **Partial function**: at least one domain element is undefined (has no output). The key accepted 'a function that all of its domain elements are defined' and rejected 'all domains are defined', 'the function is defined', 'all elements are defined'. The words *domain elements* must be there.",
-          "id": "functions.1"
+          "id": "functions.05e86616"
         },
         {
           "type": "example",
           "title": "Spotting a non-function",
           "body": "Q = {q₀, q₁}, Γ = {a, b}, δ : Q × Γ → Q × Γ × {L, R}. Can δ = { ((q₀,a), (q₀,a,L)), ((q₀,a), (q₀,b,L)) } be a function?\n\n1. Read the pairs as (input, output). Both pairs have the same input, (q₀, a).\n2. The outputs differ: (q₀, a, L) versus (q₀, b, L).\n3. One input with two outputs breaks the rule. **Not a function.**\n4. (That δ shape — state and symbol in, state and symbol and a direction out — is a Turing machine's. He's planting it in week 2.)",
           "answer": "No: the same domain element maps to two range elements.",
-          "id": "functions.2"
+          "id": "functions.c6ec8dec"
         },
         {
           "type": "prose",
           "md": "Read it aloud: 'delta is a function from Q cross Sigma to Q.' Domain: the set of (state, symbol) pairs — the Cartesian product from the previous section. Range: the set of states. In words: *given a state and a symbol, δ tells you the next state.* That is the entire brain of a DFA, and if δ is **total** (every pair has an answer), the machine always knows what to do. Lesson 5 will draw it as arrows; this is what the arrows mean.",
-          "id": "functions.3"
+          "id": "functions.a6d45052"
         },
         {
           "type": "check",
           "prompt": "D = {1, 2, 3}, R = {a, b}. f = {(1, a), (3, b)}. Is f a function? Total or partial?",
           "answer": "It's a function (no input has two outputs). Partial — 2 is a domain element with no output.",
           "sectionRef": "functions",
-          "id": "functions.4"
+          "id": "functions.272f12af"
         }
       ]
     },
@@ -254,22 +482,22 @@
           "type": "definition",
           "term": "One-dimensional projection",
           "body": "stretch a walk out in a line — v₁ → v₃ → v₁ → v₃ → v₂ — so its length is obvious (4 here).",
-          "id": "graphs.0"
+          "id": "graphs.11bf1a65"
         },
         {
           "type": "prose",
           "md": "- A **graph** is a non-empty finite set of **vertices** V and a finite set of **edges** E. This course uses **directed** graphs only: an edge is an ordered pair (from, to) — an arrow.\n- A **walk** is a sequence of edges where each edge ends where the next one begins. 'We cannot jump.' Its **length** is the number of edges.",
-          "id": "graphs.1"
+          "id": "graphs.7d03b8a0"
         },
         {
           "type": "prose",
           "md": "A DFA's control unit is drawn as a directed graph: vertices are states, edges are transitions labelled with symbols. Running the machine on a string is *taking a walk* — one edge per symbol read — and the one-dimensional projection of that walk is the machine's trace. When Lesson 5 says 'the machine follows the transition', it means 'takes the next edge in the walk'.",
-          "id": "graphs.2"
+          "id": "graphs.79b35476"
         },
         {
           "type": "prose",
           "md": "**Lessons 1–2 in one breath.** Sets hold the pieces (states Q, symbols Σ). The Cartesian product Q × Σ makes (state, symbol) pairs. A total function δ : Q × Σ → Q picks the next state for each pair. Drawn as a directed graph, running the machine is a walk. The power set 2^Q shows up when a machine is allowed several next states at once (NFA).",
-          "id": "graphs.3"
+          "id": "graphs.aeffbaa8"
         }
       ]
     }

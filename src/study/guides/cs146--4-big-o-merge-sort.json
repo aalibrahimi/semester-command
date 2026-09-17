@@ -18,7 +18,7 @@
         {
           "type": "prose",
           "md": "Chapter 0 has the definition of O, Ω and Θ. Lecture 4 is about *using* them, and Poon opens with a correction worth remembering: 'time complexity' is a misnomer. We count **operations** as a function of input size, not seconds — seconds depend on the machine; operation counts don't.",
-          "id": "bigo.0"
+          "id": "bigo.79caff2c"
         },
         {
           "type": "table",
@@ -66,46 +66,46 @@
               "Naive recursive Fibonacci"
             ]
           ],
-          "id": "bigo.1"
+          "id": "bigo.f8b9ae5b"
         },
         {
           "type": "definition",
           "term": "Insertion sort",
           "body": "Ω(n) best (sorted), O(n²) worst (reversed).",
-          "id": "bigo.2"
+          "id": "bigo.70a6aebf"
         },
         {
           "type": "definition",
           "term": "Linear search",
           "body": "Ω(1) best (it's the first element), O(n) worst (last, or missing).",
-          "id": "bigo.3"
+          "id": "bigo.aada3193"
         },
         {
           "type": "definition",
           "term": "Sum all elements",
           "body": "Ω(n) and O(n) — you must touch everything, no shortcut, so it's **Θ(n)**.",
-          "id": "bigo.4"
+          "id": "bigo.3c3acdf9"
         },
         {
           "type": "example",
           "title": "1000n vs 5n²",
           "body": "Algorithm A takes 1000n operations, B takes 5n². Which is faster?\n\n1. Set them equal to find the crossover: 1000n = 5n² → 1000 = 5n → n = 200.\n2. Below 200, the n² hasn't grown enough to beat the big 1000 constant: **B is faster** for small inputs.\n3. Above 200, n² takes over and keeps pulling away: **A is faster** for large inputs, and the gap grows without bound.\n4. This is why Big-O throws away constants: for big enough n the growth rate decides, and 'big enough' always arrives. But it's also why the hybrid sort in Project 1 exists — for tiny n, constants are the whole story.",
           "answer": "B for n < 200, A for n > 200, tie at 200",
-          "id": "bigo.5"
+          "id": "bigo.0264e589"
         },
         {
           "type": "check",
           "prompt": "HW 4 Problem 2: `for i in 0..n−1: for j in 0..i−1: sum += i`. How many times does the inner line run, and what's the Big-O?",
           "answer": "For each i it runs i times: 0 + 1 + 2 + … + (n−1) = n(n−1)/2 (Chapter 0's sum). Drop the ½ and the −n/2: O(n²).",
           "sectionRef": "bigo",
-          "id": "bigo.6"
+          "id": "bigo.cce9db30"
         },
         {
           "type": "check",
           "prompt": "Give the simplest O, Ω and Θ for f(n) = 2n³ + 5n² + 100.",
           "answer": "All n³: f = O(n³) and Ω(n³), so Θ(n³). Only the fastest-growing term survives.",
           "sectionRef": "bigo",
-          "id": "bigo.7"
+          "id": "bigo.2551d9b7"
         }
       ]
     },
@@ -115,20 +115,21 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The idea** How do you find 'marble' in a paper dictionary? You don't start at page 1. You open to the middle, see 'L…', and throw away the whole first half. Open the middle of what's left, throw away half again. Each look halves the problem, so a 1000-page dictionary takes about 10 looks (Chapter 0: log₂ 1000 ≈ 10). That's the pattern: make the problem smaller by a constant factor each step, and the number of steps is logarithmic. **Divide and conquer** is that pattern turned into a recipe.",
-          "id": "dc.0"
+          "id": "dc.06e7ca21"
         },
         {
           "type": "trap",
           "body": "**Poon's definition** **Divide**: break the problem into smaller subproblems that are the same kind of problem as the original. **Conquer**: solve them recursively; when a subproblem is small enough (the **base case**), solve it directly. Many algorithms add a third step, **combine**: put the sub-answers together. His examples: binary search and dictionary lookup.",
           "source": "Exam",
           "points": null,
-          "id": "dc.1"
+          "id": "dc.9f953a2f"
         },
         {
           "type": "prose",
           "md": "The function calls itself on a smaller input. That feels circular until you see the base case: the calls keep shrinking the input, so eventually they hit something trivially solvable (one element, an empty list) and return without calling again. Each returning call hands its answer up to the caller, which combines it and returns in turn. The call stack from Lectures 2–3 is what keeps track of who's waiting for whom.",
-          "id": "dc.2"
+          "id": "dc.387dd597"
         }
       ]
     },
@@ -138,24 +139,144 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The one trick merge sort needs** Combining two *unsorted* piles into a sorted one is hard. Combining two *sorted* piles is easy: the smallest overall must be at the front of one pile or the other. Look at both fronts, take the smaller, repeat. Merge sort is built entirely on this: it only ever asks 'merge two sorted lists', and it makes sure the lists are sorted by making them tiny first.",
-          "id": "merge.0"
+          "id": "merge.44b094b1"
         },
         {
-          "type": "prose",
-          "md": "**Merging [2, 5, 8, 12] and [3, 6, 9, 10] (HW 5 Problem 1)**\n1. `[L: 2 5 8 12, R: 3 6 9 10, out:]` Two sorted lists (HW 5 Problem 1). Keep one finger on the front of each. Each step: compare the two fingers, copy the smaller to the output, move that finger forward.\n2. `[L: 5 8 12, R: 3 6 9 10, out: 2] — 2 vs 3 → take 2` 2 < 3, so 2 goes out. The L finger moves to 5.\n3. `[L: 5 8 12, R: 6 9 10, out: 2 3] — 5 vs 3 → take 3` 5 vs 3: 3 is smaller. R finger moves to 6.\n4. `[L: 8 12, R: 6 9 10, out: 2 3 5] — 5 vs 6 → take 5` 5 vs 6: take 5.\n5. `[L: 8 12, R: 9 10, out: 2 3 5 6] — 8 vs 6 → take 6` 8 vs 6: take 6.\n6. `[L: 12, R: 9 10, out: 2 3 5 6 8] — 8 vs 9 → take 8` 8 vs 9: take 8.\n7. `[L: 12, R: 10, out: 2 3 5 6 8 9] — 12 vs 9 → take 9` 12 vs 9: take 9.\n8. `[L: 12, R: (empty), out: 2 3 5 6 8 9 10] — 12 vs 10 → take 10` 12 vs 10: take 10. R is now empty.\n9. `[L: (empty), R: (empty), out: 2 3 5 6 8 9 10 12] — copy the rest of L` One list ran out, so copy whatever's left of the other (just 12). Done. Count the work: 8 elements went out, each after at most one comparison. Merge is **O(n)** — it touches each element once.",
-          "id": "merge.1"
+          "type": "stepper",
+          "title": "Merging [2, 5, 8, 12] and [3, 6, 9, 10] (HW 5 Problem 1)",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                "L: 2 5 8 12",
+                "R: 3 6 9 10",
+                "out:"
+              ],
+              "hl": [
+                0,
+                1
+              ],
+              "caption": "Two sorted lists (HW 5 Problem 1). Keep one finger on the front of each. Each step: compare the two fingers, copy the smaller to the output, move that finger forward."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 5 8 12",
+                "R: 3 6 9 10",
+                "out: 2"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "2 vs 3 → take 2",
+              "caption": "2 < 3, so 2 goes out. The L finger moves to 5."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 5 8 12",
+                "R: 6 9 10",
+                "out: 2 3"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "5 vs 3 → take 3",
+              "caption": "5 vs 3: 3 is smaller. R finger moves to 6."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 8 12",
+                "R: 6 9 10",
+                "out: 2 3 5"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "5 vs 6 → take 5",
+              "caption": "5 vs 6: take 5."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 8 12",
+                "R: 9 10",
+                "out: 2 3 5 6"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "8 vs 6 → take 6",
+              "caption": "8 vs 6: take 6."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 12",
+                "R: 9 10",
+                "out: 2 3 5 6 8"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "8 vs 9 → take 8",
+              "caption": "8 vs 9: take 8."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 12",
+                "R: 10",
+                "out: 2 3 5 6 8 9"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "12 vs 9 → take 9",
+              "caption": "12 vs 9: take 9."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: 12",
+                "R: (empty)",
+                "out: 2 3 5 6 8 9 10"
+              ],
+              "hl": [
+                2
+              ],
+              "note": "12 vs 10 → take 10",
+              "caption": "12 vs 10: take 10. R is now empty."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "L: (empty)",
+                "R: (empty)",
+                "out: 2 3 5 6 8 9 10 12"
+              ],
+              "done": [
+                2
+              ],
+              "note": "copy the rest of L",
+              "caption": "One list ran out, so copy whatever's left of the other (just 12). Done. Count the work: 8 elements went out, each after at most one comparison. Merge is **O(n)** — it touches each element once."
+            }
+          ],
+          "id": "merge.0619e5fc"
         },
         {
           "type": "example",
           "title": "This is the shape Project 1 needs: it merges a[lo..mid] with a[mid+1..hi] into tmp, then copies back. `i` and `j` are the two fingers; `k` is the output position.",
           "body": "// merges the two sorted halves a[lo..mid] and a[mid+1..hi]\nstatic void merge(int[] a, int lo, int mid, int hi, int[] tmp) {\n  int i = lo, j = mid + 1, k = lo;\n  while (i <= mid && j <= hi) {\n    if (a[i] <= a[j]) tmp[k++] = a[i++];   // <= keeps it stable\n    else              tmp[k++] = a[j++];\n  }\n  while (i <= mid) tmp[k++] = a[i++];       // copy the rest of the left half\n  while (j <= hi)  tmp[k++] = a[j++];       // copy the rest of the right half\n  for (k = lo; k <= hi; k++) a[k] = tmp[k]; // copy back\n}",
-          "id": "merge.2"
+          "id": "merge.15a178c3"
         },
         {
           "type": "prose",
           "md": "Java (like JS) lets `k++` mean 'use k, then add one to it'. So `tmp[k++] = a[i++]` is three things in one line: copy a[i] into tmp[k], then advance both k and i. You can write it as three lines if that's clearer; the meaning is identical.",
-          "id": "merge.3"
+          "id": "merge.af835008"
         }
       ]
     },
@@ -164,36 +285,248 @@
       "heading": "Merge sort",
       "blocks": [
         {
-          "type": "prose",
-          "md": "**Merge sort as a tree: M([50, 20, 60, 30, 10])**\n1. `50 20 60 30 10` M([50, 20, 60, 30, 10]) — Poon's slide 20 example. Five things. Too many to sort 'directly', so **divide**: split in the middle. Left gets the extra element when the length is odd.\n2. `50 20 60 30 10 / 50 20 60 30 10` Two smaller versions of the same problem. Neither is size 1 yet, so keep splitting.\n3. `50 20 60 30 10 / 50 20 60 30 10 / 50 20 60 30 10` [60], [30], [10] are single elements — a one-element list is already sorted. That's the **base case**. [50 20] still needs one more split.\n4. `50 20 60 30 10 / 50 20 60 30 10 / 50 20 60 30 10 / 50 20` Now everything at the bottom is size 1. Dividing is over. From here on, every step is a **merge** going back up.\n5. `50 20 60 30 10 / 50 20 60 30 10 / 20 50 60 30 10` Merge [50] and [20] → [20, 50]. In Poon's trace format you write `→ [20, 50]` under the call that produced it.\n6. `50 20 60 30 10 / 20 50 60 10 30` Merge [20, 50] with [60] → [20, 50, 60]. On the right, merge [30] with [10] → [10, 30]. Each level's merges together touch every element once — that's O(n) per level.\n7. `10 20 30 50 60` The final merge: [20, 50, 60] with [10, 30] → [10, 20, 30, 50, 60]. Sorted. Notice what merge sort never does: it never compares elements 'in place'. It only ever splits and merges.",
-          "id": "mergesort.0"
+          "type": "stepper",
+          "title": "Merge sort as a tree: M([50, 20, 60, 30, 10])",
+          "frames": [
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "M([50, 20, 60, 30, 10]) — Poon's slide 20 example. Five things. Too many to sort 'directly', so **divide**: split in the middle. Left gets the extra element when the length is odd."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20 60",
+                    "30 10"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "Two smaller versions of the same problem. Neither is size 1 yet, so keep splitting."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20 60",
+                    "30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20",
+                    "60",
+                    "30",
+                    "10"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "[60], [30], [10] are single elements — a one-element list is already sorted. That's the **base case**. [50 20] still needs one more split."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20 60",
+                    "30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20",
+                    "60",
+                    "30",
+                    "10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50",
+                    "20"
+                  ],
+                  "hl": true
+                }
+              ],
+              "caption": "Now everything at the bottom is size 1. Dividing is over. From here on, every step is a **merge** going back up."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "50 20 60",
+                    "30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "20 50",
+                    "60",
+                    "30",
+                    "10"
+                  ],
+                  "hl": true,
+                  "work": "merge [50],[20] → [20 50]"
+                }
+              ],
+              "caption": "Merge [50] and [20] → [20, 50]. In Poon's trace format you write `→ [20, 50]` under the call that produced it."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "50 20 60 30 10"
+                  ]
+                },
+                {
+                  "nodes": [
+                    "20 50 60",
+                    "10 30"
+                  ],
+                  "hl": true,
+                  "work": "merge [20 50],[60] → [20 50 60]  ·  merge [30],[10] → [10 30]"
+                }
+              ],
+              "caption": "Merge [20, 50] with [60] → [20, 50, 60]. On the right, merge [30] with [10] → [10, 30]. Each level's merges together touch every element once — that's O(n) per level."
+            },
+            {
+              "kind": "tree",
+              "levels": [
+                {
+                  "nodes": [
+                    "10 20 30 50 60"
+                  ],
+                  "hl": true,
+                  "work": "merge [20 50 60],[10 30]"
+                }
+              ],
+              "caption": "The final merge: [20, 50, 60] with [10, 30] → [10, 20, 30, 50, 60]. Sorted. Notice what merge sort never does: it never compares elements 'in place'. It only ever splits and merges."
+            }
+          ],
+          "id": "mergesort.c0aa0b55"
         },
         {
           "type": "example",
           "title": "Indent by recursion depth. Under each call, show its two sub-calls, then `→ result` when it returns. Odd lengths: the left half gets the extra element (mid = (lo + hi) / 2, left = lo..mid).",
           "body": "M([50, 20, 60, 30, 10])\n  M([50, 20, 60])\n    M([50, 20])\n      M([50]) → [50]\n      M([20]) → [20]\n      → [20, 50]\n    M([60]) → [60]\n    → [20, 50, 60]\n  M([30, 10])\n    M([30]) → [30]\n    M([10]) → [10]\n    → [10, 30]\n  → [10, 20, 30, 50, 60]",
-          "id": "mergesort.1"
+          "id": "mergesort.05abf561"
         },
         {
           "type": "example",
           "title": "Three lines of logic: base case, two recursive calls, merge. The public wrapper allocates the temp array once and handles Project 1's null / short-array cases.",
           "body": "public static void mergeSort(int[] a) {\n  if (a == null || a.length < 2) return;\n  mergeSort(a, 0, a.length - 1, new int[a.length]);\n}\nstatic void mergeSort(int[] a, int lo, int hi, int[] tmp) {\n  if (lo >= hi) return;                 // base case: 0 or 1 element\n  int mid = (lo + hi) / 2;              // integer division: left gets the extra\n  mergeSort(a, lo, mid, tmp);           // conquer left\n  mergeSort(a, mid + 1, hi, tmp);       // conquer right\n  merge(a, lo, mid, hi, tmp);           // combine\n}",
-          "id": "mergesort.2"
+          "id": "mergesort.530b3ded"
         },
         {
-          "type": "prose",
-          "md": "**Why it's O(n log n)**\n1. `Merging one level = O(n)` At any one level of the tree, all the merges together handle every element exactly once. So a level costs about n operations — no matter how many pieces it's cut into.\n2. `Number of levels = log₂ n` How many levels? Sizes go n, n/2, n/4, … down to 1. Chapter 0: the number of halvings from n to 1 is log₂ n. (Poon spends four slides on this; it's the foundation for every recurrence later.)\n3. `Total merging = O(n) · log n = O(n log n)` n per level, log n levels: n log n.\n4. `Dividing: n − 1 splits, each O(1) = O(n)` Poon also counts the dividing: to get n single elements you make n − 1 cuts, each just computing a midpoint. O(n) total — small next to the merging.\n5. `Overall: O(n log n) + O(n) = O(n log n)` Add them; drop the lower-order term. **O(n log n)**, best case and worst case alike — merge sort does the same splits and merges regardless of the input's order.",
-          "id": "mergesort.3"
+          "type": "stepper",
+          "title": "Why it's O(n log n)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Merging one level = O(n)",
+                "Number of levels = log₂ n",
+                "Total merging = O(n) · log n = O(n log n)",
+                "Dividing: n − 1 splits, each O(1) = O(n)",
+                "Overall: O(n log n) + O(n) = O(n log n)"
+              ],
+              "active": 0,
+              "caption": "At any one level of the tree, all the merges together handle every element exactly once. So a level costs about n operations — no matter how many pieces it's cut into."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Merging one level = O(n)",
+                "Number of levels = log₂ n",
+                "Total merging = O(n) · log n = O(n log n)",
+                "Dividing: n − 1 splits, each O(1) = O(n)",
+                "Overall: O(n log n) + O(n) = O(n log n)"
+              ],
+              "active": 1,
+              "caption": "How many levels? Sizes go n, n/2, n/4, … down to 1. Chapter 0: the number of halvings from n to 1 is log₂ n. (Poon spends four slides on this; it's the foundation for every recurrence later.)"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Merging one level = O(n)",
+                "Number of levels = log₂ n",
+                "Total merging = O(n) · log n = O(n log n)",
+                "Dividing: n − 1 splits, each O(1) = O(n)",
+                "Overall: O(n log n) + O(n) = O(n log n)"
+              ],
+              "active": 2,
+              "caption": "n per level, log n levels: n log n."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Merging one level = O(n)",
+                "Number of levels = log₂ n",
+                "Total merging = O(n) · log n = O(n log n)",
+                "Dividing: n − 1 splits, each O(1) = O(n)",
+                "Overall: O(n log n) + O(n) = O(n log n)"
+              ],
+              "active": 3,
+              "caption": "Poon also counts the dividing: to get n single elements you make n − 1 cuts, each just computing a midpoint. O(n) total — small next to the merging."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Merging one level = O(n)",
+                "Number of levels = log₂ n",
+                "Total merging = O(n) · log n = O(n log n)",
+                "Dividing: n − 1 splits, each O(1) = O(n)",
+                "Overall: O(n log n) + O(n) = O(n log n)"
+              ],
+              "active": 4,
+              "caption": "Add them; drop the lower-order term. **O(n log n)**, best case and worst case alike — merge sort does the same splits and merges regardless of the input's order."
+            }
+          ],
+          "id": "mergesort.d8aaf901"
         },
         {
           "type": "prose",
           "md": "n = 1,000,000. Merge sort: about n log n = 1,000,000 × 20 = 20,000,000 operations. Insertion sort worst case: about n² = 10¹². That's the difference between a blink and eleven days. This is the sentence to remember when someone asks why growth rate matters more than constants.",
-          "id": "mergesort.4"
+          "id": "mergesort.df182200"
         },
         {
           "type": "prose",
+          "label": "why",
           "md": "**O(n) space — the price of the speed** Merge writes its output somewhere. If it wrote straight back into the input array, it would overwrite elements it hasn't read yet: merging [2, 5] with [1, 4] in place, the 1 has to go where the 2 is, but the 2 hasn't been placed yet. So merge needs a temporary array the size of the input — **O(n) extra space**. Slide 38 walks through exactly this. Heap sort (Lecture 8) is the sort that avoids it.",
-          "id": "mergesort.5"
+          "id": "mergesort.7f26efbc"
         },
         {
           "type": "table",
@@ -229,21 +562,21 @@
               "n is large"
             ]
           ],
-          "id": "mergesort.6"
+          "id": "mergesort.b203dec2"
         },
         {
           "type": "check",
           "prompt": "HW 5 Problem 2: trace merge sort on [8, 3, 1, 7, 4, 6] in M() format.",
           "answer": "M([8,3,1,7,4,6]): M([8,3,1]) → M([8,3]) → M([8])→[8], M([3])→[3], →[3,8]; M([1])→[1]; →[1,3,8]. M([7,4,6]) → M([7,4]) → [7],[4] → [4,7]; M([6])→[6]; →[4,6,7]. Final → [1,3,4,6,7,8].",
           "sectionRef": "mergesort",
-          "id": "mergesort.7"
+          "id": "mergesort.476e5227"
         },
         {
           "type": "check",
           "prompt": "Why is merge sort O(n log n) even in the best case, when insertion sort can be Ω(n)?",
           "answer": "Merge sort always makes the same splits and always merges every level; it never notices that the input was sorted. Insertion sort's inner loop stops early on sorted input, so it does less work.",
           "sectionRef": "mergesort",
-          "id": "mergesort.8"
+          "id": "mergesort.c4b72ab0"
         }
       ]
     },
@@ -254,60 +587,60 @@
         {
           "type": "prose",
           "md": "Part 1 is three methods in Java: **insertionSort**, **mergeSort**, and **hybridSort** — a merge sort that switches to insertion sort when a piece gets small. Part 2 runs the provided `main()` to time them and asks you to write about what you see. Everything above in this chapter and the previous one *is* the project; the code blocks here are the pieces. Check the spec for the exact method names and signatures he expects, and use his — he docks for format.",
-          "id": "project.0"
+          "id": "project.565dcb5a"
         },
         {
           "type": "example",
           "title": "The only new idea: change the base case. When a range is at or below the threshold, insertion-sort just that range instead of splitting further. Insertion sort must therefore work on a subrange lo..hi, not the whole array.",
           "body": "public static void hybridSort(int[] a, int threshold) {\n  if (a == null || a.length < 2) return;\n  hybridSort(a, 0, a.length - 1, threshold, new int[a.length]);\n}\nstatic void hybridSort(int[] a, int lo, int hi, int t, int[] tmp) {\n  if (hi - lo + 1 <= t) { insertionSortRange(a, lo, hi); return; }\n  int mid = (lo + hi) / 2;\n  hybridSort(a, lo, mid, t, tmp);\n  hybridSort(a, mid + 1, hi, t, tmp);\n  merge(a, lo, mid, hi, tmp);\n}\nstatic void insertionSortRange(int[] a, int lo, int hi) {\n  for (int j = lo + 1; j <= hi; j++) {\n    int key = a[j], i = j - 1;\n    while (i >= lo && a[i] > key) { a[i + 1] = a[i]; i--; }\n    a[i + 1] = key;\n  }\n}",
-          "id": "project.1"
+          "id": "project.da95d7f6"
         },
         {
           "type": "definition",
           "term": "Types everywhere",
           "body": "`int x`, `int[] a`, `boolean`, `void` for no return. No `let`/`const`.",
-          "id": "project.2"
+          "id": "project.435a782d"
         },
         {
           "type": "definition",
           "term": "Arrays are fixed size",
           "body": "`new int[n]` makes n zeros; no `.push`, no `.length` changes. `a.length` (no parentheses) is the size.",
-          "id": "project.3"
+          "id": "project.91bb08b7"
         },
         {
           "type": "definition",
           "term": "Integer division",
           "body": "`(lo + hi) / 2` with ints throws away the remainder automatically — no `Math.floor` needed.",
-          "id": "project.4"
+          "id": "project.ba740879"
         },
         {
           "type": "definition",
           "term": "`static`",
           "body": "means the method belongs to the class, not an object — you call `SortingHub.mergeSort(a)` without `new`. The spec's methods are almost certainly static.",
-          "id": "project.5"
+          "id": "project.a1c4f3b2"
         },
         {
           "type": "definition",
           "term": "Compile, then run",
           "body": "`javac SortingHub.java` then `java SortingHub`. Errors at compile time are your friend — read the line number.",
-          "id": "project.6"
+          "id": "project.9ee6ad87"
         },
         {
           "type": "definition",
           "term": "Passing arrays",
           "body": "like JS, the method gets a reference, so sorting `a` inside the method changes the caller's array. That's why these sorts return `void`.",
-          "id": "project.7"
+          "id": "project.c1eb178f"
         },
         {
           "type": "example",
           "title": "In what order to write it",
           "body": "How to get from an empty file to a submitted project.\n\n1. Write `insertionSort` (Lectures 2–3 chapter) and a tiny `main` that sorts `{8, 5, 2, 6, 9}` and prints it. Also test `null`, `{}`, `{1}`, and an already-sorted array.\n2. Write `merge` and test it alone on two sorted halves inside one array — e.g. `{2, 5, 8, 12, 3, 6, 9, 10}` with lo=0, mid=3, hi=7. Print the result; expect the HW 5 answer.\n3. Write `mergeSort` on top of `merge`. Test with the M() example — you should get [10, 20, 30, 50, 60].\n4. Copy `mergeSort` into `hybridSort`, change the base case to call `insertionSortRange`. Test with threshold 1 (should behave like merge sort) and threshold = array length (should behave like insertion sort).\n5. Run the provided `main()` for Part 2. For the write-up: expect insertion sort to win at tiny sizes, lose badly at large sizes; the hybrid should match or beat plain merge sort, with a sweet-spot threshold somewhere around 10–30. Explain *why* using the HW 4 crossover idea: constants win small, growth rate wins large.",
-          "id": "project.8"
+          "id": "project.f1cb4b67"
         },
         {
           "type": "prose",
           "md": "**Late penalty** 10% off per day. A working insertion sort + merge sort submitted on time is worth far more than a perfect hybrid submitted Sunday. Get Part 1 in first.",
-          "id": "project.9"
+          "id": "project.d0b2fcab"
         }
       ]
     }

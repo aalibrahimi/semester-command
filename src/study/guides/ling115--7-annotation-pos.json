@@ -16,32 +16,33 @@
       "blocks": [
         {
           "type": "prose",
+          "label": "why",
           "md": "**The idea** A raw corpus is a pile of strings. Ask it 'how often is *book* a verb?' and it can't answer — it doesn't know what a verb is. **Annotation** adds a layer of linguistic interpretation on top of the text (this token is a verb; these four tokens are a noun phrase; this pronoun refers to that name) so questions about *structure* become countable. It's the difference between preprocessing — technical access to the text — and analysis.",
-          "id": "why.0"
+          "id": "why.a5d489ed"
         },
         {
           "type": "definition",
           "term": "Reproducibility",
           "body": "others can check and repeat your analysis.",
-          "id": "why.1"
+          "id": "why.f9de9e32"
         },
         {
           "type": "definition",
           "term": "Automatic examination",
           "body": "a computer can search 'all verbs' only if verbs are marked.",
-          "id": "why.2"
+          "id": "why.3e78c8fe"
         },
         {
           "type": "definition",
           "term": "Manual examination",
           "body": "annotation guides a human reader through the data.",
-          "id": "why.3"
+          "id": "why.2e2be90f"
         },
         {
           "type": "definition",
           "term": "Multi-functionality",
           "body": "one annotated corpus serves many later questions.",
-          "id": "why.4"
+          "id": "why.1aa05993"
         }
       ]
     },
@@ -88,12 +89,12 @@
               "'…bring them round'; Santa Cruz Sluicing Dataset"
             ]
           ],
-          "id": "levels.0"
+          "id": "levels.dcaa1723"
         },
         {
           "type": "prose",
           "md": "The morphological and syntactic rows are LING 112's interlinear glosses and phrase-structure trees, stored as data. A treebank is a corpus where every sentence has the tree you'd draw in syntax class. That's why the Penn Treebank tagset is 'theoretically committed to constituency grammar' — its designers had a syntax theory in mind.",
-          "id": "levels.1"
+          "id": "levels.feaade6b"
         }
       ]
     },
@@ -105,41 +106,42 @@
           "type": "definition",
           "term": "2. Data design decisions",
           "body": "'this is where many linguistic decisions happen.'",
-          "id": "process.0"
+          "id": "process.62388721"
         },
         {
           "type": "definition",
           "term": "3. Data collection and shaping",
           "body": "(tokenization, normalization — last chapter).",
-          "id": "process.1"
+          "id": "process.8cec3222"
         },
         {
           "type": "definition",
           "term": "5. Analysis and evaluation",
           "body": "then iterate.",
-          "id": "process.2"
+          "id": "process.42b15a80"
         },
         {
           "type": "prose",
           "md": "- **1. Research question and hypotheses.**\n- **4. Data documentation.**",
-          "id": "process.3"
+          "id": "process.f54c4be9"
         },
         {
           "type": "prose",
           "md": "**The shift she keeps naming** Traditional corpus work: *'here is a dataset — what can I do with it?'* Contemporary work: *'what dataset do I need, and how do I design it?'* The linguist as **data architect**. Her Lecture 7 line: 'Data cleaning and shaping is actually linguistic theory in disguise.'",
-          "id": "process.4"
+          "id": "process.1d4ef9b9"
         },
         {
           "type": "prose",
+          "label": "why",
           "md": "**Why document** A datasheet is a standard description of a dataset: who made it, why, from what, how it was cleaned, what it should and shouldn't be used for. Two framings: it's **ethical accounting** (biases and provenance on the record) and it's a **QA document** (the dataset becomes inspectable, testable, reusable). Without one, a dataset has no lineage, no known biases, no clear use case, no interpretive constraints. That last sentence is the answer to 'give one reason documenting datasets is important.'",
-          "id": "process.5"
+          "id": "process.e96637e2"
         },
         {
           "type": "check",
           "prompt": "Chance quiz: T/F — removing emojis can remove pragmatic information. And: one reason documenting your dataset matters.",
           "answer": "True (🙄 marks sarcasm). Documentation gives the dataset a lineage and known biases, so a later user knows what it can and can't support — without it, results are uninterpretable and irreproducible.",
           "sectionRef": "process",
-          "id": "process.6"
+          "id": "process.b140cffc"
         }
       ]
     },
@@ -151,24 +153,105 @@
           "type": "definition",
           "term": "Parsing",
           "body": "analyzing a string of words to determine its grammatical structure with respect to a formal grammar. Input: tokens. Output: a parse tree.",
-          "id": "pos.0"
+          "id": "pos.05f67c38"
         },
         {
           "type": "definition",
           "term": "POS tagging",
           "body": "assigning a grammatical category to each word — a *component* of parsing. A tagged corpus tells you *book* is a noun; a parsed corpus tells you whether that noun is subject, object, or inside a prepositional phrase.",
-          "id": "pos.1"
+          "id": "pos.7e146ecd"
         },
         {
           "type": "definition",
           "term": "Context-free grammar",
           "body": "rewrite rules like NP → NP RelP, VP → VP NP, VP → VP PP. The slide-9 snippet generates both readings of the Canadian-audience headline.",
-          "id": "pos.2"
+          "id": "pos.a189ffe9"
         },
         {
-          "type": "prose",
-          "md": "**Tagging the same word two ways**\n1. `[Book, me, a, flight] — Book = ?` POS tagging assigns a grammatical category to every token. Start with *Book*. Out of context it could be a noun (a book) or a verb (to book). Which is it here?\n2. `[Book_VB, me, a, flight] — sentence-initial, followed by an object → verb` It starts the sentence and is followed by *me a flight* — an imperative with objects. Verb, base form: **VB**. A tagger decides this from context, not from the word alone.\n3. `[Book_VB, me_PRP, a_DT, flight_NN] — PRP pronoun · DT determiner · NN noun` *me* is a personal pronoun (PRP), *a* a determiner (DT), *flight* a singular noun (NN). These are Penn Treebank tags — the standard set.\n4. `[I, read, the, book] — Book = ?` Same word, different sentence.\n5. `[I_PRP, read_VBD, the_DT, book_NN] — after a determiner → noun` *the book*: after a determiner, it's a noun, **NN**. And *read* — past or present? Spelled the same. The tagger guessed VBD (past) here, but nothing in the sentence proves it. That's **ambiguity**, and it doesn't go away when you tokenize.",
-          "id": "pos.3"
+          "type": "stepper",
+          "title": "Tagging the same word two ways",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                "Book",
+                "me",
+                "a",
+                "flight"
+              ],
+              "hl": [
+                0
+              ],
+              "note": "Book = ?",
+              "caption": "POS tagging assigns a grammatical category to every token. Start with *Book*. Out of context it could be a noun (a book) or a verb (to book). Which is it here?"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "Book_VB",
+                "me",
+                "a",
+                "flight"
+              ],
+              "done": [
+                0
+              ],
+              "hl": [
+                1
+              ],
+              "note": "sentence-initial, followed by an object → verb",
+              "caption": "It starts the sentence and is followed by *me a flight* — an imperative with objects. Verb, base form: **VB**. A tagger decides this from context, not from the word alone."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "Book_VB",
+                "me_PRP",
+                "a_DT",
+                "flight_NN"
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "note": "PRP pronoun · DT determiner · NN noun",
+              "caption": "*me* is a personal pronoun (PRP), *a* a determiner (DT), *flight* a singular noun (NN). These are Penn Treebank tags — the standard set."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "I",
+                "read",
+                "the",
+                "book"
+              ],
+              "hl": [
+                3
+              ],
+              "note": "Book = ?",
+              "caption": "Same word, different sentence."
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "I_PRP",
+                "read_VBD",
+                "the_DT",
+                "book_NN"
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "note": "after a determiner → noun",
+              "caption": "*the book*: after a determiner, it's a noun, **NN**. And *read* — past or present? Spelled the same. The tagger guessed VBD (past) here, but nothing in the sentence proves it. That's **ambiguity**, and it doesn't go away when you tokenize."
+            }
+          ],
+          "id": "pos.8af71b32"
         },
         {
           "type": "table",
@@ -194,13 +277,13 @@
               "'Can you pass the salt?'; 'John loves his mother, and Bill does too'"
             ]
           ],
-          "id": "pos.4"
+          "id": "pos.3ae8ec9c"
         },
         {
           "type": "example",
           "title": "Two parses, and why a machine can't pick",
           "body": "Explain the ambiguity.\n\n1. Reading 1: [help [dog-bite victim]] — police help a person who was bitten by a dog. *bite* is a noun inside a compound.\n2. Reading 2: [help dog] [bite victim] — police help a dog to bite someone. *bite* is a verb.\n3. The POS tag of *bite* depends on the parse, and the parse depends on the tags — circular. What breaks the tie is world knowledge (police don't usually help dogs bite people), which a tagger doesn't have.\n4. That's the chance-quiz answer for 'say something about ambiguity and language data': ambiguity doesn't disappear when you tokenize; context is needed to resolve it, and context can mislead.",
-          "id": "pos.5"
+          "id": "pos.05de581f"
         }
       ]
     },
@@ -212,73 +295,73 @@
           "type": "definition",
           "term": "Brown tagset",
           "body": "(for the 1961 Brown Corpus): motivated by distributional linguistics, not committed to a syntactic theory; relatively coarse on verbs. NN, NNS, VB, VBD, JJ, RB.",
-          "id": "tagsets.0"
+          "id": "tagsets.fab62214"
         },
         {
           "type": "definition",
           "term": "Penn Treebank tagset",
           "body": "(early 1990s): mapped from Brown but expanded with finer, theory-committed distinctions — the most widely used tagset in NLP. Where Brown has 2 verb categories for base/past, PTB has 6.",
-          "id": "tagsets.1"
+          "id": "tagsets.60925a31"
         },
         {
           "type": "definition",
           "term": "PTB puts tense in the tag, not the tree",
           "body": "VBD (past: *she walked*) vs VBN (past participle: *she has walked*). Particle vs preposition: RP (*looked up the answer*) vs IN (*looked up the stairs*).",
-          "id": "tagsets.2"
+          "id": "tagsets.a47b7257"
         },
         {
           "type": "definition",
           "term": "Trade-off",
           "body": "more tags = more expressive, harder to annotate consistently.",
-          "id": "tagsets.3"
+          "id": "tagsets.1d60a4ee"
         },
         {
           "type": "trap",
           "body": "**Chance quiz: T/F — the Brown tagset has more tags than the Penn Treebank** Argue from granularity, not raw counts. PTB *expands* Brown's distinctions (2 verb tags → 6) and is the finer, theory-committed set — so the intended answer is false. (Raw tag counts are murky — Brown's full list runs to ~80+ with compound tags, PTB's core is 45 — which is exactly why she wants the granularity argument.)",
           "source": "Chance quiz",
           "points": null,
-          "id": "tagsets.4"
+          "id": "tagsets.6b1a46af"
         },
         {
           "type": "definition",
           "term": "Rule-based",
           "body": "hand-written disambiguation rules. Fast, transparent, brittle.",
-          "id": "tagsets.5"
+          "id": "tagsets.51f544d0"
         },
         {
           "type": "definition",
           "term": "Statistical",
           "body": "HMMs, maximum entropy — trained on annotated corpora. ('But how were *those* annotated?' — the chicken-and-egg she draws on the slide.)",
-          "id": "tagsets.6"
+          "id": "tagsets.06437e57"
         },
         {
           "type": "definition",
           "term": "Neural",
           "body": "transformers with wide context. Best accuracy, least interpretable.",
-          "id": "tagsets.7"
+          "id": "tagsets.4e62c2f3"
         },
         {
           "type": "prose",
           "md": "- None reaches 100%. Errors cluster on syntactically complex or rare structures and at sentence boundaries.",
-          "id": "tagsets.8"
+          "id": "tagsets.6431195e"
         },
         {
           "type": "example",
           "title": "Every line marked DECISION is a place to write a sentence in your discussion about what it did to the data.",
           "body": "import nltk\nfrom nltk.corpus import brown\nfrom collections import Counter\nnltk.download('brown'); nltk.download('universal_tagset')\n\nwords  = brown.words(categories='news')                 # tokens, NLTK's tokenization (DECISION)\ntagged = brown.tagged_words(categories='news', tagset='universal')\n\nfreq   = Counter(w.lower() for w in words)              # lowercasing (DECISION: Apple/apple merge)\nfreq.most_common(20)\ntypes, tokens = len(set(words)), len(words)\nttr = types / tokens                                    # only comparable across same-size categories\n\ntag_freq = Counter(t for _, t in tagged)                # POS distribution\nnouns    = Counter(w.lower() for w, t in tagged if t == 'NOUN')\n\nimport pandas as pd\ndf = pd.DataFrame(freq.most_common(), columns=['word', 'count'])\ndf['per_million'] = df['count'] / tokens * 1_000_000    # relative frequency",
-          "id": "tagsets.9"
+          "id": "tagsets.c063e632"
         },
         {
           "type": "trap",
           "body": "**Where HW 1's lost points live** In every homework discussion, write one paragraph on *what my preprocessing decisions did*: lowercasing merged *Apple/apple*; NLTK split *don't* into *do* + *n't*; TTR across categories of different sizes isn't comparable; the tagger's errors cluster at sentence boundaries. That paragraph is what she grades for.",
           "source": "HW 1",
           "points": null,
-          "id": "tagsets.10"
+          "id": "tagsets.3560989e"
         },
         {
           "type": "prose",
           "md": "**Lectures 7–8 in one paragraph.** Annotation adds linguistic interpretation at six levels (lexical, phonetic, morphological, syntactic, semantic, discourse). The data-linguist process is question → design → shape → document → analyze; datasheets give a dataset lineage and limits. POS tagging assigns a category per token and is one part of parsing; ambiguity is lexical, syntactic, or pragmatic and needs context (sometimes world knowledge) to resolve. Penn Treebank refines Brown's tags; rule-based, statistical, and neural taggers all fall short of 100%.",
-          "id": "tagsets.11"
+          "id": "tagsets.96b6c68c"
         }
       ]
     }

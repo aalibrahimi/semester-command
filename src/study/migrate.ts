@@ -21,10 +21,12 @@
  *   table                   → table (first row = columns)
  *   prof / warn that name an assignment, HW, lab, quiz, exam or points
  *                           → trap (source + points extracted)
- *   why, prof/warn without a graded source, stepper, figure
+ *   why                     → prose with label "why"
+ *   stepper, figure         → stepper, figure (kept whole)
+ *   prof/warn without a graded source
  *                           → prose, and LISTED as unclassified
  */
-import type { Block, Chapter, Course, Frame } from "./types";
+import type { Block, Chapter, Course } from "./types";
 import type { Guide, GuideBlock, GuideSection, DefinitionBlock, GuideExercise } from "./guide";
 
 /** `Omit` that distributes over a union, so each block variant keeps its own fields. */
@@ -67,18 +69,32 @@ function trapSource(text: string, title?: string): { source: string; points: str
   return { source: source.charAt(0).toUpperCase() + source.slice(1), points: pts };
 }
 
-function tidy(s: string): string {
-  return s.replace(/\s+/g, " ").trim();
+/** FNV-1a, 32-bit, as 8 hex chars. Deterministic, no dependency. */
+function hash8(input: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
 }
 
-function frameToLine(f: Frame, i: number): string {
-  const body =
-    f.kind === "array"
-      ? `[${f.cells.join(", ")}]${f.note ? ` — ${f.note}` : ""}`
-      : f.kind === "tree"
-        ? f.levels.map((l) => l.nodes.join(" ")).join(" / ")
-        : f.lines[f.active] ?? f.lines.join(" · ");
-  return `${i + 1}. \`${body}\` ${f.caption}`;
+/** The text that identifies a block for its id: term, prompt, or body. */
+function primaryText(b: DistributiveOmit<GuideBlock, "id">): string {
+  switch (b.type) {
+    case "definition": return b.term;
+    case "check": return b.prompt;
+    case "prose": return b.md;
+    case "table": return b.columns.join("|") + "\n" + b.rows.map((r) => r.join("|")).join("\n");
+    case "example": return b.body;
+    case "trap": return b.body;
+    case "stepper": return b.title + "\n" + b.frames.map((f) => f.caption).join("\n");
+    case "figure": return b.caption;
+  }
+}
+
+function tidy(s: string): string {
+  return s.replace(/\s+/g, " ").trim();
 }
 
 export function chapterToGuide(course: Course, chapter: Chapter, report?: MigrationReport): Guide {
@@ -86,7 +102,10 @@ export function chapterToGuide(course: Course, chapter: Chapter, report?: Migrat
   const sections: GuideSection[] = chapter.sections.map((sec) => {
     const out: GuideBlock[] = [];
     const push = (b: DistributiveOmit<GuideBlock, "id">) => {
-      const id = `${sec.id}.${out.length}`;
+      const base = `${sec.id}.${hash8(`${b.type}\u0000${primaryText(b)}`)}`;
+      // Two identical blocks in one section (rare) get a deterministic -2, -3 suffix.
+      let id = base;
+      for (let n = 2; out.some((o) => o.id === id); n++) id = `${base}-${n}`;
       out.push({ ...b, id } as GuideBlock);
       if (report) report.blocks[b.type]++;
       return id;
@@ -146,22 +165,15 @@ export function chapterToGuide(course: Course, chapter: Chapter, report?: Migrat
           }
           break;
         }
-        case "why": {
-          const id = push({ type: "prose", md: b.title ? `**${b.title}** ${b.text}` : b.text });
-          flag("why", "why-callout has no schema type — kept as prose", b.title ?? b.text, id);
+        case "why":
+          push({ type: "prose", label: "why", md: b.title ? `**${b.title}** ${b.text}` : b.text });
           break;
-        }
-        case "stepper": {
-          const md = [`**${b.title}**`, ...b.frames.map(frameToLine)].join("\n");
-          const id = push({ type: "prose", md });
-          flag("stepper", `interactive stepper (${b.frames.length} frames) flattened to numbered prose — loses click-through`, b.title, id);
+        case "stepper":
+          push({ type: "stepper", title: b.title, frames: b.frames });
           break;
-        }
-        case "figure": {
-          const id = push({ type: "prose", md: `*(figure)* ${b.caption}` });
-          flag("figure", "SVG figure dropped; caption kept as prose", b.caption, id);
+        case "figure":
+          push({ type: "figure", svg: b.svg, viewBox: b.viewBox, caption: b.caption });
           break;
-        }
       }
     }
     return { id: sec.id, heading: sec.title, blocks: out };
@@ -197,11 +209,19 @@ function guessSection(sections: GuideSection[], text: string): string | undefine
 }
 
 export function emptyReport(): MigrationReport {
-  return { guides: 0, blocks: { prose: 0, definition: 0, table: 0, example: 0, trap: 0, check: 0 }, unclassified: [] };
+  return { guides: 0, blocks: { prose: 0, definition: 0, table: 0, example: 0, trap: 0, check: 0, stepper: 0, figure: 0 }, unclassified: [] };
 }
 
 export function migrateAll(courses: Course[]): { guides: Guide[]; report: MigrationReport } {
   const report = emptyReport();
   const guides = courses.flatMap((c) => c.chapters.map((ch) => chapterToGuide(c, ch, report)));
+  for (const g of guides) {
+    const seen = new Set<string>();
+    for (const s of g.sections)
+      for (const b of s.blocks) {
+        if (seen.has(b.id)) throw new Error(`duplicate block id ${b.id} in ${g.id}`);
+        seen.add(b.id);
+      }
+  }
   return { guides, report };
 }
