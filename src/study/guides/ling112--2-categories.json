@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The handout's opening argument** 'I *walked* quickly around the park' and 'I took three quick *walks* around the park' describe the same event. Same meaning, but *walked* is a verb and *walks* is a noun. Tagalog does it the other way: *Matalino ang doktor* ('the doctor is smart') and *Doktor ang matalino* ('the smart one is a doctor') swap which word is the predicate. If meaning decided category, none of that could happen. So category is decided by **distribution**: where the word can appear and what can attach to it.",
+          "slide": "Meaning can't tell you the category",
           "id": "why.6e589af4"
         },
         {
@@ -29,6 +30,7 @@
         {
           "type": "prose",
           "md": "**Derivational** morphemes *create* a word of a category: -tion makes nouns (isolat-ion), -ize makes verbs (real-ize), -able makes adjectives (read-able). **Inflectional** morphemes attach to a category *without changing it*: plural -s on nouns, -ed/-ing/-s on verbs, -er/-est on adjectives. Both are tests: if a word takes -est, it's an adjective; if it takes plural -s, it's a noun.",
+          "slide": "Two kinds of affix",
           "id": "why.33da0b6b"
         }
       ]
@@ -40,6 +42,7 @@
         {
           "type": "prose",
           "md": "**Lexical** categories carry content and are **open class** — new words get coined (the handout cites 'rage-bait', 'chopped'). **Functional** categories carry grammar and are **closed class** — you can't invent a new preposition. Functional words matter for tests because they create the *context* the lexical words appear in: a determiner tells you a noun is coming.",
+          "slide": "Lexical vs functional",
           "id": "list.ae31240f"
         },
         {
@@ -106,6 +109,7 @@
               "not"
             ]
           ],
+          "slide": "Her list, verbatim",
           "id": "list.c13917ef"
         },
         {
@@ -148,6 +152,7 @@
               "CANNOT sit between D and N; follows degree adverbs ('very __')"
             ]
           ],
+          "slide": "The test table — this is what you cite",
           "id": "tests.1c7244bc"
         },
         {
@@ -456,6 +461,7 @@
               "caption": "'tonight' is a temporal adverb; it modifies the verb phrase and can't sit between D and N."
             }
           ],
+          "slide": true,
           "id": "tests.36413070"
         }
       ]
@@ -467,6 +473,7 @@
         {
           "type": "prose",
           "md": "The tests above are for English. The handout's second half lists the properties categories tend to have in *any* language, so you can identify categories in Zulu or Japanese data on a homework — and so you can explain, on the oral exam, what makes a verb a verb across languages.",
+          "slide": "Why this section exists",
           "id": "props.2caaf284"
         },
         {
@@ -526,6 +533,7 @@
         {
           "type": "prose",
           "md": "- Adjectives: **predicative** ('the car is fast') vs **attributive** ('a fast car'); **agreement** (French *vin blanc* / *porte blanche*); **comparative/superlative** (heavier/heaviest, more/most beautiful); take **degree adverbs** (very, too, quite).\n- Adverb types: modal (possibly), manner (slowly), frequency (often), temporal (yesterday), degree (very). Only -ly derivation, no inflection.",
+          "slide": "Adjectives and adverbs",
           "id": "props.db5b4829"
         },
         {
@@ -545,6 +553,7 @@
           "type": "example",
           "title": "Maurice very slowly dried the dishes with some worn red towels.",
           "body": "Label every word; justify the hard ones.\n\n1. Maurice N (proper noun; takes possessive 's) · very Adv (degree) · slowly Adv (-ly; *'the slowly dishes') · dried V (-ed; follows the subject) · the D · dishes N (plural -s; follows D) · with P · some D · worn Adj (between D and N; 'very worn') · red Adj (between D and N; 'redder') · towels N (plural; follows D + Adj + Adj).\n2. The diagnostic's Q2 asked for three multi-word constituents: 'the dishes', 'some worn red towels', 'with some worn red towels'. Why those count is Week 5's topic.",
+          "slide": "Diagnostic quiz Q1",
           "id": "practice.25787a76"
         },
         {

@@ -54,7 +54,7 @@ export default function Study() {
           {courses.map((c) => {
             const days = daysUntil(c.exam.date);
             const warns = c.alerts?.filter((a) => a.kind === "warn").length ?? 0;
-            const written = c.chapters.length;
+            const written = c.guides.length;
             return (
               <li key={c.slug}>
                 <Link

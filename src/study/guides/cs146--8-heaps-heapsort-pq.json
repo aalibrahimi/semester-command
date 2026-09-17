@@ -19,6 +19,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The problem a heap solves** An emergency room doesn't serve patients in arrival order (a queue) or most-recent-first (a stack). It serves the **most urgent** next, and new patients keep arriving with their own urgency. You need two operations, over and over: *add a thing with a priority* and *take out the most important thing*. A sorted list makes 'take the max' O(1) but 'add' O(n) (shift everything). An unsorted list makes 'add' O(1) but 'take the max' O(n) (scan everything). A **heap** gets both down to O(log n) by keeping things only *partly* sorted: just enough to know the max instantly.",
+          "slide": "The ER triage problem",
           "id": "why.2eea517f"
         },
         {
@@ -30,6 +31,7 @@
         {
           "type": "prose",
           "md": "A heap does not say the left child is smaller than the right. It does not say the array is sorted. It does not let you find the second-largest quickly without extracting the first. The only promise is the one line: parent ≥ children, on every edge. Everything else follows from that plus the complete shape.",
+          "slide": "'Partly sorted' — what a heap does NOT promise",
           "id": "why.10745185"
         }
       ]
@@ -173,6 +175,7 @@
               "caption": "Going the other way: **parent of i = ⌊(i − 1) / 2⌋**. Parent of index 9 is ⌊8/2⌋ = 4 (the 7). Parent of index 6 is ⌊5/2⌋ = 2 (the 10). And look at the values: every parent is ≥ both its children. That's the **max-heap property**."
             }
           ],
+          "slide": true,
           "id": "array.ba542557"
         },
         {
@@ -186,6 +189,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Why there are no pointers** Because the tree is complete, reading it level by level, left to right, gives one unbroken run of nodes with no holes. So position-in-that-reading *is* the array index, and the arithmetic above recovers the shape. No pointers means no extra memory per node and no chasing references around memory — the heap is one contiguous block.",
+          "slide": "Why a complete tree fits in an array",
           "id": "array.8dc69dc7"
         },
         {
@@ -371,17 +375,20 @@
               "caption": "heapify(a, 8): index 8 has no children (2·8+1 = 17 is past the end). Nothing to compare — stop. The 4 sank two levels and the tree is a heap again. Array: [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]."
             }
           ],
+          "slide": true,
           "id": "heapify.19183fb7"
         },
         {
           "type": "example",
           "title": "`n` is the heap size — which may be smaller than a.length during heapSort. The recursion follows the sinking element down.",
           "body": "static void heapify(int[] a, int i, int n) {\n  int l = 2 * i + 1, r = 2 * i + 2, largest = i;\n  if (l < n && a[l] > a[largest]) largest = l;\n  if (r < n && a[r] > a[largest]) largest = r;\n  if (largest != i) {\n    int t = a[i]; a[i] = a[largest]; a[largest] = t;   // swap\n    heapify(a, largest, n);                            // keep sinking\n  }\n}",
+          "slide": "heapify in Java",
           "id": "heapify.dd46ea30"
         },
         {
           "type": "prose",
           "md": "heapify assumes the two subtrees *below* i are already valid heaps; it only fixes i itself. Each call does a constant amount of work and moves one level down, so it makes at most (height of the tree) calls. A complete tree with n nodes has height ⌊log₂ n⌋ (Chapter 0: halving). **heapify is O(log n).**",
+          "slide": "Precondition and cost",
           "id": "heapify.8ed46de0"
         },
         {
@@ -555,18 +562,21 @@
               "caption": "heapify(2): 1 vs 6, 3 → swap with 6. The 1 is now a leaf. Every parent ≥ its children: a max-heap. **Answer: [7, 5, 6, 4, 2, 1, 3].**"
             }
           ],
+          "slide": true,
           "id": "build.05ecee39"
         },
         {
           "type": "example",
           "title": "Start at the last non-leaf and walk toward the root, heapifying each. Going bottom-up is what guarantees heapify's precondition: by the time we reach i, both of its subtrees have already been fixed.",
           "body": "static void buildHeap(int[] a) {\n  int n = a.length;\n  for (int i = n / 2 - 1; i >= 0; i--)   // last non-leaf down to root\n    heapify(a, i, n);\n}",
+          "slide": "buildHeap in Java",
           "id": "build.65254e16"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**The non-obvious runtime** There are about n/2 calls to heapify, each 'O(log n)', so the lazy answer is O(n log n). But most of those calls are cheap. Half the nodes are leaves (cost 0 — we skip them). A quarter sit one level up and can sink at most 1 step. An eighth can sink at most 2. Add it up: n/4·1 + n/8·2 + n/16·3 + … — a series whose sum is about n, not n log n. Poon states O(n) on slide 25; the sentence to say is **'most nodes are near the bottom, so most heapify calls are short.'**",
+          "slide": "Why O(n), not O(n log n)",
           "id": "build.b46411c6"
         },
         {
@@ -586,6 +596,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Max at the root, so pull it out repeatedly** If the max is always at index 0, sorting is: swap the max to the end of the array, pretend the array is one shorter, fix the root, repeat. Each round places one element in its final spot from the right. After n rounds the array is sorted ascending — and it never needed a second array.",
+          "slide": "The idea",
           "id": "sort.6731c5df"
         },
         {
@@ -739,12 +750,14 @@
               "caption": "Swap 3 out, heapify (2 vs 1 → swap); swap 2 out; one element left is trivially sorted. **[1, 2, 3, 4, 5, 6, 7]**. Everything happened inside the one array — no temp array. That's why heap sort is O(1) extra space."
             }
           ],
+          "slide": true,
           "id": "sort.6df53f6f"
         },
         {
           "type": "example",
           "title": "buildHeap once, then n rounds of swap + heapify with a shrinking heap size.",
           "body": "static void heapSort(int[] a) {\n  buildHeap(a);                              // O(n)\n  for (int end = a.length - 1; end > 0; end--) {\n    int t = a[0]; a[0] = a[end]; a[end] = t; // max → its final slot\n    heapify(a, 0, end);                      // heap is now a[0..end-1]; O(log n)\n  }\n}",
+          "slide": "heapSort in Java",
           "id": "sort.cf39e00d"
         },
         {
@@ -771,6 +784,7 @@
               "Memory-limited or embedded systems: guaranteed O(n log n) with no extra array"
             ]
           ],
+          "slide": "heapSort facts (slides 32–35)",
           "id": "sort.f73ecf5a"
         },
         {
@@ -807,6 +821,7 @@
               "no"
             ]
           ],
+          "slide": "The three sorts so far",
           "id": "sort.edbcfdeb"
         },
         {
@@ -825,6 +840,7 @@
         {
           "type": "prose",
           "md": "Lectures 2–3: an ADT is the contract, the implementation is the machinery. **Priority queue** is the contract: insert(x with a priority), extract the highest priority, peek, isEmpty. **Heap** is the machinery that makes each of those O(log n) or better. On an exam, 'priority queue' is the answer to *which ADT*, 'heap' is the answer to *how*.",
+          "slide": "ADT vs implementation, again",
           "id": "pq.9f932aa8"
         },
         {
@@ -929,6 +945,7 @@
               "caption": "heapify(1): 2 vs 5, 3 → swap with 5. The 2 is a leaf now. Heap restored: [8, 5, 7, 2, 3]. Cost: one path down the tree, O(log n)."
             }
           ],
+          "slide": true,
           "id": "pq.5c99bf5c"
         },
         {
@@ -1011,6 +1028,7 @@
               "caption": "9 is the new root. This is **trickle up** (heapify is trickle *down*). At most one swap per level, so insert is O(log n)."
             }
           ],
+          "slide": true,
           "id": "pq.8a6187f5"
         },
         {
@@ -1054,6 +1072,7 @@
           "title": "Picking the structure from a story",
           "body": "Tasks with priorities arrive continuously; the system must always work on the highest-priority task next. Which structure, which operations, what cost?\n\n1. 'Arrive continuously' → we need cheap insert. 'Highest priority next' → we need cheap take-the-max. That pair is the priority queue ADT.\n2. Implement it as a **max-heap**: insert is O(log n), extract-max is O(log n).\n3. If a batch of tasks exists at startup, buildHeap them in O(n) instead of inserting one at a time.",
           "answer": "Priority queue via max-heap; insert + extract, both O(log n)",
+          "slide": "HW 8 Problem 3: the task scheduler",
           "id": "pq.de946a7f"
         },
         {

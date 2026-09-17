@@ -15,12 +15,14 @@
         {
           "type": "prose",
           "md": "The obvious view of a sentence is that it's a list of words in a row: *the cat in the hat sat on the mat*. Reverse the list and it's garbage — *mat the on sat hat the in cat the* — which the handout marks with an asterisk: `*` means **ungrammatical**, a sentence that violates a rule of the language. So order clearly matters. Syntax is the claim that order isn't the whole story: words are grouped into units, and the units are nested inside bigger units, like a tree.",
+          "slide": "The obvious view, and why it's wrong",
           "id": "why.5d3ce763"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**Dr. Nie's proof from the handout** 'Sherlock will ask Watson to destroy the evidence' is fine. 'Will Sherlock ask Watson to destroy?' is not — the verb *destroy* needs an object. But 'What will Sherlock ask Watson to destroy?' IS fine, and *destroy* still has no word after it. The object is *what*, sitting eight words away at the front. If sentences were only linear strings, the same string 'ask Watson to destroy' couldn't be good in one case and bad in another. Something links 'what' to the empty slot after 'destroy' across all that distance. That something is structure.",
+          "slide": "The evidence: long-distance dependencies",
           "id": "why.91ba15dc"
         },
         {
@@ -69,6 +71,7 @@
           "svg": "<g font-family=\"ui-sans-serif, system-ui\" font-size=\"11\" fill=\"currentColor\">\n<text x=\"20\" y=\"20\" font-weight=\"600\">Reading A: tripped [with a cane]</text>\n<line x1=\"90\" y1=\"45\" x2=\"40\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"90\" y1=\"45\" x2=\"150\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"90\" y1=\"45\" x2=\"230\" y2=\"80\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"75\" y=\"40\">tripped</text><text x=\"20\" y=\"95\">that unlucky man</text><text x=\"200\" y=\"95\">with a cane</text>\n<text x=\"340\" y=\"20\" font-weight=\"600\">Reading B: [that unlucky man with a cane]</text>\n<line x1=\"420\" y1=\"45\" x2=\"380\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"420\" y1=\"45\" x2=\"500\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/>\n<line x1=\"500\" y1=\"80\" x2=\"460\" y2=\"120\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"500\" y1=\"80\" x2=\"560\" y2=\"120\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"400\" y=\"40\">tripped</text><text x=\"360\" y=\"95\">(subject)</text><text x=\"475\" y=\"95\">NP</text><text x=\"410\" y=\"135\">that unlucky man</text><text x=\"530\" y=\"135\">with a cane</text>\n</g>",
           "viewBox": "0 0 620 190",
           "caption": "'The thief tripped that unlucky man with a cane.' Left: the cane is the instrument (with a cane groups with the verb). Right: the man has the cane (with a cane groups with man). Same string, two trees, two meanings.",
+          "slide": "Hierarchy: the same words, two structures",
           "id": "universals.aa4a2660"
         },
         {
@@ -87,6 +90,7 @@
         {
           "type": "prose",
           "md": "The 'dominant' word order is the most common, neutral order of Subject, Object and Verb. Dr. Nie's WALS numbers: **SOV 41%** (Japanese: *Naomi-ga tegami-o yon-da*, 'Naomi letter read'), **SVO 35%** (English, French), **VSO 7%** (Tagalog: *Binasa ni Naomi ang liham*, 'read Naomi the-letter'), VOS 2%, OVS/OSV 1%, and 14% with no dominant order.",
+          "slide": "Word order",
           "id": "variation.dcd2a006"
         },
         {
@@ -118,6 +122,7 @@
               "Syrian Arabic moves 'šu' (what) to the front; Mandarin leaves 'shénme' in the object slot"
             ]
           ],
+          "slide": "The other parameters",
           "id": "variation.44501fa7"
         },
         {
@@ -137,12 +142,14 @@
           "type": "prose",
           "label": "why",
           "md": "**Why this exists** If Dr. Nie shows you a Japanese sentence, you can't tell which word is the subject. A gloss is the standard three-line format that lets anyone read the structure of any language without speaking it. Every non-English example in this course — on handouts, homework, and the oral exam — is in this format, and homework answers in Arabic must be too.",
+          "slide": "Why linguists gloss",
           "id": "gloss.cb03fdda"
         },
         {
           "type": "example",
           "title": "Line 1: the sentence with morpheme boundaries. Line 2: one gloss per morpheme, aligned under it. Line 3: a free translation in quotes.",
           "body": "Naomi-ga    tegami-o    yon-da.          ← line 1: the language, morphemes split with hyphens\nNaomi-NOM   letter-ACC  read-PAST        ← line 2: gloss, one item per morpheme, aligned\n'Naomi read the letter.'                 ← line 3: translation, in single quotes",
+          "slide": "The three lines",
           "id": "gloss.7818d49e"
         },
         {
@@ -179,6 +186,7 @@
           "type": "example",
           "title": "'The girl read the book' in MSA",
           "body": "qaraʔat al-bintu al-kitāba. Build the three lines.\n\n1. Segment: *qaraʔ-at* (read + 3SG feminine past), *al-bint-u* (the + girl + NOM), *al-kitāb-a* (the + book + ACC).\n2. Line 1: qaraʔ-at   al-bint-u   al-kitāb-a\n3. Line 2: read-3SG.F.PAST   DEF-girl-NOM   DEF-book-ACC   ← the verb suffix carries three features, joined with periods\n4. Line 3: 'The girl read the book.'\n5. Check alignment: three words, three glosses; each hyphen in line 1 has a hyphen in line 2. Order is V S O — which is the VSO parameter from the previous section, visible in your own data.",
+          "slide": "Glossing an Arabic sentence, step by step",
           "id": "gloss.fb69ef6c"
         },
         {

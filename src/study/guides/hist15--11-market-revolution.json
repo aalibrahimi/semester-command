@@ -16,6 +16,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Why the textbook uses this phrase, not 'industrial revolution'** In 1800 most American families grew or made most of what they used and bartered for the rest with neighbors. By 1840 most families sold something — wheat, cotton, cloth, their labor — for cash and bought what they needed from strangers far away. That shift, from local household economies to a national economy of cash and long-distance trade, is the **market revolution**. Factories are part of it but not the center; the center is that ordinary people started producing *for the market*. A quiz question asking for the best description wants that.",
+          "slide": "The term",
           "id": "why.d51b8b36"
         },
         {
@@ -34,6 +35,7 @@
         {
           "type": "prose",
           "md": "A farmer in Ohio in 1815 couldn't sell wheat in New York — hauling it over the mountains cost more than the wheat was worth. Cut the cost of moving goods and every farm becomes a business. That is what happened between 1815 and 1840, in four waves.",
+          "slide": "Why transport came first",
           "id": "transport.5bc00b5f"
         },
         {
@@ -74,16 +76,19 @@
         {
           "type": "prose",
           "md": "**Samuel Slater**, an English mechanic who memorized the design of British spinning machines (exporting them was illegal), built the first American water-powered textile mill at Pawtucket, Rhode Island, in **1790**. Slater's mills spun thread and hired whole families, children included. The bigger step came from **Francis Cabot Lowell**, a Boston merchant who toured British mills in 1810, memorized the power loom, and in **1813** opened the Boston Manufacturing Company at Waltham — the first mill in the world to take raw cotton in one end and finished cloth out the other. After his death his partners built a whole planned city on the Merrimack River and named it **Lowell, Massachusetts** (1820s).",
+          "slide": "From Slater to Lowell",
           "id": "factories.c958b9fd"
         },
         {
           "type": "prose",
           "md": "Lowell's founders needed a workforce and didn't want an English-style permanent factory class. Their answer: recruit **young, unmarried women from New England farms** — daughters with nothing to do at home now that cloth was cheaper to buy than make. The mills offered wages (higher than domestic service), company **boardinghouses** with matrons, curfews, mandatory church, and a respectable reputation, so farm families would send their daughters. The women worked twelve to thirteen hours a day, six days a week, typically for a few years before marrying. Some published a literary magazine, the ***Lowell Offering***. To visitors like Charles Dickens (1842), Lowell looked like the humane alternative to Manchester.",
+          "slide": "The Lowell mill girls",
           "id": "factories.5d2750a3"
         },
         {
           "type": "prose",
           "md": "In the 1830s competition drove owners to cut wages and speed up the machines. The women organized: 'turn-outs' (strikes) in **1834** and **1836**, and in the 1840s the Lowell Female Labor Reform Association petitioned for a ten-hour day. The owners' response was to replace them. From the mid-1840s **Irish immigrant families**, fleeing the famine, took the jobs at lower pay, and the boardinghouse experiment ended. Lowell became the ordinary factory town its founders had tried to avoid.",
+          "slide": "Why the system ended",
           "id": "factories.a546dced"
         },
         {
@@ -115,6 +120,7 @@
               "Company boardinghouses with rules"
             ]
           ],
+          "slide": "Slater system vs Lowell (Waltham) system",
           "id": "factories.9f53fa4f"
         },
         {
@@ -133,11 +139,13 @@
         {
           "type": "prose",
           "md": "A market economy runs on credit. The **Second Bank of the United States** (chartered **1816**) tried to discipline the hundreds of state banks issuing their own paper money. When it tightened credit in 1819 after a land-speculation boom, the result was the **Panic of 1819** — the first modern depression, with foreclosures across the West and lasting hatred of the Bank (Andrew Jackson's). The **Panic of 1837** repeated the pattern on a larger scale.",
+          "slide": "Money and panics",
           "id": "economy.31187a37"
         },
         {
           "type": "prose",
           "md": "The market revolution was not a Northern story. Eli Whitney's **cotton gin** (1793) made short-staple cotton profitable; cotton became the nation's biggest export; Northern mills spun Southern cotton grown by enslaved labor; Western farms fed the mills' workers. The textbook's point: the same economic transformation that built Lowell made slavery *more* entrenched and more valuable, which is why the 1830s abolitionists (Walker, Garrison) faced a slavery that was expanding, not fading.",
+          "slide": "Cotton ties it all together — and to slavery",
           "id": "economy.e169b28f"
         },
         {
@@ -174,11 +182,13 @@
           "type": "prose",
           "label": "why",
           "md": "**Why the textbook puts Indian removal next to the market revolution** Because it's the same story from the other side: cotton land. The market revolution made Georgia's and Alabama's land enormously valuable for cotton, and the Cherokee were sitting on it.",
+          "slide": "Why it's in this unit",
           "id": "cherokee.32540427"
         },
         {
           "type": "prose",
           "md": "The **Cherokee** of north Georgia had done exactly what Jefferson's policy asked Native nations to do: they farmed, built roads and schools, some owned enslaved people, **Sequoyah** invented a written syllabary (1821), they published a bilingual newspaper (the ***Cherokee Phoenix***, 1828), and in **1827** they adopted a written constitution modeled on the U.S. one, declaring themselves a sovereign nation. Georgia's answer was to declare that constitution void and extend state law over Cherokee land. Then, in 1829, **gold** was found at Dahlonega.",
+          "slide": "The 'civilized' tribe",
           "id": "cherokee.bce53dfb"
         },
         {

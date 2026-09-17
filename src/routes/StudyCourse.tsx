@@ -14,12 +14,14 @@ import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { AlertTriangle, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { guidesForCourse } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import { courseTick } from "./Study";
 
 export default function StudyCourse() {
   const { course: slug } = useParams();
   const c = courseBySlug(slug);
+  const guides = c ? guidesForCourse(c.slug, c.guides) : [];
   const [tab, setTab] = useState<"lectures" | "exam">("lectures");
   if (!c) return <Navigate to="/study" replace />;
 
@@ -61,33 +63,33 @@ export default function StudyCourse() {
 
       {tab === "lectures" ? (
         <div className="mt-6 flex flex-col gap-8">
-          {c.chapters.length > 0 && (
+          {guides.length > 0 && (
             <section>
               <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Written</h2>
               <ul className="mt-2 flex flex-col gap-3">
-                {c.chapters.map((ch) => (
-                  <li key={ch.slug} className="rounded-xl border border-border/60 bg-card px-4 py-3.5">
+                {guides.map((ch) => (
+                  <li key={ch.id} className="rounded-xl border border-border/60 bg-card px-4 py-3.5">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-mono text-2xs text-muted-foreground">{ch.label}</span>
+                      <span className="font-mono text-2xs text-muted-foreground">{ch.lessons}</span>
                       <span className="flex items-center gap-1 font-mono text-2xs text-muted-foreground">
-                        <Clock className="h-3 w-3" /> {ch.minutes} min
+                        <Clock className="h-3 w-3" /> {ch.estimatedMinutes} min
                       </span>
-                      {ch.practice?.length ? (
+                      {ch.exercises.length ? (
                         <span className="flex items-center gap-1 font-mono text-2xs text-brand-fg">
-                          <PencilLine className="h-3 w-3" /> {ch.practice.length} to do yourself
+                          <PencilLine className="h-3 w-3" /> {ch.exercises.length} to do yourself
                         </span>
                       ) : null}
                     </div>
                     <div className="mt-0.5 text-base font-medium">{ch.title}</div>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{ch.goal}</p>
-                    {ch.requires && ch.requires.length > 0 && (
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{ch.summary}</p>
+                    {ch.requires.length > 0 && (
                       <p className="mt-1 text-2xs text-muted-foreground">
                         Read first:{" "}
                         {ch.requires.map((r) => {
-                          const req = c.chapters.find((x) => x.slug === r);
+                          const req = guides.find((x) => x.id === r);
                           return (
-                            <Link key={r} to={`/study/${c.slug}/${r}`} className="underline underline-offset-2 hover:text-foreground">
-                              {req?.label ?? r}
+                            <Link key={r} to={`/study/${r}`} className="underline underline-offset-2 hover:text-foreground">
+                              {req?.lessons ?? r}
                             </Link>
                           );
                         })}
@@ -95,13 +97,13 @@ export default function StudyCourse() {
                     )}
                     <div className="mt-3 flex gap-2">
                       <Link
-                        to={`/study/${c.slug}/${ch.slug}`}
+                        to={`/study/${ch.id}`}
                         className="flex items-center gap-1.5 rounded-lg bg-brand-solid px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
                       >
                         <BookOpen className="h-3.5 w-3.5" /> Read
                       </Link>
                       <Link
-                        to={`/study/${c.slug}/${ch.slug}/slides`}
+                        to={`/study/${ch.id}/slides`}
                         className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground/90 hover:bg-fill-ghost"
                       >
                         <Presentation className="h-3.5 w-3.5" /> Slides
@@ -116,7 +118,7 @@ export default function StudyCourse() {
           {c.planned.length > 0 && (
             <section>
               <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-                {c.chapters.length > 0 ? "Still to write" : "Planned"}
+                {guides.length > 0 ? "Still to write" : "Planned"}
               </h2>
               <ul className="mt-2 divide-y divide-border/50 rounded-xl border border-dashed border-border/70">
                 {c.planned.map((p, i) => (

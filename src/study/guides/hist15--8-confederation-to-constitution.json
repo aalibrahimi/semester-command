@@ -15,6 +15,7 @@
         {
           "type": "prose",
           "md": "In 1776 thirteen colonies declared independence together but did not want to be one country — they'd just fought a king, and a strong central government looked like another king. So they built the weakest national government they could: the **Articles of Confederation**. Within six years it couldn't pay its debts, couldn't protect its borders, and couldn't stop an armed uprising in Massachusetts. In 1787 a convention meant to *revise* it instead threw it out and wrote the **Constitution**, which created a real national government. Roughly half the country thought that was a betrayal of the Revolution. They lost the ratification fight but won a **Bill of Rights**. Then in the 1790s Washington and Hamilton made the new government work — and in doing so split the country into its first two political parties.",
+          "slide": "The arc",
           "id": "why.6aa7ac6c"
         },
         {
@@ -33,6 +34,7 @@
         {
           "type": "prose",
           "md": "The Articles were drafted by the Continental Congress in 1777 and finally ratified by all thirteen states in 1781. The document calls the union a **'firm league of friendship'** — that phrase matters, because it tells you what they were building: an alliance of thirteen sovereign states, not a nation. Each state kept 'its sovereignty, freedom, and independence.'",
+          "slide": "A league, not a nation",
           "id": "articles.2bc5bae6"
         },
         {
@@ -86,6 +88,7 @@
         {
           "type": "prose",
           "md": "The Articles government did get one thing enduringly right. The **Land Ordinance of 1785** laid the survey grid — townships six miles square, sections of 640 acres, one section per township reserved for schools — that still shapes the Midwest from an airplane window. The **Northwest Ordinance of 1787** set the process by which a territory becomes a state (a governor, then a legislature at 5,000 free men, then statehood at 60,000 on equal footing with the original states) and **banned slavery north of the Ohio River**. That ban is the first federal limit on slavery and the seed of the free-state/slave-state divide.",
+          "slide": "Its one big success: the West",
           "id": "articles.2bd72223"
         },
         {
@@ -105,26 +108,31 @@
           "type": "prose",
           "label": "why",
           "md": "**One cause** Every failure below traces to the same design choice: a government that couldn't tax or compel. Remember that and you can reconstruct the list on the quiz.",
+          "slide": "Four failures, one cause",
           "id": "failed.7d8a5bcd"
         },
         {
           "type": "prose",
           "md": "- The war left a huge debt owed to soldiers, suppliers, and foreign lenders (France, the Dutch). Congress had no way to pay it — it couldn't tax.\n- Congress had printed paper money ('Continentals') during the war that became worthless: 'not worth a Continental' entered the language.\n- States printed their own money and put tariffs on goods from neighboring states. There was no national economy, just thirteen quarreling ones.",
+          "slide": "Money",
           "id": "failed.0978f352"
         },
         {
           "type": "prose",
           "md": "- Britain kept its forts in the Northwest (Detroit, Niagara) in violation of the 1783 peace treaty, and Congress couldn't force them out.\n- Spain closed the Mississippi River to American trade in 1784, strangling western farmers. Congress had no leverage.\n- Barbary pirates seized American ships in the Mediterranean; Britain no longer protected them and Congress had no navy.",
+          "slide": "Weakness abroad",
           "id": "failed.fcf28848"
         },
         {
           "type": "prose",
           "md": "Massachusetts tried to pay its war debt with heavy taxes in hard money. Farmers in the western part of the state, many of them Revolutionary War veterans, couldn't pay and were losing their farms in debt court. Led by **Daniel Shays**, a former captain, they closed the courts by force and marched on the federal arsenal at Springfield in January 1787. The Confederation government could do nothing — it had no army and no money. Massachusetts put the rising down with a privately funded militia. To the country's elites, this was the proof: a government that couldn't protect a federal arsenal from its own citizens wasn't a government. Washington wrote that he was 'mortified beyond expression.'",
+          "slide": "Shays's Rebellion, 1786–87 — the shock",
           "id": "failed.c78a2aa2"
         },
         {
           "type": "prose",
           "md": "In September 1786 a meeting at **Annapolis** to fix trade problems drew only five states — too few to do anything — but the delegates (including **Alexander Hamilton** and **James Madison**) called for a new convention in Philadelphia in May 1787 'to render the federal constitution adequate.' Shays's Rebellion, happening at that exact moment, got Congress to endorse it. Fifty-five delegates from twelve states came (Rhode Island refused). Their instructions were to *revise* the Articles. They locked the doors and wrote a new government instead.",
+          "slide": "From Annapolis to Philadelphia",
           "id": "failed.ebb23c2d"
         },
         {
@@ -143,6 +151,7 @@
         {
           "type": "prose",
           "md": "The Articles made a league of states; the Constitution made a **federal republic** — a national government with direct power over individual citizens (it can tax *you*, not just ask your state), supreme over state law in its own sphere (the **supremacy clause**, Article VI), and able to do the two things the Articles couldn't: **tax** and **regulate commerce**. Power was divided between nation and states — that division is what 'federalism' means.",
+          "slide": "The big shift: federal, not confederal",
           "id": "changed.dc3a10b7"
         },
         {
@@ -166,21 +175,25 @@
         {
           "type": "prose",
           "md": "- Each branch checks the others: Congress passes laws, the President can veto, Congress can override; the President appoints judges, the Senate confirms; and so on. The design assumes people are ambitious and sets ambition against ambition (Madison, Federalist 51).",
+          "slide": "Three branches, checks and balances",
           "id": "changed.0c979fc5"
         },
         {
           "type": "prose",
           "md": "The convention nearly broke over representation. Madison's **Virginia Plan** proposed two houses both apportioned by population — big states would dominate. The **New Jersey Plan** (William Paterson) kept one vote per state. Roger Sherman's **Connecticut Compromise** (the 'Great Compromise') split it: the **House** apportioned by population, the **Senate** with two members per state regardless of size. That's why Wyoming and California each have two senators today.",
+          "slide": "The Great Compromise",
           "id": "changed.47808714"
         },
         {
           "type": "prose",
           "md": "The word 'slavery' appears nowhere in the Constitution, but three clauses protect it. The **Three-fifths Compromise**: for both representation in the House and direct taxes, enslaved people would be counted as three-fifths of a person — giving southern states extra seats and extra electoral votes for people who could not vote. Congress could not ban the **international slave trade** until **1808** (Article I, Section 9). And the **fugitive slave clause** (Article IV) required that people escaping slavery be returned even from free states. These were the price of getting South Carolina and Georgia to sign. They are also exactly the gap David Walker will attack in 1829 — keep this section in mind for Friday's exercise.",
+          "slide": "The compromises over slavery",
           "id": "changed.1e1f943d"
         },
         {
           "type": "prose",
           "md": "The convention required approval by **nine of thirteen** states (not all, as the Articles demanded) and by **special conventions** elected for the purpose rather than by state legislatures. Two reasons: the legislatures would lose power and would likely vote no, and a document that opens 'We the People' needed the people's direct consent to claim authority above the states.",
+          "slide": "Ratification by the people, not the legislatures",
           "id": "changed.8ba04e53"
         },
         {
@@ -237,6 +250,7 @@
               "9 of 13 state conventions"
             ]
           ],
+          "slide": "Articles vs Constitution, side by side",
           "id": "changed.a9864fe9"
         },
         {
@@ -255,6 +269,7 @@
         {
           "type": "prose",
           "md": "The people who opposed ratification called themselves the true heirs of 1776 and got stuck with the name their opponents gave them: **Anti-Federalists**. Their leaders included **Patrick Henry** ('I smell a rat'), **George Mason** (who had written Virginia's Declaration of Rights and refused to sign the Constitution), **Richard Henry Lee**, and Governor **George Clinton** of New York. Their base was small farmers, debtors, and the western backcountry.",
+          "slide": "Anti-Federalists: the Revolution's logic turned on the Constitution",
           "id": "objected.251939f1"
         },
         {
@@ -290,11 +305,13 @@
         {
           "type": "prose",
           "md": "Supporters — **Federalists** — had the better organization, the newspapers, and Washington's endorsement. **Hamilton, Madison, and John Jay** wrote 85 essays as 'Publius', *The Federalist*, to win New York. The most famous, **Federalist No. 10**, flips the size objection: a *large* republic is *safer*, because with so many competing factions no single one can seize control. To win the close states, Federalists promised to add a bill of rights by amendment once the Constitution was in place.",
+          "slide": "Federalists: the answer",
           "id": "objected.71d24c56"
         },
         {
           "type": "prose",
           "md": "Delaware ratified first (December 1787). **New Hampshire** was the ninth, in June 1788, making it law — but the union was meaningless without Virginia and New York, which ratified narrowly (89–79 and 30–27) on the promise of amendments. Madison then drafted the amendments himself in the first Congress; ten were ratified as the **Bill of Rights** in **1791**. North Carolina and Rhode Island only joined after seeing them.",
+          "slide": "Ratification and the Bill of Rights",
           "id": "objected.d0d21c5f"
         },
         {
@@ -320,6 +337,7 @@
         {
           "type": "prose",
           "md": "By 1789 the United States had a government that could tax, trade, defend itself, and enforce its laws — the things the Articles couldn't. What it had *not* settled: how far federal power reached versus the states (the argument of the 1790s and of 1861), and slavery, which the compromises deferred rather than resolved. The textbook's conclusion makes this point: the Constitution was a framework, and the fights over what it meant began immediately.",
+          "slide": "Settled and unsettled",
           "id": "conclusion.157d9375"
         }
       ]
@@ -332,36 +350,43 @@
           "type": "prose",
           "label": "why",
           "md": "**The question the section answers** A brand-new government under a document half the country had opposed could easily have collapsed. It didn't. The section asks why. The answer has five parts, and the quiz will ask about each.",
+          "slide": "Why this is the assigned section",
           "id": "stability.b2484228"
         },
         {
           "type": "prose",
           "md": "**George Washington** was elected unanimously by the Electoral College in 1789 — the only president ever to be. He knew every act set a precedent and chose carefully: he created a **cabinet** (Jefferson at State, Hamilton at Treasury, Knox at War, Randolph as Attorney General), insisted on the plain title 'Mr. President' over 'His Highness', toured the states to make the office visible, and retired after **two terms** — a limit followed until FDR and then written into the 22nd Amendment. His **Farewell Address** (1796) warned against permanent foreign alliances and against political parties.",
+          "slide": "1 · Washington",
           "id": "stability.d6b2a21f"
         },
         {
           "type": "prose",
           "md": "The first Congress did two things that reconciled the losers of ratification. It passed the **Bill of Rights** (1791), answering the Anti-Federalists' main complaint. And the **Judiciary Act of 1789** built the court system the Constitution had only sketched: a **Supreme Court** of six justices, thirteen district courts, and three circuit courts — with the federal courts able to review state court decisions on federal questions.",
+          "slide": "2 · The Bill of Rights and the Judiciary Act",
           "id": "stability.79761961"
         },
         {
           "type": "prose",
           "md": "Treasury Secretary **Alexander Hamilton** set out to make the national government's credit sound and to bind the wealthy to its success. His *Report on Public Credit* (1790) proposed **funding** the national debt at full face value (paying bondholders in full, even speculators who'd bought bonds cheap) and **assuming** the states' war debts. Then a **national bank** — the **Bank of the United States** (1791) — to hold government funds and issue a stable currency; an **excise tax** on whiskey; and a **tariff** on imports to protect American manufacturing (his *Report on Manufactures*). The logic: creditors who are owed money by the government want the government to survive.",
+          "slide": "3 · Hamilton's financial program",
           "id": "stability.c3037c0e"
         },
         {
           "type": "prose",
           "md": "Assumption of state debts stalled — Virginia had already paid its debts and didn't want to pay Massachusetts's. In June 1790, over dinner, **Jefferson and Madison agreed to deliver southern votes for assumption** in exchange for Hamilton delivering northern votes to put the permanent **national capital on the Potomac** — Washington, D.C. Both sides got what they wanted; the deal is a textbook staple.",
+          "slide": "The Dinner Table Bargain",
           "id": "stability.88bc60b9"
         },
         {
           "type": "prose",
           "md": "Hamilton's whiskey excise fell hardest on western Pennsylvania farmers who turned grain into whiskey because it was the only way to get it to market. In 1794 they tarred and feathered tax collectors and gathered by the thousands. Washington personally led a **13,000-man militia** west; the rebels dissolved before it arrived. Compare 1787: under the Articles, Shays's men closed courts and the national government watched. Under the Constitution, the government marched. That contrast is the whole point of the section.",
+          "slide": "4 · The Whiskey Rebellion, 1794 — Shays's Rebellion answered",
           "id": "stability.7cb5545e"
         },
         {
           "type": "prose",
           "md": "The 1790s were economically good: European wars (after 1793) made American ships the neutral carriers of the Atlantic, exports boomed, and the population grew fast and moved west (Kentucky 1792, Tennessee 1796). A government that presides over growth gets the credit.",
+          "slide": "5 · Prosperity and expansion",
           "id": "stability.9a05518b"
         },
         {
@@ -403,6 +428,7 @@
               "Virginia & Kentucky Resolutions (states can nullify)"
             ]
           ],
+          "slide": "How stability turned into the first parties",
           "id": "stability.609cac4c"
         },
         {

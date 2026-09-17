@@ -59,6 +59,12 @@ export type GuideBlock =
 interface BlockBase {
   /** `${sectionId}.${hash8}` — what mastery records and Recall cards point at. */
   id: string;
+  /**
+   * Slide deck: `true` makes this block a slide; a string is the slide's
+   * title. Blocks without it stay in the book only. Steppers expand to one
+   * slide per frame.
+   */
+  slide?: true | string;
 }
 
 /** A markdown paragraph. Lists and sub-headings are markdown too. */

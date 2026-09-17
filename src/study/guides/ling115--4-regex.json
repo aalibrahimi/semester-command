@@ -16,11 +16,13 @@
           "type": "prose",
           "label": "why",
           "md": "**The problem** You have a million words of text and you want every word ending in -ing. Ctrl+F finds exact strings: it can find 'running', but not 'every word that ends in ing'. A **regular expression** is a search pattern that describes a *shape* of text — 'any word characters, then ing, then a word boundary' — and a regex engine finds every stretch of text with that shape. Kraus's definition: 'a syntax for finding & manipulating text… operates on the level of the character; used to find, split, extract, or transform strings.' Every corpus tool you'll use this semester runs on it.",
+          "slide": "Ctrl+F with wildcards",
           "id": "why.605732dc"
         },
         {
           "type": "prose",
           "md": "If you're also in CS 154: a regular expression describes exactly the languages a DFA can recognize. `abc*` is the language { ab, abc, abcc, … } = { abcⁿ | n ≥ 0 }, and the regex engine is, underneath, running a finite automaton over your text. The two courses are teaching the same object from opposite ends.",
+          "slide": "Its connection to CS 154",
           "id": "why.b6aa78ec"
         }
       ]
@@ -152,6 +154,7 @@
               "caption": "Same pattern on 'abd'. a ✓, b ✓, then `c+` needs at least one c and finds d. The pattern fails at this position; the engine slides to position 1 and tries again (b, d… no a). No match anywhere. Compare `abc*`: `*` means zero or more, so 'ab' with zero c's would match."
             }
           ],
+          "slide": true,
           "id": "how.db847fea"
         },
         {
@@ -242,6 +245,7 @@
               "escaped specials"
             ]
           ],
+          "slide": "Kraus's cheat sheet (slide 8)",
           "id": "how.1f807e1e"
         },
         {
@@ -259,6 +263,7 @@
           "type": "example",
           "title": "Four patterns, four different sets",
           "body": "Words: bingo, running, binges, cringe, pooling, ingenuity, cooperating. Which does each pattern find?\n\n1. `ing` — the letters anywhere: all seven.\n2. `^ing` — at the start of the string: ingenuity only. (`\\bing` — at the start of any word — is the same idea inside a longer text.)\n3. `ing$` — at the end: running, pooling, cooperating.\n4. `\\wing\\w` — a word character on both sides, so ing is strictly inside: bingo, binges, cringe.",
+          "slide": "Slide 7: the -ing family",
           "id": "examples.e8e50e83"
         },
         {
@@ -320,12 +325,14 @@
               "caption": "In Python: `re.findall` returns a list of matches — but if the pattern has capturing groups, it returns only the group contents. Adding `?:` right after the `(` makes a **non-capturing** group, so you get the whole matched phrase back. The `r` before the quote makes it a raw string so `\\s` isn't mangled by Python first."
             }
           ],
+          "slide": true,
           "id": "examples.55056b29"
         },
         {
           "type": "example",
           "title": "Always write patterns as raw strings r\"…\" so backslashes reach the regex engine intact.",
           "body": "import re\nre.search(r\"ing$\", \"running\")        # first match object, or None\nre.findall(r\"\\w+ing\\b\", text)         # list of every match\nre.sub(r\"\\s+\", \" \", text)             # replace: collapse runs of whitespace\nre.split(r\"[.!?]\\s\", text)            # split on sentence-ish boundaries\nre.findall(r\"colou?r\", text, re.I)    # re.I = ignore case\n\n# groups: findall returns the GROUPS if you have any\nre.findall(r\"(\\w+)ing\", \"running singing\")   # ['runn', 'sing']\nre.findall(r\"(?:\\w+)ing\", \"running singing\") # ['running', 'singing']  (?: = don't capture)",
+          "slide": "The Python you need (HW 1)",
           "id": "examples.bf6c43c1"
         },
         {

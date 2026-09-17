@@ -1,52 +1,47 @@
 /**
- * Study module entry: courses, chapters, and the chapter → deck derivation.
+ * Study module entry: courses and the guide → deck derivation.
  *
  * Called by: src/routes/Study*.tsx, src/components/study/*.
  */
-import type { Block, Chapter, Slide } from "./types";
+import type { Guide } from "./guide";
+import type { Slide } from "./types";
 
 export * from "./types";
 export { courses, courseBySlug } from "./courses";
 
-/** Anchor id for a block: its own id, or a stable positional fallback. */
-export function blockAnchor(sectionId: string, block: Block, index: number): string {
-  return block.id ?? `${sectionId}-b${index}`;
-}
-
 /**
- * Derive the slide deck from a chapter. Every section contributes a title
+ * Derive the slide deck from a guide. Every section contributes a title
  * slide; every block with `slide` contributes one slide (a stepper
- * contributes one per frame). The anchor on each slide is the block it came
- * from, so "Read in the book" is exact.
+ * contributes one per frame). The anchor on each slide is the block id, so
+ * "Read in the book" lands on the exact paragraph.
  */
-export function buildDeck(chapter: Chapter): Slide[] {
+export function buildDeck(guide: Guide): Slide[] {
   const slides: Slide[] = [];
-  const total = chapter.sections.length;
-  chapter.sections.forEach((section, si) => {
+  const total = guide.sections.length;
+  guide.sections.forEach((section, si) => {
     slides.push({
-      section: section.title,
+      section: section.heading,
       sectionId: section.id,
       anchor: section.id,
-      content: { kind: "section-title", title: section.title, index: si + 1, total },
+      content: { kind: "section-title", title: section.heading, index: si + 1, total },
     });
-    section.blocks.forEach((block, bi) => {
-      if (!("slide" in block) || !block.slide) return;
-      const anchor = blockAnchor(section.id, block, bi);
+    for (const block of section.blocks) {
+      if (!block.slide || block.type === "check") continue;
       const title = typeof block.slide === "string" ? block.slide : undefined;
-      if (block.t === "stepper") {
+      if (block.type === "stepper") {
         block.frames.forEach((frame, fi) => {
           slides.push({
-            section: section.title,
+            section: section.heading,
             sectionId: section.id,
-            anchor,
+            anchor: block.id,
             title: title ?? block.title,
             content: { kind: "frame", stepperTitle: block.title, frame, index: fi + 1, total: block.frames.length },
           });
         });
       } else {
-        slides.push({ section: section.title, sectionId: section.id, anchor, title, content: { kind: "block", block } });
+        slides.push({ section: section.heading, sectionId: section.id, anchor: block.id, title, content: { kind: "block", block } });
       }
-    });
+    }
   });
   return slides;
 }

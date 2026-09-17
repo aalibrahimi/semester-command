@@ -16,6 +16,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The plan behind the preliminaries** CS 154 asks a strange question: *what can a machine compute at all?* To answer it, Chen replaces real computers with mathematical toys — automata — and every toy is defined as a handful of sets and one function between them. A DFA (Lesson 5) is literally (Q, Σ, δ, q₀, F): a set of states, a set of symbols, a function, a state, and a subset. So Lessons 1–2 aren't a review; they're the parts list. Everything below reappears as a piece of a machine.",
+          "slide": "The whole course is built from sets",
           "id": "why.3692bb5d"
         },
         {
@@ -102,6 +103,7 @@
               "caption": "One more convention that costs points: in the condition, a **comma means 'and'**. x ≥ 1 *and* x ≤ 5. If you mean 'or', you must write 'or' (or ∨) explicitly."
             }
           ],
+          "slide": true,
           "id": "reading.45de1622"
         },
         {
@@ -114,6 +116,7 @@
           "type": "example",
           "title": "Writing B = {0, 3, 6, 9, 12, 15, 18} and X = {0, 3, 6, 9, …}",
           "body": "Give both in set-builder form and say whether each is finite.\n\n1. Find the pattern: every element is a multiple of 3. So the left side is 3n.\n2. Find the range of n. For B, n goes 0 to 6: B = { 3n | 0 ≤ n ≤ 6 }. Finite, |B| = 7.\n3. For X the '…' means it never stops: X = { 3n | n ≥ 0 }. Infinite.\n4. You may write n ∈ ℕ in the condition, but Chen's default universal set for variables is the natural numbers, so it can be left out.",
+          "slide": "Going the other way: English → set-builder",
           "id": "reading.a4967fc2"
         },
         {
@@ -193,6 +196,7 @@
         {
           "type": "prose",
           "md": "- Element to set: x ∈ A (is in), x ∉ A (is not in).",
+          "slide": "Relations between sets",
           "id": "sets.46fc475c"
         },
         {
@@ -204,6 +208,7 @@
         {
           "type": "prose",
           "md": "- Union A ∪ B = { x | x ∈ A or x ∈ B }. Intersection A ∩ B = { x | x ∈ A, x ∈ B }. Difference A − B = { x | x ∈ A, x ∉ B }. Complement Ā = U − A.\n- Union and intersection are commutative, associative, distributive. Difference is none of those (A − B ≠ B − A).\n- Identity A ∪ ϕ = A, A ∩ U = A. Domination A ∪ U = U, A ∩ ϕ = ϕ. Idempotent A ∪ A = A. Complement A ∪ Ā = U, A ∩ Ā = ϕ. Double complement gives A back.",
+          "slide": "Operations and the identities he lists",
           "id": "sets.4f4e515a"
         },
         {
@@ -304,13 +309,17 @@
               "caption": "Written out with **outer braces** (it's a set) and **inner braces** (each element is itself a set). Two elements, each in-or-out, gives 2 × 2 = 4 subsets. In general |2ᴬ| = 2^|A| — which is exactly why it's called 2ᴬ."
             }
           ],
+          "slide": true,
           "id": "power.634042cf"
         },
         {
           "type": "definition",
           "term": "Power set 2ᴬ",
           "body": "2ᴬ = { X | X ⊆ A }, the set of all subsets of A. |2ᴬ| = 2^|A|. Always includes ϕ and A itself.",
-          "id": "power.7128c4b5"
+          "id": "power.7128c4b5",
+          "related": [
+            "Cardinality |A|"
+          ]
         },
         {
           "type": "trap",
@@ -322,6 +331,7 @@
         {
           "type": "prose",
           "md": "In Lesson 8, a nondeterministic automaton's transition function will map to a *set of states* rather than a single state. Its range is 2^Q — the power set of the state set. When Chen asks 'what is the range of δ for an NFA', this is the answer, and this is where he taught it.",
+          "slide": "Why you'll need this: NFAs",
           "id": "power.88c9b179"
         },
         {
@@ -341,6 +351,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Where pairs come from** A DFA's brain makes a decision from two things at once: *which state am I in* and *which symbol did I just read*. A decision that depends on two inputs is a function of the **pair** (state, symbol). The Cartesian product is how you build the set of all such pairs — so the transition function has a domain to be defined on.",
+          "slide": "Why pairs",
           "id": "product.002df2a4"
         },
         {
@@ -422,13 +433,17 @@
               "caption": "The answer: outer **braces** (a set), each element in **parentheses** (an ordered pair). |A × B| = |A| · |B| — always check your count. Chen's key: writing 'lambda' in words is fine; wrong brackets are −0.5."
             }
           ],
+          "slide": true,
           "id": "product.eefb210c"
         },
         {
           "type": "definition",
           "term": "Cartesian product A × B",
           "body": "{ (a, b) | a ∈ A, b ∈ B }: every ordered pair with first part from A and second from B. |A × B| = |A|·|B|. A × ϕ = ϕ. **Not commutative** — A × B ≠ B × A unless A = B or one is empty, because pairs are ordered. Extends to more sets: Q × Σ × Γ is a set of 3-tuples.",
-          "id": "product.cbc233f5"
+          "id": "product.cbc233f5",
+          "related": [
+            "Cardinality |A|"
+          ]
         },
         {
           "type": "check",
@@ -446,6 +461,7 @@
         {
           "type": "prose",
           "md": "f : D → R takes each element of the **domain** D to **one** element of the **range** R. One input, at most one output — that's the rule. Several inputs may share an output (f(1) = f(2) = 5 is fine); one input may not have two outputs. You can write a function as algebra (f(x) = 2x), as arrows in a diagram, or as a set of ordered pairs (input, output) — and that set of pairs is a subset of D × R. That's the link to the Cartesian product.",
+          "slide": "A function is a rule with one answer",
           "id": "functions.394cff89"
         },
         {
@@ -458,11 +474,13 @@
           "title": "Spotting a non-function",
           "body": "Q = {q₀, q₁}, Γ = {a, b}, δ : Q × Γ → Q × Γ × {L, R}. Can δ = { ((q₀,a), (q₀,a,L)), ((q₀,a), (q₀,b,L)) } be a function?\n\n1. Read the pairs as (input, output). Both pairs have the same input, (q₀, a).\n2. The outputs differ: (q₀, a, L) versus (q₀, b, L).\n3. One input with two outputs breaks the rule. **Not a function.**\n4. (That δ shape — state and symbol in, state and symbol and a direction out — is a Turing machine's. He's planting it in week 2.)",
           "answer": "No: the same domain element maps to two range elements.",
+          "slide": "Assignment 1: can this δ be a function?",
           "id": "functions.c6ec8dec"
         },
         {
           "type": "prose",
           "md": "Read it aloud: 'delta is a function from Q cross Sigma to Q.' Domain: the set of (state, symbol) pairs — the Cartesian product from the previous section. Range: the set of states. In words: *given a state and a symbol, δ tells you the next state.* That is the entire brain of a DFA, and if δ is **total** (every pair has an answer), the machine always knows what to do. Lesson 5 will draw it as arrows; this is what the arrows mean.",
+          "slide": "The one function that matters: δ : Q × Σ → Q",
           "id": "functions.a6d45052"
         },
         {
@@ -487,11 +505,13 @@
         {
           "type": "prose",
           "md": "- A **graph** is a non-empty finite set of **vertices** V and a finite set of **edges** E. This course uses **directed** graphs only: an edge is an ordered pair (from, to) — an arrow.\n- A **walk** is a sequence of edges where each edge ends where the next one begins. 'We cannot jump.' Its **length** is the number of edges.",
+          "slide": "The definitions",
           "id": "graphs.7d03b8a0"
         },
         {
           "type": "prose",
           "md": "A DFA's control unit is drawn as a directed graph: vertices are states, edges are transitions labelled with symbols. Running the machine on a string is *taking a walk* — one edge per symbol read — and the one-dimensional projection of that walk is the machine's trace. When Lesson 5 says 'the machine follows the transition', it means 'takes the next edge in the walk'.",
+          "slide": "Why graphs are here",
           "id": "graphs.79b35476"
         },
         {

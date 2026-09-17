@@ -18,11 +18,13 @@
           "type": "prose",
           "label": "why",
           "md": "**The idea** Imagine the simplest possible machine that reads a string and answers **yes or no**. It reads one symbol at a time, left to right, never going back. It has no notepad, no counter, no memory of what it read — except for one thing: *which of a handful of states it's currently in*. Each symbol it reads moves it from its current state to another, following fixed rules. When the string runs out, it looks at which state it's standing in: if that's one of the marked 'yes' states, the answer is yes. That's a **deterministic finite automaton**. It's the weakest machine in the course, and the point of Lessons 5–7 is to see exactly what such a thing can and can't do.",
+          "slide": "A yes/no machine with no memory",
           "id": "why.49847f0d"
         },
         {
           "type": "prose",
           "md": "The set of strings a machine says yes to is its **language**, L(M). So 'what can a DFA do' really means 'which languages can a DFA recognize'. A DFA for the language {strings that start with a} is a machine that says yes to exactly those strings. Designing a DFA = building a yes/no machine for a given language. Analyzing a DFA = figuring out which language a given machine says yes to.",
+          "slide": "How it connects to Lessons 3–4",
           "id": "why.afd56430"
         },
         {
@@ -79,6 +81,7 @@
           "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M80 90 Q 119 90 158 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"119\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M200 90 Q 239 90 278 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"239\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M320 90 Q 359 90 398 90\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"359\" y=\"104\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M77.88854381999832 98.94427190999916 Q 149.10557280900008 134.55278640450004 220.32260179800184 170.16130089900093\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"144.6334368540005\" y=\"147.4970583144992\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M191.0940039245046 106.64100588675687 Q 209.4452998037748 134.16794970566215 227.79659568304496 161.69489352456745\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"201.12479686039634\" y=\"143.71495166791445\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M288.9059960754954 106.64100588675687 Q 270.5547001962252 134.16794970566215 252.20340431695504 161.69489352456745\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"262.2341972528468\" y=\"132.62094774340986\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M402.1114561800017 98.94427190999916 Q 330.8944271909999 134.55278640450004 259.67739820199813 170.16130089900093\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"326.4222912360003\" y=\"129.60851449450087\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M230 198 C 214 234, 266 234, 250 198\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"240\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M14 80 L14 100 L38 90 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"60\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"60\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"180\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"180\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text><circle cx=\"300\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"300\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q2</text><circle cx=\"420\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"420\" cy=\"90\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"420\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q3</text><circle cx=\"240\" cy=\"180\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"240\" y=\"184\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q4</text></g>",
           "viewBox": "0 0 480 270",
           "caption": "Five states. Triangle = initial (q0). Double circle = accepting (q3). q4 is the trap: every arrow into it stays there. Only the walk a, b, b from q0 reaches q3.",
+          "slide": "The Lesson 6 example: L(M) = {abb}",
           "id": "structure.b0da62dc"
         },
         {
@@ -166,6 +169,7 @@
               "caption": "Same machine, input aba. The third symbol is an a, and (q2, a) sends us to q4 — the **trap**. q4 loops on everything and isn't accepting, so once you're in, you're done: reject. Note the machine still consumed every symbol; it rejected because of *where it ended*, not because it got stuck."
             }
           ],
+          "slide": true,
           "id": "workflow.e80c596e"
         },
         {
@@ -183,6 +187,7 @@
         {
           "type": "prose",
           "md": "- ♥ A DFA **halts** iff all input symbols are consumed. (c ⟺ h)\n- ♥ A DFA **accepts** a string iff it halts with all symbols consumed AND it is in an accepting state. ((c ∧ f) ⟺ a)\n- ♥ A DFA **rejects** iff at least one symbol is not consumed OR it is not in an accepting state. ((¬c ∨ ¬f) ⟺ ¬a — De Morgan applied to the line above.)",
+          "slide": "The ♥ workflow sentences",
           "id": "workflow.9194e48d"
         },
         {
@@ -200,6 +205,7 @@
         {
           "type": "prose",
           "md": "To read a language off a diagram: start at the initial state and follow every walk that ends in an accepting state without falling into a trap. Each such walk is a family of strings; loops give you exponents. In the {abb} machine, the only walk to q3 is a, b, b, so L(M) = {abb}. If q3 looped on a and b, the language would be { abbw | w ∈ Σ∗ }.",
+          "slide": "Follow the accepting walks",
           "id": "analyze.d6e7dfc3"
         },
         {
@@ -225,6 +231,7 @@
           "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M90 100 Q 149 78 208 100\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"149\" y=\"92\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M210 100 Q 151 122 92 100\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"151\" y=\"116\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M60 82 C 44 46, 96 46, 80 82\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"70\" y=\"50\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M220 82 C 204 46, 256 46, 240 82\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"230\" y=\"50\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M24 90 L24 110 L48 100 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"70\" cy=\"100\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"70\" cy=\"100\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"70\" y=\"104\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"230\" cy=\"100\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"230\" y=\"104\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text></g>",
           "viewBox": "0 0 300 170",
           "caption": "Two states; a toggles between them, b changes nothing. The initial state is accepting because λ has zero a's — and zero is even. No trap needed: every string over {a, b} has either an even or an odd count.",
+          "slide": "Even number of a's",
           "id": "analyze.f8a1c60f"
         },
         {
@@ -305,6 +312,7 @@
               "caption": "**Step 6: test** with strings from L, strings from L̄, and λ — never with symbols outside Σ. Chen's two ways to break a design: a string from L that's rejected, or a string from L̄ that's accepted. If neither exists among your tests, submit. (You can never *prove* it by testing — Σ∗ is infinite.)"
             }
           ],
+          "slide": true,
           "id": "design.2697f08c"
         },
         {
@@ -312,12 +320,14 @@
           "svg": "<g fill=\"currentColor\" font-family=\"ui-sans-serif, system-ui\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0 L10 5 L0 10 z\" fill=\"currentColor\"/></marker></defs><path d=\"M79.55604828154819 85.80941822538253 Q 129.02219758592258 75.20952908873087 178.48834689029698 64.60963995207922\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"131.1174884732313\" y=\"88.98755322950497\" text-anchor=\"middle\" font-size=\"12\">a</text><path d=\"M78.38290060036115 97.87838597158336 Q 129.08085496998194 119.60608070142084 179.77880933960273 141.33377543125832\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"125.14166198419026\" y=\"132.7975310016014\" text-anchor=\"middle\" font-size=\"12\">b</text><path d=\"M190 42 C 174 6, 226 6, 210 42\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"200\" y=\"10\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M190 132 C 174 96, 226 96, 210 132\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" marker-end=\"url(#ah)\"/><text x=\"200\" y=\"100\" text-anchor=\"middle\" font-size=\"12\">a, b</text><path d=\"M14 80 L14 100 L38 90 z\" fill=\"currentColor\" opacity=\".8\"/><circle cx=\"60\" cy=\"90\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"60\" y=\"94\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q0</text><circle cx=\"200\" cy=\"60\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"200\" cy=\"60\" r=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"200\" y=\"64\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q1</text><circle cx=\"200\" cy=\"150\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><text x=\"200\" y=\"154\" text-anchor=\"middle\" font-size=\"12\" font-family=\"ui-monospace, monospace\">q2</text></g>",
           "viewBox": "0 0 360 190",
           "caption": "L = { aw | w ∈ Σ∗ }. q1 is heaven; q2 is hell. Every state has one a-arrow and one b-arrow.",
+          "slide": "The result",
           "id": "design.b95fc263"
         },
         {
           "type": "example",
           "title": "Seven small languages over Σ = {a, b}",
           "body": "Describe the DFA for each.\n\n1. **L = ϕ**: one non-accepting state looping on a, b (all hell). **L = Σ∗**: one accepting state looping on a, b (all heaven).\n2. **L = {λ}**: q0 accepting; any symbol → hell. **L = Σ⁺**: q0 non-accepting → q1 accepting on a or b; q1 loops.\n3. **L = {a}**: q0 —a→ q1 (accepting); q0 —b→ hell; q1 —a, b→ hell.\n4. **L = { aw | w ∈ Σ⁺ }** (starts with a, at least 2 symbols): like 'starts with a' but q1 is *not* accepting; q1 —a, b→ q2 accepting, q2 loops. The string 'a' alone must be rejected.\n5. **L = { aⁿ | n ≥ 0 }**: q0 accepting, loops on a; b → hell. For n ≥ 1: q0 non-accepting —a→ q1 accepting (loops on a); b → hell from both.\n6. **Even number of a's**: the two-state toggle above.",
+          "slide": "The Lesson 6 design set (redo each cold)",
           "id": "design.c7b4191e"
         },
         {
@@ -330,6 +340,7 @@
         {
           "type": "prose",
           "md": "- JFLAP7.1.jar from the course home page. Finite Automaton → draw states with the state tool; right-click a state to set Initial or Final.\n- Each transition is **one symbol**. For 'a or b', add two transitions between the same states — JFLAP stacks the labels.\n- Input → Multiple Run lets you test a batch of strings at once. Test strings from L, strings from L̄, and λ (leave the input empty).\n- Undo is unreliable; save often.",
+          "slide": "JFLAP (Assignment 3 was 9 points of this)",
           "id": "design.e5515ae5"
         },
         {
@@ -434,22 +445,26 @@
               "caption": "All together. When he asks 'give the formal definition of this DFA', this line plus the δ table is the full answer."
             }
           ],
+          "slide": true,
           "id": "formal.43469063"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**Determinism** From Lesson 2: a **total** function has an output for every domain element. δ's domain is Q × Σ — every (state, symbol) pair — so a total δ means the machine always knows exactly one next state. No choices, no dead ends: that's *deterministic*. Lesson 8 will relax this: an NFA's δ maps to a *set* of states (range 2^Q, the power set from Lesson 2) and may be undefined for some pairs. Every piece of the definition is a knob Chen will turn later.",
+          "slide": "Why 'deterministic' means 'δ is total'",
           "id": "formal.be03aa9b"
         },
         {
           "type": "prose",
           "md": "It can't. The input string is by definition in Σ∗. Asking what a DFA over {a, b} does on 'abc' is a category error, not a hard case — which is why the design steps say to test only with strings from Σ∗.",
+          "slide": "What if the input has a symbol not in Σ?",
           "id": "formal.70c77022"
         },
         {
           "type": "prose",
           "md": "A DFA has no memory beyond its current state, and it has finitely many states. So it can't count without bound. Try to design a DFA for the celebrity language { aⁿbⁿ | n ≥ 0 }: you'd need to remember how many a's you saw, for *any* n, with a fixed number of states — impossible. Lesson 12 proves that (the pumping lemma). Every later machine class exists to add a kind of memory the DFA lacks.",
+          "slide": "The limitation that motivates everything after",
           "id": "formal.1fbe2ced"
         },
         {

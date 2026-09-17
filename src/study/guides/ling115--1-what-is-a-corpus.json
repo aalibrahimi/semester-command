@@ -16,6 +16,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The idea** Suppose you want to know how 1960s American newspapers used the word *nuclear*. A trillion words of web text won't tell you — wrong decade, wrong register, unknown authors, duplicated spam, and no way to say what fraction is news. A **corpus** is the fix: a collection of texts chosen *on purpose*, so that what you count in the sample says something about the language you actually care about. The design questions — what population, what proportions, how sampled — are the whole discipline. Everything later (regex, tokens, tagging) is machinery for asking questions of a well-built corpus.",
+          "slide": "Size is not evidence",
           "id": "why.c64e6387"
         },
         {
@@ -110,6 +111,7 @@
               "Complete works; closed, historical"
             ]
           ],
+          "slide": "The corpora she names (one line each)",
           "id": "design.57d489cf"
         },
         {
@@ -117,6 +119,7 @@
           "title": "Why Brown can beat the web",
           "body": "Why might a 1-billion-word web corpus be *less* useful than the 1-million-word Brown Corpus for a question about 1960s written American English?\n\n1. Population match: Brown *is* edited 1961 American English; the web is mostly not.\n2. Balance: Brown's genre proportions are known and deliberate; the web's are unknown and skewed.\n3. Documentation: Brown's design is published; a web crawl has no datasheet (Lectures 7–8).\n4. Annotation: Brown is POS-tagged; a raw crawl isn't.\n5. Size helps only for rare phenomena — and only if the sample is of the right thing.",
           "answer": "Representativeness, balance, documentation, and annotation beat raw size.",
+          "slide": "Small and balanced vs huge and messy",
           "id": "design.b21a3e7a"
         },
         {

@@ -1,10 +1,10 @@
 /**
- * StudySlides — the deck view of a chapter (route "/study/:course/:chapter/slides").
+ * StudySlides — the deck view of a guide (route "/study/:course/:chapter/slides").
  *
  * Called by: the router.
- * Calls: buildDeck, BlockView / FrameView.
+ * Calls: buildDeck, GuideBlockView / FrameView.
  *
- * The deck is derived from the chapter (src/study/index.ts), so every slide
+ * The deck is derived from the guide (src/study/index.ts), so every slide
  * has an exact anchor back into the book — the "Read in the book" button
  * opens the chapter scrolled to and flashing the paragraph the slide came
  * from. ← → or click to move; Esc goes back to the chapter.
@@ -12,19 +12,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { BookOpen, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { BlockView, FrameView } from "@/components/study/Blocks";
+import { GuideBlockView } from "@/components/study/GuideBlocks";
+import { FrameView } from "@/components/study/Stepper";
 import { cn } from "@/lib/utils";
 import { buildDeck, courseBySlug } from "@/study";
+import { guideById } from "@/study/loadGuides";
 
 export default function StudySlides() {
   const { course: cslug, chapter: chslug } = useParams();
   const navigate = useNavigate();
   const course = courseBySlug(cslug);
-  const chapter = course?.chapters.find((c) => c.slug === chslug);
+  const chapter = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
   const deck = useMemo(() => (chapter ? buildDeck(chapter) : []), [chapter]);
   const [i, setI] = useState(0);
   const slide = deck[i];
-  const bookHref = course && chapter ? `/study/${course.slug}/${chapter.slug}` : "/study";
+  const bookHref = chapter ? `/study/${chapter.id}` : "/study";
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -49,7 +51,7 @@ export default function StudySlides() {
       {/* Top bar */}
       <div className="flex items-center gap-3 border-b border-border/60 px-6 py-3">
         <span className="font-mono text-2xs text-muted-foreground">
-          {course.code} · {chapter.label}
+          {course.code} · {chapter.lessons}
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-medium">{chapter.title}</span>
         <Link
@@ -79,11 +81,15 @@ export default function StudySlides() {
           <div className={cn("flex min-h-0 flex-1 flex-col overflow-y-auto px-8", c.kind === "section-title" ? "items-center justify-center" : "justify-center py-6")}>
             {c.kind === "section-title" && (
               <div className="text-center">
-                <div className="font-mono text-xs text-muted-foreground">{course.code} · {chapter.label}</div>
+                <div className="font-mono text-xs text-muted-foreground">{course.code} · {chapter.lessons}</div>
                 <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">{c.title}</h1>
               </div>
             )}
-            {c.kind === "block" && <BlockView block={c.block} large />}
+            {c.kind === "block" && (
+              <div className="[&_p]:text-base [&_p]:leading-[1.8]">
+                <GuideBlockView block={c.block} />
+              </div>
+            )}
             {c.kind === "frame" && (
               <div className="flex flex-col gap-6">
                 <div className="text-base font-medium">{c.stepperTitle}</div>

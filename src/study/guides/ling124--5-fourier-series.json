@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The claim** Take any periodic wave — a vowel, a square wave, a triangle wave — with fundamental frequency F₀ (period T₀ = 1/F₀). Fourier's theorem: you can build it exactly by adding sinusoids whose frequencies are **whole-number multiples of F₀**: F₀, 2F₀, 3F₀, … (the **harmonics**), each with its own amplitude and phase. Going from the wave to the list of amplitudes and phases is **Fourier analysis**; going back is **Fourier synthesis**. The list *is* the spectrum from Chapter 0.",
+          "slide": "Any periodic wave is a sum of sinusoids",
           "id": "why.13cf5e9e"
         },
         {
@@ -28,6 +29,7 @@
         {
           "type": "prose",
           "md": "- x(t) is real-valued (pressure is real).\n- It's periodic with fundamental period T₀ and fundamental frequency F₀ = 1/T₀.\n- It's piecewise smooth. At a jump (a square wave's edge) the series converges to the midpoint of the two sides.",
+          "slide": "Assumptions (note §2)",
           "id": "why.61cfe5e9"
         }
       ]
@@ -40,23 +42,27 @@
           "type": "example",
           "title": "(1) is the intuitive one: a sum of cosines with amplitudes and phases. (2) splits each cosine into a cosine and a sine with no phase. (3) uses complex spinners at positive AND negative frequencies.",
           "body": "(1) amplitude-phase:   x(t) = A₀ + Σ_{k=1}^{∞} A_k cos(2πF₀kt + ϕ_k)\n\n(2) sine-cosine:       x(t) = a₀ + Σ_{k=1}^{∞} [ a_k cos(2πF₀kt) + b_k sin(2πF₀kt) ]\n\n(3) exponential:       x(t) = Σ_{k=−∞}^{∞} X_k e^{j2πF₀kt}        X_k complex,  X_{−k} = X̄_k",
+          "slide": "The three forms (slide 3)",
           "id": "forms.2e96c5c5"
         },
         {
           "type": "prose",
           "md": "k is the harmonic number. The k-th term is a cosine at frequency k·F₀ with amplitude A_k and phase ϕ_k — exactly the formula from Chapter 0, once per harmonic. A₀ is the constant offset (the average level); the note shows it's the k = 0 term with ϕ₀ = 0, since cos(0) = 1.",
+          "slide": "Reading (1)",
           "id": "forms.b2629394"
         },
         {
           "type": "example",
           "title": "Converting amplitude-phase ↔ sine-cosine",
           "body": "Show A_k cos(2πF₀kt + ϕ_k) = a_k cos(2πF₀kt) + b_k sin(2πF₀kt).\n\n1. The sum formula: cos(α + β) = cos α cos β − sin α sin β. Let α = 2πF₀kt, β = ϕ_k.\n2. A_k cos(α + ϕ_k) = A_k cos ϕ_k · cos α − A_k sin ϕ_k · sin α.\n3. Match with a_k cos α + b_k sin α: **a_k = A_k cos ϕ_k**, **b_k = −A_k sin ϕ_k**.\n4. Going back: a_k² + b_k² = A_k²(cos² + sin²) = A_k², so **A_k = √(a_k² + b_k²)**. And −b_k/a_k = tan ϕ_k, so **ϕ_k = atan2(−b_k, a_k)** (atan2 picks the right quadrant).\n5. Lab 4 Q4-style check: for a wave with only cosine terms (b_k = 0), ϕ_k = 0 and A_k = a_k.",
+          "slide": "Why (1) and (2) are the same: the cosine sum formula",
           "id": "forms.0ccb21ed"
         },
         {
           "type": "example",
           "title": "Converting to the exponential form",
           "body": "Show each cosine becomes a pair of complex spinners.\n\n1. Chapter 4: cos θ = (e^{jθ} + e^{−jθ})/2 and sin θ = (e^{jθ} − e^{−jθ})/(2j).\n2. So a_k cos(2πF₀kt) + b_k sin(2πF₀kt) = [(a_k − jb_k)/2]·e^{j2πF₀kt} + [(a_k + jb_k)/2]·e^{−j2πF₀kt}.\n3. Read off: **X_k = (a_k − jb_k)/2** for k > 0, **X_{−k} = (a_k + jb_k)/2** — conjugates, as promised. X₀ = a₀ = A₀.\n4. From form (1) directly: **X_k = (A_k/2)·e^{jϕ_k}**, so **A_k = 2|X_k|** and **ϕ_k = ∠X_k**. Half the amplitude at +kF₀, half at −kF₀ — Chapter 4's result, one harmonic at a time.",
+          "slide": "Why (2)/(1) and (3) are the same: Euler",
           "id": "forms.e658d4f2"
         },
         {
@@ -87,6 +93,7 @@
               "A_k = 2|X_k|;  ϕ_k = ∠X_k"
             ]
           ],
+          "slide": "The conversion table (slides 5, 7, 8, 19, 20)",
           "id": "forms.94aacdba"
         },
         {
@@ -105,18 +112,21 @@
         {
           "type": "prose",
           "md": "Given a wave, how do you find how much of harmonic k it contains? **Multiply x(t) by the harmonic you're testing for, integrate over one period, and divide by the period.** The result is nonzero only if x(t) actually contains that harmonic. It's a detector.",
+          "slide": "The recipe (slide 11)",
           "id": "coef.5ec06407"
         },
         {
           "type": "example",
           "title": "For (2): note the 2/T₀ on a_k and b_k but 1/T₀ on a₀. For (3): multiply by the spinner with the OPPOSITE frequency (−k).",
           "body": "a₀ = (1/T₀) ∫₀^{T₀} x(t) dt                        (the average)\na_k = (2/T₀) ∫₀^{T₀} x(t) cos(2πF₀kt) dt\nb_k = (2/T₀) ∫₀^{T₀} x(t) sin(2πF₀kt) dt\n\nX_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
+          "slide": "The formulas",
           "id": "coef.f11cf061"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**The one fact that makes Fourier analysis possible** A sinusoid with no offset, integrated over a whole number of its own cycles, gives **zero** — every positive hump cancels a negative hump. So when you multiply x(t) (a sum of harmonics) by cos(2πF₀kt) and integrate, every product of two *different* harmonics is itself a sum of sinusoids at nonzero frequencies and integrates to zero. Only the product of harmonic k with itself survives — cos² has a positive average of ½, giving T₀/2 (hence the 2/T₀ in front). The harmonics are **orthogonal**: the test for k ignores everything that isn't k.",
+          "slide": "Why it works: orthogonality",
           "id": "coef.2a33eca3"
         },
         {
@@ -147,6 +157,7 @@
               "0 (whole cycles cancel) — Lab 4 Q6: BOTH are zero"
             ]
           ],
+          "slide": "The orthogonality facts (slides 15–16) — Lab 4 Q6 and Q8",
           "id": "coef.4bafb5bc"
         },
         {
@@ -232,12 +243,14 @@
               "caption": "And Q10: change the third harmonic's amplitude from 3 to 6 — X₁ stays 1, because the k = 1 test ignores the 3F₀ term entirely. Q11: give the third harmonic a phase π/2 — X₃ becomes 1.5·e^{jπ/2} = 1.5j. Amplitude → magnitude, phase → angle."
             }
           ],
+          "slide": true,
           "id": "coef.b333bc9f"
         },
         {
           "type": "example",
           "title": "Why X_k = (1/T₀)∫ x(t) e^{−j2πF₀kt} dt",
           "body": "Substitute the series for x(t) and watch everything but one term vanish.\n\n1. ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt = ∫ Σ_n X_n e^{j2πF₀nt} e^{−j2πF₀kt} dt.\n2. Swap sum and integral: Σ_n X_n ∫ e^{j2πF₀(n−k)t} dt.\n3. If n ≠ k, the integrand is a complex sinusoid at a nonzero frequency over T₀/|n−k| — whole cycles — so it integrates to 0.\n4. If n = k, the exponent is 0, the integrand is the constant X_k, and the integral is X_k·T₀.\n5. So the whole thing equals X_k·T₀. Divide by T₀: X_k = (1/T₀)∫ x(t) e^{−j2πF₀kt} dt.",
+          "slide": "The derivation in Koo's note, §4.1 (for the exam's 'why')",
           "id": "coef.4d9bbcde"
         }
       ]
@@ -249,18 +262,21 @@
         {
           "type": "prose",
           "md": "**Magnitude spectrum**: A_k (or 2|X_k|) at each frequency k·F₀ — stems at F₀, 2F₀, 3F₀… **Phase spectrum**: ϕ_k = ∠X_k at each k·F₀. In the two-sided (exponential) picture, the stems are |X_k| at both +kF₀ and −kF₀, each half as tall.",
+          "slide": "Two plots",
           "id": "spectrum.c782b2ec"
         },
         {
           "type": "example",
           "title": "x(t) = 0.4 + cos(2π·2t + π/4) + 0.6cos(2π·5t − π/2)",
           "body": "Write the two-sided coefficients.\n\n1. F₀ = 1 Hz (harmonics at 2 and 5 are both multiples of 1). Three components: k = 0, 2, 5.\n2. X₀ = A₀ = 0.4.\n3. k = 2: A = 1, ϕ = π/4 → X₂ = 0.5·e^{jπ/4} = 0.354 + 0.354j; X₋₂ = 0.354 − 0.354j. |X| = 0.5, ∠ = ±π/4.\n4. k = 5: A = 0.6, ϕ = −π/2 → X₅ = 0.3·e^{−jπ/2} = −0.3j; X₋₅ = +0.3j. |X| = 0.3, ∠ = ∓π/2.\n5. Magnitude spectrum (one-sided): 0.4 at 0 Hz, 1 at 2 Hz, 0.6 at 5 Hz. Phase spectrum: 0, π/4, −π/2.",
+          "slide": "The slides' example (slides 21–22)",
           "id": "spectrum.f42f5899"
         },
         {
           "type": "example",
           "title": "F₀ = 5 Hz triangle wave with cosine amplitudes 8/(π²k²) for odd k",
           "body": "The lab's first block of questions.\n\n1. Q1: F₀ = 5 Hz → T₀ = 1/5 = 0.2 s.\n2. Q2: 5th harmonic is at 5·F₀ = 25 Hz.\n3. Q3: its amplitude is 8/(π²·25) = 8/(25π²). Even harmonics are 0 (a triangle wave is symmetric in a way that kills them).\n4. Q4 (the sketch): stems at 5, 15, 25, 35, 45 Hz with heights 8/π², 8/(9π²), 8/(25π²), 8/(49π²), 8/(81π²) — falling fast — and nothing at 10, 20, 30, 40 Hz.\n5. Q5 (essay): as you add terms, the straight sides get straighter and the rounded peaks get sharper; the remaining error is largest at the peaks and troughs, because sharp corners need the highest harmonics.\n6. Q12: two-sided coefficients X_k = A_k/2 = 4/(π²k²) for odd k > 0, zero for even k.\n7. Q13: rebuilding from X_k should **match** the cosine reconstruction, since each ±k pair of complex terms adds up to exactly the k-th cosine.",
+          "slide": "Lab 4 Q1–Q5, Q12–Q13: the triangle wave",
           "id": "spectrum.e7b9b2d0"
         },
         {

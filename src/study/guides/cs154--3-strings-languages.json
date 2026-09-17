@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The idea** In this course a *language* is not English. It's a **set of strings** — any set of strings. {ab, aabb, aaabbb, …} is a language. Why care? Because every yes/no question about text can be rewritten as 'is this string in that set?' *Is this a valid email?* → is it in the set of valid emails. *Does this program compile?* → is it in the set of well-formed programs. So 'which languages can a machine recognize' is the same question as 'which problems can a machine solve'. Strings and languages are the vocabulary for asking that.",
+          "slide": "A language is a yes/no problem in disguise",
           "id": "why.be42a6cc"
         },
         {
@@ -43,19 +44,28 @@
           "type": "definition",
           "term": "String",
           "body": "a **finite sequence of symbols from Σ**. It need not mean anything. Strings are named w (then u, v, then x, y, z).",
-          "id": "strings.9c917349"
+          "id": "strings.9c917349",
+          "related": [
+            "Alphabet Σ"
+          ]
         },
         {
           "type": "definition",
           "term": "Length |w|",
           "body": "the number of symbols. |babba| = 5.",
-          "id": "strings.86e43913"
+          "id": "strings.86e43913",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",
           "term": "Empty string λ",
           "body": "the string with zero symbols. |λ| = 0. λ can never be a *symbol* in an alphabet (λaabb would be ambiguous).",
-          "id": "strings.e0ba960b"
+          "id": "strings.e0ba960b",
+          "related": [
+            "Length |w|"
+          ]
         },
         {
           "type": "table",
@@ -81,6 +91,7 @@
               "|{λ}| = 1"
             ]
           ],
+          "slide": "The three empties — never confuse them",
           "id": "strings.b3ad79ed"
         },
         {
@@ -148,30 +159,42 @@
               "caption": "**Reverse** flips the order of symbols. Reversing a concatenation reverses each piece *and* swaps their order. A **palindrome** is a string with wᴿ = w (abba)."
             }
           ],
+          "slide": true,
           "id": "strings.1b5a6405"
         },
         {
           "type": "definition",
           "term": "Concatenation uv",
           "body": "write u then v. |uv| = |u| + |v|. λ is the neutral element: λw = wλ = w.",
-          "id": "strings.6a8897cb"
+          "id": "strings.6a8897cb",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",
           "term": "Substring",
           "body": "a run of consecutive symbols. If w = uv, then u is a **prefix** and v a **suffix**. Both λ and w itself count as prefixes and suffixes.",
-          "id": "strings.a47ef09b"
+          "id": "strings.a47ef09b",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",
           "term": "Σ∗",
           "body": "(Sigma star): every string of zero or more symbols from Σ — including λ. **Σ⁺**: one or more — excluding λ. Both are infinite. Σ⁺ = Σ∗ − {λ}. Σ∗ is 'the universal language over Σ' — every language over Σ is a subset of it.",
-          "id": "strings.84bc2a2a"
+          "id": "strings.84bc2a2a",
+          "related": [
+            "Alphabet Σ",
+            "Empty string λ"
+          ]
         },
         {
           "type": "example",
           "title": "Listing every split",
           "body": "List all (prefix, suffix) pairs of w = abaaba.\n\n1. A split is a place to cut. With 6 symbols there are 7 cut positions (before the first, between each pair, after the last).\n2. (λ, abaaba), (a, baaba), (ab, aaba), (aba, aba), (abaa, ba), (abaab, a), (abaaba, λ).\n3. Always |w| + 1 pairs. Don't forget the two ends.",
+          "slide": "Prefix/suffix pairs of abaaba",
           "id": "strings.6cb1be6f"
         },
         {
@@ -204,6 +227,7 @@
         {
           "type": "prose",
           "md": "L = { aⁿbⁿ | n ≥ 0 } = {λ, ab, aabb, aaabbb, …}: some a's, then *the same number* of b's. Compare { aⁿbᵐ | n, m ≥ 0 }: any number of a's, then any number of b's — n and m are independent, so aab is in it but not in the first. That one letter of difference is the whole distinction between what a DFA can and cannot do (Lesson 12).",
+          "slide": "The celebrity language",
           "id": "languages.fffcbf27"
         },
         {
@@ -291,6 +315,7 @@
               "caption": "**Exponent on a language** concatenates it with itself. The two copies choose their n *independently* — so the second copy needs its own variable m. aabb·ab ∈ L² with n = 2, m = 1. Also: L⁰ = {λ} for every L, even ϕ⁰ = {λ}."
             }
           ],
+          "slide": true,
           "id": "languages.b8e634d0"
         },
         {
@@ -303,17 +328,24 @@
           "type": "definition",
           "term": "Concatenation",
           "body": "L₁L₂ = { uv | u ∈ L₁, v ∈ L₂ }. ϕL = ϕ. {λ}L = L.",
-          "id": "languages.00482c30"
+          "id": "languages.00482c30",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",
           "term": "Exponent Lⁿ",
           "body": "n copies concatenated, each with its own index. L⁰ = {λ}, even for ϕ.",
-          "id": "languages.b843bc1c"
+          "id": "languages.b843bc1c",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "prose",
           "md": "- Set operations as usual. **Complement** L̄ = Σ∗ − L — the universal set is Σ∗.",
+          "slide": "Language operations, collected",
           "id": "languages.189a875e"
         },
         {
@@ -333,6 +365,7 @@
           "type": "prose",
           "label": "why",
           "md": "**How to write 'at least one a'** Assignment 3 asked for languages in set-builder and their complements, and the key wants specific shapes. The trick for all of them: describe the string as a *template* — some free stuff, the thing you require, more free stuff — where 'free stuff' is bⁿ (only b's) or w ∈ Σ∗ (anything). 'At least one a' becomes: any b's, then an a, then anything: { bⁿaw | n ≥ 0, w ∈ Σ∗ }. Once you see the template idea, the whole table writes itself.",
+          "slide": "Why this table exists",
           "id": "patterns.b2cd2d15"
         },
         {
@@ -374,6 +407,7 @@
               "≤ n−1 / ≥ n+1"
             ]
           ],
+          "slide": "The patterns (Σ = {a, b})",
           "id": "patterns.3093d3f0"
         },
         {
@@ -381,6 +415,7 @@
           "title": "Complement by asking 'how can a string fail?'",
           "body": "L = { aⁿb | n ≥ 0 } over {a, b}: some a's then exactly one b at the end. Write L̄.\n\n1. A string is *not* in L in exactly two ways. Way 1: it has no b at all — just a's (including λ): { aⁿ | n ≥ 0 }.\n2. Way 2: it has a b, but the b isn't the last symbol — something follows it: { aⁿbw | n ≥ 0, w ∈ Σ⁺ }. (Σ⁺, not Σ∗, because if w were λ the string would be in L.)\n3. Union the two ways.",
           "answer": "L̄ = { aⁿ | n ≥ 0 } ∪ { aⁿbw | n ≥ 0, w ∈ {a, b}⁺ }",
+          "slide": "Assignment 3 Q1: the complement of { aⁿb | n ≥ 0 }",
           "id": "patterns.66679c42"
         },
         {
@@ -427,6 +462,7 @@
               "caption": "The accepted answer. Deductions from the key: no braces −0.25 · no '…' −0.25 · λ included −0.5 · halves don't match (a@b) −1 · anything else −1.5."
             }
           ],
+          "slide": true,
           "id": "patterns.2a9e9909"
         },
         {
@@ -445,6 +481,7 @@
         {
           "type": "prose",
           "md": "Every one of these is a deduction from the Assignment 1–3 keys. Assignment 2 lost 7.5 of 24 points, almost all on these. Write them on a card and check every quiz answer against the card before submitting — it's the cheapest grade recovery in any of your classes.",
+          "slide": "Where these come from",
           "id": "rules.d1750f47"
         },
         {
@@ -457,7 +494,10 @@
           "type": "definition",
           "term": "Rule 2",
           "body": "λ is the empty *string*; ϕ or { } is the empty *set*; {λ} is a language with one string.",
-          "id": "rules.2a74e338"
+          "id": "rules.2a74e338",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",
@@ -469,7 +509,10 @@
           "type": "definition",
           "term": "Rule 4",
           "body": "Always name the alphabet: 'over Σ = {a, b}'.",
-          "id": "rules.3074ecaa"
+          "id": "rules.3074ecaa",
+          "related": [
+            "Alphabet Σ"
+          ]
         },
         {
           "type": "definition",
@@ -481,19 +524,29 @@
           "type": "definition",
           "term": "Rule 6",
           "body": "Strings are w, u, v; languages are L; alphabets are Σ.",
-          "id": "rules.2e74e984"
+          "id": "rules.2e74e984",
+          "related": [
+            "Alphabet Σ"
+          ]
         },
         {
           "type": "definition",
           "term": "Rule 7",
           "body": "Complement of a language means Σ∗ − L; you need Σ.",
-          "id": "rules.2f74eb17"
+          "id": "rules.2f74eb17",
+          "related": [
+            "Alphabet Σ",
+            "Σ∗"
+          ]
         },
         {
           "type": "definition",
           "term": "Rule 8",
           "body": "w⁰ = λ (a string), but L⁰ = {λ} (a language).",
-          "id": "rules.2474d9c6"
+          "id": "rules.2474d9c6",
+          "related": [
+            "Empty string λ"
+          ]
         },
         {
           "type": "definition",

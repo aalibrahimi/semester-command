@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Which groups of words are real?** Week 4 said sentences are built from phrases. But look at 'Several large books fell to the ground with a loud thud' and ask: is 'books fell' a phrase? Is 'to the ground'? Is 'ground with'? You can't tell by looking — every adjacent pair of words *looks* like a group. You need a way to test whether a string of words actually behaves as one unit. That test-based notion is what a constituent is.",
+          "slide": "The question",
           "id": "why.031ea67f"
         },
         {
@@ -66,6 +67,7 @@
               "[in the garden] → there; [after midnight] → then"
             ]
           ],
+          "slide": "Pro-forms by constituent type (handout §1.1)",
           "id": "sub.e2cec6e2"
         },
         {
@@ -193,6 +195,7 @@
               "caption": "No pro-form stands for 'spies in', 'stash the', or 'evidence after'. They aren't units. Substitution fails, and — spoiler — so will every other test."
             }
           ],
+          "slide": true,
           "id": "sub.7f9cea74"
         },
         {
@@ -209,6 +212,7 @@
         {
           "type": "prose",
           "md": "Move the string somewhere else in the sentence. If the result is grammatical, the string traveled as a unit — which means it *is* a unit. Two ways to move things in English:",
+          "slide": "If it moves as a block, it's a block",
           "id": "move.229cb46e"
         },
         {
@@ -237,12 +241,14 @@
         {
           "type": "prose",
           "md": "Ask a wh-question about the sentence. If the string can be the whole answer, standing alone, it's a constituent — because only units can be pronounced in isolation.",
+          "slide": "Can it answer a question alone?",
           "id": "frag.057c1dc2"
         },
         {
           "type": "example",
           "title": "Question → fragment",
           "body": "Those tall spies in the garden will quickly stash the evidence after midnight.\n\n1. Who will stash the evidence? — 'Those tall spies in the garden.' ✓ NP\n2. Where are the spies? — 'In the garden.' ✓ PP\n3. What will they stash? — 'The evidence.' ✓ NP\n4. When? — 'After midnight.' ✓ PP\n5. What will they do? — 'Quickly stash the evidence after midnight.' ✓ VP (and 'Stash the evidence after midnight.' ✓ — the smaller VP)\n6. *'Stash the.' — no question has that answer. ✗",
+          "slide": "Fragment answers for handout (3)",
           "id": "frag.bcb9162e"
         }
       ]
@@ -254,12 +260,14 @@
         {
           "type": "prose",
           "md": "'The thief tripped that unlucky man with a cane.' Two meanings: the thief used a cane, or the man carries a cane. Chapter 0 showed these as two trees. Now you can *prove* both trees exist with tests — each reading passes a test the other fails.",
+          "slide": "Handout (7)",
           "id": "ambig.6ccc92dd"
         },
         {
           "type": "example",
           "title": "'with a cane' attaches to the verb",
           "body": "Show 'with a cane' is a separate constituent from the NP.\n\n1. Cleft: 'It's with a cane that the thief tripped that unlucky man.' ✓ — the PP moved away from 'man', so it wasn't inside the NP.\n2. Substitution: 'The thief tripped him with a cane.' ✓ — 'him' replaces 'that unlucky man' and leaves 'with a cane' behind.\n3. Do-so: 'The thief tripped that unlucky man with a cane, and the burglar did so with a rope.' ✓ — 'did so' = 'tripped that unlucky man', and the instrument is outside it.",
+          "slide": "Reading A: the cane is the instrument",
           "id": "ambig.f92e84be"
         },
         {
@@ -267,6 +275,7 @@
           "title": "'with a cane' attaches to the noun",
           "body": "Show 'that unlucky man with a cane' is one NP.\n\n1. Substitution: 'The thief tripped him.' ✓ where 'him' = 'that unlucky man with a cane' — the whole thing, cane included.\n2. Fragment: 'Who did the thief trip?' — 'That unlucky man with a cane.' ✓\n3. Topicalization: 'That unlucky man with a cane, the thief tripped.' ✓ — the PP moved along with the NP, so it's inside it.",
           "answer": "Same string, two constituent structures. Each test result is evidence for one of them.",
+          "slide": "Reading B: the man has the cane",
           "id": "ambig.5b5d8605"
         }
       ]
@@ -278,6 +287,7 @@
         {
           "type": "prose",
           "md": "'Farah **will submit** the assignment' — the VP after the modal is **non-finite** (no tense on 'submit'). Substitution: 'Farah will do so.' ✓ Fragment: 'What will Farah do? — Submit the assignment.' ✓ Clean.",
+          "slide": "Finite vs non-finite VPs behave differently",
           "id": "finite.75776839"
         },
         {
@@ -300,18 +310,21 @@
           "type": "example",
           "title": "That officer from the precinct sauntered away very slowly.",
           "body": "Categories, then three constituents with three different tests.\n\n1. Categories: That D · officer N · from P · the D · precinct N · sauntered V · away Adv (particle) · very Adv · slowly Adv.\n2. Substitution: [That officer from the precinct] → 'He sauntered away very slowly.' ✓ NP.\n3. Movement (cleft): [very slowly] → 'It was very slowly that that officer sauntered away.' ✓ AdvP.\n4. Fragment: 'What did the officer do?' — [Sauntered away very slowly.] ✓ VP.\n5. Bonus: [from the precinct] → 'It's from the precinct that the officer is' / fragment 'From where?' — 'From the precinct.' ✓ PP.",
+          "slide": "Handout (4)",
           "id": "practice.10a38037"
         },
         {
           "type": "example",
           "title": "I will invest in some cryptocurrency to fund my globe-trotting lifestyle.",
           "body": "Three constituents, three tests.\n\n1. Categories: I N · will Mod · invest V · in P · some D · cryptocurrency N · to T · fund V · my D · globe-trotting Adj · lifestyle N.\n2. Substitution (do so): 'I will [do so] to fund my lifestyle.' ✓ → 'invest in some cryptocurrency' is a VP.\n3. Movement (cleft): 'It's to fund my globe-trotting lifestyle that I will invest in some cryptocurrency.' ✓ → the purpose clause is a constituent (an adjunct).\n4. Fragment: 'In what will you invest?' — 'In some cryptocurrency.' ✓ PP.\n5. Substitution: [my globe-trotting lifestyle] → 'to fund it' ✓ NP.",
+          "slide": "Handout (5)",
           "id": "practice.154457af"
         },
         {
           "type": "example",
           "title": "Lee paraded his favorite new motorbikes around town.",
           "body": "Is 'motorbikes around town' a constituent?\n\n1. Try substitution: 'them' replaces 'his favorite new motorbikes' — 'Lee paraded them around town' ✓ — but that leaves 'around town' outside. No pro-form covers 'motorbikes around town' alone.\n2. Try movement: '*Motorbikes around town, Lee paraded his favorite new.' ✗\n3. Try fragment: 'What did Lee parade?' — 'His favorite new motorbikes.' ✓ — the answer stops before 'around town'. '*Motorbikes around town' is not an answer to any question.\n4. Conclusion: 'motorbikes around town' is NOT a constituent. 'around town' is a PP adjunct of the verb ('It's around town that Lee paraded them' ✓), sister to the object NP, not inside it. Compare reading A of the cane sentence.",
+          "slide": "Handout (6)",
           "id": "practice.929febcd"
         },
         {

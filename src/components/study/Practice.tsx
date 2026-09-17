@@ -1,7 +1,7 @@
 /**
  * Practice — the "Do it yourself" section at the end of a chapter.
  *
- * Called by: StudyChapter.
+ * Called by: StudyRead (the section's "Do it yourself" exercises).
  * Calls: Inline (from Blocks).
  *
  * Each exercise is a card the reader works on paper first. A scratch box
@@ -13,7 +13,7 @@
 import { useEffect, useState } from "react";
 import { Check, ChevronRight, Compass, Eye, Lightbulb, RotateCcw, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Exercise } from "@/study/types";
+import type { GuideExercise as Exercise } from "@/study/guide";
 import { Inline } from "./Blocks";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";

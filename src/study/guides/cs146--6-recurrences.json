@@ -18,11 +18,13 @@
           "type": "prose",
           "label": "why",
           "md": "**The question** In Lecture 5 you saw merge sort, and Poon argued it runs in O(n log n) with a picture: n−1 divisions, then O(n) of merging per level times log n levels. That argument works for merge sort. But what about an algorithm that splits into three pieces? Or four pieces each a third the size? Or does n² of work to combine? You'd need a new hand-wavy picture every time. Recurrences are the *general* tool: write one equation describing a single level of recursion, then solve it with a method that works for every shape.",
+          "slide": "The question this answers",
           "id": "why.3c7acb7b"
         },
         {
           "type": "prose",
           "md": "That's the entire chapter: **(1)** write the equation, **(2)** solve it. Writing it is easy once you can read T(n) as a sentence. Solving it has three methods — the recursion tree (draw it), substitution (guess and prove), the master method (look it up in a three-case table). Poon teaches them in that order because each one explains the next.",
+          "slide": "The whole chapter in one line",
           "id": "why.b341e8cc"
         },
         {
@@ -41,12 +43,14 @@
         {
           "type": "prose",
           "md": "Chapter 0 gave you T(n) as \"steps to handle n things.\" A recurrence describes what happens in one call of the recursive function — not the whole recursion, just one level. Merge sort on n things does exactly three things: it splits (cheap, constant), it calls itself on two halves, and it merges the results (a pass over n things, so some constant k per element).",
+          "slide": "Describe ONE level",
           "id": "read.6343fbde"
         },
         {
           "type": "example",
           "title": "Lecture 6 slides 9–10. The +kn is the merge; Poon writes it as O(n) first, then as kn to keep a constant to track.",
           "body": "mergeSort(a):                         T(n) =\n  if a.length == 1: return a            T(1) = 1                  ← base case\n  left  = mergeSort(first half)         T(n/2)\n  right = mergeSort(second half)      + T(n/2)      = 2T(n/2)     ← two recursive calls\n  return merge(left, right)           + kn                        ← merge: k steps per element",
+          "slide": "Merge sort's recurrence",
           "id": "read.4fe059ad"
         },
         {
@@ -57,6 +61,7 @@
         {
           "type": "prose",
           "md": "- T(n) = 3T(n/5) + 17 — \"three subproblems of a fifth the size, plus 17 fixed steps.\"\n- T(n) = 3T(n/5) + 4n — \"three subproblems of a fifth the size, plus 4n steps.\"\n- T(n) = T(n−1) + 1 — \"one subproblem of size one less, plus one step.\" (A loop in disguise: that's n steps total.)\n- T(n) = 2T(n/2) + O(n) — same as merge sort with the constant hidden; Poon writes both.",
+          "slide": "Other recurrences read the same way",
           "id": "read.c414db0c"
         },
         {
@@ -75,6 +80,7 @@
         {
           "type": "prose",
           "md": "Before the three methods, do the dumbest possible thing once: pick n = 8 and compute T(8) by plugging numbers in. This is what a recurrence *is*. Everything after is a shortcut for this.",
+          "slide": "Before any method: just compute it",
           "id": "unroll.5b4df710"
         },
         {
@@ -159,6 +165,7 @@
               "caption": "T(8) = 8 + 24k. Look at the 24k: it's 8k + 8k + 8k — one kn for each of the 3 levels of merging. That's n log n: 8 · log₂ 8 = 8 · 3 = 24. The recursion tree is this computation drawn as a picture."
             }
           ],
+          "slide": true,
           "id": "unroll.010b8469"
         },
         {
@@ -175,6 +182,7 @@
         {
           "type": "prose",
           "md": "Draw every call as a box. Under each box, draw the boxes it calls. Write each box's *own* work (the f(n) part — the merge) next to it. Then add up a whole row at a time, because every box in a row is the same size and does the same work. Total = sum of the rows.",
+          "slide": "The idea",
           "id": "tree.091c4a40"
         },
         {
@@ -330,6 +338,7 @@
               "caption": "How many levels? Sizes go n, n/2, n/4, … until size 1. That's log₂ n halvings (Chapter 0), so log n + 1 levels including the root. Total ≈ kn · log n = O(n log n)."
             }
           ],
+          "slide": true,
           "id": "tree.fd7c6b85"
         },
         {
@@ -378,11 +387,13 @@
               "2ⁱ · kn/2ⁱ = kn"
             ]
           ],
+          "slide": "Poon's table (Lecture 6 slide 24) — this is what HW 6 asks for",
           "id": "tree.cd65f2da"
         },
         {
           "type": "prose",
           "md": "The row for level i is the one that matters, because it's true for every level at once. At level i there are 2ⁱ boxes (doubling each level — Chapter 0's picture), each of size n/2ⁱ (halving each level), each doing k times its size. Multiply: 2ⁱ · k · n/2ⁱ — the 2ⁱ cancels — = kn. Every row costs kn, no matter how deep.",
+          "slide": "Row i in general",
           "id": "tree.1540211c"
         },
         {
@@ -390,12 +401,14 @@
           "title": "Counting the depth",
           "body": "The tree stops when a box has size 1. At level i the size is n/2ⁱ. At what level does that hit 1?\n\n1. Set n/2ⁱ = 1.\n2. Multiply both sides by 2ⁱ: n = 2ⁱ.\n3. \"2 to what power is n?\" — that's log₂ n. So i = log₂ n is the last level.\n4. Levels are numbered from 0, so there are log₂ n + 1 levels in total (Poon's little table: n=1 → 1 level, n=8 → 4 levels, n=16 → 5).",
           "answer": "log₂ n + 1 levels",
+          "slide": "How many levels? (slides 25–26)",
           "id": "tree.7a38a103"
         },
         {
           "type": "example",
           "title": "Lecture 6 slide 27. Drop the +1 and the constant k when you switch to Big-O.",
           "body": "Total = (cost per level) × (number of levels)\n      = kn × (log n + 1)\n      = kn log n + kn\n      = O(n log n)",
+          "slide": "The total",
           "id": "tree.e7f19ca5"
         },
         {
@@ -406,18 +419,21 @@
         {
           "type": "prose",
           "md": "Merge sort is the special case where every row costs the same. Change the numbers and the rows change size. Poon does two on slides 28–33, and they're the intuition behind the master method, so slow down here.",
+          "slide": "Trees where each level grows or shrinks",
           "id": "tree.97917b03"
         },
         {
           "type": "example",
           "title": "Three subproblems of half size",
           "body": "Fill the row for level i.\n\n1. Nodes: each box makes 3 children, so level i has 3ⁱ boxes (not 2ⁱ).\n2. Size: each child is half the parent, so size at level i is still n/2ⁱ.\n3. Work per node: k · n/2ⁱ.\n4. Total at level i: 3ⁱ · k · n/2ⁱ = (3/2)ⁱ · kn.\n5. (3/2)ⁱ grows with i: level 0 costs kn, level 1 costs 1.5kn, level 2 costs 2.25kn… The BOTTOM row is the biggest. The leaves dominate.\n6. Depth is still log₂ n (sizes halve). Bottom row has 3^(log₂ n) = n^(log₂ 3) ≈ n^1.58 leaves, each O(1). Total is Θ(n^1.58).",
+          "slide": "T(n) = 3T(n/2) + kn — rows GROW",
           "id": "tree.401755a9"
         },
         {
           "type": "example",
           "title": "Two subproblems of a third the size",
           "body": "Fill the row for level i.\n\n1. Nodes: 2ⁱ (each box makes 2 children).\n2. Size: n/3ⁱ (each child is a third of the parent).\n3. Work per node: k · n/3ⁱ. Total at level i: 2ⁱ · kn/3ⁱ = (2/3)ⁱ · kn.\n4. (2/3)ⁱ shrinks: kn, then 0.67kn, then 0.44kn… The TOP row is the biggest. The root dominates.\n5. Depth: sizes divide by 3, so n/3ⁱ = 1 → i = log₃ n → log₃ n + 1 levels (slide 32).\n6. A shrinking geometric series adds up to a constant times its first term, so the total is Θ(kn) = Θ(n).",
+          "slide": "T(n) = 2T(n/3) + kn — rows SHRINK",
           "id": "tree.711a9e15"
         },
         {
@@ -425,6 +441,7 @@
           "svg": "<g font-family=\"ui-monospace, monospace\" font-size=\"11\" fill=\"currentColor\">\n<rect x=\"70\" y=\"20\" width=\"60\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"60\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"50\" y=\"72\" width=\"100\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"40\" y=\"98\" width=\"120\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"30\" y=\"124\" width=\"140\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"30\" y=\"160\" opacity=\".7\">grows → leaves dominate</text>\n<rect x=\"270\" y=\"20\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"72\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"98\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"124\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"240\" y=\"160\" opacity=\".7\">equal → cost × log n</text>\n<rect x=\"460\" y=\"20\" width=\"100\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"470\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"480\" y=\"72\" width=\"60\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"490\" y=\"98\" width=\"40\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"500\" y=\"124\" width=\"20\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"440\" y=\"160\" opacity=\".7\">shrinks → root dominates</text>\n</g>",
           "viewBox": "0 0 600 180",
           "caption": "Row cost by level. Left: rows grow (leaves win — Case 1). Middle: rows equal (multiply by #levels — Case 2). Right: rows shrink (root wins — Case 3). This picture IS the master method.",
+          "slide": "Three shapes, one picture",
           "id": "tree.a8b1f3df"
         },
         {
@@ -444,6 +461,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Why it exists** The tree gives you a strong guess but the hand-waving (\"about kn per level\") isn't a proof. Substitution is how you prove a guess is right. It's induction from Chapter 0: assume the formula works for smaller inputs, show it then works for n.",
+          "slide": "Why a second method",
           "id": "substitution.33af4352"
         },
         {
@@ -475,6 +493,7 @@
           "title": "Prove T(n) = 2T(n/2) + kn is O(n log n)",
           "body": "Every line uses one fact from Chapter 0. I'll name which.\n\n1. Guess: T(n) ≤ c·n log n.\n2. Assume for n/2: T(n/2) ≤ c·(n/2)·log(n/2).\n3. Substitute into T(n) = 2T(n/2) + kn:   T(n) ≤ 2·c·(n/2)·log(n/2) + kn.\n4. Simplify 2·(n/2) = n:   T(n) ≤ c·n·log(n/2) + kn.\n5. Log rule 1: log(n/2) = log n − 1:   T(n) ≤ c·n·(log n − 1) + kn.\n6. Distribute:   T(n) ≤ c·n·log n − c·n + kn.\n7. We need this ≤ c·n·log n. Subtract c·n·log n from both sides: need −cn + kn ≤ 0, i.e. kn ≤ cn, i.e. **c ≥ k**.\n8. k is a constant (the merge's cost per element), so pick any c ≥ k. The inequality holds. QED: merge sort is O(n log n).",
           "answer": "Any c ≥ k works.",
+          "slide": "Merge sort by substitution (slides 13–16)",
           "id": "substitution.a6482ea3"
         },
         {
@@ -499,17 +518,20 @@
           "type": "prose",
           "label": "why",
           "md": "**Why it exists** Trees and substitution work but take a page each. Most recurrences you'll ever meet have the shape aT(n/b) + f(n), and for that shape someone did the tree once, in general, and wrote down the answer as three cases. You match your recurrence to the shape, do one comparison, and read off the answer. It's a lookup table with one calculation.",
+          "slide": "Why a third method",
           "id": "master.85868c9e"
         },
         {
           "type": "example",
           "title": "a ≥ 1, b > 1, f(n) positive. Merge sort: a = 2, b = 2, f(n) = n.",
           "body": "T(n) = a·T(n/b) + f(n)\n        │     │      └─ work done OUTSIDE the recursive calls (divide + combine)\n        │     └─ each subproblem is 1/b the size\n        └─ number of subproblems",
+          "slide": "The shape (Lecture 7 slides 10–11)",
           "id": "master.e2d85093"
         },
         {
           "type": "prose",
           "md": "Every case is a comparison between two things: **f(n)** — the work at the root — and **n^(log_b a)** — which, as the tree section showed, is the number of leaves, i.e. the work at the bottom (Lecture 7 slide 21: a^(log_b n) = n^(log_b a) = # leaves). Poon borrows CLRS's word *watershed* for n^(log_b a): a ridge line. If f is below it, water runs to the leaves (they dominate). If f is above it, water runs to the root. If f is exactly on it, every level is equal and you multiply by the number of levels.",
+          "slide": "The watershed function",
           "id": "master.ac6747fd"
         },
         {
@@ -540,16 +562,19 @@
               "Θ(f(n))"
             ]
           ],
+          "slide": "The three cases — printed on the exam",
           "id": "master.093117b9"
         },
         {
           "type": "prose",
           "md": "\"Polynomially smaller\" means the *exponents* differ by some fixed amount ε > 0: f(n) = O(n^(log_b a − ε)). n vs n² qualifies (ε = 1). n^1.9 vs n² qualifies (ε = 0.1). But n/log n vs n does NOT — they have the same exponent 1, and a log factor is not a polynomial gap. That's the trap on slide 28, and it's HW 7 Problem 4.",
+          "slide": "What 'polynomially' means — the ε",
           "id": "master.70bb43cb"
         },
         {
           "type": "prose",
           "md": "- Match the shape. Write a, b, f(n) explicitly.\n- Compute the watershed n^(log_b a). (Chapter 0 table: log₂ 4 = 2, log₂ 8 = 3, log₃ 27 = 3, log₂ 1 = 0.)\n- Compare f(n)'s exponent to the watershed's exponent. Smaller by a constant → Case 1. Equal → Case 2. Larger by a constant → Case 3.\n- Case 3 only: check regularity — a·f(n/b) ≤ c·f(n) for some c < 1. (Plug n/b into f, multiply by a, confirm it's a fraction of f(n).)\n- Write the answer with the case named.",
+          "slide": "The procedure (this is HW 7's answer format)",
           "id": "master.4587e5ba"
         },
         {
@@ -693,6 +718,7 @@
               "caption": "Case 3's answer is f(n) itself: Θ(n³)."
             }
           ],
+          "slide": true,
           "id": "master.3aca9ca1"
         },
         {
@@ -751,6 +777,7 @@
           "type": "example",
           "title": "HW 6 Problem 1 and the 'quite hard' Problem 2",
           "body": "Draw the first 3 levels, then generalize to level i, count levels, and total.\n\n1. Subproblems: 4. Size of each: n/3. Combine cost per node: c × its size.\n2. Level 0: 1 node, size n, work cn. Total cn.\n3. Level 1: 4 nodes, size n/3, work cn/3 each. Total 4cn/3.\n4. Level 2: 16 nodes, size n/9, work cn/9 each. Total 16cn/9.\n5. Level i: 4ⁱ nodes × c·n/3ⁱ = (4/3)ⁱ · cn.\n6. Levels: size n/3ⁱ = 1 → i = log₃ n → log₃ n + 1 levels.\n7. Total: cn · Σ (4/3)ⁱ for i = 0…log₃ n. Growing series → dominated by the last term ≈ cn·(4/3)^(log₃ n) = c·n^(log₃ 4). Answer Θ(n^(log₃ 4)) ≈ Θ(n^1.26). Cross-check with the master method: a=4, b=3, watershed n^1.26, f = n is smaller → Case 1 → same answer.",
+          "slide": "HW 6 · T(n) = 4T(n/3) + cn",
           "id": "hw.f8b204bd"
         },
         {
@@ -758,6 +785,7 @@
           "title": "T(n) = 8T(n/2) + n²",
           "body": "Master method with justification.\n\n1. a = 8, b = 2, f(n) = n².\n2. Watershed: n^(log₂ 8) = n³.\n3. n² vs n³: exponent smaller by 1 (ε = 1). Case 1.\n4. T(n) = Θ(n³).",
           "answer": "Θ(n³), Case 1",
+          "slide": "HW 7 · Problem 1",
           "id": "hw.6c15e9df"
         },
         {
@@ -765,6 +793,7 @@
           "title": "T(n) = 7T(n/2) + n³",
           "body": "Master method with justification.\n\n1. a = 7, b = 2, f(n) = n³.\n2. Watershed: n^(log₂ 7) ≈ n^2.81.\n3. n³ vs n^2.81: exponent larger by ≈ 0.19 (ε = 0.19 > 0). Case 3.\n4. Regularity: 7·(n/2)³ = 7n³/8 ≤ c·n³ with c = 7/8 < 1. ✓\n5. T(n) = Θ(n³).",
           "answer": "Θ(n³), Case 3",
+          "slide": "HW 7 · Problem 2",
           "id": "hw.065dc67a"
         },
         {
@@ -772,6 +801,7 @@
           "title": "T(n) = 27T(n/3) + Θ(n³)",
           "body": "Master method with justification.\n\n1. a = 27, b = 3, f(n) = Θ(n³).\n2. Watershed: n^(log₃ 27) = n³.\n3. n³ vs n³: equal. Case 2.\n4. T(n) = Θ(n³ log n).",
           "answer": "Θ(n³ log n), Case 2",
+          "slide": "HW 7 · Problem 3",
           "id": "hw.fa4e22f0"
         },
         {
@@ -779,6 +809,7 @@
           "title": "T(n) = T(n/2) + log n",
           "body": "Master method with justification.\n\n1. a = 1, b = 2, f(n) = log n.\n2. Watershed: n^(log₂ 1) = n⁰ = 1.\n3. log n vs 1: log n is bigger, but is it *polynomially* bigger? That needs log n = Ω(n^ε) for some ε > 0. No — log n grows slower than every n^ε, no matter how tiny ε is.\n4. So it's not Case 2 (not equal) and not Case 3 (gap isn't polynomial). **The master method does not apply.** State that.\n5. (For your own curiosity: unrolling gives log n + log(n/2) + log(n/4) + … ≈ log n terms of size ≤ log n → Θ(log² n). Not required.)",
           "answer": "Does not apply — the gap between log n and 1 is not polynomial.",
+          "slide": "HW 7 · Problem 4",
           "id": "hw.b69e42d8"
         }
       ]

@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "npm run migrate:guides",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
@@ -14,8 +13,7 @@
     "typecheck": "tsc -b",
     "lint": "oxlint",
     "check:tokens": "node scripts/check-tokens.mjs",
-    "migrate:guides": "tsx scripts/migrate-guides.ts",
-    "check:guides": "tsx scripts/migrate-guides.ts --check",
+    "check:guides": "tsx scripts/check-guides.ts",
     "check:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml --check && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings",
     "test": "cargo test --manifest-path src-tauri/Cargo.toml",
     "verify": "npm run typecheck && npm run lint && npm run check:tokens && npm run check:guides && npm run test"

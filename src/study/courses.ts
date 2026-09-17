@@ -1,46 +1,13 @@
-import type { Chapter, Course, Exercise } from "./types";
-import { cs146Practice } from "./practice/cs146";
-import { cs154Practice } from "./practice/cs154";
-import { hist15Practice } from "./practice/hist15";
-import { ling112Practice } from "./practice/ling112";
-import { ling115Practice } from "./practice/ling115";
-import { ling124Practice } from "./practice/ling124";
+import type { Course } from "./types";
 
-import { cs146Notation } from "./chapters/cs146-00-notation";
-import { cs146Adts } from "./chapters/cs146-02-adts-insertion";
-import { cs146MergeSort } from "./chapters/cs146-04-mergesort";
-import { cs146Recurrences } from "./chapters/cs146-06-recurrences";
-import { cs146Heaps } from "./chapters/cs146-08-heaps";
-import { cs154Sets } from "./chapters/cs154-01-sets";
-import { cs154Languages } from "./chapters/cs154-03-languages";
-import { cs154Dfa } from "./chapters/cs154-05-dfa";
-import { hist15Constitution } from "./chapters/hist15-08-constitution";
-import { hist15Walker } from "./chapters/hist15-06-walker";
-import { hist15Market } from "./chapters/hist15-11-market";
-import { ling112Intro } from "./chapters/ling112-00-intro";
-import { ling112Categories } from "./chapters/ling112-02-categories";
-import { ling112Heads } from "./chapters/ling112-04-heads";
-import { ling112Constituents } from "./chapters/ling112-05-constituents";
-import { ling115Corpus } from "./chapters/ling115-01-corpus";
-import { ling115Regex } from "./chapters/ling115-04-regex";
-import { ling115Words } from "./chapters/ling115-05-words";
-import { ling115Annotation } from "./chapters/ling115-07-annotation-pos";
-import { ling124Waves } from "./chapters/ling124-00-waves";
-import { ling124Sampling } from "./chapters/ling124-03-sampling";
-import { ling124Complex } from "./chapters/ling124-04-complex";
-import { ling124Fourier } from "./chapters/ling124-05-fourier";
-import { ling124Transform } from "./chapters/ling124-06-transform";
 
-/** Attach "Do it yourself" sets to chapters by slug. Chapters without a set are unchanged. */
-function withPractice(chapters: Chapter[], sets: Record<string, Exercise[]>): Chapter[] {
-  return chapters.map((c) => (sets[c.slug] ? { ...c, practice: sets[c.slug] } : c));
-}
 
 /**
- * Course metadata + chapter registry. Exam facts come from each syllabus and
- * the Canvas assignment list (read Sep 16, 2026). Chapters are written one at
- * a time; `planned` lists what exists on Canvas but isn't written yet so the
- * course page shows the whole shape of the semester.
+ * Course metadata + guide order. Exam facts come from each syllabus and the
+ * Canvas assignment list (read Sep 16, 2026). `guides` lists the guide slugs
+ * (src/study/guides/<course>--<slug>.json) in reading order; `planned` lists
+ * what exists on Canvas but isn't written yet so the course page shows the
+ * whole shape of the semester.
  */
 export const courses: Course[] = [
   {
@@ -86,7 +53,7 @@ export const courses: Course[] = [
       "Heap index formulas; trace heapify, buildHeap, heapSort, extract; buildHeap is O(n), heapSort O(1) space.",
       "(After Sep 21–Oct 5) partition trace, counting sort, hash collisions, BST delete, AVL rotations.",
     ],
-    chapters: withPractice([cs146Notation, cs146Adts, cs146MergeSort, cs146Recurrences, cs146Heaps], cs146Practice),
+    guides: ["0-notation", "2-adts-invariants-insertion", "4-big-o-merge-sort", "6-recurrences", "8-heaps-heapsort-pq"],
     planned: [
       { label: "Lecture 9", title: "Quicksort (Sep 21)" },
       { label: "Lecture 10", title: "Linear-time sorts (Sep 23)" },
@@ -130,7 +97,7 @@ export const courses: Course[] = [
       "Compute L₁L₂, Lⁿ, Lᴿ, L̄.",
       "Describe DFA structure and workflow; analyze a DFA into L(M); design a DFA with hell/heaven and every (state, symbol) covered.",
     ],
-    chapters: withPractice([cs154Sets, cs154Languages, cs154Dfa], cs154Practice),
+    guides: ["1-sets-functions", "3-strings-languages", "5-dfa"],
     planned: [
       { label: "Lessons 8–10", title: "NFA, λ-transitions, subset construction (Sep 21–28)" },
       { label: "Lesson 11", title: "Regular languages and closure (Sep 30)" },
@@ -171,7 +138,7 @@ export const courses: Course[] = [
       "1790s stability: Washington's precedents, Judiciary Act, Hamilton's program, Whiskey Rebellion.",
       "Walker's argument with three quoted phrases and the 1830s context.",
     ],
-    chapters: withPractice([hist15Walker, hist15Constitution, hist15Market], hist15Practice),
+    guides: ["6-walker", "8-confederation-to-constitution", "11-market-revolution"],
     planned: [
       { label: "Weeks 6–7", title: "Abolitionism, Women's Rights, Contested West, Sectional Crisis (Sep 21–30)" },
       { label: "Paper 1", title: "Writing the Historical Analysis Paper (due week 9)" },
@@ -213,7 +180,7 @@ export const courses: Course[] = [
       "Substitution, movement, fragment-answer tests with correct pass/fail.",
       "Head directionality for English, Japanese, Arabic.",
     ],
-    chapters: withPractice([ling112Intro, ling112Categories, ling112Heads, ling112Constituents], ling112Practice),
+    guides: ["0-what-syntax-is", "2-categories", "4-heads-dependents", "5-constituency-tests"],
     planned: [
       { label: "Week 6", title: "Phrase structure rules and tree drawing (Sep 22–24, Quiz 3)" },
       { label: "Week 7", title: "X-bar theory (Sep 29–Oct 1)" },
@@ -253,7 +220,7 @@ export const courses: Course[] = [
       "Fourier series: three forms, conversions, compute X_k for a sum of cosines, orthogonality.",
       "DFT/IDFT, bin spacing Fs/N, leakage, STFT parameters, narrow vs broad band.",
     ],
-    chapters: withPractice([ling124Waves, ling124Sampling, ling124Complex, ling124Fourier, ling124Transform], ling124Practice),
+    guides: ["0-reading-a-wave", "3-sampling-aliasing", "4-complex-sinusoids", "5-fourier-series", "6-transform-dft-stft"],
     planned: [
       { label: "Days 10–11", title: "Mel filterbank, cepstrum, MFCC features" },
       { label: "Days 12–13", title: "Dynamic time warping, GMMs, HMMs" },
@@ -294,7 +261,7 @@ export const courses: Course[] = [
       "Six annotation levels; datasheets; the data-linguist process.",
       "Parsing vs tagging; three ambiguity types; Brown vs PTB.",
     ],
-    chapters: withPractice([ling115Corpus, ling115Regex, ling115Words, ling115Annotation], ling115Practice),
+    guides: ["1-what-is-a-corpus", "4-regex", "5-words-tokens-normalization", "7-annotation-pos"],
     planned: [
       { label: "Week 6", title: "Frequencies: raw vs relative, Zipf's law, keyness (Sep 22–24)" },
       { label: "Week 7", title: "Building an annotated dataset; annotation guidelines (Oct 1)" },

@@ -18,6 +18,7 @@
         {
           "type": "prose",
           "md": "Chapter 0 has the definition of O, Ω and Θ. Lecture 4 is about *using* them, and Poon opens with a correction worth remembering: 'time complexity' is a misnomer. We count **operations** as a function of input size, not seconds — seconds depend on the machine; operation counts don't.",
+          "slide": "What we're actually counting",
           "id": "bigo.79caff2c"
         },
         {
@@ -66,6 +67,7 @@
               "Naive recursive Fibonacci"
             ]
           ],
+          "slide": "The growth-rate table (slide 26 — reproduce from memory)",
           "id": "bigo.f8b9ae5b"
         },
         {
@@ -91,6 +93,7 @@
           "title": "1000n vs 5n²",
           "body": "Algorithm A takes 1000n operations, B takes 5n². Which is faster?\n\n1. Set them equal to find the crossover: 1000n = 5n² → 1000 = 5n → n = 200.\n2. Below 200, the n² hasn't grown enough to beat the big 1000 constant: **B is faster** for small inputs.\n3. Above 200, n² takes over and keeps pulling away: **A is faster** for large inputs, and the gap grows without bound.\n4. This is why Big-O throws away constants: for big enough n the growth rate decides, and 'big enough' always arrives. But it's also why the hybrid sort in Project 1 exists — for tiny n, constants are the whole story.",
           "answer": "B for n < 200, A for n > 200, tie at 200",
+          "slide": "HW 4 Problem 3: when do constants win?",
           "id": "bigo.0264e589"
         },
         {
@@ -117,6 +120,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The idea** How do you find 'marble' in a paper dictionary? You don't start at page 1. You open to the middle, see 'L…', and throw away the whole first half. Open the middle of what's left, throw away half again. Each look halves the problem, so a 1000-page dictionary takes about 10 looks (Chapter 0: log₂ 1000 ≈ 10). That's the pattern: make the problem smaller by a constant factor each step, and the number of steps is logarithmic. **Divide and conquer** is that pattern turned into a recipe.",
+          "slide": "Looking up a word",
           "id": "dc.06e7ca21"
         },
         {
@@ -129,6 +133,7 @@
         {
           "type": "prose",
           "md": "The function calls itself on a smaller input. That feels circular until you see the base case: the calls keep shrinking the input, so eventually they hit something trivially solvable (one element, an empty list) and return without calling again. Each returning call hands its answer up to the caller, which combines it and returns in turn. The call stack from Lectures 2–3 is what keeps track of who's waiting for whom.",
+          "slide": "What 'recursively' means here",
           "id": "dc.387dd597"
         }
       ]
@@ -141,6 +146,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The one trick merge sort needs** Combining two *unsorted* piles into a sorted one is hard. Combining two *sorted* piles is easy: the smallest overall must be at the front of one pile or the other. Look at both fronts, take the smaller, repeat. Merge sort is built entirely on this: it only ever asks 'merge two sorted lists', and it makes sure the lists are sorted by making them tiny first.",
+          "slide": "Why merge is the key move",
           "id": "merge.44b094b1"
         },
         {
@@ -265,17 +271,20 @@
               "caption": "One list ran out, so copy whatever's left of the other (just 12). Done. Count the work: 8 elements went out, each after at most one comparison. Merge is **O(n)** — it touches each element once."
             }
           ],
+          "slide": true,
           "id": "merge.0619e5fc"
         },
         {
           "type": "example",
           "title": "This is the shape Project 1 needs: it merges a[lo..mid] with a[mid+1..hi] into tmp, then copies back. `i` and `j` are the two fingers; `k` is the output position.",
           "body": "// merges the two sorted halves a[lo..mid] and a[mid+1..hi]\nstatic void merge(int[] a, int lo, int mid, int hi, int[] tmp) {\n  int i = lo, j = mid + 1, k = lo;\n  while (i <= mid && j <= hi) {\n    if (a[i] <= a[j]) tmp[k++] = a[i++];   // <= keeps it stable\n    else              tmp[k++] = a[j++];\n  }\n  while (i <= mid) tmp[k++] = a[i++];       // copy the rest of the left half\n  while (j <= hi)  tmp[k++] = a[j++];       // copy the rest of the right half\n  for (k = lo; k <= hi; k++) a[k] = tmp[k]; // copy back\n}",
+          "slide": "merge in Java, working on a subrange with a temp array",
           "id": "merge.15a178c3"
         },
         {
           "type": "prose",
           "md": "Java (like JS) lets `k++` mean 'use k, then add one to it'. So `tmp[k++] = a[i++]` is three things in one line: copy a[i] into tmp[k], then advance both k and i. You can write it as three lines if that's clearer; the meaning is identical.",
+          "slide": "Reading `tmp[k++] = a[i++]`",
           "id": "merge.af835008"
         }
       ]
@@ -436,18 +445,21 @@
               "caption": "The final merge: [20, 50, 60] with [10, 30] → [10, 20, 30, 50, 60]. Sorted. Notice what merge sort never does: it never compares elements 'in place'. It only ever splits and merges."
             }
           ],
+          "slide": true,
           "id": "mergesort.c0aa0b55"
         },
         {
           "type": "example",
           "title": "Indent by recursion depth. Under each call, show its two sub-calls, then `→ result` when it returns. Odd lengths: the left half gets the extra element (mid = (lo + hi) / 2, left = lo..mid).",
           "body": "M([50, 20, 60, 30, 10])\n  M([50, 20, 60])\n    M([50, 20])\n      M([50]) → [50]\n      M([20]) → [20]\n      → [20, 50]\n    M([60]) → [60]\n    → [20, 50, 60]\n  M([30, 10])\n    M([30]) → [30]\n    M([10]) → [10]\n    → [10, 30]\n  → [10, 20, 30, 50, 60]",
+          "slide": "Poon's trace format, M([…]) — HW 5 requires exactly this",
           "id": "mergesort.05abf561"
         },
         {
           "type": "example",
           "title": "Three lines of logic: base case, two recursive calls, merge. The public wrapper allocates the temp array once and handles Project 1's null / short-array cases.",
           "body": "public static void mergeSort(int[] a) {\n  if (a == null || a.length < 2) return;\n  mergeSort(a, 0, a.length - 1, new int[a.length]);\n}\nstatic void mergeSort(int[] a, int lo, int hi, int[] tmp) {\n  if (lo >= hi) return;                 // base case: 0 or 1 element\n  int mid = (lo + hi) / 2;              // integer division: left gets the extra\n  mergeSort(a, lo, mid, tmp);           // conquer left\n  mergeSort(a, mid + 1, hi, tmp);       // conquer right\n  merge(a, lo, mid, hi, tmp);           // combine\n}",
+          "slide": "mergeSort in Java",
           "id": "mergesort.530b3ded"
         },
         {
@@ -515,17 +527,20 @@
               "caption": "Add them; drop the lower-order term. **O(n log n)**, best case and worst case alike — merge sort does the same splits and merges regardless of the input's order."
             }
           ],
+          "slide": true,
           "id": "mergesort.d8aaf901"
         },
         {
           "type": "prose",
           "md": "n = 1,000,000. Merge sort: about n log n = 1,000,000 × 20 = 20,000,000 operations. Insertion sort worst case: about n² = 10¹². That's the difference between a blink and eleven days. This is the sentence to remember when someone asks why growth rate matters more than constants.",
+          "slide": "His scale check",
           "id": "mergesort.df182200"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**O(n) space — the price of the speed** Merge writes its output somewhere. If it wrote straight back into the input array, it would overwrite elements it hasn't read yet: merging [2, 5] with [1, 4] in place, the 1 has to go where the 2 is, but the 2 hasn't been placed yet. So merge needs a temporary array the size of the input — **O(n) extra space**. Slide 38 walks through exactly this. Heap sort (Lecture 8) is the sort that avoids it.",
+          "slide": "Why merge sort needs extra space",
           "id": "mergesort.7f26efbc"
         },
         {
@@ -562,6 +577,7 @@
               "n is large"
             ]
           ],
+          "slide": "Insertion sort vs merge sort",
           "id": "mergesort.b203dec2"
         },
         {
@@ -587,12 +603,14 @@
         {
           "type": "prose",
           "md": "Part 1 is three methods in Java: **insertionSort**, **mergeSort**, and **hybridSort** — a merge sort that switches to insertion sort when a piece gets small. Part 2 runs the provided `main()` to time them and asks you to write about what you see. Everything above in this chapter and the previous one *is* the project; the code blocks here are the pieces. Check the spec for the exact method names and signatures he expects, and use his — he docks for format.",
+          "slide": "What the project is",
           "id": "project.565dcb5a"
         },
         {
           "type": "example",
           "title": "The only new idea: change the base case. When a range is at or below the threshold, insertion-sort just that range instead of splitting further. Insertion sort must therefore work on a subrange lo..hi, not the whole array.",
           "body": "public static void hybridSort(int[] a, int threshold) {\n  if (a == null || a.length < 2) return;\n  hybridSort(a, 0, a.length - 1, threshold, new int[a.length]);\n}\nstatic void hybridSort(int[] a, int lo, int hi, int t, int[] tmp) {\n  if (hi - lo + 1 <= t) { insertionSortRange(a, lo, hi); return; }\n  int mid = (lo + hi) / 2;\n  hybridSort(a, lo, mid, t, tmp);\n  hybridSort(a, mid + 1, hi, t, tmp);\n  merge(a, lo, mid, hi, tmp);\n}\nstatic void insertionSortRange(int[] a, int lo, int hi) {\n  for (int j = lo + 1; j <= hi; j++) {\n    int key = a[j], i = j - 1;\n    while (i >= lo && a[i] > key) { a[i + 1] = a[i]; i--; }\n    a[i + 1] = key;\n  }\n}",
+          "slide": "hybridSort: merge sort with a small-case base",
           "id": "project.da95d7f6"
         },
         {
@@ -635,6 +653,7 @@
           "type": "example",
           "title": "In what order to write it",
           "body": "How to get from an empty file to a submitted project.\n\n1. Write `insertionSort` (Lectures 2–3 chapter) and a tiny `main` that sorts `{8, 5, 2, 6, 9}` and prints it. Also test `null`, `{}`, `{1}`, and an already-sorted array.\n2. Write `merge` and test it alone on two sorted halves inside one array — e.g. `{2, 5, 8, 12, 3, 6, 9, 10}` with lo=0, mid=3, hi=7. Print the result; expect the HW 5 answer.\n3. Write `mergeSort` on top of `merge`. Test with the M() example — you should get [10, 20, 30, 50, 60].\n4. Copy `mergeSort` into `hybridSort`, change the base case to call `insertionSortRange`. Test with threshold 1 (should behave like merge sort) and threshold = array length (should behave like insertion sort).\n5. Run the provided `main()` for Part 2. For the write-up: expect insertion sort to win at tiny sizes, lose badly at large sizes; the hybrid should match or beat plain merge sort, with a sweet-spot threshold somewhere around 10–30. Explain *why* using the HW 4 crossover idea: constants win small, growth rate wins large.",
+          "slide": "Build order that won't waste your weekend",
           "id": "project.f1cb4b67"
         },
         {

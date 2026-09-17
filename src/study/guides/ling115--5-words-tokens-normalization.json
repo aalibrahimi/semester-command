@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Every technical choice is a linguistic claim** Before you can count words, you have to decide what a word is — and every answer erases something. Is *San Francisco* one word or two? Is *don't* one? Are *Apple* and *apple* the same? Kraus's line: **'Tokenization is an analytic decision, not a neutral preprocessing step.'** Her chance-quiz questions almost all have the same shape: *true or false about a definition*, then *give one example of what a choice preserves or erases*. This chapter is that answer bank.",
+          "slide": "The course's thesis",
           "id": "why.519614dd"
         }
       ]
@@ -161,12 +162,14 @@
               "caption": "Real corpora. Notice the pattern: **the bigger the corpus, the lower the TTR**. That's not because Google's English is boring. It's because vocabulary grows slower than text (next section), so tokens outrun types. TTR is only comparable between texts of similar size — Kraus's caveat about Alice vs Moby Dick."
             }
           ],
+          "slide": true,
           "id": "units.42225655"
         },
         {
           "type": "example",
           "title": "'they sat back on their San Francisco stoop and looked up at the stars and their'",
           "body": "How many tokens, how many types?\n\n1. Split on spaces: 16 tokens. If *San Francisco* is one multi-word token: 15. Already a decision.\n2. Types: *and* appears twice, *their* twice. 16 − 2 = 14 types. Treat *San Francisco* as one: 13. Lemmatize *stars* → *star*, *looked* → *look*? Still 13 here (no collisions), but in a longer text lemmatizing shrinks V.\n3. There's no single right count. The right answer names the decisions: 'Sixteen tokens on whitespace, fourteen types as wordforms; fifteen and thirteen if multi-word place names are one token.'",
+          "slide": "Her 16-token example",
           "id": "units.e5467c73"
         },
         {
@@ -235,6 +238,7 @@
               "caption": "The catch: typos, stretched spellings, and case variants all look like new types to a computer. Whether they *are* new types is a decision — which is what the rest of this chapter is about."
             }
           ],
+          "slide": true,
           "id": "heaps.83f8c0b1"
         },
         {
@@ -247,6 +251,7 @@
         {
           "type": "prose",
           "md": "Frequency reveals things the words alone don't: register (formal text uses *however*; chat uses *lol*), speaker age, subject matter, dialect. A frequency list is the first thing a corpus linguist looks at — and every number in it depends on the tokenization and normalization decisions below.",
+          "slide": "Why frequency matters at all",
           "id": "heaps.51afa9f5"
         }
       ]
@@ -349,12 +354,14 @@
               "Normalize if it interferes"
             ]
           ],
+          "slide": "The normalization table (slide 28 — shown three times)",
           "id": "normalization.c3a7f9e0"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**Why the bottom rows say PRESERVE** The rows to normalize are variation that *doesn't correlate with anything linguistic* — a typo tells you nothing about the writer. The rows to preserve are variation that *is* linguistic evidence: register, dialect, identity. If your research question is about those, normalizing them away deletes your data. If it isn't, they're noise. The table isn't a rule; it's a way of asking 'what is my question?' before touching the text.",
+          "slide": "The pattern in the table",
           "id": "normalization.029065e5"
         },
         {

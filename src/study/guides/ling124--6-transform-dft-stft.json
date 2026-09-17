@@ -18,18 +18,21 @@
           "type": "prose",
           "label": "why",
           "md": "**Speech isn't periodic** The Fourier series needs a periodic signal — it only has ingredients at multiples of F₀. A whole sentence isn't periodic. Koo's move (fourier_transform.pdf §2): take a T₀-long chunk of any signal, pretend it repeats every T₀ (so it has a series), then let T₀ grow without limit. As T₀ → ∞ the repeats move infinitely far apart — you're left with the original signal — and F₀ = 1/T₀ → 0, so the harmonics kF₀ crowd together into a **continuous** frequency axis. The sum becomes an integral. That integral is the Fourier transform.",
+          "slide": "The problem with the series",
           "id": "transform.722ac419"
         },
         {
           "type": "example",
           "title": "Same shape as the series formulas, with ∫ dF replacing Σ over k and X_F (a function of continuous F) replacing X_k. Opposite signs in the exponents; no normalizing factor under this convention.",
           "body": "Fourier transform:          X_F = ∫_{−∞}^{∞} x(t) · e^{−j2πFt} dt      \"how much of frequency F is in x\"\nInverse Fourier transform:  x(t) = ∫_{−∞}^{∞} X_F · e^{j2πFt} dF      \"rebuild x from all its frequencies\"",
+          "slide": "The transform pair",
           "id": "transform.fece0462"
         },
         {
           "type": "example",
           "title": "Where X_F comes from",
           "body": "Turn X_k and the series into X_F and the integral.\n\n1. Start from the series x(t) = Σ X_k e^{j2πF_k t} with F_k = kF₀, and the coefficient formula X_k = (1/T₀)∫ x(t)e^{−j2πF_k t} dt over one period.\n2. Multiply each series term by F₀/F₀: x(t) = Σ (X_k/F₀) e^{j2πF_k t} · F₀. Now it looks like a Riemann sum — rectangles of width ΔF = F₀ and height (X_k/F₀)e^{j2πF_k t}.\n3. Define X_F as the limit of X_k/F₀ as F₀ → 0 and F_k → F. The Riemann sum becomes ∫ X_F e^{j2πFt} dF: the inverse transform.\n4. For X_F itself: since 1/T₀ = F₀, X_k/F₀ = ∫_{−T₀/2}^{T₀/2} x(t)e^{−j2πF_k t} dt. Let T₀ → ∞: the limits go to ±∞, F_k → F, and the left side is X_F. That's the forward transform.",
+          "slide": "The derivation, in four moves (note §3–4)",
           "id": "transform.13b182d6"
         }
       ]
@@ -41,12 +44,14 @@
         {
           "type": "prose",
           "md": "Computers can't integrate over continuous time or evaluate continuous frequency. So we discretize twice more (dft.pdf). **Time**: sample at Fₛ, x[n] = x(n/Fₛ), and replace ∫dt by a sum with dt → 1/Fₛ. **Frequency**: for an N-sample signal, evaluate at N equally spaced frequencies. Each step has a name.",
+          "slide": "Two more discretizations",
           "id": "dft.b2befc4f"
         },
         {
           "type": "example",
           "title": "F̂ is frequency in cycles per SAMPLE (F/Fₛ). The DTFT is periodic in F̂ with period 1 because e^{j2π(F̂+1)n} = e^{j2πF̂n}·e^{j2πn} and e^{j2πn} = 1 for integer n. The DFT samples one period of it at N points.",
           "body": "DTFT (discrete time, continuous F̂):\n   X(F̂) = Σ_{n=−∞}^{∞} x[n] e^{−j2πF̂n}                  F̂ = F/Fₛ, consider [−1/2, 1/2]\n\nDFT (N samples in, N coefficients out):\n   X[k] = Σ_{n=0}^{N−1} x[n] e^{−j2π(k/N)n}               k = −N/2 … N/2−1   (F̂ = k/N)\n   x[n] = (1/N) Σ_{k=−N/2}^{N/2−1} X[k] e^{j2π(k/N)n}      inverse DFT — exact, by orthogonality\n\nbin k corresponds to frequency  F = k · Fₛ/N        bin spacing = Fₛ/N Hz",
+          "slide": "DTFT → DFT",
           "id": "dft.bd6af04f"
         },
         {
@@ -58,6 +63,7 @@
         {
           "type": "prose",
           "md": "- N samples in → N complex numbers out. Each X[k] is the complex amplitude (Chapter 4) of frequency k·Fₛ/N.\n- k = N/2 is excluded because F̂ = 1/2 and F̂ = −1/2 are the same point (that's the Nyquist frequency, Chapter 3).\n- The **FFT** is just a fast algorithm for computing the DFT. Same numbers, fewer operations; fastest when N is a power of 2.",
+          "slide": "What to remember",
           "id": "dft.026d9221"
         },
         {
@@ -83,17 +89,20 @@
         {
           "type": "prose",
           "md": "To analyze a changing signal, cut it into short **frames** (a **sliding window**) and transform each one. The DFT treats each frame as if it repeated forever. That assumption is where the trouble starts.",
+          "slide": "Frames",
           "id": "window.3c5c254d"
         },
         {
           "type": "example",
           "title": "A 100 Hz tone in a 25 ms rectangular window",
           "body": "Why does the spectrum show energy at frequencies other than 100 Hz?\n\n1. A 25 ms frame, repeated, has period 0.025 s, so the DFT's harmonic grid is F₀ = 1/0.025 = 40 Hz: 40, 80, 120, 160…\n2. 100 Hz is **not on the grid** — it's not an integer multiple of 40. There's no single harmonic to hold it, so 'harmonics close to 100 Hz share the burden': energy smears into 80 and 120 Hz and beyond.\n3. Second cause: 25 ms is 2.5 cycles of 100 Hz, so the frame ends mid-cycle. Repeating it creates a **sudden jump** at each seam. Sharp jumps need a broad band of frequencies to represent (think of the triangle wave's corners in Lab 4).\n4. Together these are **spectral leakage**: a pure tone shows up as a smeared hump instead of a single line.",
+          "slide": "Koo's leakage example (windowing.pdf slides 7–11)",
           "id": "window.ae77d222"
         },
         {
           "type": "prose",
           "md": "The fix: multiply the frame by a **window function** that fades in from zero and back out to zero — a **Hamming** or **Hann** window — instead of the abrupt **rectangular** window. No jump at the seams → much less leakage. The cost (NI reading): the main peak gets a little wider, and you lose a little amplitude accuracy. For speech, always taper; Lab 7's notebook compares rectangular vs Hamming on the same tone.",
+          "slide": "Tapering",
           "id": "window.371ce4d0"
         },
         {
@@ -101,6 +110,7 @@
           "svg": "<g fill=\"none\" stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"20\" y1=\"120\" x2=\"260\" y2=\"120\" opacity=\".4\"/><path d=\"M40 120 L40 40 L240 40 L240 120\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<path d=\"M40 80 L45 52.58355816303808 L50 45.91533291926317 L55 65.04170419181595 L60 95.48821551531984 L65 114.2135541182784 L70 107.04675706445954 L75 79.41151348304776 L80 52.221624765279635 L85 46.05385662042198 L90 65.57585301653852 L95 96.01375628213626 L100 114.3327680523272 L105 106.66942543716613 L110 78.82319334726022 L115 51.86754507069327 L120 46.20197782077529 L125 66.11407994042858 L130 96.53476952394632 L135 114.44227517785751 L140 106.28455363700867 L145 78.23520592676148 L150 51.52141918725131 L155 46.35965464242592 L160 66.65623279207709 L165 97.05110793611783 L170 114.54204453422273 L175 105.89225047772626 L180 77.64771746160838 L185 51.18334497416714 L190 46.526842505842396 L195 67.20215829010837 L200 97.56262553572009 L205 114.63204791390874 L210 105.49262687410577 L215 77.06089405078886 L220 50.85341801422771 L225 46.70349414246268 L230 67.75170208651683 L235 98.06917770279745 L240 114.71225987050906\" opacity=\".5\"/>\n<text x=\"60\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">rectangular</text>\n<line x1=\"300\" y1=\"120\" x2=\"540\" y2=\"120\" opacity=\".4\"/>\n<path d=\"M320 113.6 L325 113.14693093390107 L330 111.79887979966165 L335 109.58904009013193 L340 106.57182539299806 L345 102.82152954766495 L350 98.43049728436301 L355 93.50685039041532 L360 88.17182539299807 L365 82.5567883134805 L370 76.8 L375 71.0432116865195 L380 65.42817460700194 L385 60.09314960958467 L390 55.169502715636995 L395 50.77847045233506 L400 47.028174607001944 L405 44.01095990986806 L410 41.801120200338346 L415 40.453069066098934 L420 40 L425 40.453069066098934 L430 41.80112020033833 L435 44.01095990986805 L440 47.02817460700193 L445 50.77847045233504 L450 55.16950271563698 L455 60.09314960958467 L460 65.42817460700192 L465 71.0432116865195 L470 76.79999999999998 L475 82.5567883134805 L480 88.17182539299806 L485 93.50685039041531 L490 98.430497284363 L495 102.82152954766494 L500 106.57182539299805 L505 109.58904009013193 L510 111.79887979966165 L515 113.14693093390106 L520 113.6\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<path d=\"M320 80 L325 77.6514153818077 L330 76.50584435352953 L335 78.0533722752631 L340 82.59973077863239 L345 87.34670660612764 L350 87.29231374938793 L355 79.80511423328952 L360 68.94831278413128 L365 64.11184209371898 L370 72.2109606289308 L375 89.79977595510266 L380 103.42002279262378 L385 99.97101599578309 L390 79.04633799369167 L395 55.65785549828302 L400 49.17120783636173 L405 66.81027829881074 L410 96.16250568147734 L415 114.2472160597431 L420 106.28455363700867 L425 78.24520059679422 L430 52.16258602698643 L435 48.04628059971775 L440 67.82851186523295 L445 94.75379714775507 L450 107.9922240546534 L455 99.38903969550384 L460 78.39539560049867 L465 62.365363999971336 L470 61.92449495315489 L475 74.01009629657449 L480 86.98732890135364 L485 91.46890033336862 L490 86.87329105737182 L495 79.36888319118992 L500 75.10768259872191 L505 75.66689265473114 L510 78.74437795702464 L515 81.54786653456107 L520 82.77698078964073\" opacity=\".5\"/>\n<text x=\"360\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">Hamming (tapered)</text>\n</g>",
           "viewBox": "0 0 560 150",
           "caption": "Left: rectangular window — the frame starts and stops abruptly. Right: Hamming window — the same frame faded in and out. The right one leaks far less.",
+          "slide": "Rectangular vs Hamming",
           "id": "window.b338f93c"
         },
         {
@@ -176,6 +186,7 @@
               "'spectrum': |X_k| = |A_k|/2 · 'psd': amplitude spectral density"
             ]
           ],
+          "slide": "The parameters (stft.pdf) — what each one is and how to compute it",
           "id": "stft.caf39de1"
         },
         {
@@ -281,12 +292,14 @@
               "caption": "Slide the window until you can't fit another full frame: (N − nperseg)/hop, rounded down, plus the first frame. 98 frames for 1 second — one spectrum every 10 ms."
             }
           ],
+          "slide": true,
           "id": "stft.fd1adfc7"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**Why you can't have both** Frequency resolution is Fₛ/N: a **longer** window gives finer frequency detail. But a longer window blurs *when* things happen. **Short window (≈5 ms)** → high time resolution, coarse frequency → a **broad-band** spectrogram: you see each glottal pulse as a vertical striation and formants as wide dark bands. **Long window (≈25–50 ms)** → fine frequency, blurred time → a **narrow-band** spectrogram: you see the harmonics as thin horizontal lines. Phoneticians use broad-band to read formants and narrow-band to read pitch. This is the one conceptual question Day 8 is guaranteed to ask.",
+          "slide": "The time–frequency trade-off",
           "id": "stft.8a5a6027"
         },
         {

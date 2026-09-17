@@ -18,6 +18,7 @@
           "type": "prose",
           "label": "why",
           "md": "**The idea** A raw corpus is a pile of strings. Ask it 'how often is *book* a verb?' and it can't answer — it doesn't know what a verb is. **Annotation** adds a layer of linguistic interpretation on top of the text (this token is a verb; these four tokens are a noun phrase; this pronoun refers to that name) so questions about *structure* become countable. It's the difference between preprocessing — technical access to the text — and analysis.",
+          "slide": "Raw text can't answer linguistic questions",
           "id": "why.a5d489ed"
         },
         {
@@ -89,11 +90,13 @@
               "'…bring them round'; Santa Cruz Sluicing Dataset"
             ]
           ],
+          "slide": "Levels, with her examples",
           "id": "levels.dcaa1723"
         },
         {
           "type": "prose",
           "md": "The morphological and syntactic rows are LING 112's interlinear glosses and phrase-structure trees, stored as data. A treebank is a corpus where every sentence has the tree you'd draw in syntax class. That's why the Penn Treebank tagset is 'theoretically committed to constituency grammar' — its designers had a syntax theory in mind.",
+          "slide": "How this connects to LING 112",
           "id": "levels.feaade6b"
         }
       ]
@@ -123,6 +126,7 @@
         {
           "type": "prose",
           "md": "- **1. Research question and hypotheses.**\n- **4. Data documentation.**",
+          "slide": "The five steps (Lecture 7 slide 6)",
           "id": "process.f54c4be9"
         },
         {
@@ -134,6 +138,7 @@
           "type": "prose",
           "label": "why",
           "md": "**Why document** A datasheet is a standard description of a dataset: who made it, why, from what, how it was cleaned, what it should and shouldn't be used for. Two framings: it's **ethical accounting** (biases and provenance on the record) and it's a **QA document** (the dataset becomes inspectable, testable, reusable). Without one, a dataset has no lineage, no known biases, no clear use case, no interpretive constraints. That last sentence is the answer to 'give one reason documenting datasets is important.'",
+          "slide": "Datasheets for Datasets (Gebru et al. 2018)",
           "id": "process.e96637e2"
         },
         {
@@ -251,6 +256,7 @@
               "caption": "*the book*: after a determiner, it's a noun, **NN**. And *read* — past or present? Spelled the same. The tagger guessed VBD (past) here, but nothing in the sentence proves it. That's **ambiguity**, and it doesn't go away when you tokenize."
             }
           ],
+          "slide": true,
           "id": "pos.8af71b32"
         },
         {
@@ -277,12 +283,14 @@
               "'Can you pass the salt?'; 'John loves his mother, and Bill does too'"
             ]
           ],
+          "slide": "Three kinds of ambiguity (slide 11)",
           "id": "pos.3ae8ec9c"
         },
         {
           "type": "example",
           "title": "Two parses, and why a machine can't pick",
           "body": "Explain the ambiguity.\n\n1. Reading 1: [help [dog-bite victim]] — police help a person who was bitten by a dog. *bite* is a noun inside a compound.\n2. Reading 2: [help dog] [bite victim] — police help a dog to bite someone. *bite* is a verb.\n3. The POS tag of *bite* depends on the parse, and the parse depends on the tags — circular. What breaks the tie is world knowledge (police don't usually help dogs bite people), which a tagger doesn't have.\n4. That's the chance-quiz answer for 'say something about ambiguity and language data': ambiguity doesn't disappear when you tokenize; context is needed to resolve it, and context can mislead.",
+          "slide": "Why 'Police help dog bite victim' is hard",
           "id": "pos.05de581f"
         }
       ]
@@ -343,12 +351,14 @@
         {
           "type": "prose",
           "md": "- None reaches 100%. Errors cluster on syntactically complex or rare structures and at sentence boundaries.",
+          "slide": "Three families of tagger",
           "id": "tagsets.6431195e"
         },
         {
           "type": "example",
           "title": "Every line marked DECISION is a place to write a sentence in your discussion about what it did to the data.",
           "body": "import nltk\nfrom nltk.corpus import brown\nfrom collections import Counter\nnltk.download('brown'); nltk.download('universal_tagset')\n\nwords  = brown.words(categories='news')                 # tokens, NLTK's tokenization (DECISION)\ntagged = brown.tagged_words(categories='news', tagset='universal')\n\nfreq   = Counter(w.lower() for w in words)              # lowercasing (DECISION: Apple/apple merge)\nfreq.most_common(20)\ntypes, tokens = len(set(words)), len(words)\nttr = types / tokens                                    # only comparable across same-size categories\n\ntag_freq = Counter(t for _, t in tagged)                # POS distribution\nnouns    = Counter(w.lower() for w, t in tagged if t == 'NOUN')\n\nimport pandas as pd\ndf = pd.DataFrame(freq.most_common(), columns=['word', 'count'])\ndf['per_million'] = df['count'] / tokens * 1_000_000    # relative frequency",
+          "slide": "HW 2's NLTK moves (Brown frequency analysis)",
           "id": "tagsets.c063e632"
         },
         {
