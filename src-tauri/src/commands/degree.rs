@@ -147,7 +147,11 @@ async fn audit_from(db: &Db, report: degree::Report) -> CommandResult<DegreeAudi
         .filter_map(|b| {
             let needed = b.units_needed()?;
             let prefix = format!("{}:", b.key);
-            if !report.requirements.iter().any(|r| r.key.starts_with(&prefix)) {
+            if !report
+                .requirements
+                .iter()
+                .any(|r| r.key.starts_with(&prefix))
+            {
                 return None;
             }
             let itemised: f64 = outstanding_refs

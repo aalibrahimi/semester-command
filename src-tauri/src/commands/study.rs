@@ -74,7 +74,11 @@ pub async fn study_mastery(app: AppHandle, guide_id: String) -> CommandResult<St
         .fetch_all(&db)
         .await
         .map_err(storage_err)?;
-    Ok(StudyMastery { guide_id, sections, reviews })
+    Ok(StudyMastery {
+        guide_id,
+        sections,
+        reviews,
+    })
 }
 
 /// Section status for every guide — the Study index and course pages need
@@ -97,7 +101,9 @@ pub async fn set_study_section(
     status: String,
 ) -> CommandResult<StudySectionRow> {
     if !matches!(status.as_str(), "unread" | "shaky" | "mastered") {
-        return Err(CommandError::internal("Section status must be unread, shaky or mastered."));
+        return Err(CommandError::internal(
+            "Section status must be unread, shaky or mastered.",
+        ));
     }
     let db = db_of(&app);
     sqlx::query(
@@ -141,7 +147,10 @@ pub async fn save_study_scratch(
 
 /// Store a review record as the webview computed it (SM-2 runs there).
 #[tauri::command]
-pub async fn record_study_review(app: AppHandle, review: StudyReviewRow) -> CommandResult<StudyReviewRow> {
+pub async fn record_study_review(
+    app: AppHandle,
+    review: StudyReviewRow,
+) -> CommandResult<StudyReviewRow> {
     let db = db_of(&app);
     sqlx::query(
         "INSERT INTO study_review (guide_id, item_id, last_seen, misses, next_due, ease, interval_days, reps)

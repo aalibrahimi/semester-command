@@ -311,8 +311,7 @@ impl Requirement {
     /// Whether the report says anything is still outstanding here. A bare
     /// `Error` with no counts is a heading whose children carry the detail.
     pub fn needs_work(&self) -> bool {
-        self.courses.is_some_and(|c| c.needed > 0.0)
-            || self.units.is_some_and(|u| u.needed > 0.0)
+        self.courses.is_some_and(|c| c.needed > 0.0) || self.units.is_some_and(|u| u.needed > 0.0)
     }
 
     /// A unit-total constraint rather than a course to take.
@@ -435,10 +434,10 @@ impl Report {
             .chain(self.requirements.iter().flat_map(|r| &r.options))
             .filter(|c| c.code.eq_ignore_ascii_case(code) && c.grade.is_some())
             .max_by(|a, b| {
-                let pts = |c: &CourseRow| {
-                    c.grade.as_deref().and_then(grade_points).unwrap_or(-1.0)
-                };
-                pts(a).partial_cmp(&pts(b)).unwrap_or(std::cmp::Ordering::Equal)
+                let pts = |c: &CourseRow| c.grade.as_deref().and_then(grade_points).unwrap_or(-1.0);
+                pts(a)
+                    .partial_cmp(&pts(b))
+                    .unwrap_or(std::cmp::Ordering::Equal)
             })
     }
 }
@@ -526,8 +525,11 @@ pub fn audit(report: &Report) -> Vec<AuditItem> {
                 })
             });
 
-            let offerings: Vec<&Offering> =
-                r.options.iter().filter_map(|c| c.offering.as_ref()).collect();
+            let offerings: Vec<&Offering> = r
+                .options
+                .iter()
+                .filter_map(|c| c.offering.as_ref())
+                .collect();
 
             AuditItem {
                 key: r.key.clone(),
@@ -649,7 +651,10 @@ pub fn parse(input: &str) -> Report {
             // A new top-level group (`RGxxxx`) ends the previous block's grade
             // floor. Without this, GE Area 6's C- rule leaks into every later
             // block that states no floor of its own.
-            if key_from_title.as_deref().is_some_and(|k| k.starts_with("RG")) {
+            if key_from_title
+                .as_deref()
+                .is_some_and(|k| k.starts_with("RG"))
+            {
                 inherited_floor = None;
             }
             requirements.push(Requirement {
@@ -828,7 +833,13 @@ fn is_req_id(s: &str) -> bool {
 fn slug(title: &str) -> String {
     let body: String = title
         .chars()
-        .map(|c| if c.is_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
+        .map(|c| {
+            if c.is_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                '-'
+            }
+        })
         .collect();
     format!("slug:{}", body.trim_matches('-'))
 }
@@ -1075,7 +1086,10 @@ mod tests {
             })
         );
         // A complete table is not truncation.
-        assert_eq!(parse_pagination(" First\t Previous\t1-13 of 13\tNext"), None);
+        assert_eq!(
+            parse_pagination(" First\t Previous\t1-13 of 13\tNext"),
+            None
+        );
     }
 
     #[test]

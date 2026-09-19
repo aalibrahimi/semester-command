@@ -20,8 +20,8 @@
 //! tables precisely so a cascade cannot take them (§3).
 
 use super::Db;
-use crate::degree::{CourseRow, CourseStatus, Offering, ReportHeader, ReqStatus, Truncation};
 use crate::degree::{Counts, Report, Requirement};
+use crate::degree::{CourseRow, CourseStatus, Offering, ReportHeader, ReqStatus, Truncation};
 
 /// Store a freshly parsed report, replacing any previous one.
 ///
@@ -190,12 +190,13 @@ pub async fn load(db: &Db) -> Result<Option<Report>, sqlx::Error> {
             gpa: row.gpa_required.zip(row.gpa_actual),
             min_grade: row.min_grade,
             options: options.into_iter().map(CourseRowDb::into_row).collect(),
-            truncated: row.truncated_shown.zip(row.truncated_total).map(|(s, t)| {
-                Truncation {
+            truncated: row
+                .truncated_shown
+                .zip(row.truncated_total)
+                .map(|(s, t)| Truncation {
                     shown: s as usize,
                     total: t as usize,
-                }
-            }),
+                }),
             position: row.position as usize,
         });
     }
@@ -437,7 +438,10 @@ mod tests {
         // Import again, as the user would after re-pasting with View All.
         save(&db, &parsed, SAMPLE).await.unwrap();
 
-        assert_eq!(target_term(&db).await.unwrap().as_deref(), Some("Fall 2027"));
+        assert_eq!(
+            target_term(&db).await.unwrap().as_deref(),
+            Some("Fall 2027")
+        );
         let plan: Option<(String,)> =
             sqlx::query_as("SELECT planned_term FROM degree_plan WHERE requirement_key = ?")
                 .bind("RQ2995:LI20")

@@ -98,7 +98,11 @@ impl SessionStore {
     pub fn load(&self) -> Option<Restored> {
         for slot in [Slot::Token, Slot::Session] {
             if let Some((secret, backend)) = self.load_slot(slot) {
-                return Some(Restored { slot, secret, backend });
+                return Some(Restored {
+                    slot,
+                    secret,
+                    backend,
+                });
             }
         }
         None
@@ -154,7 +158,11 @@ impl SessionStore {
         let b = self.clear(Slot::Session);
         match (a, b) {
             (Ok(()), Ok(())) => Ok(()),
-            (r1, r2) => Err([r1.err(), r2.err()].into_iter().flatten().collect::<Vec<_>>().join("; ")),
+            (r1, r2) => Err([r1.err(), r2.err()]
+                .into_iter()
+                .flatten()
+                .collect::<Vec<_>>()
+                .join("; ")),
         }
     }
 
@@ -223,6 +231,9 @@ mod tests {
         store.write_file(Slot::Token, "tok").unwrap();
         store.write_file(Slot::Session, "cookie").unwrap();
         assert_ne!(store.file_path(Slot::Token), store.file_path(Slot::Session));
-        assert_eq!(std::fs::read_to_string(store.file_path(Slot::Token)).unwrap(), "tok");
+        assert_eq!(
+            std::fs::read_to_string(store.file_path(Slot::Token)).unwrap(),
+            "tok"
+        );
     }
 }

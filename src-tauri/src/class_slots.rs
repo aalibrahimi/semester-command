@@ -108,14 +108,23 @@ pub async fn detect(
     // Dedupe on (course, weekday, start): Canvas beats syllabus (it carries
     // the room and reflects reality after schedule changes).
     candidates.sort_by(|a, b| {
-        (&a.course_id, a.weekday, a.start_min, &a.source)
-            .cmp(&(&b.course_id, b.weekday, b.start_min, &b.source))
+        (&a.course_id, a.weekday, a.start_min, &a.source).cmp(&(
+            &b.course_id,
+            b.weekday,
+            b.start_min,
+            &b.source,
+        ))
     });
     candidates.dedup_by(|b, a| {
-        a.course_id == b.course_id && a.weekday == b.weekday && (a.start_min - b.start_min).abs() < 20
+        a.course_id == b.course_id
+            && a.weekday == b.weekday
+            && (a.start_min - b.start_min).abs() < 20
     });
 
-    DetectResult { candidates, canvas_checked }
+    DetectResult {
+        candidates,
+        canvas_checked,
+    }
 }
 
 /// Recurring events for one course over a three-week window.
@@ -134,8 +143,12 @@ async fn canvas_events_for(
     let mut buckets: std::collections::HashMap<(i64, i64, i64), (usize, Option<String>)> =
         std::collections::HashMap::new();
     for value in events {
-        let Ok(ev) = serde_json::from_value::<CalendarEvent>(value) else { continue };
-        let (Some(s), Some(e)) = (ev.start_at.as_deref(), ev.end_at.as_deref()) else { continue };
+        let Ok(ev) = serde_json::from_value::<CalendarEvent>(value) else {
+            continue;
+        };
+        let (Some(s), Some(e)) = (ev.start_at.as_deref(), ev.end_at.as_deref()) else {
+            continue;
+        };
         let (Ok(s), Ok(e)) = (
             chrono::DateTime::parse_from_rfc3339(s),
             chrono::DateTime::parse_from_rfc3339(e),
@@ -145,31 +158,40 @@ async fn canvas_events_for(
         let s = s.with_timezone(&chrono::Local);
         let e = e.with_timezone(&chrono::Local);
         let weekday = s.format("%u").to_string().parse::<i64>().unwrap_or(1) - 1; // Mon=0
-        let start_min = i64::from(chrono::Timelike::hour(&s)) * 60 + i64::from(chrono::Timelike::minute(&s));
-        let end_min = i64::from(chrono::Timelike::hour(&e)) * 60 + i64::from(chrono::Timelike::minute(&e));
+        let start_min =
+            i64::from(chrono::Timelike::hour(&s)) * 60 + i64::from(chrono::Timelike::minute(&s));
+        let end_min =
+            i64::from(chrono::Timelike::hour(&e)) * 60 + i64::from(chrono::Timelike::minute(&e));
         if end_min <= start_min {
             continue; // all-day or malformed
         }
-        let entry = buckets.entry((weekday, start_min, end_min)).or_insert((0, None));
+        let entry = buckets
+            .entry((weekday, start_min, end_min))
+            .or_insert((0, None));
         entry.0 += 1;
         if entry.1.is_none() {
-            entry.1 = ev.location_name.filter(|l| !l.trim().is_empty()).or(ev.title);
+            entry.1 = ev
+                .location_name
+                .filter(|l| !l.trim().is_empty())
+                .or(ev.title);
         }
     }
 
     Ok(buckets
         .into_iter()
         .filter(|(_, (count, _))| *count >= 2)
-        .map(|((weekday, start_min, end_min), (count, location))| ClassSlotCandidate {
-            course_id: course_id.to_string(),
-            course_code: None,
-            weekday,
-            start_min,
-            end_min,
-            location,
-            source: "canvas".into(),
-            confidence: count,
-        })
+        .map(
+            |((weekday, start_min, end_min), (count, location))| ClassSlotCandidate {
+                course_id: course_id.to_string(),
+                course_code: None,
+                weekday,
+                start_min,
+                end_min,
+                location,
+                source: "canvas".into(),
+                confidence: count,
+            },
+        )
         .collect())
 }
 
@@ -185,8 +207,12 @@ pub fn from_syllabus_text(text: &str) -> Vec<ClassSlotCandidate> {
 
     let mut out = Vec::new();
     for line in text.lines() {
-        let Some(days) = parse_day_tokens(line) else { continue };
-        let Some(caps) = range_re.captures(line) else { continue };
+        let Some(days) = parse_day_tokens(line) else {
+            continue;
+        };
+        let Some(caps) = range_re.captures(line) else {
+            continue;
+        };
 
         let sh: i64 = caps[1].parse().unwrap_or(0);
         let sm: i64 = caps[2].parse().unwrap_or(0);
@@ -244,12 +270,21 @@ fn parse_day_tokens(line: &str) -> Option<Vec<i64>> {
 
     // Full/abbreviated names first — unambiguous.
     for (pat, d) in [
-        ("monday", 0), ("mon", 0),
-        ("tuesday", 1), ("tues", 1), ("tue", 1),
-        ("wednesday", 2), ("wed", 2),
-        ("thursday", 3), ("thurs", 3), ("thur", 3), ("thu", 3),
-        ("friday", 4), ("fri", 4),
-        ("saturday", 5), ("sat", 5),
+        ("monday", 0),
+        ("mon", 0),
+        ("tuesday", 1),
+        ("tues", 1),
+        ("tue", 1),
+        ("wednesday", 2),
+        ("wed", 2),
+        ("thursday", 3),
+        ("thurs", 3),
+        ("thur", 3),
+        ("thu", 3),
+        ("friday", 4),
+        ("fri", 4),
+        ("saturday", 5),
+        ("sat", 5),
     ] {
         if lower.contains(pat) && !days.contains(&d) {
             days.push(d);
@@ -328,6 +363,9 @@ mod tests {
 
     #[test]
     fn prose_without_times_is_ignored() {
-        assert!(from_syllabus_text("Make-up work: within two weeks. MW office drop-ins welcome.").is_empty());
+        assert!(
+            from_syllabus_text("Make-up work: within two weeks. MW office drop-ins welcome.")
+                .is_empty()
+        );
     }
 }

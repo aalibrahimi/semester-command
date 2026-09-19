@@ -76,7 +76,11 @@ pub async fn get_sync_status(app: AppHandle) -> CommandResult<SyncStatus> {
             let has_feed = dir
                 .map(|d| crate::settings::load(&d).calendar_feed_url.is_some())
                 .unwrap_or(false);
-            if has_feed { AuthModeTag::Ics } else { AuthModeTag::None }
+            if has_feed {
+                AuthModeTag::Ics
+            } else {
+                AuthModeTag::None
+            }
         }
     };
 

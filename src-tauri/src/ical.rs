@@ -46,19 +46,23 @@ use crate::db::{self, schema::*, upsert, Db};
 
 /// Build the semester `.ics` from every dated, non-hidden assignment (§5).
 ///
+/// One exportable assignment:
+/// `(assignment_id, course_code, name, due_at, points_possible)`.
+pub type IcsItem = (String, Option<String>, Option<String>, String, Option<f64>);
+
 /// The UID is the load-bearing part: `canvas-assignment-{id}@semester-command`
 /// is stable across exports, so re-importing after a sync *updates* events in
 /// the user's real calendar instead of duplicating them all. Generating a
 /// fresh UID per export is the naive default and produces a calendar nobody
 /// can use by week four.
-pub fn build_semester_ics(
-    items: &[(String, Option<String>, Option<String>, String, Option<f64>)],
-) -> String {
+pub fn build_semester_ics(items: &[IcsItem]) -> String {
     let mut calendar = Calendar::new();
     calendar.name("Semester Command — due dates");
 
     for (assignment_id, course_code, name, due_at, points) in items {
-        let Ok(due) = chrono::DateTime::parse_from_rfc3339(due_at) else { continue };
+        let Ok(due) = chrono::DateTime::parse_from_rfc3339(due_at) else {
+            continue;
+        };
         let due = due.with_timezone(&chrono::Utc);
 
         let title = match (name, course_code) {
@@ -69,7 +73,9 @@ pub fn build_semester_ics(
         };
         let mut event = Event::new();
         event
-            .uid(&format!("canvas-assignment-{assignment_id}@semester-command"))
+            .uid(&format!(
+                "canvas-assignment-{assignment_id}@semester-command"
+            ))
             .summary(&title)
             .starts(due)
             .ends(due);
@@ -122,12 +128,14 @@ pub async fn import_feed(db: &Db, feed_url: &str) -> Result<IcsSummary, String> 
 
 /// Parse the feed text into assignments. Pure, so the tests need no network.
 fn parse_feed(text: &str) -> Result<Vec<FeedAssignment>, String> {
-    let calendar = Calendar::from_str(text)
-        .map_err(|e| format!("that is not a valid .ics feed: {e}"))?;
+    let calendar =
+        Calendar::from_str(text).map_err(|e| format!("that is not a valid .ics feed: {e}"))?;
 
     let mut out = Vec::new();
     for component in &calendar.components {
-        let CalendarComponent::Event(event) = component else { continue };
+        let CalendarComponent::Event(event) = component else {
+            continue;
+        };
         let Some(uid) = event.get_uid() else { continue };
 
         // Only assignment events carry a Canvas assignment id.
@@ -158,7 +166,10 @@ async fn write_feed(db: &Db, items: Vec<FeedAssignment>) -> Result<IcsSummary, S
     for item in items {
         // A course row must exist for the FK. Feed events without a URL have
         // no course id; they get a shared placeholder so they still show up.
-        let course_id = item.course_id.clone().unwrap_or_else(|| "ics-unlinked".into());
+        let course_id = item
+            .course_id
+            .clone()
+            .unwrap_or_else(|| "ics-unlinked".into());
         let created = upsert::course_if_absent(
             db,
             &course_id,
@@ -204,7 +215,9 @@ async fn write_feed(db: &Db, items: Vec<FeedAssignment>) -> Result<IcsSummary, S
 /// The bracket suffix is Canvas's convention for feed events; a summary
 /// without one is kept whole as the name.
 fn split_summary(summary: Option<&str>) -> (Option<String>, Option<String>) {
-    let Some(s) = summary else { return (None, None) };
+    let Some(s) = summary else {
+        return (None, None);
+    };
     let s = s.trim();
     if let (Some(open), true) = (s.rfind('['), s.ends_with(']')) {
         let label = s[open + 1..s.len() - 1].trim();

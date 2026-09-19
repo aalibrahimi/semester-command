@@ -204,7 +204,9 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
     if let Some(r) = restored {
         let mode = match r.slot {
             Slot::Token => AuthMode::Token(r.secret),
-            Slot::Session => AuthMode::Session { cookie_header: r.secret },
+            Slot::Session => AuthMode::Session {
+                cookie_header: r.secret,
+            },
         };
         tracing::info!(slot = ?r.slot, backend = ?r.backend, "credential restored from storage");
 
@@ -311,7 +313,13 @@ fn build_tray_menu(
     }
     builder
         .item(&PredefinedMenuItem::separator(app)?)
-        .item(&MenuItem::with_id(app, "sync", "Sync now", true, None::<&str>)?)
+        .item(&MenuItem::with_id(
+            app,
+            "sync",
+            "Sync now",
+            true,
+            None::<&str>,
+        )?)
         .item(&PredefinedMenuItem::separator(app)?)
         .item(&MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?)
         .build()
@@ -321,7 +329,9 @@ fn build_tray_menu(
 /// Called after every sync; cheap enough not to care how often.
 pub async fn update_tray_menu(app: &tauri::AppHandle) {
     let db = app.state::<db::Db>().inner().clone();
-    let Ok(bundle) = commands::grades::load_bundle(&db).await else { return };
+    let Ok(bundle) = commands::grades::load_bundle(&db).await else {
+        return;
+    };
 
     let lines: Vec<String> = triage::rank(&bundle, chrono::Utc::now())
         .into_iter()
@@ -387,8 +397,7 @@ fn setup_notify_schedule(app: tauri::AppHandle) {
 /// usable credential — keeping every "should we sync" rule in one place.
 fn setup_sync_schedule(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
-        let mut interval =
-            tokio::time::interval(std::time::Duration::from_secs(30 * 60));
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(30 * 60));
         // The first tick fires immediately; skip it — launch sync is handled
         // by setup_auth once the credential is validated.
         interval.tick().await;

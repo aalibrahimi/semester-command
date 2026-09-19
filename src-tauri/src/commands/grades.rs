@@ -103,7 +103,10 @@ impl Bundle {
                 score: sub.and_then(|s| s.score),
                 excused: sub.and_then(|s| s.excused).unwrap_or(false),
             };
-            match groups.iter_mut().find(|g| Some(&g.id) == a.group_id.as_ref()) {
+            match groups
+                .iter_mut()
+                .find(|g| Some(&g.id) == a.group_id.as_ref())
+            {
                 Some(g) => g.assignments.push(input),
                 None => orphans.assignments.push(input),
             }
@@ -193,7 +196,10 @@ impl Bundle {
 
     /// Is this course hidden (local view preference)?
     pub fn is_hidden(&self, course_id: &str) -> bool {
-        self.targets.get(course_id).map(|t| t.hidden).unwrap_or(false)
+        self.targets
+            .get(course_id)
+            .map(|t| t.hidden)
+            .unwrap_or(false)
     }
 
     /// Missing-work count: Canvas's own `missing` flag on ungraded work.
@@ -329,7 +335,11 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
             SignalStatus::OnTrack => 2,
             SignalStatus::Locked => 3,
         };
-        (u8::from(s.hidden), u8::from(!s.gradeable || !s.active), status)
+        (
+            u8::from(s.hidden),
+            u8::from(!s.gradeable || !s.active),
+            status,
+        )
     }
     courses.sort_by(|a, b| {
         rank(a).cmp(&rank(b)).then(
@@ -383,7 +393,11 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         })
         .count();
 
-    Ok(Dashboard { courses, open_total, due_this_week })
+    Ok(Dashboard {
+        courses,
+        open_total,
+        due_this_week,
+    })
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -459,7 +473,10 @@ pub struct CourseDetailPayload {
 
 /// Everything the course-detail screen needs, in one read.
 #[tauri::command]
-pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<CourseDetailPayload> {
+pub async fn course_detail(
+    app: AppHandle,
+    course_id: String,
+) -> CommandResult<CourseDetailPayload> {
     let db = app.state::<Db>().inner().clone();
     let bundle = load_bundle(&db).await.map_err(storage_err)?;
 
@@ -482,10 +499,16 @@ pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<C
         .filter(|g| g.course_id == course_id)
         .map(|g| {
             let engine_group = input.groups.iter().find(|ig| ig.id == g.id);
-            let assignments = engine_group.map(|ig| ig.assignments.clone()).unwrap_or_default();
+            let assignments = engine_group
+                .map(|ig| ig.assignments.clone())
+                .unwrap_or_default();
             let solo = CourseInput {
                 mode: GradingMode::Points,
-                groups: vec![GroupInput { id: g.id.clone(), weight: None, assignments: assignments.clone() }],
+                groups: vec![GroupInput {
+                    id: g.id.clone(),
+                    weight: None,
+                    assignments: assignments.clone(),
+                }],
             };
             GroupDetail {
                 id: g.id.clone(),
@@ -595,7 +618,12 @@ pub async fn what_do_i_need(
         Some(id) => SolveScope::SingleAssignment(id),
         None => SolveScope::EverythingRemaining,
     };
-    Ok(grades::solve(&input, target_pct, scope, &bundle.scale_of(&course_id)))
+    Ok(grades::solve(
+        &input,
+        target_pct,
+        scope,
+        &bundle.scale_of(&course_id),
+    ))
 }
 
 /// Set or clear a course's grade scale (§4.4). `scale: None` resets to the
@@ -613,7 +641,10 @@ pub async fn set_grade_scale(
             if pairs.is_empty() {
                 return Err(CommandError::internal("A scale needs at least one cutoff."));
             }
-            if pairs.iter().any(|(c, l)| !(0.0..=110.0).contains(c) || l.trim().is_empty()) {
+            if pairs
+                .iter()
+                .any(|(c, l)| !(0.0..=110.0).contains(c) || l.trim().is_empty())
+            {
                 return Err(CommandError::internal(
                     "Each cutoff must be 0–110% and carry a letter.",
                 ));

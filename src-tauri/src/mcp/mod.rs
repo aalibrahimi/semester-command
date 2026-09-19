@@ -82,13 +82,15 @@ async fn serve_inner() -> Result<(), Box<dyn std::error::Error>> {
             // isError, not protocol errors — that is what MCP hosts render
             // as a tool failure the model can react to. Only an unknown
             // method is a JSON-RPC error.
-            "tools/call" => Ok(match call_tool(&db, msg.get("params").unwrap_or(&Value::Null)).await {
-                Ok(result) => result,
-                Err(message) => json!({
-                    "content": [{ "type": "text", "text": message }],
-                    "isError": true,
-                }),
-            }),
+            "tools/call" => Ok(
+                match call_tool(&db, msg.get("params").unwrap_or(&Value::Null)).await {
+                    Ok(result) => result,
+                    Err(message) => json!({
+                        "content": [{ "type": "text", "text": message }],
+                        "isError": true,
+                    }),
+                },
+            ),
             _ => Err(format!("method not supported: {method}")),
         };
 
@@ -221,7 +223,9 @@ async fn call_tool(db: &Db, params: &Value) -> Result<Value, String> {
     let name = params.get("name").and_then(|n| n.as_str()).unwrap_or("");
     let args = params.get("arguments").cloned().unwrap_or(json!({}));
 
-    let bundle = load_bundle(db).await.map_err(|e| format!("database read failed: {e}"))?;
+    let bundle = load_bundle(db)
+        .await
+        .map_err(|e| format!("database read failed: {e}"))?;
 
     let text = match name {
         "list_courses" => list_courses(&bundle),
@@ -264,7 +268,10 @@ fn str_arg(args: &Value, key: &str) -> Result<String, String> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Match "CS 146" / "cs-146" / a name fragment against a course row.
-fn find_course<'a>(bundle: &'a Bundle, needle: &str) -> Result<&'a crate::db::schema::CourseRow, String> {
+fn find_course<'a>(
+    bundle: &'a Bundle,
+    needle: &str,
+) -> Result<&'a crate::db::schema::CourseRow, String> {
     let n = needle.to_lowercase().replace('-', " ");
     bundle
         .courses
@@ -295,7 +302,12 @@ fn list_courses(bundle: &Bundle) -> String {
         // stale terms) are noise in a grades listing — one trailer line
         // names them so nothing is silently invisible.
         if bundle.is_hidden(&c.id) || !bundle.is_active(&c.id, now) {
-            dormant.push(c.course_code.as_deref().or(c.name.as_deref()).unwrap_or("?"));
+            dormant.push(
+                c.course_code
+                    .as_deref()
+                    .or(c.name.as_deref())
+                    .unwrap_or("?"),
+            );
             continue;
         }
         let input = bundle.course_input(&c.id);
@@ -343,15 +355,25 @@ fn course_grades(bundle: &Bundle, needle: &str) -> Result<String, String> {
         out.push_str(&format!(
             "[{}] weight {}\n",
             g.name.as_deref().unwrap_or("group"),
-            g.group_weight.map(|w| format!("{w:.0}%")).unwrap_or_else(|| "—".into()),
+            g.group_weight
+                .map(|w| format!("{w:.0}%"))
+                .unwrap_or_else(|| "—".into()),
         ));
-        for a in bundle.assignments.iter().filter(|a| a.group_id.as_deref() == Some(g.id.as_str())) {
+        for a in bundle
+            .assignments
+            .iter()
+            .filter(|a| a.group_id.as_deref() == Some(g.id.as_str()))
+        {
             let sub = bundle.submissions.get(&a.id);
             out.push_str(&format!(
                 "  {} — {} / {}\n",
                 a.name.as_deref().unwrap_or("?"),
-                sub.and_then(|s| s.score).map(|v| format!("{v}")).unwrap_or_else(|| "ungraded".into()),
-                a.points_possible.map(|v| format!("{v}")).unwrap_or_else(|| "—".into()),
+                sub.and_then(|s| s.score)
+                    .map(|v| format!("{v}"))
+                    .unwrap_or_else(|| "ungraded".into()),
+                a.points_possible
+                    .map(|v| format!("{v}"))
+                    .unwrap_or_else(|| "—".into()),
             ));
         }
     }
@@ -384,7 +406,11 @@ fn what_do_i_need(
                 .ok_or_else(|| {
                     format!(
                         "\"{letter}\" is not on this course's scale ({})",
-                        scale.iter().map(|(_, l)| l.as_str()).collect::<Vec<_>>().join(", ")
+                        scale
+                            .iter()
+                            .map(|(_, l)| l.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
                     )
                 })?
         }
@@ -401,7 +427,12 @@ fn what_do_i_need(
                 .assignments
                 .iter()
                 .filter(|a| a.course_id == c.id)
-                .find(|a| a.name.as_deref().map(|n| n.to_lowercase().contains(&f)).unwrap_or(false))
+                .find(|a| {
+                    a.name
+                        .as_deref()
+                        .map(|n| n.to_lowercase().contains(&f))
+                        .unwrap_or(false)
+                })
                 .ok_or_else(|| format!("no assignment in that course matches \"{frag}\""))?;
             grades::SolveScope::SingleAssignment(&a.id)
         }
@@ -436,7 +467,10 @@ fn upcoming(bundle: &Bundle, days: f64) -> String {
         if bundle.is_hidden(&a.course_id) || !bundle.is_active(&a.course_id, now) {
             continue;
         }
-        let Some(due) = a.due_at.as_deref().and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
+        let Some(due) = a
+            .due_at
+            .as_deref()
+            .and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
         else {
             continue;
         };
@@ -470,7 +504,10 @@ fn upcoming(bundle: &Bundle, days: f64) -> String {
     if rows.is_empty() {
         format!("Nothing due in the next {days:.0} days.")
     } else {
-        rows.into_iter().map(|(_, line)| line).collect::<Vec<_>>().join("\n")
+        rows.into_iter()
+            .map(|(_, line)| line)
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -510,15 +547,14 @@ async fn syllabus_search(db: &Db, query: &str) -> Result<String, String> {
     .await
     .map_err(|e| format!("database read failed: {e}"))?;
 
-    let codes: std::collections::HashMap<String, String> = sqlx::query_as::<_, (String, Option<String>)>(
-        "SELECT id, course_code FROM courses",
-    )
-    .fetch_all(db)
-    .await
-    .map_err(|e| e.to_string())?
-    .into_iter()
-    .filter_map(|(id, code)| code.map(|c| (id, c)))
-    .collect();
+    let codes: std::collections::HashMap<String, String> =
+        sqlx::query_as::<_, (String, Option<String>)>("SELECT id, course_code FROM courses")
+            .fetch_all(db)
+            .await
+            .map_err(|e| e.to_string())?
+            .into_iter()
+            .filter_map(|(id, code)| code.map(|c| (id, c)))
+            .collect();
 
     let q = query.to_lowercase();
     let mut out = String::new();
@@ -530,7 +566,12 @@ async fn syllabus_search(db: &Db, query: &str) -> Result<String, String> {
         while let Some(pos) = lower[from..].find(&q) {
             let at = from + pos;
             // A passage of context around the hit, on char boundaries.
-            let start = text[..at].char_indices().rev().nth(120).map(|(i, _)| i).unwrap_or(0);
+            let start = text[..at]
+                .char_indices()
+                .rev()
+                .nth(120)
+                .map(|(i, _)| i)
+                .unwrap_or(0);
             let end = text[at..]
                 .char_indices()
                 .nth(200)
@@ -538,7 +579,10 @@ async fn syllabus_search(db: &Db, query: &str) -> Result<String, String> {
                 .unwrap_or(text.len());
             out.push_str(&format!(
                 "— {} ({}):\n…{}…\n\n",
-                codes.get(&course_id).map(String::as_str).unwrap_or(&course_id),
+                codes
+                    .get(&course_id)
+                    .map(String::as_str)
+                    .unwrap_or(&course_id),
                 filename,
                 text[start..end].trim().replace('\n', " "),
             ));

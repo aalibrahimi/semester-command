@@ -242,10 +242,11 @@ pub async fn handle_session_death(app: AppHandle) {
     // A poller already running (user is mid-sign-in, or another death beat
     // us here) means the situation is already being handled.
     if refreshable && cooldown_ok && !ctx.polling.swap(true, Ordering::SeqCst) {
-        if app.get_webview_window(LOGIN_WINDOW).is_none()
-            && build_login_window(&app, false).is_ok()
+        if app.get_webview_window(LOGIN_WINDOW).is_none() && build_login_window(&app, false).is_ok()
         {
-            tracing::info!("session died — attempting silent re-auth through the hidden login window");
+            tracing::info!(
+                "session died — attempting silent re-auth through the hidden login window"
+            );
             if poll_for_session(app.clone(), true).await {
                 return; // fresh session, sync already kicked; nobody noticed.
             }
@@ -307,7 +308,11 @@ async fn poll_for_session(app: AppHandle, silent: bool) -> bool {
         };
         // A silent window the user has since revealed (clicked Reconnect) is
         // an interactive sign-in now — give it the interactive timeout.
-        let timeout = if win.is_visible().unwrap_or(false) { TIMEOUT } else { timeout };
+        let timeout = if win.is_visible().unwrap_or(false) {
+            TIMEOUT
+        } else {
+            timeout
+        };
         if started.elapsed() > timeout {
             let _ = win.close();
             break Some(if silent {
@@ -360,7 +365,9 @@ async fn poll_for_session(app: AppHandle, silent: bool) -> bool {
             .map(|c| format!("{}={}", c.name(), c.value()))
             .collect::<Vec<_>>()
             .join("; ");
-        let candidate = AuthMode::Session { cookie_header: header.clone() };
+        let candidate = AuthMode::Session {
+            cookie_header: header.clone(),
+        };
 
         let ctx = app.state::<AuthCtx>();
         match ctx.client.validate(&candidate).await {
@@ -417,7 +424,9 @@ async fn poll_for_session(app: AppHandle, silent: bool) -> bool {
 /// credential with no data behind it is exactly when the user is watching.
 /// Also re-arms the session-death notification: this session is alive.
 fn kick_sync(app: &AppHandle) {
-    app.state::<AuthCtx>().death_notified.store(false, Ordering::SeqCst);
+    app.state::<AuthCtx>()
+        .death_notified
+        .store(false, Ordering::SeqCst);
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
         crate::sync::run(&app, true).await;
@@ -453,7 +462,9 @@ pub async fn harvest_session(app: AppHandle) -> CommandResult<HarvestReport> {
         .map(|c| format!("{}={}", c.name(), c.value()))
         .collect::<Vec<_>>()
         .join("; ");
-    let candidate = AuthMode::Session { cookie_header: header.clone() };
+    let candidate = AuthMode::Session {
+        cookie_header: header.clone(),
+    };
 
     let ctx = app.state::<AuthCtx>();
     match ctx.client.validate(&candidate).await {
@@ -465,9 +476,17 @@ pub async fn harvest_session(app: AppHandle) -> CommandResult<HarvestReport> {
             let _ = win.close();
             emit_status(&app, None).await;
             kick_sync(&app);
-            Ok(HarvestReport { connected: true, cookie_names, validated_as: user.name })
+            Ok(HarvestReport {
+                connected: true,
+                cookie_names,
+                validated_as: user.name,
+            })
         }
-        Err(_) => Ok(HarvestReport { connected: false, cookie_names, validated_as: None }),
+        Err(_) => Ok(HarvestReport {
+            connected: false,
+            cookie_names,
+            validated_as: None,
+        }),
     }
 }
 
@@ -483,9 +502,11 @@ pub async fn set_access_token(app: AppHandle, token: String) -> CommandResult<()
 
     let ctx = app.state::<AuthCtx>();
     let candidate = AuthMode::Token(token.clone());
-    let user = ctx.client.validate(&candidate).await.map_err(|e| {
-        CommandError::internal(format!("Canvas rejected that token: {e}"))
-    })?;
+    let user = ctx
+        .client
+        .validate(&candidate)
+        .await
+        .map_err(|e| CommandError::internal(format!("Canvas rejected that token: {e}")))?;
 
     let backend = ctx
         .store

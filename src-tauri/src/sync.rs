@@ -197,10 +197,10 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
     let client = app.state::<AuthCtx>().client.clone();
     // For syllabus document storage. Failure to resolve it would have failed
     // setup long before a sync could run.
-    let data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|_| CanvasError::Http { status: 0, path: "app data dir".into() })?;
+    let data_dir = app.path().app_data_dir().map_err(|_| CanvasError::Http {
+        status: 0,
+        path: "app data dir".into(),
+    })?;
     let mut summary = SyncSummary::default();
 
     // On the very first sync everything is "new" — that is a fresh install,
@@ -212,10 +212,14 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
         .flatten()
         .is_none();
 
-    let umbrella = upsert::sync_log_start(&db, "sync").await.map_err(log_db_err)?;
+    let umbrella = upsert::sync_log_start(&db, "sync")
+        .await
+        .map_err(log_db_err)?;
 
     // ── Courses ────────────────────────────────────────────────────────────
-    let course_log = upsert::sync_log_start(&db, "courses").await.map_err(log_db_err)?;
+    let course_log = upsert::sync_log_start(&db, "courses")
+        .await
+        .map_err(log_db_err)?;
     let courses = match endpoints::active_courses(&client).await {
         Ok((rows, skipped)) => {
             summary.skipped_rows += skipped;
@@ -259,13 +263,12 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
         // notification threshold — plus one baseline row for a course with
         // no history yet. Errors are logged and swallowed; history must
         // never fail a sync.
-        let has_history: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM score_history WHERE course_id = ?1)",
-        )
-        .bind(&row.id)
-        .fetch_one(&db)
-        .await
-        .unwrap_or(true);
+        let has_history: bool =
+            sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM score_history WHERE course_id = ?1)")
+                .bind(&row.id)
+                .fetch_one(&db)
+                .await
+                .unwrap_or(true);
         if (row.current_score != old || !has_history) && row.current_score.is_some() {
             if let Err(e) = sqlx::query(
                 "INSERT INTO score_history (course_id, recorded_at, current_score, final_score)
@@ -292,7 +295,9 @@ async fn run_inner(app: &AppHandle) -> Result<SyncSummary, CanvasError> {
             .course_code
             .clone()
             .unwrap_or_else(|| course.id.clone());
-        let log_id = upsert::sync_log_start(&db, &format!("course:{label}")).await.map_err(log_db_err)?;
+        let log_id = upsert::sync_log_start(&db, &format!("course:{label}"))
+            .await
+            .map_err(log_db_err)?;
 
         match sync_one_course(&db, &client, &data_dir, raw, &mut summary).await {
             Ok(()) => {
@@ -346,7 +351,9 @@ async fn sync_one_course(
     let (groups, skipped) = endpoints::assignment_groups(client, course_id).await?;
     summary.skipped_rows += skipped;
     for g in &groups {
-        upsert::assignment_group(db, &group_row(g, course_id, &now)).await.map_err(log_db_err)?;
+        upsert::assignment_group(db, &group_row(g, course_id, &now))
+            .await
+            .map_err(log_db_err)?;
         summary.assignment_groups += 1;
     }
 
@@ -380,14 +387,14 @@ async fn sync_one_course(
         if !known_ids.contains(&a.parsed.id) {
             summary.changes.new_assignments += 1;
         }
-        upsert::assignment(db, &assignment_row(a, course_id, &now)).await.map_err(log_db_err)?;
+        upsert::assignment(db, &assignment_row(a, course_id, &now))
+            .await
+            .map_err(log_db_err)?;
         summary.assignments += 1;
 
         if let Some(sub) = &a.parsed.submission {
-            let (old_score, old_missing) = old_subs
-                .get(&a.parsed.id)
-                .cloned()
-                .unwrap_or((None, None));
+            let (old_score, old_missing) =
+                old_subs.get(&a.parsed.id).cloned().unwrap_or((None, None));
 
             let event = || GradeEvent {
                 assignment_id: a.parsed.id.clone(),
@@ -405,7 +412,9 @@ async fn sync_one_course(
                 summary.changes.missing_flips.push(event());
             }
 
-            upsert::submission(db, &submission_row(sub, &a.parsed.id, &now)).await.map_err(log_db_err)?;
+            upsert::submission(db, &submission_row(sub, &a.parsed.id, &now))
+                .await
+                .map_err(log_db_err)?;
             summary.submissions += 1;
         }
     }
@@ -545,9 +554,9 @@ fn assignment_row(
     // Rubric criteria + settings travel together or not at all.
     let rubric_json = match (&a.rubric, &a.rubric_settings) {
         (None, None) => None,
-        (rubric, settings) => Some(
-            serde_json::json!({ "rubric": rubric, "settings": settings }).to_string(),
-        ),
+        (rubric, settings) => {
+            Some(serde_json::json!({ "rubric": rubric, "settings": settings }).to_string())
+        }
     };
     AssignmentRow {
         id: a.id.clone(),

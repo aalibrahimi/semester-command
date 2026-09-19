@@ -10,7 +10,7 @@ use std::collections::HashMap;
 
 use semester_command_lib::commands::grades::Bundle;
 use semester_command_lib::db::schema::*;
-use semester_command_lib::grades::{self, CourseInput, GradingMode, GroupInput, AssignmentInput};
+use semester_command_lib::grades::{self, AssignmentInput, CourseInput, GradingMode, GroupInput};
 use semester_command_lib::triage::{self, TriageState};
 
 // ── Builders ────────────────────────────────────────────────────────────────
@@ -120,18 +120,37 @@ fn zero_stake_overdue_is_not_pinned() {
         vec![group_row("g1", "c1", Some(100.0))],
         vec![
             // The noise: overdue, zero points, flagged missing by Canvas.
-            assignment_row("checklist", "c1", None, Some("2026-09-10T07:00:00Z"), Some(0.0)),
+            assignment_row(
+                "checklist",
+                "c1",
+                None,
+                Some("2026-09-10T07:00:00Z"),
+                Some(0.0),
+            ),
             // The real work: due tomorrow, all the marbles.
-            assignment_row("essay", "c1", Some("g1"), Some("2026-09-19T07:00:00Z"), Some(100.0)),
+            assignment_row(
+                "essay",
+                "c1",
+                Some("g1"),
+                Some("2026-09-19T07:00:00Z"),
+                Some(100.0),
+            ),
         ],
         vec![missing_submission("checklist")],
     );
 
     let rows = triage::rank(&b, now());
     assert_eq!(rows.len(), 2);
-    assert_eq!(rows[0].assignment_id, "essay", "real work outranks 0-point noise");
+    assert_eq!(
+        rows[0].assignment_id, "essay",
+        "real work outranks 0-point noise"
+    );
     assert!(!rows[0].pinned);
-    assert_eq!(rows[1].state, TriageState::Missing, "the pill still says missing");
+    assert_eq!(
+        rows[1].state,
+        TriageState::Missing,
+        "the pill still says missing"
+    );
     assert!(!rows[1].pinned, "but zero stake does not pin");
 }
 
@@ -142,8 +161,20 @@ fn overdue_with_stake_still_pins() {
         vec![course_row("c1", "LING-115", true)],
         vec![group_row("g1", "c1", Some(100.0))],
         vec![
-            assignment_row("reading1", "c1", Some("g1"), Some("2026-09-10T17:00:00Z"), Some(20.0)),
-            assignment_row("reading2", "c1", Some("g1"), Some("2026-09-19T17:00:00Z"), Some(20.0)),
+            assignment_row(
+                "reading1",
+                "c1",
+                Some("g1"),
+                Some("2026-09-10T17:00:00Z"),
+                Some(20.0),
+            ),
+            assignment_row(
+                "reading2",
+                "c1",
+                Some("g1"),
+                Some("2026-09-19T17:00:00Z"),
+                Some(20.0),
+            ),
         ],
         vec![],
     );
@@ -160,8 +191,20 @@ fn missing_flag_keeps_state_but_stake_decides_pin() {
         vec![course_row("c1", "HIST-15", true)],
         vec![group_row("g1", "c1", Some(100.0))],
         vec![
-            assignment_row("survey", "c1", None, Some("2026-09-01T07:00:00Z"), Some(0.0)),
-            assignment_row("paper", "c1", Some("g1"), Some("2026-09-02T07:00:00Z"), Some(50.0)),
+            assignment_row(
+                "survey",
+                "c1",
+                None,
+                Some("2026-09-01T07:00:00Z"),
+                Some(0.0),
+            ),
+            assignment_row(
+                "paper",
+                "c1",
+                Some("g1"),
+                Some("2026-09-02T07:00:00Z"),
+                Some(50.0),
+            ),
         ],
         vec![missing_submission("survey"), missing_submission("paper")],
     );
@@ -187,7 +230,13 @@ fn dormant_shell_is_out_of_triage() {
         vec![],
         vec![
             assignment_row("training", "shell", None, None, Some(100.0)),
-            assignment_row("hw8", "live", None, Some("2026-09-21T17:30:00Z"), Some(100.0)),
+            assignment_row(
+                "hw8",
+                "live",
+                None,
+                Some("2026-09-21T17:30:00Z"),
+                Some(100.0),
+            ),
         ],
         vec![],
     );
@@ -207,7 +256,13 @@ fn stale_term_course_is_dormant() {
     let b = bundle(
         vec![course_row("old", "FA25 LING-101", false)],
         vec![],
-        vec![assignment_row("hw", "old", None, Some("2025-12-01T08:00:00Z"), Some(10.0))],
+        vec![assignment_row(
+            "hw",
+            "old",
+            None,
+            Some("2025-12-01T08:00:00Z"),
+            Some(10.0),
+        )],
         vec![],
     );
     assert!(!b.is_active("old", now()));
@@ -219,10 +274,19 @@ fn stale_term_course_is_dormant() {
 fn undated_rows_survive_in_active_courses() {
     let b = bundle(
         vec![course_row("c1", "CS-146", true)],
-        vec![group_row("final", "c1", Some(40.0)), group_row("hw", "c1", Some(60.0))],
+        vec![
+            group_row("final", "c1", Some(40.0)),
+            group_row("hw", "c1", Some(60.0)),
+        ],
         vec![
             assignment_row("final-exam", "c1", Some("final"), None, Some(100.0)),
-            assignment_row("hw8", "c1", Some("hw"), Some("2026-09-21T17:30:00Z"), Some(100.0)),
+            assignment_row(
+                "hw8",
+                "c1",
+                Some("hw"),
+                Some("2026-09-21T17:30:00Z"),
+                Some(100.0),
+            ),
         ],
         vec![],
     );
@@ -240,9 +304,21 @@ fn shares_weighted_normalise_declared_weights() {
     let input = CourseInput {
         mode: GradingMode::Weighted,
         groups: vec![
-            GroupInput { id: "hw".into(), weight: Some(30.0), assignments: vec![] },
-            GroupInput { id: "exams".into(), weight: Some(50.0), assignments: vec![] },
-            GroupInput { id: "extra".into(), weight: None, assignments: vec![] },
+            GroupInput {
+                id: "hw".into(),
+                weight: Some(30.0),
+                assignments: vec![],
+            },
+            GroupInput {
+                id: "exams".into(),
+                weight: Some(50.0),
+                assignments: vec![],
+            },
+            GroupInput {
+                id: "extra".into(),
+                weight: None,
+                assignments: vec![],
+            },
         ],
     };
     let shares: HashMap<String, f64> = grades::group_shares(&input).into_iter().collect();
@@ -293,8 +369,14 @@ fn shares_points_follow_points() {
         ],
     };
     let shares: HashMap<String, f64> = grades::group_shares(&input).into_iter().collect();
-    assert!((shares["a"] - 25.0).abs() < 0.01, "30 of 120 countable points");
-    assert!((shares["b"] - 75.0).abs() < 0.01, "excused 100-pointer is invisible");
+    assert!(
+        (shares["a"] - 25.0).abs() < 0.01,
+        "30 of 120 countable points"
+    );
+    assert!(
+        (shares["b"] - 75.0).abs() < 0.01,
+        "excused 100-pointer is invisible"
+    );
 }
 
 // ── Grade scales ────────────────────────────────────────────────────────────
@@ -324,7 +406,12 @@ fn broken_scales_fall_back() {
 /// `Bundle::scale_of` prefers the stored scale and falls back per course.
 #[test]
 fn scale_of_prefers_stored() {
-    let mut b = bundle(vec![course_row("c1", "CS-146", true)], vec![], vec![], vec![]);
+    let mut b = bundle(
+        vec![course_row("c1", "CS-146", true)],
+        vec![],
+        vec![],
+        vec![],
+    );
     b.targets.insert(
         "c1".into(),
         TargetRow {
@@ -336,7 +423,15 @@ fn scale_of_prefers_stored() {
         },
     );
     let custom = b.scale_of("c1");
-    assert_eq!(grades::letter_for(&custom, 86.0), "A", "custom cutoff applies");
+    assert_eq!(
+        grades::letter_for(&custom, 86.0),
+        "A",
+        "custom cutoff applies"
+    );
     let default = b.scale_of("other-course");
-    assert_eq!(grades::letter_for(&default, 86.0), "B", "default scale for the rest");
+    assert_eq!(
+        grades::letter_for(&default, 86.0),
+        "B",
+        "default scale for the rest"
+    );
 }

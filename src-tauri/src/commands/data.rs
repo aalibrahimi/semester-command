@@ -55,7 +55,9 @@ pub async fn debug_overview(app: AppHandle) -> CommandResult<DebugOverview> {
     let db = db_of(&app);
     Ok(DebugOverview {
         stats: queries::entity_stats(&db).await.map_err(storage_err)?,
-        sync_log: queries::recent_sync_log(&db, 50).await.map_err(storage_err)?,
+        sync_log: queries::recent_sync_log(&db, 50)
+            .await
+            .map_err(storage_err)?,
     })
 }
 
@@ -179,8 +181,13 @@ pub async fn set_estimate(
     assignment_id: String,
     est_minutes: Option<i64>,
 ) -> CommandResult<()> {
-    if est_minutes.map(|m| m < 0 || m > 10_000).unwrap_or(false) {
-        return Err(CommandError::internal("That estimate doesn't look like minutes."));
+    if est_minutes
+        .map(|m| !(0..=10_000).contains(&m))
+        .unwrap_or(false)
+    {
+        return Err(CommandError::internal(
+            "That estimate doesn't look like minutes.",
+        ));
     }
     let db = db_of(&app);
     upsert::estimate(&db, &assignment_id, est_minutes)
@@ -193,9 +200,7 @@ pub async fn set_estimate(
 /// Propose class meeting slots from Canvas calendar events + syllabus text.
 /// Proposes only — the user confirms before anything becomes a block.
 #[tauri::command]
-pub async fn detect_class_slots(
-    app: AppHandle,
-) -> CommandResult<crate::class_slots::DetectResult> {
+pub async fn detect_class_slots(app: AppHandle) -> CommandResult<crate::class_slots::DetectResult> {
     let db = db_of(&app);
     let bundle = crate::commands::grades::load_bundle(&db)
         .await
@@ -320,6 +325,10 @@ pub async fn planner_blocks(app: AppHandle) -> CommandResult<Vec<PlannerBlockRow
 
 /// Create (id: None) or update (id: Some) one block. Returns the row id.
 /// Exactly one of weekday/date must be set — the recurrence model.
+// The parameter list mirrors the block's fields one-to-one because Tauri
+// commands take their arguments flat from the webview; bundling them into a
+// struct would change the IPC call shape for zero behavior gain.
+#[allow(clippy::too_many_arguments)]
 #[tauri::command]
 pub async fn save_planner_block(
     app: AppHandle,
@@ -335,7 +344,9 @@ pub async fn save_planner_block(
     note: Option<String>,
 ) -> CommandResult<i64> {
     if !matches!(kind.as_str(), "class" | "event") {
-        return Err(CommandError::internal("Block kind must be 'class' or 'event'."));
+        return Err(CommandError::internal(
+            "Block kind must be 'class' or 'event'.",
+        ));
     }
     if weekday.is_some() == date.is_some() {
         return Err(CommandError::internal(
@@ -344,11 +355,15 @@ pub async fn save_planner_block(
     }
     if let Some(w) = weekday {
         if !(0..=6).contains(&w) {
-            return Err(CommandError::internal("Weekday must be 0 (Mon) to 6 (Sun)."));
+            return Err(CommandError::internal(
+                "Weekday must be 0 (Mon) to 6 (Sun).",
+            ));
         }
     }
     if !(0..=1440).contains(&start_min) || !(0..=1440).contains(&end_min) || end_min <= start_min {
-        return Err(CommandError::internal("End time must come after start time."));
+        return Err(CommandError::internal(
+            "End time must come after start time.",
+        ));
     }
     let title = title.trim().to_string();
     if title.is_empty() {
@@ -420,7 +435,7 @@ pub async fn export_semester_ics(app: AppHandle, path: String) -> CommandResult<
         .await
         .map_err(storage_err)?;
 
-    let items: Vec<(String, Option<String>, Option<String>, String, Option<f64>)> = bundle
+    let items: Vec<crate::ical::IcsItem> = bundle
         .assignments
         .iter()
         .filter(|a| !bundle.is_hidden(&a.course_id))
@@ -561,7 +576,10 @@ pub async fn set_grad_override(
     term_id: Option<String>,
 ) -> CommandResult<()> {
     if let Some(s) = &status {
-        if !matches!(s.as_str(), "planned" | "in_progress" | "passed" | "failed" | "dropped") {
+        if !matches!(
+            s.as_str(),
+            "planned" | "in_progress" | "passed" | "failed" | "dropped"
+        ) {
             return Err(CommandError::internal(format!("Unknown status \"{s}\".")));
         }
     }
@@ -613,7 +631,9 @@ pub async fn syllabi(app: AppHandle) -> CommandResult<Vec<CourseSyllabus>> {
     let bundle = crate::commands::grades::load_bundle(&db)
         .await
         .map_err(storage_err)?;
-    let files = queries::all_syllabus_files(&db).await.map_err(storage_err)?;
+    let files = queries::all_syllabus_files(&db)
+        .await
+        .map_err(storage_err)?;
 
     Ok(bundle
         .courses
@@ -623,11 +643,12 @@ pub async fn syllabi(app: AppHandle) -> CommandResult<Vec<CourseSyllabus>> {
             course_id: c.id.clone(),
             course_code: c.course_code.clone(),
             course_name: c.name.clone(),
-            syllabus_html: c
-                .syllabus_html
-                .clone()
-                .filter(|h| !h.trim().is_empty()),
-            files: files.iter().filter(|f| f.course_id == c.id).cloned().collect(),
+            syllabus_html: c.syllabus_html.clone().filter(|h| !h.trim().is_empty()),
+            files: files
+                .iter()
+                .filter(|f| f.course_id == c.id)
+                .cloned()
+                .collect(),
         })
         .collect())
 }
@@ -744,7 +765,9 @@ pub async fn save_manual_group(
         raw_json: None,
         synced_at: Some(db::now_rfc3339()),
     };
-    upsert::assignment_group(&db, &row).await.map_err(storage_err)?;
+    upsert::assignment_group(&db, &row)
+        .await
+        .map_err(storage_err)?;
     Ok(id)
 }
 
@@ -795,7 +818,14 @@ pub async fn save_manual_score(
         grade: None,
         submitted_at: None,
         graded_at: score.is_some().then(db::now_rfc3339),
-        workflow_state: Some((if score.is_some() { "graded" } else { "unsubmitted" }).into()),
+        workflow_state: Some(
+            (if score.is_some() {
+                "graded"
+            } else {
+                "unsubmitted"
+            })
+            .into(),
+        ),
         excused: None,
         missing: None,
         late: None,

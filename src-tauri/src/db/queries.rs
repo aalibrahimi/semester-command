@@ -40,11 +40,10 @@ pub async fn entity_stats(db: &Db) -> Result<Vec<EntityStat>, sqlx::Error> {
         "instructors",
     ] {
         // Table names come from the constant list above, never from input.
-        let (rows, last): (i64, Option<String>) = sqlx::query_as(&format!(
-            "SELECT COUNT(*), MAX(synced_at) FROM {table}"
-        ))
-        .fetch_one(db)
-        .await?;
+        let (rows, last): (i64, Option<String>) =
+            sqlx::query_as(&format!("SELECT COUNT(*), MAX(synced_at) FROM {table}"))
+                .fetch_one(db)
+                .await?;
         out.push(EntityStat {
             entity: table.to_string(),
             rows,
@@ -120,5 +119,7 @@ pub async fn all_targets(db: &Db) -> Result<Vec<TargetRow>, sqlx::Error> {
 }
 
 pub async fn all_estimates(db: &Db) -> Result<Vec<EstimateRow>, sqlx::Error> {
-    sqlx::query_as("SELECT * FROM estimates").fetch_all(db).await
+    sqlx::query_as("SELECT * FROM estimates")
+        .fetch_all(db)
+        .await
 }

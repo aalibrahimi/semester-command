@@ -262,12 +262,7 @@ pub async fn instructor(db: &Db, r: &InstructorRow) -> Result<(), sqlx::Error> {
 }
 
 /// Set a course's target grade (local-only table, user-owned).
-pub async fn target(
-    db: &Db,
-    course_id: &str,
-    letter: &str,
-    pct: f64,
-) -> Result<(), sqlx::Error> {
+pub async fn target(db: &Db, course_id: &str, letter: &str, pct: f64) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
         INSERT INTO targets (course_id, target_letter, target_pct)

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "semester-dev",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd", "C:\\Dev\\Python GitHub\\semester-command", "dev", "--port", "5175", "--strictPort"],
+      "port": 5175
+    }
+  ]
+}

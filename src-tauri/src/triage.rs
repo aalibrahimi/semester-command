@@ -82,7 +82,11 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
         }
         let input = bundle.course_input(&course.id);
 
-        for a in bundle.assignments.iter().filter(|a| a.course_id == course.id) {
+        for a in bundle
+            .assignments
+            .iter()
+            .filter(|a| a.course_id == course.id)
+        {
             let sub = bundle.submissions.get(&a.id);
             let submitted = sub.map(|s| s.submitted_at.is_some()).unwrap_or(false);
             let graded = sub.map(|s| s.score.is_some()).unwrap_or(false);
@@ -132,7 +136,10 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
             let est_minutes = bundle.estimates.get(&a.id).and_then(|e| e.est_minutes);
             // No estimate defaults to one hour; a floor of 15 minutes stops a
             // tiny estimate from catapulting a trivial item over a midterm.
-            let est_hours = est_minutes.map(|m| m as f64 / 60.0).unwrap_or(1.0).max(0.25);
+            let est_hours = est_minutes
+                .map(|m| m as f64 / 60.0)
+                .unwrap_or(1.0)
+                .max(0.25);
             let score = (impact * urgency) / est_hours;
 
             // Pinned = urgent state AND something actually at stake. A
@@ -160,18 +167,18 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
 
     rows.sort_by(|a, b| {
         let pin = |r: &TriageRow| u8::from(!r.pinned);
-        pin(a)
-            .cmp(&pin(b))
-            .then_with(|| {
-                if a.pinned && b.pinned {
-                    // Pinned zone: oldest deadline first — the longest-overdue
-                    // item is the most on fire.
-                    a.due_at.cmp(&b.due_at)
-                } else {
-                    // Ranked zone: highest score first.
-                    b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal)
-                }
-            })
+        pin(a).cmp(&pin(b)).then_with(|| {
+            if a.pinned && b.pinned {
+                // Pinned zone: oldest deadline first — the longest-overdue
+                // item is the most on fire.
+                a.due_at.cmp(&b.due_at)
+            } else {
+                // Ranked zone: highest score first.
+                b.score
+                    .partial_cmp(&a.score)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            }
+        })
     });
     rows
 }

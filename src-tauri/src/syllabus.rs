@@ -39,8 +39,13 @@ pub async fn fetch_for_course(
 ) -> Result<usize, CanvasError> {
     let (files, _skipped) = match endpoints::files_search(client, course_id, "syllabus").await {
         Ok(r) => r,
-        Err(CanvasError::Http { status: 403 | 404, .. }) => {
-            tracing::debug!(course_id, "course files not visible; syllabus needs manual import");
+        Err(CanvasError::Http {
+            status: 403 | 404, ..
+        }) => {
+            tracing::debug!(
+                course_id,
+                "course files not visible; syllabus needs manual import"
+            );
             return Ok(0);
         }
         Err(e) => return Err(e),
@@ -85,7 +90,10 @@ pub async fn fetch_for_course(
         .await
         .map_err(|e| {
             tracing::error!(error = %e, "storing syllabus failed");
-            CanvasError::Http { status: 0, path: "local storage".into() }
+            CanvasError::Http {
+                status: 0,
+                path: "local storage".into(),
+            }
         })?;
         tracing::info!(course_id, file = %row.filename, "syllabus stored");
         stored += 1;
@@ -110,12 +118,23 @@ pub async fn import_local(
         Some("pdf") => Some("application/pdf"),
         Some("html") | Some("htm") => Some("text/html"),
         Some("txt") | Some("md") => Some("text/plain"),
-        Some("docx") => Some("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        Some("docx") => {
+            Some("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        }
         _ => None,
     };
-    store_document(db, data_dir, course_id, None, &name, content_type, &bytes, "manual")
-        .await
-        .map_err(|e| format!("Could not store the file: {e}"))
+    store_document(
+        db,
+        data_dir,
+        course_id,
+        None,
+        &name,
+        content_type,
+        &bytes,
+        "manual",
+    )
+    .await
+    .map_err(|e| format!("Could not store the file: {e}"))
 }
 
 /// Write bytes to the store, extract text, record the row.
@@ -136,7 +155,13 @@ async fn store_document(
     // anything the filesystem might object to.
     let safe: String = filename
         .chars()
-        .map(|c| if c.is_alphanumeric() || ".-_ ".contains(c) { c } else { '_' })
+        .map(|c| {
+            if c.is_alphanumeric() || ".-_ ".contains(c) {
+                c
+            } else {
+                '_'
+            }
+        })
         .collect();
     let path = dir.join(&safe);
     std::fs::write(&path, bytes)?;
@@ -261,6 +286,9 @@ mod tests {
 
     #[test]
     fn extract_unknown_format_is_none_not_error() {
-        assert_eq!(extract_text(&[0x50, 0x4b, 0x03, 0x04], None, "syllabus.docx"), None);
+        assert_eq!(
+            extract_text(&[0x50, 0x4b, 0x03, 0x04], None, "syllabus.docx"),
+            None
+        );
     }
 }

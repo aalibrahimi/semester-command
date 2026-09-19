@@ -218,7 +218,11 @@ pub struct CourseGrade {
 // puts the *fields* in camelCase — without it the frontend would silently
 // read `undefined` for every snake_case key.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", rename_all_fields = "camelCase", tag = "outcome")]
+#[serde(
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    tag = "outcome"
+)]
 pub enum SolverAnswer {
     /// Reachable. Score this or better.
     Required {
@@ -433,8 +437,14 @@ pub fn solve<S: AsRef<str>>(
     let (at_zero, at_full, points_possible) = match scope {
         SolveScope::EverythingRemaining => {
             let s = standing(input);
-            let remaining: f64 = ungraded(input).map(|a| a.points_possible.unwrap_or(0.0)).sum();
-            (s.projected_pct, s.max_possible_pct, (remaining > 0.0).then_some(remaining))
+            let remaining: f64 = ungraded(input)
+                .map(|a| a.points_possible.unwrap_or(0.0))
+                .sum();
+            (
+                s.projected_pct,
+                s.max_possible_pct,
+                (remaining > 0.0).then_some(remaining),
+            )
         }
         SolveScope::SingleAssignment(id) => {
             let pts = ungraded(input)
@@ -585,7 +595,11 @@ pub fn group_shares(input: &CourseInput) -> Vec<(String, f64)> {
                 .groups
                 .iter()
                 .map(|g| {
-                    let share = if total > 0.0 { points_of(g) / total * 100.0 } else { 0.0 };
+                    let share = if total > 0.0 {
+                        points_of(g) / total * 100.0
+                    } else {
+                        0.0
+                    };
                     (g.id.clone(), share)
                 })
                 .collect()
@@ -611,17 +625,13 @@ pub enum SignalStatus {
 /// performance — "if you keep scoring like this, where do you land" — with
 /// `max_possible` as the hard backstop:
 ///
-/// - locked:   nothing gradeable remains.
+/// - locked: nothing gradeable remains.
 /// - critical: the target is mathematically unreachable, work is missing, or
-///             current performance trails the target by more than 5 points.
-/// - atRisk:   current performance is below target (within 5 points).
-/// - onTrack:  current meets target, or nothing is graded yet (week one gets
-///             the benefit of the doubt).
-pub fn signal(
-    s: &Standing,
-    target_pct: f64,
-    missing_count: usize,
-) -> SignalStatus {
+///   current performance trails the target by more than 5 points.
+/// - atRisk: current performance is below target (within 5 points).
+/// - onTrack: current meets target, or nothing is graded yet (week one gets
+///   the benefit of the doubt).
+pub fn signal(s: &Standing, target_pct: f64, missing_count: usize) -> SignalStatus {
     if (s.max_possible_pct - s.projected_pct).abs() <= f64::EPSILON {
         return SignalStatus::Locked;
     }

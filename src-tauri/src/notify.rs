@@ -104,7 +104,9 @@ async fn deadline_reminders(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error>
         let hit: Vec<i64> = thresholds_for(row.impact_pct)
             .filter(|h| hours_left <= *h as f64)
             .collect();
-        let Some(tightest) = hit.iter().min().copied() else { continue };
+        let Some(tightest) = hit.iter().min().copied() else {
+            continue;
+        };
 
         let key = format!("due:{}:{}", row.assignment_id, tightest);
         if already_sent(db, &key).await? {
@@ -121,7 +123,10 @@ async fn deadline_reminders(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error>
         send(
             app,
             &format!("{name} — due {}", human_hours(hours_left)),
-            &format!("{course} · worth {:.1}% of your final grade", row.impact_pct),
+            &format!(
+                "{course} · worth {:.1}% of your final grade",
+                row.impact_pct
+            ),
         );
     }
     Ok(())
@@ -161,7 +166,12 @@ async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
             r.due_at
                 .as_deref()
                 .and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
-                .map(|d| d.with_timezone(&chrono::Local).format("%Y-%m-%d").to_string() == today)
+                .map(|d| {
+                    d.with_timezone(&chrono::Local)
+                        .format("%Y-%m-%d")
+                        .to_string()
+                        == today
+                })
                 .unwrap_or(false)
         })
         .count();
@@ -208,22 +218,16 @@ pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
     for m in &changes.course_moves {
         // Keyed on the rounded pair, so a regrade back and forth cannot ping
         // twice for the same transition.
-        let key = format!(
-            "grade:{}:{:.1}->{:.1}",
-            m.course_id, m.old_pct, m.new_pct
-        );
-        match already_sent(&db, &key).await {
-            Ok(false) => {
-                let _ = mark_sent(&db, &key).await;
-                let code = m.course_code.as_deref().unwrap_or("A course");
-                let dir = if m.new_pct > m.old_pct { "up" } else { "down" };
-                send(
-                    app,
-                    &format!("{code}: grade moved {dir}"),
-                    &format!("current {:.1}% → {:.1}%", m.old_pct, m.new_pct),
-                );
-            }
-            _ => {}
+        let key = format!("grade:{}:{:.1}->{:.1}", m.course_id, m.old_pct, m.new_pct);
+        if let Ok(false) = already_sent(&db, &key).await {
+            let _ = mark_sent(&db, &key).await;
+            let code = m.course_code.as_deref().unwrap_or("A course");
+            let dir = if m.new_pct > m.old_pct { "up" } else { "down" };
+            send(
+                app,
+                &format!("{code}: grade moved {dir}"),
+                &format!("current {:.1}% → {:.1}%", m.old_pct, m.new_pct),
+            );
         }
     }
 
@@ -231,16 +235,19 @@ pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
         // Keyed on the assignment id: a renamed assignment is the same
         // assignment, and must not re-fire.
         let key = format!("missing:{}", f.assignment_id);
-        match already_sent(&db, &key).await {
-            Ok(false) => {
-                let _ = mark_sent(&db, &key).await;
-                send(
-                    app,
-                    &format!("Marked missing: {}", f.assignment_name.as_deref().unwrap_or("an assignment")),
-                    &format!("{} — still submittable? Check late policy in Syllabi.", f.course_code.as_deref().unwrap_or("")),
-                );
-            }
-            _ => {}
+        if let Ok(false) = already_sent(&db, &key).await {
+            let _ = mark_sent(&db, &key).await;
+            send(
+                app,
+                &format!(
+                    "Marked missing: {}",
+                    f.assignment_name.as_deref().unwrap_or("an assignment")
+                ),
+                &format!(
+                    "{} — still submittable? Check late policy in Syllabi.",
+                    f.course_code.as_deref().unwrap_or("")
+                ),
+            );
         }
     }
 }

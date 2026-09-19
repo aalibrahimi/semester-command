@@ -186,16 +186,24 @@ impl CanvasClient {
             return Err(CanvasError::NoAuth);
         }
         let path = "/users/self";
-        let resp = self.send_with(mode, &format!("{}/api/v1{}", self.base, path)).await?;
+        let resp = self
+            .send_with(mode, &format!("{}/api/v1{}", self.base, path))
+            .await?;
         self.check_session_alive(&resp)?;
 
         let status = resp.status().as_u16();
         if status != 200 {
-            return Err(CanvasError::Http { status, path: path.into() });
+            return Err(CanvasError::Http {
+                status,
+                path: path.into(),
+            });
         }
         let body = resp.text().await?;
-        let user: ValidatedUser = serde_json::from_str(&body)
-            .map_err(|source| CanvasError::Parse { path: path.into(), source })?;
+        let user: ValidatedUser =
+            serde_json::from_str(&body).map_err(|source| CanvasError::Parse {
+                path: path.into(),
+                source,
+            })?;
         self.alive.store(true, Ordering::SeqCst);
         Ok(user)
     }
@@ -236,10 +244,16 @@ impl CanvasClient {
                     rl_attempts += 1;
                     continue; // same URL, same page — retry it
                 }
-                return Err(CanvasError::Http { status, path: path.into() });
+                return Err(CanvasError::Http {
+                    status,
+                    path: path.into(),
+                });
             }
             if status != 200 {
-                return Err(CanvasError::Http { status, path: path.into() });
+                return Err(CanvasError::Http {
+                    status,
+                    path: path.into(),
+                });
             }
 
             rl_attempts = 0;
@@ -254,10 +268,12 @@ impl CanvasClient {
             // (§2.2).
             self.log_raw(path, page, &body);
 
-            out.extend(
-                serde_json::from_str::<Vec<T>>(&body)
-                    .map_err(|source| CanvasError::Parse { path: path.into(), source })?,
-            );
+            out.extend(serde_json::from_str::<Vec<T>>(&body).map_err(|source| {
+                CanvasError::Parse {
+                    path: path.into(),
+                    source,
+                }
+            })?);
 
             match next {
                 Some(u) => {
@@ -279,12 +295,17 @@ impl CanvasClient {
         self.check_session_alive(&resp)?;
         let status = resp.status().as_u16();
         if status != 200 {
-            return Err(CanvasError::Http { status, path: path.into() });
+            return Err(CanvasError::Http {
+                status,
+                path: path.into(),
+            });
         }
         self.respect_rate_limit(&resp).await;
         let body = resp.text().await?;
-        serde_json::from_str(&body)
-            .map_err(|source| CanvasError::Parse { path: path.into(), source })
+        serde_json::from_str(&body).map_err(|source| CanvasError::Parse {
+            path: path.into(),
+            source,
+        })
     }
 
     /// Download a file's bytes, following redirects **manually**.
@@ -298,11 +319,17 @@ impl CanvasClient {
         if auth.is_none() {
             return Err(CanvasError::NoAuth);
         }
-        let canvas_host = url::Url::parse(&self.base).ok().and_then(|u| u.host_str().map(String::from));
+        let canvas_host = url::Url::parse(&self.base)
+            .ok()
+            .and_then(|u| u.host_str().map(String::from));
 
         let mut current = url.to_string();
         for _hop in 0..5 {
-            let _permit = self.limiter.acquire().await.map_err(|_| CanvasError::RateLimited)?;
+            let _permit = self
+                .limiter
+                .acquire()
+                .await
+                .map_err(|_| CanvasError::RateLimited)?;
             let on_canvas = url::Url::parse(&current)
                 .ok()
                 .and_then(|u| u.host_str().map(String::from))
@@ -318,7 +345,10 @@ impl CanvasClient {
                     .headers()
                     .get(LOCATION)
                     .and_then(|v| v.to_str().ok())
-                    .ok_or(CanvasError::Http { status: status.as_u16(), path: current.clone() })?;
+                    .ok_or(CanvasError::Http {
+                        status: status.as_u16(),
+                        path: current.clone(),
+                    })?;
                 // Location may be relative; resolve against the current URL.
                 current = url::Url::parse(&current)
                     .and_then(|base| base.join(next))
@@ -331,11 +361,17 @@ impl CanvasClient {
                 return Err(CanvasError::SessionExpired);
             }
             if !status.is_success() {
-                return Err(CanvasError::Http { status: status.as_u16(), path: current });
+                return Err(CanvasError::Http {
+                    status: status.as_u16(),
+                    path: current,
+                });
             }
             return Ok(resp.bytes().await?.to_vec());
         }
-        Err(CanvasError::Http { status: 310, path: url.to_string() })
+        Err(CanvasError::Http {
+            status: 310,
+            path: url.to_string(),
+        })
     }
 
     /// One authenticated GET, concurrency-capped. The only network call in
@@ -350,7 +386,11 @@ impl CanvasClient {
         }
         // Closed-semaphore is impossible here (we never close it); if it ever
         // happens, treating it as a network error is the least-wrong answer.
-        let _permit = self.limiter.acquire().await.map_err(|_| CanvasError::RateLimited)?;
+        let _permit = self
+            .limiter
+            .acquire()
+            .await
+            .map_err(|_| CanvasError::RateLimited)?;
 
         let req = self
             .http
@@ -451,7 +491,12 @@ async fn backoff_after_rate_limit(path: &str, attempt: u32) -> Result<(), Canvas
         return Err(CanvasError::RateLimited);
     }
     let wait = 2u64 << attempt;
-    tracing::info!(path, attempt, wait_s = wait, "403 rate-limit body; backing off");
+    tracing::info!(
+        path,
+        attempt,
+        wait_s = wait,
+        "403 rate-limit body; backing off"
+    );
     tokio::time::sleep(std::time::Duration::from_secs(wait)).await;
     Ok(())
 }
@@ -473,9 +518,14 @@ fn rate_limit_remaining(resp: &reqwest::Response) -> Option<f64> {
 fn parse_link_next(header: Option<&str>) -> Option<String> {
     let header = header?;
     for segment in header.split(',') {
-        let Some((url_part, rel_part)) = segment.split_once(';') else { continue };
+        let Some((url_part, rel_part)) = segment.split_once(';') else {
+            continue;
+        };
         if rel_part.contains("rel=\"next\"") || rel_part.contains("rel=next") {
-            let url = url_part.trim().trim_start_matches('<').trim_end_matches('>');
+            let url = url_part
+                .trim()
+                .trim_start_matches('<')
+                .trim_end_matches('>');
             if !url.is_empty() {
                 return Some(url.to_string());
             }
@@ -527,7 +577,9 @@ mod tests {
         let t = format!("{:?}", AuthMode::Token("secret-token".into()));
         let s = format!(
             "{:?}",
-            AuthMode::Session { cookie_header: "canvas_session=secret".into() }
+            AuthMode::Session {
+                cookie_header: "canvas_session=secret".into()
+            }
         );
         assert!(!t.contains("secret"));
         assert!(!s.contains("secret"));

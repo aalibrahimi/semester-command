@@ -78,7 +78,9 @@ pub async fn assignments(
 ) -> Result<(Vec<Raw<Assignment>>, usize), CanvasError> {
     get_all_raw(
         client,
-        &format!("/courses/{course_id}/assignments?include[]=submission&include[]=score_statistics"),
+        &format!(
+            "/courses/{course_id}/assignments?include[]=submission&include[]=score_statistics"
+        ),
     )
     .await
 }

@@ -180,7 +180,9 @@ fn reconciliation_against_canvas() {
     assert_eq!(agrees.reconciliation_delta, None);
 
     let disagrees = course_grade(&course, Some(91.0));
-    let delta = disagrees.reconciliation_delta.expect("delta should be flagged");
+    let delta = disagrees
+        .reconciliation_delta
+        .expect("delta should be flagged");
     assert!((delta - (85.0 - 91.0)).abs() < 0.01);
     assert_eq!(disagrees.canvas_current_pct, Some(91.0));
     assert_close(disagrees.current_pct, 85.0);
@@ -206,12 +208,18 @@ fn points_mode_ignores_group_weights() {
 /// need (0.8×250 − 156) = 44 of 50 → 88%.
 #[test]
 fn solver_single_assignment_points_mode() {
-    let course = points(vec![
-        a("done", 200.0, Some(156.0)),
-        a("final", 50.0, None),
-    ]);
-    match solve(&course, 80.0, SolveScope::SingleAssignment("final"), DEFAULT_SCALE) {
-        SolverAnswer::Required { pct, points_needed, points_possible } => {
+    let course = points(vec![a("done", 200.0, Some(156.0)), a("final", 50.0, None)]);
+    match solve(
+        &course,
+        80.0,
+        SolveScope::SingleAssignment("final"),
+        DEFAULT_SCALE,
+    ) {
+        SolverAnswer::Required {
+            pct,
+            points_needed,
+            points_possible,
+        } => {
             assert!((pct - 88.0).abs() < 0.01, "pct was {pct}");
             assert!((points_needed.unwrap() - 44.0).abs() < 0.01);
             assert!((points_possible.unwrap() - 50.0).abs() < 0.01);
@@ -230,8 +238,15 @@ fn solver_single_assignment_weighted_mode() {
         group("midterms", 30.0, vec![a("m", 100.0, Some(90.0))]),
         group("final", 40.0, vec![a("f", 100.0, None)]),
     ]);
-    match solve(&course, 85.0, SolveScope::SingleAssignment("f"), DEFAULT_SCALE) {
-        SolverAnswer::Required { pct, points_needed, .. } => {
+    match solve(
+        &course,
+        85.0,
+        SolveScope::SingleAssignment("f"),
+        DEFAULT_SCALE,
+    ) {
+        SolverAnswer::Required {
+            pct, points_needed, ..
+        } => {
             assert!((pct - 85.0).abs() < 0.01, "pct was {pct}");
             assert!((points_needed.unwrap() - 85.0).abs() < 0.01);
         }
@@ -247,8 +262,16 @@ fn solver_unreachable_reports_ceiling() {
         a("final", 50.0, None),
     ]);
     // Perfect final: 170/250 = 68%. The A is gone; say what's left.
-    match solve(&course, 93.0, SolveScope::EverythingRemaining, DEFAULT_SCALE) {
-        SolverAnswer::Unreachable { best_possible_pct, best_possible_letter } => {
+    match solve(
+        &course,
+        93.0,
+        SolveScope::EverythingRemaining,
+        DEFAULT_SCALE,
+    ) {
+        SolverAnswer::Unreachable {
+            best_possible_pct,
+            best_possible_letter,
+        } => {
             assert!((best_possible_pct - 68.0).abs() < 0.01);
             assert_eq!(best_possible_letter, "D+");
         }
@@ -264,8 +287,16 @@ fn solver_already_locked_reports_floor() {
         a("quiz", 10.0, None),
     ]);
     // Even a zero on the quiz leaves 196/210 = 93.3% — the A holds.
-    match solve(&course, 90.0, SolveScope::EverythingRemaining, DEFAULT_SCALE) {
-        SolverAnswer::AlreadyLocked { floor_pct, floor_letter } => {
+    match solve(
+        &course,
+        90.0,
+        SolveScope::EverythingRemaining,
+        DEFAULT_SCALE,
+    ) {
+        SolverAnswer::AlreadyLocked {
+            floor_pct,
+            floor_letter,
+        } => {
             assert!((floor_pct - 93.33).abs() < 0.01);
             assert_eq!(floor_letter, "A");
         }
@@ -278,8 +309,15 @@ fn solver_already_locked_reports_floor() {
 #[test]
 fn solver_nothing_remaining() {
     let course = points(vec![a("done", 100.0, Some(70.0))]);
-    match solve(&course, 90.0, SolveScope::EverythingRemaining, DEFAULT_SCALE) {
-        SolverAnswer::Unreachable { best_possible_pct, .. } => {
+    match solve(
+        &course,
+        90.0,
+        SolveScope::EverythingRemaining,
+        DEFAULT_SCALE,
+    ) {
+        SolverAnswer::Unreachable {
+            best_possible_pct, ..
+        } => {
             assert!((best_possible_pct - 70.0).abs() < 0.01);
         }
         other => panic!("expected Unreachable, got {other:?}"),
@@ -299,22 +337,38 @@ fn letter_boundaries() {
 #[test]
 fn signal_mapping() {
     // Week one, nothing graded, nothing missing → benefit of the doubt.
-    let fresh = Standing { current_pct: None, projected_pct: 0.0, max_possible_pct: 100.0 };
+    let fresh = Standing {
+        current_pct: None,
+        projected_pct: 0.0,
+        max_possible_pct: 100.0,
+    };
     assert_eq!(signal(&fresh, 90.0, 0), SignalStatus::OnTrack);
 
     // Missing work is critical regardless of the numbers.
     assert_eq!(signal(&fresh, 90.0, 1), SignalStatus::Critical);
 
     // Current below target but within 5 → at risk.
-    let slipping = Standing { current_pct: Some(87.0), projected_pct: 40.0, max_possible_pct: 95.0 };
+    let slipping = Standing {
+        current_pct: Some(87.0),
+        projected_pct: 40.0,
+        max_possible_pct: 95.0,
+    };
     assert_eq!(signal(&slipping, 90.0, 0), SignalStatus::AtRisk);
 
     // Target mathematically gone → critical.
-    let gone = Standing { current_pct: Some(85.0), projected_pct: 60.0, max_possible_pct: 82.0 };
+    let gone = Standing {
+        current_pct: Some(85.0),
+        projected_pct: 60.0,
+        max_possible_pct: 82.0,
+    };
     assert_eq!(signal(&gone, 90.0, 0), SignalStatus::Critical);
 
     // Nothing left to grade → locked.
-    let done = Standing { current_pct: Some(91.0), projected_pct: 91.0, max_possible_pct: 91.0 };
+    let done = Standing {
+        current_pct: Some(91.0),
+        projected_pct: 91.0,
+        max_possible_pct: 91.0,
+    };
     assert_eq!(signal(&done, 90.0, 0), SignalStatus::Locked);
 }
 
