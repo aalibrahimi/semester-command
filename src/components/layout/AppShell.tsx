@@ -18,6 +18,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { SemesterProgress } from "@/components/layout/SemesterProgress";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { Button } from "@/components/ui/button";
+import { currentTermBounds } from "@/lib/academicCalendar";
 import { hasMod, shortcut } from "@/lib/platform";
 import { IS_TAURI } from "@/lib/ipc";
 import type { SyncChanges } from "@/types";
@@ -28,7 +29,7 @@ import type { SyncChanges } from "@/types";
  *  TODO(M1): promote to the settings table, keeping this as the mirror. */
 const COLLAPSE_KEY = "sc.sidebar.collapsed";
 
-/** Digit → route, for ⌘1–⌘5 (§5, plus the Syllabi screen). */
+/** Digit → route, ⌘1–⌘9 — same order as the sidebar nav. */
 const DIGIT_ROUTES: Record<string, string> = {
   "1": "/",
   "2": "/courses",
@@ -90,7 +91,7 @@ export function AppShell() {
     };
   }, []);
 
-  // ⌘\ collapse and ⌘1–⌘6 navigation. ⌘K is owned by CommandPalette.
+  // ⌘\ collapse and ⌘1–⌘9 navigation. ⌘K is owned by CommandPalette.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!hasMod(e)) return;
@@ -120,9 +121,12 @@ export function AppShell() {
             Deliberately thin. The screen below it is the product; this strip
             carries only what has to be true on every screen. */}
         <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border/60 px-6">
-          {/* TODO(M1): real term dates from courses.term. Renders nothing until
-              then rather than inventing a semester. */}
-          <SemesterProgress />
+          {/* Term bounds from the bundled SJSU instruction calendar — between
+              terms this renders nothing, which is the truthful picture. */}
+          <SemesterProgress
+            startsAt={currentTermBounds(new Date())?.start}
+            endsAt={currentTermBounds(new Date())?.end}
+          />
 
           <div className="ml-auto flex items-center gap-2">
             {/* Styled as the reference's floating search pill rather than a

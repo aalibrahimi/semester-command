@@ -36,6 +36,19 @@ export function points(earned: number | null | undefined, possible: number | nul
   return `${trimNum(earned)}/${trimNum(possible)}`;
 }
 
+/** "11:59p" — the compact 12-hour clock agenda rows use. */
+export function clock12(d: Date): string {
+  const h = d.getHours();
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(d.getMinutes()).padStart(2, "0")}${h >= 12 ? "p" : "a"}`;
+}
+
+/** `clock12` over an ISO string; "" when unparseable. */
+export function dueClock(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : clock12(d);
+}
+
 /** Drop a trailing ".0" so 50 renders as "50" and 12.5 stays "12.5". */
 function trimNum(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);

@@ -80,6 +80,16 @@ export function semesterWeekOf(d: Date): { week: number; total: number } | null 
   };
 }
 
+/**
+ * The instruction span `d` falls in, as ISO dates — the header's semester
+ * progress bar. Between terms (breaks, finals, summer) this is null and the
+ * bar stays absent: finals week is not "week 17 of 16".
+ */
+export function currentTermBounds(d: Date): { start: string; end: string } | null {
+  const key = isoKey(d);
+  return INSTRUCTION.find((s) => s.start <= key && key <= s.end) ?? null;
+}
+
 /** Upcoming spans (starting today or later), soonest first, with a countdown.
  *  Spans already in progress count as starting "today". */
 export function upcomingAcademic(

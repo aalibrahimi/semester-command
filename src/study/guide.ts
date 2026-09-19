@@ -2,8 +2,9 @@
  * guide.ts — the typed study-guide schema every Study view (Read, Cheat sheet,
  * Recall, Map) renders from.
  *
- * Called by: the four views, the Recall card generator, the Map edge builder,
- * and scripts/migrate-guides.ts (which produces guides from the old chapters).
+ * Called by: the Study views, the Recall card generator, the Map edge
+ * builder, and scripts/check-guides.ts (which validates the JSON against
+ * this shape). The guides/*.json files are the canonical content source.
  * Calls: nothing.
  *
  * A guide is content only. Nothing here records what the reader knows — that
@@ -34,7 +35,8 @@ export interface Guide {
   sections: GuideSection[];
   /**
    * Hands-on exercises with the hint ladder (the "Do it yourself" sets).
-   * Carried over unchanged from the chapter model; richer than a `check`.
+   * Richer than a `check`: multiple choice with per-wrong-answer feedback,
+   * three hints, a stepped solution.
    */
   exercises: GuideExercise[];
 }

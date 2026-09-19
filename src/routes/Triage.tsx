@@ -55,7 +55,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { springy, useReducedMotion } from "@/hooks/useReducedMotion";
 import { useCourses } from "@/hooks/useCourses";
 import { calendarItems, courseDetail, debugDump, setEstimate, triageRows } from "@/lib/ipc";
-import { dueShort, minutes, pct, relativeDue } from "@/lib/format";
+import { dueClock, dueShort, minutes, pct, relativeDue } from "@/lib/format";
+import { stripShouting } from "@/lib/stripShouting";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { courseShort } from "@/lib/courseLabel";
 import { chipStyle, tickStyle } from "@/lib/courseColor";
@@ -86,7 +87,7 @@ export default function Triage() {
   );
   const [selIdx, setSelIdx] = useState(0);
   const [estimateEditId, setEstimateEditId] = useState<string | null>(null);
-  const { courses, openTotal, dueThisWeek, loaded } = useCourses();
+  const { courses, openTotal, loaded } = useCourses();
   const nicknames = useNicknames();
   const doneSet = useDoneSet();
   const navigate = useNavigate();
@@ -125,22 +126,30 @@ export default function Triage() {
     [nicknames],
   );
 
+  // ONE definition of "due this week", used by the stat tile's number, its
+  // hover preview, and its click filter — three surfaces that once counted
+  // three different sets. Open work (triage rows are already open-only),
+  // due between now and 7 days out, minus local done-marks.
+  const isDueThisWeek = useCallback(
+    (r: TriageRow) => {
+      if (!r.dueAt) return false;
+      const t = new Date(r.dueAt).getTime();
+      return t > mountNow && t < mountNow + 7 * 86_400_000;
+    },
+    [mountNow],
+  );
+
   // Done marks and tile filters are view-layer subtraction, never mutation.
   const visibleRows = useMemo(() => {
     if (rows === null) return null;
     let out = rows.filter((r) => !doneSet.has(r.assignmentId));
     if (filter === "week") {
-      const horizon = mountNow + 7 * 86_400_000;
-      out = out.filter((r) => {
-        if (!r.dueAt) return false;
-        const t = new Date(r.dueAt).getTime();
-        return t < horizon;
-      });
+      out = out.filter(isDueThisWeek);
     } else if (filter === "missing") {
       out = out.filter((r) => r.state === "missing");
     }
     return out;
-  }, [rows, doneSet, filter, mountNow]);
+  }, [rows, doneSet, filter, isDueThisWeek]);
 
   // Per-course pulse for standings: of everything due this week (from the
   // start of today), how much is already turned in. Submission state comes
@@ -162,15 +171,13 @@ export default function Triage() {
     return map;
   }, [allItems, mountNow]);
 
-  // The week's items regardless of the active tile filter — the hover
-  // preview on "due this week" must show the same set its click filters to.
+  // The week's items regardless of the active tile filter — the tile's
+  // number IS this list's length, and the hover preview and click filter
+  // show exactly this set.
   const weekRows = useMemo(() => {
     if (rows === null) return [];
-    const horizon = mountNow + 7 * 86_400_000;
-    return rows
-      .filter((r) => !doneSet.has(r.assignmentId))
-      .filter((r) => r.dueAt !== null && new Date(r.dueAt).getTime() < horizon);
-  }, [rows, doneSet, mountNow]);
+    return rows.filter((r) => !doneSet.has(r.assignmentId)).filter(isDueThisWeek);
+  }, [rows, doneSet, isDueThisWeek]);
 
   const pickView = (v: QueueView) => {
     setView(v);
@@ -345,7 +352,7 @@ export default function Triage() {
           rows={visibleRows}
           courses={visible}
           openTotal={openTotal}
-          dueThisWeek={dueThisWeek}
+          dueThisWeek={weekRows.length}
           labelOf={labelOf}
           onOpen={openSheet}
           onShowBoard={() => pickLayout("board")}
@@ -531,7 +538,7 @@ export default function Triage() {
               <div className="h-full min-w-0">
                 <StatMini
                   label="due this week"
-                  value={dueThisWeek}
+                  value={weekRows.length}
                   icon={CalendarClock}
                   zeroLabel="nothing due this week"
                   active={filter === "week"}
@@ -617,7 +624,10 @@ export default function Triage() {
           />
         </Tile>
 
-        {/* ── Right rail: week · workload · what changed ───────────────── */}
+        {/* ── Right rail: the week ahead, and what changed. (A workload
+            chart lived here once; built mostly from 60-minute default
+            estimates it was furniture, and furniture is what makes a
+            dashboard disorienting.) ─────────────────────────────────────── */}
         <div className="flex min-w-0 flex-col gap-4">
           <Tile label="Next 7 days" icon={CalendarClock}>
             {week.length === 0 ? (
@@ -625,9 +635,6 @@ export default function Triage() {
             ) : (
               <WeekAhead items={week} labelOf={labelOf} />
             )}
-          </Tile>
-          <Tile label="Workload by day" icon={Timer}>
-            <WorkloadByDay rows={visibleRows} />
           </Tile>
           <Tile label="What changed" icon={Sparkles}>
             <WhatChanged labelOf={labelOf} />
@@ -1028,20 +1035,6 @@ function StatMini({
 
 /* ── Queue row ───────────────────────────────────────────────────────────── */
 
-/** "[REQUIRED] Homework 1" → title without the shouting + the chip text. */
-function stripShouting(name: string | null): { title: string; flags: string[] } {
-  const raw = name ?? "Untitled";
-  const flags: string[] = [];
-  const title = raw
-    .replace(/\[([A-Z][A-Z !]{2,})\]/g, (_, f: string) => {
-      flags.push(f.trim().toLowerCase());
-      return "";
-    })
-    .replace(/\s{2,}/g, " ")
-    .trim();
-  return { title: title || raw, flags };
-}
-
 function QueueRow({
   row,
   showEstimate,
@@ -1087,7 +1080,6 @@ function QueueRow({
   const overdue = pinned || (hoursLeft !== null && hoursLeft <= 0);
   const imminent = !overdue && hoursLeft !== null && hoursLeft <= 6;
   const soon = !overdue && !imminent && hoursLeft !== null && hoursLeft <= 72;
-  const dueToday = soon && (hoursLeft as number) <= 24;
   const distant = !overdue && !imminent && !soon && (hoursLeft === null || hoursLeft > 7 * 24);
 
   return (
@@ -1116,22 +1108,14 @@ function QueueRow({
         </span>
       )}
 
-      {/* One line: title + exception chips, then fixed columns. */}
+      {/* One line: title + the one exception chip, then fixed columns. Only
+          overdue/missing earns a chip — "due today"/"due in 3h" chips said
+          what the colored due column already says, twice per row. */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <span className={cn("truncate text-sm", distant && "text-foreground/70")}>{title}</span>
         {overdue && (
           <span className="chip shrink-0 bg-critical/25 text-2xs font-semibold text-critical-fg/90">
             {row.state === "missing" ? "missing" : "overdue"}
-          </span>
-        )}
-        {imminent && (
-          <span className="chip shrink-0 bg-critical/15 text-2xs font-semibold text-critical-fg">
-            due in {Math.max(1, Math.ceil(hoursLeft as number))}h
-          </span>
-        )}
-        {dueToday && (
-          <span className="chip shrink-0 bg-at-risk/15 text-2xs font-medium text-at-risk-fg">
-            due today
           </span>
         )}
         {flags.map((f) => (
@@ -1404,67 +1388,6 @@ function WeekAhead({
   );
 }
 
-/** Estimated hours per day for the next 7 days — a linear bar per day, never
- *  a donut (§5: one donut in the whole app, and it isn't here). */
-function WorkloadByDay({ rows }: { rows: TriageRow[] }) {
-  const [start] = useState(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d.getTime();
-  });
-
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const dayStart = start + i * 86_400_000;
-    const dayEnd = dayStart + 86_400_000;
-    const dayRows = rows.filter((r) => {
-      if (!r.dueAt) return false;
-      const t = new Date(r.dueAt).getTime();
-      return t >= dayStart && t < dayEnd;
-    });
-    const mins = dayRows.reduce((s, r) => s + (r.estMinutes ?? 60), 0);
-    const unestimated = dayRows.filter((r) => r.estMinutes === null).length;
-    return { date: new Date(dayStart), mins, count: dayRows.length, unestimated };
-  });
-  const maxMins = Math.max(60, ...days.map((d) => d.mins));
-  const anyUnestimated = days.some((d) => d.unestimated > 0);
-
-  if (days.every((d) => d.count === 0)) {
-    return <p className="text-xs text-muted-foreground">Nothing due in the next week.</p>;
-  }
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      {days.map((d) => (
-        <div key={d.date.toISOString()} className="flex items-center gap-2">
-          <span className="w-8 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-            {d.date.toLocaleDateString(undefined, { weekday: "short" })}
-          </span>
-          <span className="h-2 flex-1 overflow-hidden rounded-full bg-fill-ghost" aria-hidden>
-            <span
-              className={cn(
-                "block h-full rounded-full",
-                d.mins / 60 >= 4 ? "bg-at-risk/80" : "bg-brand/60",
-              )}
-              style={{ width: `${(d.mins / maxMins) * 100}%` }}
-            />
-          </span>
-          <span
-            data-numeric
-            className="w-12 shrink-0 whitespace-nowrap text-right font-mono text-2xs tabular-nums text-muted-foreground"
-          >
-            {d.count > 0 ? minutes(d.mins) : "—"}
-          </span>
-        </div>
-      ))}
-      {anyUnestimated && (
-        <p className="mt-1 text-2xs text-muted-foreground/70">
-          Unestimated items counted at 1h — add estimates to sharpen this.
-        </p>
-      )}
-    </div>
-  );
-}
-
 /** Grades posted recently, with the score — sourced from the local DB dump
  *  (already-synced data; nothing here re-fetches Canvas). */
 function WhatChanged({
@@ -1540,13 +1463,3 @@ function WhatChanged({
   );
 }
 
-/** "11:59p" — the compact clock for agenda rows. Presentation only. */
-function dueClock(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const h = d.getHours();
-  const m = d.getMinutes();
-  const suffix = h >= 12 ? "p" : "a";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${String(m).padStart(2, "0")}${suffix}`;
-}

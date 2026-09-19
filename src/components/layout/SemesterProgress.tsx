@@ -8,9 +8,8 @@
  * weeks" is a number. Reframing one into the other is the entire job, which is
  * why the remaining count is the loud part and the bar is the quiet part.
  *
- * TODO(M1): term start/end come from `courses.term` once sync populates it.
- * Until then AppShell passes nothing and this renders nothing — better than
- * inventing a semester.
+ * AppShell feeds it the bundled SJSU instruction calendar's current-term
+ * bounds (lib/academicCalendar); outside a term it renders nothing.
  */
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";

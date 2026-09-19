@@ -4,7 +4,7 @@ A local-first desktop app that pulls your Canvas coursework and tells you what t
 
 Built for San José State (`sjsu.instructure.com`), where student-generated API tokens are disabled, so it authenticates by borrowing your own signed-in browser session instead.
 
-> **Status: Milestone 0 (scaffold).** The app launches, switches themes cleanly, and the design system is in place with contrast verified in both modes. Canvas sync lands in M1 and the grade engine in M2. See [Milestones](#milestones).
+> **Status: all planned milestones (M0–M5) shipped.** Auth (all three tiers, with silent SSO re-auth), sync, the tested grade engine, the four screens plus a study system, degree audit, syllabus hub and finance snapshot, tray/notifications/autostart, `.ics` export, and the MCP server mode. See [Milestones](#milestones).
 
 ![Screenshot placeholder — replace with the Triage screen once M3 lands](docs/screenshot.png)
 
@@ -74,7 +74,7 @@ sudo apt install libwebkit2gtk-4.1-dev libsoup-3.0-dev build-essential \
 ```sh
 git clone <your-remote> semester-command
 cd semester-command
-npm install
+bun install        # npm install works too
 ```
 
 That is the whole setup. There is no `.env` to fill in and no key to paste — credentials live in your OS keychain and are put there by signing in from inside the app.
@@ -82,11 +82,11 @@ That is the whole setup. There is no `.env` to fill in and no key to paste — c
 ## Run
 
 ```sh
-npm run tauri:dev     # the real app: Rust backend + webview
-npm run dev           # frontend only, in a browser — fast for UI work, no Canvas
+bun run tauri:dev     # the real app: Rust backend + webview
+bun run dev           # frontend only, in a browser — fast for UI work, no Canvas
 ```
 
-`npm run dev` is genuinely useful: every IPC call degrades to a sensible standalone value, so you can push pixels around without waiting on a Rust rebuild. Anything that needs real data needs `tauri:dev`.
+`bun run dev` is genuinely useful: every IPC call degrades to a sensible standalone value, so you can push pixels around without waiting on a Rust rebuild. Anything that needs real data needs `tauri:dev`.
 
 Two dev-only extras:
 
@@ -96,7 +96,7 @@ Two dev-only extras:
 ## Build a release
 
 ```sh
-npm run tauri:build
+bun run tauri:build
 ```
 
 Installers land in `src-tauri/target/release/bundle/` — `.msi`/`.exe` on Windows, `.dmg`/`.app` on macOS, `.deb`/`.AppImage` on Linux.
@@ -104,7 +104,7 @@ Installers land in `src-tauri/target/release/bundle/` — `.msi`/`.exe` on Windo
 ## Verify
 
 ```sh
-npm run verify        # typecheck + lint + token contrast + Rust tests
+bun run verify        # typecheck + lint + token contrast + guide checks + Rust tests
 ```
 
 Run this before every commit. It is what CI would run.
@@ -115,7 +115,7 @@ Run this before every commit. It is what CI would run.
 
 SJSU has disabled student-generated access tokens — the Canvas settings page says so outright. There are three tiers, each degrading into the next, and all three are real supported modes.
 
-**Tier 1 — session cookie (primary).** The app opens a second window at `sjsu.instructure.com`. You sign in through SSO yourself, MFA and all; the app never sees your password. It then harvests the session cookie from that webview and attaches it to its own requests. Sessions expire and SSO forces periodic re-auth, so this is treated as short-lived by design: a `401`, a redirect to the SSO host, or HTML where JSON was expected all surface a non-blocking "Reconnect to Canvas" banner. Grades on screen are marked stale rather than quietly left to look current.
+**Tier 1 — session cookie (primary).** The app opens a second window at `sjsu.instructure.com`. You sign in through SSO yourself, MFA and all; the app never sees your password. It then harvests the session cookie from that webview and attaches it to its own requests. The Canvas session itself is short-lived — but the login webview's profile persists on disk, so if you tick "Keep me signed in" during SSO, an expired session is refreshed **silently**: the app reloads Canvas in that window hidden, rides the remembered SSO cookies through the redirect chain, and harvests a fresh session with nobody in the loop. Only when SSO actually demands a human (password change, MFA re-enrolment, remember-me expiry — typically weeks out) does the non-blocking "Reconnect to Canvas" banner and an OS notification appear. A `401`, a redirect to the SSO host, or HTML where JSON was expected all count as session death; grades on screen are marked stale rather than quietly left to look current.
 
 **Tier 0 — an admin-issued token.** If SJSU's CFETI (`cfeti@sjsu.edu`) ever issues you a scoped read-only token, paste it into Settings and Tier 1 becomes unnecessary. The client keeps both behind one `AuthMode` interface so the swap is one line.
 
@@ -132,11 +132,17 @@ Anything not confirmed by the Canvas API is visibly marked in the UI. You should
 | | | Status |
 |---|---|---|
 | **M0** | Scaffold, design system, theme | ✅ done |
-| **M1** | Auth, Canvas client, DB, sync, ICS fallback | ⬜ next |
-| **M2** | Grade engine + tests | ⬜ |
-| **M3** | The four screens, Grade Gap bar | ⬜ |
-| **M4** | Tray, autostart, notifications, `.ics` export | ⬜ |
-| **M5** | MCP server mode (`--mcp`) | ⬜ |
+| **M1** | Auth, Canvas client, DB, sync, ICS fallback | ✅ done |
+| **M2** | Grade engine + tests | ✅ done |
+| **M3** | The four screens, Grade Gap bar | ✅ done |
+| **M4** | Tray, autostart, notifications, `.ics` export | ✅ done |
+| **M5** | MCP server mode (`--mcp`) | ✅ done |
+
+Grown beyond the spec since: the Study system (guides, cheat sheets, SM-2
+recall, concept maps, slides), the Graduation degree audit (MyProgress
+import), the Syllabi hub with policy search, a Finance snapshot, a weekly
+planner in Calendar, manual course/assignment/score entry, per-course grade
+scales, and silent SSO session refresh.
 
 Each milestone stops for review before the next begins. `SPEC.md` is the contract; where this README and the spec disagree, the spec wins and the README is wrong.
 

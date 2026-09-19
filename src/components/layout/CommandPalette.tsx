@@ -17,6 +17,7 @@ import {
   Award,
   BookOpen,
   CalendarDays,
+  CheckCircle2,
   ClipboardList,
   GraduationCap,
   ListChecks,
@@ -24,6 +25,7 @@ import {
   RefreshCw,
   Settings,
   Users,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -81,7 +83,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     onOpenChange(false);
   };
 
-  const visibleCourses = courses.filter((c) => !c.hidden && c.gradeable);
+  const visibleCourses = courses.filter((c) => !c.hidden && c.gradeable && c.active);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
@@ -124,6 +126,16 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <Award className="mr-2 h-4 w-4" />
             Graduation
             <CommandShortcut>{shortcut("6")}</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go("/done")}>
+            <CheckCircle2 className="mr-2 h-4 w-4" />
+            Done
+            <CommandShortcut>{shortcut("7")}</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go("/finance")}>
+            <Wallet className="mr-2 h-4 w-4" />
+            Finance
+            <CommandShortcut>{shortcut("8")}</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 

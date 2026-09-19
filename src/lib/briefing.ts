@@ -10,6 +10,7 @@
  * on real conditions rather than decorating, so the voice never claims
  * detail the data doesn't have.
  */
+import { clock12 as clockOf } from "@/lib/format";
 import type { TriageRow } from "@/types";
 
 /** "Ali Alibrahimi" → "Ali". Null in, null out — greet namelessly. */
@@ -24,12 +25,6 @@ export function greeting(d: Date): string {
   if (h < 12) return "Good morning";
   if (h < 18) return "Good afternoon";
   return "Good evening";
-}
-
-function clockOf(d: Date): string {
-  const h = d.getHours();
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${String(d.getMinutes()).padStart(2, "0")}${h >= 12 ? "p" : "a"}`;
 }
 
 function dayDiff(d: Date, now: Date): number {

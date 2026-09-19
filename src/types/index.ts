@@ -102,16 +102,6 @@ export interface AuthStatus {
   message: string | null;
 }
 
-/**
- * Result of a manual harvest attempt (dev/debug surface). Cookie *names* only
- * — the M1 acceptance list wants them reported, and names are not secrets.
- */
-export interface HarvestReport {
-  connected: boolean;
-  cookieNames: string[];
-  validatedAs: string | null;
-}
-
 /* ────────────────────────────────────────────────────────────────────────────
    Synced rows (§3) — mirrors of the Rust structs in db/schema.rs.
    All camelCase via serde; every row carries `source` so the UI can mark
@@ -380,6 +370,10 @@ export interface CourseSummary {
   missingCount: number;
   /** False for shells (announcements, advising) — de-emphasised in the UI. */
   gradeable: boolean;
+  /** False when nothing about the course is recent (no due dates in the last
+   *  30 days or future, nothing graded in 60) — stale enrollments Canvas
+   *  still calls active. Grouped with the shells, out of every count. */
+  active: boolean;
   /** Local view preference — hidden courses render only in the Courses
    *  page's collapsed section. */
   hidden: boolean;
@@ -396,6 +390,9 @@ export interface GroupDetail {
   id: string;
   name: string | null;
   weight: number | null;
+  /** This group's share of the final grade (0–100), computed in Rust — the
+   *  Composition card renders it verbatim. */
+  sharePct: number;
   currentPct: number | null;
   gradedCount: number;
   totalCount: number;
@@ -431,6 +428,13 @@ export interface CourseDetailPayload {
   groups: GroupDetail[];
   assignments: AssignmentDetail[];
   instructors: InstructorRow[];
+  /** The scale letters were computed with: descending [cutoff, letter]. */
+  scale: [number, string][];
+  /** True when `scale` is the user's own, not the default. */
+  customScale: boolean;
+  /** Weighted course: assignments outside any weighted group (ICS/manual
+   *  orphans) that cannot count toward the grade. >0 → warn visibly. */
+  uncountedCount: number;
 }
 
 /** The solver's answer (§4.3) — blunt on purpose. */
@@ -459,6 +463,9 @@ export interface TriageRow {
   htmlUrl: string | null;
   /** The Rust-computed rank score, for the debug view. */
   score: number;
+  /** True = sits in the pinned zone above the ranked list. Missing/overdue
+   *  with nothing at stake (0 points, 0 impact) is deliberately false. */
+  pinned: boolean;
 }
 
 export interface CalendarItem {
@@ -507,6 +514,8 @@ export interface CourseSyllabus {
    ──────────────────────────────────────────────────────────────────────────── */
 
 export interface GradeEvent {
+  /** Canvas assignment id — the stable identity behind the event. */
+  assignmentId: string;
   courseCode: string | null;
   assignmentName: string | null;
   score: number | null;

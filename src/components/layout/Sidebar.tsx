@@ -73,10 +73,11 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { courses: allCourses, openTotal, dueThisWeek, loaded } = useCourses();
   const { status, isReconnectRequired } = useSync();
   const nicknames = useNicknames();
-  // Hidden courses live only in the Courses page's own section. Real
-  // courses first; announcement/advising shells cluster under "Other" —
-  // nobody navigates to them with intent.
-  const courses = [...allCourses.filter((c) => !c.hidden)].sort(
+  // Hidden courses live only in the Courses page's own section, and dormant
+  // enrollments (Title IX shells, stale terms) don't earn sidebar rows at
+  // all — the rail is a glance surface for THIS term. Live-but-ungradeable
+  // shells cluster under "Other".
+  const courses = [...allCourses.filter((c) => !c.hidden && c.active)].sort(
     (a, b) => Number(b.gradeable) - Number(a.gradeable),
   );
   const gradeableCount = courses.filter((c) => c.gradeable).length;

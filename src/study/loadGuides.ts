@@ -1,13 +1,13 @@
 /**
  * loadGuides — the bundled guides (src/study/guides/*.json), as typed objects.
  *
- * Called by: StudyRead (and the later Cheat sheet / Recall / Map views),
- * StudyCourse for chapter lists.
+ * Called by: the Study views (Read / Cheat sheet / Recall / Map / Slides)
+ * and StudyCourse for chapter lists.
  * Calls: nothing — Vite inlines the JSON at build time via import.meta.glob.
  *
- * The JSON is generated from src/study/chapters by `npm run migrate:guides`
- * (a prebuild step); `check:guides` fails CI when it is stale. Until the
- * flip to JSON-canonical after Phase 4, edit the chapters, not these files.
+ * The JSON files ARE the canonical source — edit them directly. (They were
+ * originally migrated from TypeScript "chapters"; that pipeline is gone.)
+ * `npm run check:guides` validates shape, ids and cross-references.
  */
 import type { Guide } from "./guide";
 
@@ -28,5 +28,3 @@ export function guideById(id: string | undefined): Guide | undefined {
 export function guidesForCourse(course: string, order: string[]): Guide[] {
   return order.map((slug) => byId.get(`${course}/${slug}`)).filter((g): g is Guide => !!g);
 }
-
-export const allGuides: Guide[] = [...byId.values()];

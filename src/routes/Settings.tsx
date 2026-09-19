@@ -112,7 +112,7 @@ export default function Settings() {
               tier="Tier 1"
               name="Sign in to Canvas"
               status={sessionStatus}
-              description="Opens an SJSU login window. You sign in through SSO yourself, including MFA — the app never sees your password, only the resulting session cookie. Sessions expire; you will be asked to sign in again periodically."
+              description="Opens an SJSU login window. You sign in through SSO yourself, including MFA — the app never sees your password, only the resulting session cookie. Tick “Keep me signed in” / “Stay signed in” during SSO: when the Canvas session later expires, the app reconnects through those remembered SSO cookies silently, so weeks can pass without this window reappearing."
               cta={sessionActive && status.alive ? "Sign out" : busy ? "Waiting…" : "Sign in to Canvas"}
               disabled={!IS_TAURI || busy || tokenActive}
               onCta={sessionActive && status.alive ? handleSignOut : handleSignIn}

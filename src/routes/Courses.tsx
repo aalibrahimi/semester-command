@@ -10,17 +10,27 @@
  * into Course detail. If it starts growing analytics, that work belongs on
  * Course detail instead.
  */
-import { Eye, GraduationCap } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Eye, GraduationCap, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { announceCoursesChanged, useCourses } from "@/hooks/useCourses";
-import { setCourseHidden } from "@/lib/ipc";
+import { saveManualCourse, setCourseHidden } from "@/lib/ipc";
 import { pct } from "@/lib/format";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
 import { parseCourseLabel } from "@/lib/courseLabel";
@@ -29,12 +39,27 @@ import type { CourseSummary } from "@/types";
 
 export default function Courses() {
   const { courses: allCourses, loaded, refresh } = useCourses();
-  const courses = allCourses.filter((c) => !c.hidden);
+  const [addOpen, setAddOpen] = useState(false);
+  // Three tiers: this term's live courses, dormant enrollments Canvas still
+  // lists (Title IX shells, last term), and explicitly hidden ones.
+  const courses = allCourses.filter((c) => !c.hidden && c.active);
+  const dormant = allCourses.filter((c) => !c.hidden && !c.active);
   const hidden = allCourses.filter((c) => c.hidden);
 
   return (
     <>
-      <ScreenHeader title="Courses" subtitle="Active enrollments, sorted by risk." />
+      <ScreenHeader
+        title="Courses"
+        subtitle="Active enrollments, sorted by risk."
+        actions={
+          <Button variant="outline" size="sm" onClick={() => setAddOpen(true)}>
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            Add course
+          </Button>
+        }
+      />
+
+      <AddCourseDialog open={addOpen} onOpenChange={setAddOpen} onSaved={refresh} />
 
       {!loaded ? (
         <div className="mx-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -62,6 +87,22 @@ export default function Courses() {
               <CourseCard key={c.id} course={c} featured={i === 0 && courses.length > 2} />
             ))}
           </div>
+
+          {/* Dormant enrollments: synced and openable, but visually out of
+              the way — this is the Title IX / stale-term noise the triage
+              and sidebar deliberately skip. */}
+          {dormant.length > 0 && (
+            <details className="mt-2">
+              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                {dormant.length} dormant — no recent due dates or grading
+              </summary>
+              <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {dormant.map((c) => (
+                  <CourseCard key={c.id} course={c} />
+                ))}
+              </div>
+            </details>
+          )}
 
           {/* Hidden courses: present but quiet, one click to restore. */}
           {hidden.length > 0 && (
@@ -98,6 +139,89 @@ export default function Courses() {
         </div>
       )}
     </>
+  );
+}
+
+/** Create a course by hand — the whole grade path under Tier 2 (calendar
+ *  feed) starts here, since the feed carries dates but no course structure. */
+function AddCourseDialog({
+  open,
+  onOpenChange,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSaved: () => Promise<void> | void;
+}) {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [weighted, setWeighted] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    if (name.trim() === "") {
+      toast.error("Give the course a name.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const id = await saveManualCourse({
+        name: name.trim(),
+        courseCode: code.trim() === "" ? undefined : code.trim(),
+        applyGroupWeights: weighted,
+      });
+      onOpenChange(false);
+      announceCoursesChanged();
+      await onSaved();
+      toast.success("Course created — add its groups and assignments from the detail page.");
+      navigate(`/courses/${id}`);
+    } catch (e) {
+      toast.error(String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Add a course</DialogTitle>
+          <DialogDescription>
+            For anything Canvas can't see — running on the calendar feed, a course on another
+            platform, or planning ahead. Manual courses survive every sync.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-2.5">
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Course name (e.g. Data Structures and Algorithms)"
+            className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
+          />
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Code (e.g. CS-146) — optional"
+            className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
+          />
+          <label className="flex items-center justify-between rounded-md border border-border/60 px-2.5 py-2 text-sm">
+            <span>
+              Weighted groups
+              <span className="block text-2xs text-muted-foreground">
+                On when the syllabus says "Homework 30%, Exams 50%…"
+              </span>
+            </span>
+            <Switch checked={weighted} onCheckedChange={setWeighted} />
+          </label>
+        </div>
+        <Button size="sm" onClick={() => void save()} disabled={saving}>
+          {saving ? "Creating…" : "Create course"}
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }
 

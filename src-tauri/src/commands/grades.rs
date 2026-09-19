@@ -158,6 +158,16 @@ impl Bundle {
     /// Inactive courses stay synced and visible on the Courses page; triage,
     /// the sidebar and the MCP tools skip them.
     pub fn is_active(&self, course_id: &str, now: chrono::DateTime<chrono::Utc>) -> bool {
+        // A hand-made course is active by definition — the user created it on
+        // purpose, possibly before adding any dated work, and "hidden" is the
+        // tool for retiring it.
+        if self
+            .courses
+            .iter()
+            .any(|c| c.id == course_id && c.source == "manual")
+        {
+            return true;
+        }
         let recent_due = now - chrono::Duration::days(30);
         let recent_grade = now - chrono::Duration::days(60);
         self.assignments

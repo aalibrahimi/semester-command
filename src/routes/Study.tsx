@@ -8,15 +8,61 @@
  * teaching lives one level down; this screen only has to answer "where do I
  * go tonight".
  */
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, BookOpen, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courses, daysUntil, formatDate } from "@/study";
+import { guidesForCourse } from "@/study/loadGuides";
+import { studySectionsAll } from "@/lib/ipc";
 
 const HUES: Record<string, number> = { hist15: 330, cs146: 217, ling112: 282, ling124: 172, ling115: 48, cs154: 200 };
 export const courseTick = (slug: string) => ({ backgroundColor: `hsl(${HUES[slug] ?? 200} 60% 60% / 0.9)` });
 
+/** Per-course reading progress: mastered / total sections across the
+ *  written chapters. Counts come from the mastery store's section rows;
+ *  totals from the guide content itself. */
+function useCourseProgress(): Record<string, { mastered: number; shaky: number; total: number }> {
+  const [bySlug, setBySlug] = useState<Record<string, { mastered: number; shaky: number; total: number }>>({});
+
+  useEffect(() => {
+    let alive = true;
+    void studySectionsAll().then((rows) => {
+      if (!alive) return;
+      const byGuide = new Map<string, { mastered: number; shaky: number }>();
+      for (const r of rows) {
+        const g = byGuide.get(r.guideId) ?? { mastered: 0, shaky: 0 };
+        if (r.status === "mastered") g.mastered += 1;
+        else if (r.status === "shaky") g.shaky += 1;
+        byGuide.set(r.guideId, g);
+      }
+      const out: Record<string, { mastered: number; shaky: number; total: number }> = {};
+      for (const c of courses) {
+        const guides = guidesForCourse(c.slug, c.guides);
+        const total = guides.reduce((s, g) => s + g.sections.length, 0);
+        let mastered = 0;
+        let shaky = 0;
+        for (const g of guides) {
+          const counts = byGuide.get(g.id);
+          if (counts) {
+            mastered += counts.mastered;
+            shaky += counts.shaky;
+          }
+        }
+        out[c.slug] = { mastered, shaky, total };
+      }
+      setBySlug(out);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return bySlug;
+}
+
 export default function Study() {
+  const progress = useCourseProgress();
   const soon = courses
     .flatMap((c) => c.deadlines.map((d) => ({ ...d, course: c, days: daysUntil(d.date) })))
     .filter((d) => d.days >= 0 && d.days <= 7 && d.kind !== "other")
@@ -83,6 +129,7 @@ export default function Study() {
                         {days <= 0 ? "now" : `${days} days`}
                       </span>
                     </div>
+                    <CourseProgressBar p={progress[c.slug]} />
                   </div>
                   {warns > 0 && (
                     <span className="chip shrink-0 bg-at-risk/10 text-at-risk-fg">
@@ -96,6 +143,28 @@ export default function Study() {
           })}
         </ul>
       </section>
+    </div>
+  );
+}
+
+/** A quiet two-tone strip: mastered solid, shaky faded, the rest empty.
+ *  Absent entirely until something has been read — an all-empty bar on
+ *  every row would just be furniture. */
+function CourseProgressBar({ p }: { p?: { mastered: number; shaky: number; total: number } }) {
+  if (!p || p.total === 0 || (p.mastered === 0 && p.shaky === 0)) return null;
+  const masteredPct = (p.mastered / p.total) * 100;
+  const shakyPct = (p.shaky / p.total) * 100;
+  return (
+    <div className="mt-1.5 flex items-center gap-2">
+      <div className="h-1 w-40 overflow-hidden rounded-full bg-fill-ghost">
+        <div className="flex h-full">
+          <div className="h-full bg-on-track" style={{ width: `${masteredPct}%` }} />
+          <div className="h-full bg-at-risk/50" style={{ width: `${shakyPct}%` }} />
+        </div>
+      </div>
+      <span data-numeric className="font-mono text-2xs tabular-nums text-muted-foreground">
+        {p.mastered}/{p.total} mastered
+      </span>
     </div>
   );
 }

@@ -24,7 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { setEstimate } from "@/lib/ipc";
+import { saveManualScore, setEstimate } from "@/lib/ipc";
 import { sanitize } from "@/lib/canvasHtml";
 import { dateTime, minutes, points, relativeDue } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -74,7 +74,7 @@ function SheetBody({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
           sub={a.dueAt ? dateTime(a.dueAt) : undefined}
           valueClass={dueTone(a)}
         />
-        <Stat label="score" value={points(a.score, a.pointsPossible)} sub={a.score === null ? "not graded" : a.submitted ? "graded" : undefined} />
+        <ScoreStat a={a} onChanged={onChanged} />
         <Stat label="grade impact" value={`${a.impactPct.toFixed(1)}%`} sub="of your final grade" />
         <EstimateStat a={a} onChanged={onChanged} />
       </div>
@@ -150,6 +150,75 @@ function Stat({
       </div>
       {sub && <div className="text-2xs text-muted-foreground">{sub}</div>}
     </div>
+  );
+}
+
+/**
+ * The score tile — editable by hand (§3: manual entry is first-class, and
+ * under the calendar-feed tier it is the only way grades exist at all).
+ * A score Canvas has already posted is left read-only: the next sync would
+ * overwrite the edit anyway, and two sources of truth is one too many.
+ */
+function ScoreStat({ a, onChanged }: { a: AssignmentDetail; onChanged: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const canvasGraded = a.score !== null && a.source === "api";
+
+  const save = () => {
+    const score = value.trim() === "" ? null : Number.parseFloat(value);
+    if (score !== null && (Number.isNaN(score) || score < 0)) {
+      toast.error("Scores are points — plain non-negative numbers.");
+      return;
+    }
+    saveManualScore(a.id, score)
+      .then(() => {
+        setEditing(false);
+        onChanged();
+      })
+      .catch(() => toast.error("Could not save the score."));
+  };
+
+  if (canvasGraded) {
+    return <Stat label="score" value={points(a.score, a.pointsPossible)} sub="graded on Canvas" />;
+  }
+  if (editing) {
+    return (
+      <div className="rounded-xl bg-fill-ghost/60 px-3 py-2">
+        <div className="text-2xs uppercase tracking-wide text-muted-foreground">score</div>
+        <input
+          autoFocus
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={save}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") setEditing(false);
+          }}
+          placeholder={a.pointsPossible !== null ? `points of ${a.pointsPossible}` : "points"}
+          className="mt-0.5 w-full rounded-md border border-brand bg-transparent px-1.5 py-0.5 font-mono text-sm tabular-nums outline-none"
+        />
+        <div className="text-2xs text-muted-foreground">blank = not graded</div>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setValue(a.score?.toString() ?? "");
+        setEditing(true);
+      }}
+      className="rounded-xl bg-fill-ghost/60 px-3 py-2 text-left transition-colors duration-micro hover:bg-fill-ghost"
+      title="Click to record a score by hand — marked manual until Canvas confirms"
+    >
+      <div className="text-2xs uppercase tracking-wide text-muted-foreground">score</div>
+      <div data-numeric className="font-mono text-sm font-medium tabular-nums">
+        {points(a.score, a.pointsPossible)}
+      </div>
+      <div className="text-2xs text-muted-foreground">
+        {a.score === null ? "not graded — click to record" : "recorded by hand"}
+      </div>
+    </button>
   );
 }
 

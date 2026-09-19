@@ -24,7 +24,6 @@ import type {
   DebugDump,
   DetectResult,
   DebugOverview,
-  HarvestReport,
   IcsSummary,
   CourseSyllabus,
   InstructorRow,
@@ -130,11 +129,6 @@ export async function getAuthStatus(): Promise<AuthStatus> {
  */
 export async function openCanvasLogin(): Promise<void> {
   return call<void>("open_canvas_login");
-}
-
-/** One manual harvest attempt against the open login window (debug surface). */
-export async function harvestSession(): Promise<HarvestReport> {
-  return call<HarvestReport>("harvest_session");
 }
 
 /** Tier 0: validate and store an admin-issued access token. Throws with a
@@ -249,6 +243,15 @@ export async function setTarget(
   targetLetter?: string,
 ): Promise<void> {
   return call<void>("set_target", { courseId, targetPct, targetLetter });
+}
+
+/** Set a course's grade scale as descending [cutoff, letter] pairs (§4.4);
+ *  null resets to the default scale. */
+export async function setGradeScale(
+  courseId: string,
+  scale: [number, string][] | null,
+): Promise<void> {
+  return call<void>("set_grade_scale", { courseId, scale });
 }
 
 /** The ranked triage list. Outside Tauri: empty. */
@@ -396,6 +399,18 @@ export async function setEstimate(assignmentId: string, estMinutes: number | nul
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+   Whole-database dump.
+
+   Despite the historical `debug_` command name, this is a PRODUCTION data
+   source: the Done screen, Triage's "what changed" rail and the Briefing all
+   read it. Do not strip it from release builds.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export async function debugDump(): Promise<DebugDump> {
+  return call<DebugDump>("debug_dump");
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
    Debug surface (dev builds only — the /dev/debug route).
    ──────────────────────────────────────────────────────────────────────────── */
 
@@ -403,16 +418,10 @@ export async function debugOverview(): Promise<DebugOverview> {
   return call<DebugOverview>("debug_overview");
 }
 
-export async function debugDump(): Promise<DebugDump> {
-  return call<DebugDump>("debug_dump");
-}
-
 /** Force the session-dead state to exercise the reconnect flow. */
 export async function debugForceReconnect(): Promise<void> {
   return call<void>("debug_force_reconnect");
 }
-// TODO(M2): getCourseGrades, whatDoINeed
-// TODO(M4): exportIcs
 
 /* ────────────────────────────────────────────────────────────────────────────
    Degree progress (MyProgress import)

@@ -35,6 +35,9 @@ import {
   EyeOff,
   GraduationCap,
   Pencil,
+  Plus,
+  RotateCcw,
+  SlidersHorizontal,
   Target,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -64,7 +67,17 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { courseDetail, setCourseHidden, setTarget, syllabi, whatDoINeed } from "@/lib/ipc";
+import {
+  courseDetail,
+  saveManualAssignment,
+  saveManualGroup,
+  setCourseHidden,
+  setGradeScale,
+  setTarget,
+  syllabi,
+  whatDoINeed,
+} from "@/lib/ipc";
+import { stripShouting } from "@/lib/stripShouting";
 import { extractFacts } from "@/lib/syllabusFacts";
 import { announceCoursesChanged } from "@/hooks/useCourses";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
@@ -164,17 +177,18 @@ function SyllabusCard({ courseId }: { courseId: string }) {
   );
 }
 
-/** Letter → percent for the target picker. Mirrors DEFAULT_SCALE in Rust. */
-const TARGETS: [string, number][] = [
-  ["A", 93],
-  ["A-", 90],
-  ["B+", 87],
-  ["B", 83],
-  ["B-", 80],
-  ["C+", 77],
-  ["C", 73],
-  ["C-", 70],
-];
+/** Letter → percent options for the target picker, from THIS course's scale
+ *  (custom cutoffs included — §4.4). D-range targets are left out; nobody
+ *  aims for a D on purpose, and the list stays scannable. */
+function targetsFrom(scale: [number, string][]): [string, number][] {
+  const options = scale
+    .filter(([cutoff]) => cutoff >= 70)
+    .map(([cutoff, letter]) => [letter, cutoff] as [string, number]);
+  // A degenerate custom scale (everything under 70) still needs choices.
+  return options.length > 0
+    ? options
+    : scale.map(([cutoff, letter]) => [letter, cutoff] as [string, number]);
+}
 
 /** Categorical hues for the donut segments — the same family as course
  *  identity colors, applied per group here. */
@@ -186,6 +200,8 @@ export default function CourseDetail() {
   const [data, setData] = useState<CourseDetailPayload | null>(null);
   const [missingCourse, setMissingCourse] = useState(false);
   const [solverOpen, setSolverOpen] = useState(false);
+  const [scaleOpen, setScaleOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const [openAssignmentId, setOpenAssignmentId] = useState<string | null>(null);
   const [hoverGroupId, setHoverGroupId] = useState<string | null>(null);
   const [filterGroupId, setFilterGroupId] = useState<string | null>(null);
@@ -242,6 +258,7 @@ export default function CourseDetail() {
   }
 
   const { summary: s, groups, assignments } = data;
+  const targets = targetsFrom(data.scale);
   const label = parseCourseLabel(s.courseCode ?? s.name);
   const nickname = nicknames[s.id];
   const floor = floorForCanvasCourse(s.courseCode);
@@ -251,7 +268,7 @@ export default function CourseDetail() {
   const maxBelowFloor = floor !== null && s.maxPossiblePct < floor.pct;
 
   const pickTarget = (letter: string) => {
-    const found = TARGETS.find(([l]) => l === letter);
+    const found = targets.find(([l]) => l === letter);
     if (!found || !courseId) return;
     setTarget(courseId, found[1], found[0])
       .then(() => {
@@ -301,13 +318,28 @@ export default function CourseDetail() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TARGETS.map(([letter, cutoff]) => (
+                {targets.map(([letter, cutoff]) => (
                   <SelectItem key={letter} value={letter}>
                     Target {letter} ({cutoff}%)
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setScaleOpen(true)}
+              title={
+                data.customScale
+                  ? "Custom grade scale in use — edit it"
+                  : "Edit this course's grade scale (professor curves, custom cutoffs)"
+              }
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {data.customScale && (
+                <span className="ml-1 text-2xs text-brand-fg">custom</span>
+              )}
+            </Button>
             <Button size="sm" onClick={() => setSolverOpen(true)} disabled={!s.gradeable}>
               <Calculator className="mr-1.5 h-3.5 w-3.5" />
               What do I need?
@@ -347,6 +379,24 @@ export default function CourseDetail() {
               {Math.abs(s.grade.reconciliationDelta).toFixed(1)} points. This usually means an
               unmodelled course rule (dropped-lowest, a curve). Trust Canvas's number until this
               banner clears, and treat the solver as approximate for this course.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Weighted course with orphan assignments: they cannot count. Say
+            so once, loudly — a manual assignment that silently moves nothing
+            is worse than no manual assignment at all. */}
+        {data.uncountedCount > 0 && (
+          <Alert className="border-at-risk/40 xl:col-span-3">
+            <AlertTriangle className="h-4 w-4 text-at-risk-fg" />
+            <AlertTitle>
+              {data.uncountedCount} assignment{data.uncountedCount === 1 ? " doesn't" : "s don't"}{" "}
+              count toward this grade
+            </AlertTitle>
+            <AlertDescription>
+              This course grades by weighted groups, and assignments outside a weighted group
+              (added by hand or from the calendar feed) can't contribute. Edit each one and put
+              it in a group — they still show in the list and in Triage meanwhile.
             </AlertDescription>
           </Alert>
         )}
@@ -434,7 +484,6 @@ export default function CourseDetail() {
             groups={groups}
             mode={s.grade.mode}
             centerLabel={anyGraded ? pct(s.grade.currentPct) : "—"}
-            assignments={assignments}
             hoverGroupId={hoverGroupId}
             onHover={setHoverGroupId}
             filterGroupId={filterGroupId}
@@ -451,6 +500,7 @@ export default function CourseDetail() {
           filterGroupId={filterGroupId}
           onClearFilter={() => setFilterGroupId(null)}
           onOpen={setOpenAssignmentId}
+          onAdd={() => setAddOpen(true)}
         />
 
         {/* ── Syllabus knowledge (mined from imported documents) ────────── */}
@@ -461,9 +511,34 @@ export default function CourseDetail() {
         open={solverOpen}
         onOpenChange={setSolverOpen}
         courseId={s.id}
+        targets={targets}
         defaultTargetPct={s.targetPct}
         maxPossiblePct={s.maxPossiblePct}
         assignments={assignments.filter((a) => a.score === null && !a.excused && !a.omitted)}
+      />
+
+      <ScaleDialog
+        open={scaleOpen}
+        onOpenChange={setScaleOpen}
+        courseId={s.id}
+        scale={data.scale}
+        customScale={data.customScale}
+        onSaved={() => {
+          refresh();
+          announceCoursesChanged();
+        }}
+      />
+
+      <AddAssignmentDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        courseId={s.id}
+        weighted={s.grade.mode === "weighted"}
+        groups={groups}
+        onSaved={() => {
+          refresh();
+          announceCoursesChanged();
+        }}
       />
 
       <AssignmentSheet
@@ -539,36 +614,18 @@ interface SegmentInfo {
   zeroWeightWithWork: boolean;
 }
 
-function segmentsOf(
-  groups: GroupDetail[],
-  mode: string,
-  assignments: AssignmentDetail[],
-): SegmentInfo[] {
-  const pointsOf = (g: GroupDetail) =>
-    assignments
-      .filter((a) => a.groupId === g.id)
-      .reduce((s, a) => s + (a.pointsPossible ?? 0), 0);
-  const totalPoints = groups.reduce((s, g) => s + pointsOf(g), 0);
-  const totalWeight = groups.reduce((s, g) => s + (g.weight ?? 0), 0);
-
+function segmentsOf(groups: GroupDetail[], mode: string): SegmentInfo[] {
+  // `sharePct` arrives computed from grades.rs — this function only assigns
+  // hues and flags. The weight normalisation that used to live here was the
+  // §10 violation ("a percentage computed in TypeScript is a bug").
   return groups
-    .map((g, i) => {
-      const share =
-        mode === "weighted"
-          ? totalWeight > 0
-            ? ((g.weight ?? 0) / totalWeight) * 100
-            : 0
-          : totalPoints > 0
-            ? (pointsOf(g) / totalPoints) * 100
-            : 0;
-      return {
-        group: g,
-        share,
-        hue: SEGMENT_HUES[i % SEGMENT_HUES.length],
-        graded: g.gradedCount > 0,
-        zeroWeightWithWork: mode === "weighted" && (g.weight ?? 0) === 0 && g.totalCount > 0,
-      };
-    })
+    .map((g, i) => ({
+      group: g,
+      share: g.sharePct,
+      hue: SEGMENT_HUES[i % SEGMENT_HUES.length],
+      graded: g.gradedCount > 0,
+      zeroWeightWithWork: mode === "weighted" && (g.weight ?? 0) === 0 && g.totalCount > 0,
+    }))
     .sort((a, b) => b.share - a.share);
 }
 
@@ -576,7 +633,6 @@ function CompositionCard({
   groups,
   mode,
   centerLabel,
-  assignments,
   hoverGroupId,
   onHover,
   filterGroupId,
@@ -585,16 +641,12 @@ function CompositionCard({
   groups: GroupDetail[];
   mode: string;
   centerLabel: string;
-  assignments: AssignmentDetail[];
   hoverGroupId: string | null;
   onHover: (id: string | null) => void;
   filterGroupId: string | null;
   onFilter: (id: string) => void;
 }) {
-  const segments = useMemo(
-    () => segmentsOf(groups, mode, assignments),
-    [groups, mode, assignments],
-  );
+  const segments = useMemo(() => segmentsOf(groups, mode), [groups, mode]);
 
   // Donut geometry: r=54, stroke 16, circumference splits by share. Offsets
   // are precomputed so render stays pure.
@@ -725,6 +777,7 @@ function GroupedAssignments({
   filterGroupId,
   onClearFilter,
   onOpen,
+  onAdd,
 }: {
   groups: GroupDetail[];
   assignments: AssignmentDetail[];
@@ -733,6 +786,7 @@ function GroupedAssignments({
   filterGroupId: string | null;
   onClearFilter: () => void;
   onOpen: (id: string) => void;
+  onAdd: () => void;
 }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const toggle = (id: string) =>
@@ -761,6 +815,7 @@ function GroupedAssignments({
           id: "__ungrouped",
           name: "Ungrouped",
           weight: null,
+          sharePct: 0,
           currentPct: null,
           gradedCount: orphans.filter((a) => a.score !== null).length,
           totalCount: orphans.length,
@@ -777,15 +832,25 @@ function GroupedAssignments({
         <h3 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
           Assignments
         </h3>
-        {filterGroupId && (
+        <div className="flex items-center gap-3">
+          {filterGroupId && (
+            <button
+              type="button"
+              onClick={onClearFilter}
+              className="text-2xs text-brand-fg underline underline-offset-2"
+            >
+              Clear group filter
+            </button>
+          )}
           <button
             type="button"
-            onClick={onClearFilter}
-            className="text-2xs text-brand-fg underline underline-offset-2"
+            onClick={onAdd}
+            title="Add an assignment by hand — the syllabus knows things Canvas doesn't yet"
+            className="flex items-center gap-1 text-2xs text-muted-foreground transition-colors duration-micro hover:text-foreground"
           >
-            Clear group filter
+            <Plus className="h-3 w-3" /> Add
           </button>
-        )}
+        </div>
       </div>
 
       {/* Column labels, once — the numbers below explain themselves. */}
@@ -870,20 +935,6 @@ const ROW_GRID =
 function byDueUndatedLast(a: AssignmentDetail, b: AssignmentDetail): number {
   // Undated items never float to the top: they sort after everything dated.
   return (a.dueAt ?? "9999") .localeCompare(b.dueAt ?? "9999");
-}
-
-/** "[REQUIRED] Homework 1" → clean title + quiet chips. */
-function stripShouting(name: string | null): { title: string; flags: string[] } {
-  const raw = name ?? "Untitled";
-  const flags: string[] = [];
-  const title = raw
-    .replace(/\[([A-Z][A-Z !]{2,})\]/g, (_, f: string) => {
-      flags.push(f.trim().toLowerCase());
-      return "";
-    })
-    .replace(/\s{2,}/g, " ")
-    .trim();
-  return { title: title || raw, flags };
 }
 
 /** Row state, told once by a dot instead of a crowd of chips. Chips stay
@@ -999,6 +1050,7 @@ function SolverDialog({
   open,
   onOpenChange,
   courseId,
+  targets,
   defaultTargetPct,
   maxPossiblePct,
   assignments,
@@ -1006,6 +1058,7 @@ function SolverDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseId: string;
+  targets: [string, number][];
   defaultTargetPct: number;
   maxPossiblePct: number;
   assignments: AssignmentDetail[];
@@ -1042,7 +1095,7 @@ function SolverDialog({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {TARGETS.map(([letter, cutoff]) => (
+              {targets.map(([letter, cutoff]) => (
                 <SelectItem key={letter} value={String(cutoff)}>
                   {letter} ({cutoff}%)
                 </SelectItem>
@@ -1126,6 +1179,297 @@ function SolverResult({ answer }: { answer: SolverAnswer }) {
         </span>
       </p>
     </div>
+  );
+}
+
+/* ── Grade scale editor (§4.4) ───────────────────────────────────────────── */
+
+/** Edit this course's letter cutoffs — SJSU professors curve, and the
+ *  default scale lying about it poisons every letter in the app. Rows are
+ *  edited as text and validated in Rust on save. */
+function ScaleDialog({
+  open,
+  onOpenChange,
+  courseId,
+  scale,
+  customScale,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  courseId: string;
+  scale: [number, string][];
+  customScale: boolean;
+  onSaved: () => void;
+}) {
+  const [rows, setRows] = useState<{ letter: string; cutoff: string }[]>([]);
+
+  useEffect(() => {
+    if (!open) return;
+    // Reseeding the editor from the live scale each time it opens.
+    // oxlint-disable-next-line set-state-in-effect
+    setRows(scale.map(([cutoff, letter]) => ({ letter, cutoff: String(cutoff) })));
+  }, [open, scale]);
+
+  const save = () => {
+    const parsed: [number, string][] = [];
+    for (const r of rows) {
+      if (r.letter.trim() === "" && r.cutoff.trim() === "") continue; // deleted row
+      const cutoff = Number.parseFloat(r.cutoff);
+      if (Number.isNaN(cutoff) || cutoff < 0 || cutoff > 110 || r.letter.trim() === "") {
+        toast.error("Each row needs a letter and a cutoff between 0 and 110.");
+        return;
+      }
+      parsed.push([cutoff, r.letter.trim()]);
+    }
+    if (parsed.length === 0) {
+      toast.error("A scale needs at least one cutoff.");
+      return;
+    }
+    setGradeScale(courseId, parsed)
+      .then(() => {
+        onOpenChange(false);
+        onSaved();
+        toast.success("Scale saved — every letter in this course now uses it.");
+      })
+      .catch((e: unknown) => toast.error(String(e)));
+  };
+
+  const reset = () => {
+    setGradeScale(courseId, null)
+      .then(() => {
+        onOpenChange(false);
+        onSaved();
+        toast.success("Back to the standard scale.");
+      })
+      .catch(() => toast.error("Could not reset the scale."));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Grade scale</DialogTitle>
+          <DialogDescription>
+            The cutoffs letters are computed with, for this course only. Blank out both fields
+            to drop a row.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex max-h-72 flex-col gap-1.5 overflow-y-auto pr-1">
+          {rows.map((r, i) => (
+            <div key={i} className="grid grid-cols-[72px_1fr] gap-2">
+              <input
+                value={r.letter}
+                onChange={(e) =>
+                  setRows((cur) => cur.map((row, j) => (j === i ? { ...row, letter: e.target.value } : row)))
+                }
+                placeholder="A-"
+                className="rounded-md border border-border bg-transparent px-2 py-1 text-sm outline-none focus-visible:border-brand"
+              />
+              <input
+                value={r.cutoff}
+                onChange={(e) =>
+                  setRows((cur) => cur.map((row, j) => (j === i ? { ...row, cutoff: e.target.value } : row)))
+                }
+                placeholder="90"
+                inputMode="decimal"
+                className="rounded-md border border-border bg-transparent px-2 py-1 font-mono text-sm tabular-nums outline-none focus-visible:border-brand"
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setRows((cur) => [...cur, { letter: "", cutoff: "" }])}
+            className="mt-1 flex items-center gap-1 self-start text-2xs text-muted-foreground hover:text-foreground"
+          >
+            <Plus className="h-3 w-3" /> Add a cutoff
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          {customScale ? (
+            <Button variant="ghost" size="sm" onClick={reset}>
+              <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+              Use the default
+            </Button>
+          ) : (
+            <span />
+          )}
+          <Button size="sm" onClick={save}>
+            Save scale
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ── Manual assignment entry (§3 — first-class under Tier 2) ─────────────── */
+
+/** Add an assignment by hand: name, group, due date, points. In a weighted
+ *  course the group choice is mandatory — an ungrouped assignment cannot
+ *  count toward the grade, and this dialog refuses to create one silently.
+ *  "New group…" creates the group (with a weight) in the same save. */
+function AddAssignmentDialog({
+  open,
+  onOpenChange,
+  courseId,
+  weighted,
+  groups,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  courseId: string;
+  weighted: boolean;
+  groups: GroupDetail[];
+  onSaved: () => void;
+}) {
+  const NEW_GROUP = "__new";
+  const NO_GROUP = "__none";
+  const [name, setName] = useState("");
+  const [groupId, setGroupId] = useState<string>(weighted ? (groups[0]?.id ?? NEW_GROUP) : NO_GROUP);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupWeight, setNewGroupWeight] = useState("");
+  const [due, setDue] = useState("");
+  const [pointsStr, setPointsStr] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    if (name.trim() === "") {
+      toast.error("Give the assignment a name.");
+      return;
+    }
+    const pts = pointsStr.trim() === "" ? undefined : Number.parseFloat(pointsStr);
+    if (pts !== undefined && (Number.isNaN(pts) || pts < 0)) {
+      toast.error("Points must be a plain non-negative number.");
+      return;
+    }
+    if (weighted && groupId === NO_GROUP) {
+      toast.error("Pick a group — ungrouped work can't count in a weighted course.");
+      return;
+    }
+    setSaving(true);
+    try {
+      let resolvedGroup: string | undefined =
+        groupId === NO_GROUP ? undefined : groupId === NEW_GROUP ? undefined : groupId;
+      if (groupId === NEW_GROUP) {
+        if (newGroupName.trim() === "") {
+          toast.error("Name the new group.");
+          setSaving(false);
+          return;
+        }
+        const w = newGroupWeight.trim() === "" ? undefined : Number.parseFloat(newGroupWeight);
+        if (weighted && (w === undefined || Number.isNaN(w) || w <= 0)) {
+          toast.error("A weighted course needs the new group's weight (e.g. 20).");
+          setSaving(false);
+          return;
+        }
+        resolvedGroup = await saveManualGroup({
+          courseId,
+          name: newGroupName.trim(),
+          groupWeight: w,
+        });
+      }
+      // datetime-local gives local wall time; store the instant it names.
+      const dueAt = due ? new Date(due).toISOString() : undefined;
+      await saveManualAssignment({
+        courseId,
+        groupId: resolvedGroup,
+        name: name.trim(),
+        dueAt,
+        pointsPossible: pts,
+      });
+      onOpenChange(false);
+      onSaved();
+      setName("");
+      setDue("");
+      setPointsStr("");
+      toast.success("Added. It's marked manual until Canvas confirms it.");
+    } catch (e) {
+      toast.error(String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Add an assignment</DialogTitle>
+          <DialogDescription>
+            For work the syllabus knows about but Canvas doesn't show yet — or everything, if
+            you're running on the calendar feed. Manual rows survive every sync.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-2.5">
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Assignment name"
+            className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
+          />
+
+          <Select value={groupId} onValueChange={setGroupId}>
+            <SelectTrigger className="text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {!weighted && <SelectItem value={NO_GROUP}>No group</SelectItem>}
+              {groups.map((g) => (
+                <SelectItem key={g.id} value={g.id}>
+                  {g.name ?? "Unnamed group"}
+                  {g.weight !== null ? ` (${g.weight.toFixed(0)}%)` : ""}
+                </SelectItem>
+              ))}
+              <SelectItem value={NEW_GROUP}>New group…</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {groupId === NEW_GROUP && (
+            <div className="grid grid-cols-[1fr_88px] gap-2">
+              <input
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                placeholder="Group name"
+                className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
+              />
+              <input
+                value={newGroupWeight}
+                onChange={(e) => setNewGroupWeight(e.target.value)}
+                placeholder={weighted ? "weight %" : "weight"}
+                inputMode="decimal"
+                className="rounded-md border border-border bg-transparent px-2.5 py-1.5 font-mono text-sm tabular-nums outline-none focus-visible:border-brand"
+              />
+            </div>
+          )}
+
+          <div className="grid grid-cols-[1fr_88px] gap-2">
+            <input
+              type="datetime-local"
+              value={due}
+              onChange={(e) => setDue(e.target.value)}
+              className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
+            />
+            <input
+              value={pointsStr}
+              onChange={(e) => setPointsStr(e.target.value)}
+              placeholder="points"
+              inputMode="decimal"
+              className="rounded-md border border-border bg-transparent px-2.5 py-1.5 font-mono text-sm tabular-nums outline-none focus-visible:border-brand"
+            />
+          </div>
+        </div>
+
+        <Button size="sm" onClick={() => void save()} disabled={saving}>
+          {saving ? "Saving…" : "Add assignment"}
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }
 

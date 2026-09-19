@@ -4,21 +4,19 @@
  * Called by: Sidebar (footer), and later the tray/toast surfaces.
  * Calls: lib/ipc.ts → `get_sync_status`.
  *
- * Polls rather than subscribes, for now. A Tauri event channel is the right
- * long-term shape and lands with the sync engine in M1; a 5-second poll of a
- * single SQLite row costs nothing and keeps M0 free of an event contract we
- * would only have to redesign once the engine exists.
- *
- * TODO(M1): replace the interval with a `sync://status` Tauri event and expose
- * `triggerSync()` here.
+ * Subscribes to the engine's "sync:status-changed" event (same channel
+ * useCourses listens on) and re-reads on every transition, with a slow poll
+ * as the safety net for anything the event misses (e.g. a status written
+ * before this hook mounted, or outside Tauri where events don't exist).
  */
 import { useCallback, useEffect, useState } from "react";
-import { getSyncStatus } from "@/lib/ipc";
+import { listen } from "@tauri-apps/api/event";
+import { getSyncStatus, IS_TAURI } from "@/lib/ipc";
 import type { SyncStatus } from "@/types";
 
-/** How often the footer re-reads status. Unrelated to the 30-minute Canvas
- *  poll interval in §6 — this only watches a local row. */
-const POLL_MS = 5_000;
+/** Safety-net poll cadence. The event is the primary signal; this only
+ *  catches missed transitions, so it can be lazy. */
+const POLL_MS = 60_000;
 
 const INITIAL: SyncStatus = {
   phase: "idle",
@@ -42,14 +40,19 @@ export function useSync() {
   useEffect(() => {
     // The linter flags setState inside an effect, and is usually right. Here the
     // effect *is* the synchronisation with an external system — the sync engine
-    // running in Rust — and there is no render-time derivation or event that
-    // could produce this value instead. The immediate call before the interval
-    // is what stops the footer showing "synced never" for the first five
-    // seconds of every launch.
+    // running in Rust — and there is no render-time derivation that could
+    // produce this value instead. The immediate call is what stops the footer
+    // showing "synced never" on launch; the event does the live updates.
     // oxlint-disable-next-line set-state-in-effect
     void refresh();
+    const unlisten = IS_TAURI
+      ? listen("sync:status-changed", () => void refresh())
+      : null;
     const id = window.setInterval(() => void refresh(), POLL_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      void unlisten?.then((f) => f());
+    };
   }, [refresh]);
 
   return {
