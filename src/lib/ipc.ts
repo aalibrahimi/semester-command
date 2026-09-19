@@ -280,7 +280,7 @@ export async function plannerBlocks(): Promise<PlannerBlock[]> {
 /** Create (id undefined) or update one planner block. Resolves with its id. */
 export async function savePlannerBlock(block: {
   id?: number;
-  kind: "class" | "event";
+  kind: "class" | "study" | "event";
   courseId?: string | null;
   title: string;
   location?: string | null;

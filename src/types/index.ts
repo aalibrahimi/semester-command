@@ -686,8 +686,9 @@ export interface DegreeBlocks {
 
 export interface PlannerBlock {
   id: number;
-  /** 'class' (recurring course meeting) | 'event' (anything else). */
-  kind: "class" | "event";
+  /** 'class' (recurring course meeting) | 'study' (study session) |
+   *  'event' (personal — gym, work, anything). */
+  kind: "class" | "study" | "event";
   courseId: string | null;
   title: string;
   location: string | null;

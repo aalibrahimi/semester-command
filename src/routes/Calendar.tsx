@@ -136,6 +136,10 @@ export default function Calendar() {
             <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
+      ) : view === "week" ? (
+        /* The week planner works with zero due dates — class times and
+           study blocks are its own data, not Canvas's. */
+        <WeekView items={items} />
       ) : items.length === 0 ? (
         <EmptyState
           icon={CalendarDays}
@@ -144,8 +148,6 @@ export default function Calendar() {
         />
       ) : view === "agenda" ? (
         <AgendaView items={items} />
-      ) : view === "week" ? (
-        <WeekView items={items} />
       ) : (
         <MonthView items={items} />
       )}
@@ -403,6 +405,28 @@ const END_HOUR = 23;
 const HOUR_H = 48; // px per hour
 const GRID_H = (END_HOUR - START_HOUR) * HOUR_H;
 
+/** The calendar's category color language (per the reference design).
+ *  Classes wear their per-course identity color instead of one flat blue —
+ *  telling CS-146 from LING-112 at a glance is worth more than uniformity;
+ *  the legend represents them with the deck's blue. Literal hsl like
+ *  lib/courseColor, readable on both themes. */
+const CATEGORY = {
+  class: { label: "Classes", dot: "hsl(217 70% 58%)" },
+  study: { label: "Study", dot: "hsl(258 60% 62%)" },
+  event: { label: "Personal", dot: "hsl(150 45% 45%)" },
+  deadline: { label: "Deadlines", dot: "hsl(350 70% 58%)" },
+} as const;
+type Category = keyof typeof CATEGORY;
+
+/** Fill/border for the non-class block kinds. */
+function kindStyle(kind: "study" | "event"): React.CSSProperties {
+  const dot = CATEGORY[kind].dot;
+  return {
+    backgroundColor: dot.replace(")", " / 0.14)"),
+    borderColor: dot.replace(")", " / 0.45)"),
+  };
+}
+
 /** Local YYYY-MM-DD, no UTC surprises. */
 function localDateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -420,6 +444,12 @@ function minLabel(min: number): string {
   const h = Math.floor(min / 60);
   const hour12 = h % 12 === 0 ? 12 : h % 12;
   return `${hour12}${h >= 12 ? "p" : "a"}`;
+}
+
+/** "8 AM" / "12 PM" — the time gutter's voice (reference design). */
+function hourLabel(hour: number): string {
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${hour12} ${hour >= 12 ? "PM" : "AM"}`;
 }
 
 function minToInput(min: number): string {
@@ -475,6 +505,17 @@ function WeekView({ items }: { items: CalendarItem[] }) {
     | { phase: "review"; candidates: ClassSlotCandidate[]; canvasChecked: boolean }
     | null
   >(null);
+  // Legend chips double as filters — hidden categories vanish from the grid
+  // and the agenda rail. Session-scoped on purpose: a filter that survives a
+  // restart is a filter you forgot about.
+  const [hiddenCats, setHiddenCats] = useState<Set<Category>>(new Set());
+  const toggleCat = (c: Category) =>
+    setHiddenCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(c)) next.delete(c);
+      else next.add(c);
+      return next;
+    });
   const { courses } = useCourses();
   const nicknames = useNicknames();
 
@@ -567,30 +608,66 @@ function WeekView({ items }: { items: CalendarItem[] }) {
 
   return (
     <div className="mx-8 mb-10">
-      {/* Week navigation */}
-      <div className="mb-2 flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={() => setAnchor((a) => addDays(a, -7))}>
-          <ChevronLeft className="h-4 w-4" />
+      {/* ── Toolbar row 1: where in time we are ─────────────────────────── */}
+      <div className="mb-2 flex items-center gap-1.5">
+        <div className="flex items-center overflow-hidden rounded-lg border border-border/60 bg-card shadow-card">
+          <button
+            type="button"
+            onClick={() => setAnchor((a) => addDays(a, -7))}
+            className="px-2 py-1.5 text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-foreground"
+            title="Previous week"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span
+            data-numeric
+            className="border-x border-border/60 px-3 py-1.5 font-mono text-xs font-medium tabular-nums"
+          >
+            {days[0].toLocaleDateString(undefined, { month: "short", day: "numeric" })} –{" "}
+            {days[6].toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </span>
+          <button
+            type="button"
+            onClick={() => setAnchor((a) => addDays(a, 7))}
+            className="px-2 py-1.5 text-muted-foreground transition-colors duration-micro hover:bg-fill-ghost hover:text-foreground"
+            title="Next week"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => setAnchor(mondayOf(new Date()))}>
+          Today
         </Button>
-        <span className="w-56 text-center font-display text-sm font-semibold">
-          {days[0].toLocaleDateString(undefined, { month: "short", day: "numeric" })} –{" "}
-          {days[6].toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </span>
-        <Button variant="ghost" size="sm" onClick={() => setAnchor((a) => addDays(a, 7))}>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground"
-          onClick={() => setAnchor(mondayOf(new Date()))}
-        >
-          This week
-        </Button>
+      </div>
+
+      {/* ── Toolbar row 2: what's shown + the actions ───────────────────── */}
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        {(Object.keys(CATEGORY) as Category[]).map((c) => {
+          const off = hiddenCats.has(c);
+          return (
+            <button
+              key={c}
+              type="button"
+              onClick={() => toggleCat(c)}
+              title={off ? `Show ${CATEGORY[c].label.toLowerCase()}` : `Hide ${CATEGORY[c].label.toLowerCase()}`}
+              className={cn(
+                "chip gap-1.5 border border-border/60 bg-card text-2xs font-medium transition-opacity duration-micro",
+                off && "opacity-40",
+              )}
+            >
+              <span
+                aria-hidden
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: CATEGORY[c].dot }}
+              />
+              {CATEGORY[c].label}
+            </button>
+          );
+        })}
         <Button
           variant="outline"
           size="sm"
@@ -600,7 +677,6 @@ function WeekView({ items }: { items: CalendarItem[] }) {
           <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Detect class times
         </Button>
         <Button
-          variant="outline"
           size="sm"
           onClick={() =>
             setDialog({
@@ -623,33 +699,40 @@ function WeekView({ items }: { items: CalendarItem[] }) {
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-border/60">
-        <div className="grid min-w-[880px] grid-cols-[48px_repeat(7,minmax(0,1fr))]">
+      <div className="flex items-start gap-4">
+      <div className="min-w-0 flex-1 overflow-x-auto rounded-2xl border border-border/60 bg-card shadow-card">
+        <div className="grid min-w-[880px] grid-cols-[56px_repeat(7,minmax(0,1fr))]">
           {/* Header row: day names + due strips. */}
-          <div className="border-b border-border/60 bg-fill-ghost/40" />
+          <div className="border-b border-border/60" />
           {days.map((d) => {
             const key = localDateKey(d);
-            const due = dueByDay.get(key) ?? [];
+            const due = hiddenCats.has("deadline") ? [] : (dueByDay.get(key) ?? []);
             const isToday = key === todayKey;
             return (
               <div
                 key={key}
                 className={cn(
-                  "border-b border-l border-border/60 bg-fill-ghost/40 px-1.5 py-1.5",
-                  isToday && "bg-at-risk/[0.06]",
+                  "border-b border-l border-border/40 px-2 py-2",
+                  isToday && "bg-brand/[0.06]",
                 )}
               >
-                <div className="flex items-baseline gap-1.5">
+                <div className="flex flex-col leading-tight">
                   <span
                     className={cn(
                       "text-[10px] font-semibold uppercase tracking-wide",
-                      isToday ? "text-at-risk-fg" : "text-muted-foreground",
+                      isToday ? "text-brand-fg" : "text-muted-foreground",
                     )}
                   >
                     {d.toLocaleDateString(undefined, { weekday: "short" })}
                   </span>
-                  <span data-numeric className="font-mono text-xs font-semibold tabular-nums">
-                    {d.getDate()}
+                  <span
+                    data-numeric
+                    className={cn(
+                      "font-mono text-sm font-semibold tabular-nums",
+                      isToday && "text-brand-fg",
+                    )}
+                  >
+                    {d.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                   </span>
                 </div>
                 {academicOn(d).map((s) => (
@@ -667,15 +750,17 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                     {s.noClasses && s.kind !== "break" ? " · no class" : ""}
                   </div>
                 ))}
-                {/* Due strip: what's owed that day, above the time grid. */}
+                {/* Due strip: the day's deadlines as banners above the time
+                    grid (reference design) — deadlines are facts about the
+                    day, not one-hour blocks at 11:59pm. */}
                 {due.length > 0 && (
-                  <div className="mt-1 flex flex-col gap-0.5">
+                  <div className="mt-1.5 flex flex-col gap-0.5">
                     {due.slice(0, 3).map((item) => (
                       <Link
                         key={item.assignmentId}
                         to={`/courses/${item.courseId}`}
-                        className="truncate rounded bg-critical/10 px-1 py-px text-[10px] leading-tight text-critical-fg hover:bg-critical/20"
-                        title={item.name ?? undefined}
+                        className="truncate rounded-md border-l-2 border-critical bg-critical/10 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-critical-fg hover:bg-critical/20"
+                        title={`${item.name ?? "Untitled"} · due ${minLabel(new Date(item.dueAt).getHours() * 60 + new Date(item.dueAt).getMinutes())}`}
                       >
                         {item.name ?? "Untitled"}
                       </Link>
@@ -697,12 +782,24 @@ function WeekView({ items }: { items: CalendarItem[] }) {
               <span
                 key={i}
                 data-numeric
-                className="absolute right-1.5 -translate-y-1/2 font-mono text-[10px] tabular-nums text-muted-foreground/60"
+                className="absolute right-2 -translate-y-1/2 whitespace-nowrap font-mono text-[10px] tabular-nums text-muted-foreground/60"
                 style={{ top: i * HOUR_H }}
               >
-                {i === 0 ? "" : minLabel((START_HOUR + i) * 60)}
+                {i === 0 ? "" : hourLabel(START_HOUR + i)}
               </span>
             ))}
+            {/* The current time, named in the gutter beside the now-line. */}
+            {days.some((d) => localDateKey(d) === todayKey) &&
+              nowMin >= START_HOUR * 60 &&
+              nowMin <= END_HOUR * 60 && (
+                <span
+                  data-numeric
+                  className="absolute right-2 z-20 -translate-y-1/2 rounded bg-brand px-1 py-px font-mono text-[9px] font-semibold tabular-nums text-white"
+                  style={{ top: ((nowMin - START_HOUR * 60) / 60) * HOUR_H }}
+                >
+                  {minLabel(nowMin)}
+                </span>
+              )}
           </div>
 
           {/* Day columns */}
@@ -713,18 +810,20 @@ function WeekView({ items }: { items: CalendarItem[] }) {
             // the weekly class blocks there so the grid tells the truth.
             const noClass = noClassSpan(d);
             const dayBlocks = withLanes(
-              blocks.filter((b) =>
-                b.date
-                  ? b.date === key
-                  : b.weekday === dayIdx && !(noClass && b.kind === "class"),
-              ),
+              blocks
+                .filter((b) => !hiddenCats.has(b.kind))
+                .filter((b) =>
+                  b.date
+                    ? b.date === key
+                    : b.weekday === dayIdx && !(noClass && b.kind === "class"),
+                ),
             );
             return (
               <div
                 key={key}
                 className={cn(
-                  "relative cursor-crosshair border-l border-border/60",
-                  isToday && "bg-at-risk/[0.03]",
+                  "relative cursor-crosshair border-l border-border/40",
+                  isToday && "bg-brand/[0.04]",
                   noClass && "bg-fill-ghost/40",
                 )}
                 style={{ height: GRID_H }}
@@ -741,13 +840,16 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                   />
                 ))}
 
-                {/* Now line */}
+                {/* Now line — brand blue with a leading dot (reference
+                    design); red stays reserved for deadlines. */}
                 {isToday && nowMin >= START_HOUR * 60 && nowMin <= END_HOUR * 60 && (
                   <span
                     aria-hidden
-                    className="absolute left-0 right-0 z-20 border-t-2 border-critical/80"
+                    className="absolute left-0 right-0 z-20 border-t-2 border-brand"
                     style={{ top: ((nowMin - START_HOUR * 60) / 60) * HOUR_H }}
-                  />
+                  >
+                    <span className="absolute -left-1 -top-[5px] h-2 w-2 rounded-full bg-brand" />
+                  </span>
                 )}
 
                 {/* Blocks */}
@@ -770,42 +872,36 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                         setDialog({ mode: "edit", block: b });
                       }}
                       className={cn(
-                        "absolute z-10 overflow-hidden rounded-md border px-1.5 py-0.5 text-left leading-tight transition-colors duration-micro",
-                        b.kind === "event" && "border-brand/40 bg-brand/15 hover:bg-brand/25",
+                        "absolute z-10 overflow-hidden rounded-md border border-l-[3px] px-1.5 py-0.5 text-left leading-tight transition-opacity duration-micro hover:opacity-85",
                       )}
                       style={{
                         top,
                         height,
                         left: `${b.lane * width}%`,
                         width: `calc(${width}% - 3px)`,
-                        ...(b.kind === "class" && b.courseId ? chipStyle(b.courseId) : {}),
+                        ...(b.kind === "class" && b.courseId
+                          ? {
+                              ...chipStyle(b.courseId),
+                              borderLeftColor: String(tickStyle(b.courseId).backgroundColor),
+                            }
+                          : {
+                              ...kindStyle(b.kind === "study" ? "study" : "event"),
+                              borderLeftColor: CATEGORY[b.kind].dot,
+                            }),
                       }}
                       title={`${labelFor(b)} · ${minLabel(b.startMin)}–${minLabel(b.endMin)}${b.location ? ` · ${b.location}` : ""}`}
                     >
-                      {b.kind === "class" && b.courseId && (
-                        <span
-                          aria-hidden
-                          className="absolute bottom-1 left-0 top-1 w-[3px] rounded-full"
-                          style={tickStyle(b.courseId)}
-                        />
-                      )}
-                      <span
-                        className={cn(
-                          "block truncate text-[11px] font-medium",
-                          b.kind === "class" && "pl-1.5",
-                        )}
-                      >
+                      <span className="block truncate text-[11px] font-semibold">
                         {labelFor(b)}
                       </span>
                       {height >= 34 && (
-                        <span
-                          className={cn(
-                            "block truncate text-[10px] text-muted-foreground",
-                            b.kind === "class" && "pl-1.5",
-                          )}
-                        >
+                        <span className="block truncate text-[10px] text-muted-foreground">
                           {minLabel(b.startMin)}–{minLabel(b.endMin)}
-                          {b.location ? ` · ${b.location}` : ""}
+                        </span>
+                      )}
+                      {height >= 46 && b.location && (
+                        <span className="block truncate text-[10px] text-muted-foreground/80">
+                          {b.location}
                         </span>
                       )}
                     </button>
@@ -817,10 +913,19 @@ function WeekView({ items }: { items: CalendarItem[] }) {
         </div>
       </div>
 
+      {/* ── Today's agenda rail (reference design) ──────────────────────── */}
+      <TodayAgendaRail
+        now={now}
+        blocks={blocks.filter((b) => !hiddenCats.has(b.kind))}
+        due={hiddenCats.has("deadline") ? [] : (dueByDay.get(todayKey) ?? [])}
+        labelFor={labelFor}
+      />
+      </div>
+
       <p className="mt-2 text-2xs text-muted-foreground">
-        Click any empty slot to add a class meeting or a personal block — a two-hour gap is a
-        gym or homework session waiting to be claimed. Class times repeat weekly; events can be
-        one-off or weekly.
+        Click any empty slot to add a class meeting, a study session, or a personal block — a
+        two-hour gap is a gym or homework session waiting to be claimed. Class times repeat
+        weekly; study and personal blocks can be one-off or weekly.
       </p>
 
       {dialog && (
@@ -852,6 +957,137 @@ function WeekView({ items }: { items: CalendarItem[] }) {
 }
 
 const WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/**
+ * Today's agenda — the week distilled to "what does TODAY hold", beside the
+ * grid on wide windows. Deadlines and blocks interleaved in time order,
+ * each with its category (or course) dot.
+ */
+function TodayAgendaRail({
+  now,
+  blocks,
+  due,
+  labelFor,
+}: {
+  now: Date;
+  blocks: PlannerBlock[];
+  due: CalendarItem[];
+  labelFor: (b: PlannerBlock) => string;
+}) {
+  const todayKey = localDateKey(now);
+  const todayWeekIdx = (now.getDay() + 6) % 7;
+  const noClass = noClassSpan(now);
+
+  type AgendaEntry = {
+    key: string;
+    atMin: number;
+    dot: string;
+    title: string;
+    detail: string;
+    courseId: string | null;
+    past: boolean;
+  };
+
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const entries: AgendaEntry[] = [
+    ...blocks
+      .filter((b) =>
+        b.date ? b.date === todayKey : b.weekday === todayWeekIdx && !(noClass && b.kind === "class"),
+      )
+      .map((b) => ({
+        key: `b${b.id}`,
+        atMin: b.startMin,
+        dot:
+          b.kind === "class" && b.courseId
+            ? String(tickStyle(b.courseId).backgroundColor)
+            : CATEGORY[b.kind].dot,
+        title: labelFor(b),
+        detail: `${minLabel(b.startMin)}–${minLabel(b.endMin)}${b.location ? ` · ${b.location}` : ""}`,
+        courseId: b.kind === "class" ? b.courseId : null,
+        past: b.endMin < nowMin,
+      })),
+    ...due.map((i) => {
+      const d = new Date(i.dueAt);
+      const atMin = d.getHours() * 60 + d.getMinutes();
+      return {
+        key: `d${i.assignmentId}`,
+        atMin,
+        dot: CATEGORY.deadline.dot,
+        title: i.name ?? "Untitled",
+        detail: `due ${minLabel(atMin)} · ${courseShort(i.courseCode)}`,
+        courseId: i.courseId,
+        past: atMin < nowMin,
+      };
+    }),
+  ].sort((a, b) => a.atMin - b.atMin);
+
+  return (
+    <aside className="hidden w-64 shrink-0 rounded-2xl border border-border/60 bg-card p-4 shadow-card xl:block">
+      <h3 className="font-display text-sm font-semibold tracking-tight">Today's agenda</h3>
+      <p className="text-2xs text-muted-foreground">
+        {now.toLocaleDateString(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </p>
+      {noClass && (
+        <p className="mt-2 rounded-lg bg-at-risk/10 px-2 py-1 text-2xs text-at-risk-fg">
+          {noClass.label} — no class meetings today.
+        </p>
+      )}
+      {entries.length === 0 ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          Nothing scheduled and nothing due today.
+        </p>
+      ) : (
+        <div className="mt-3 flex flex-col gap-2.5">
+          {entries.map((e) => {
+            const body = (
+              <span className="flex items-start gap-2">
+                <span
+                  aria-hidden
+                  className="mt-1 h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: e.dot }}
+                />
+                <span className="min-w-0 flex-1">
+                  <span
+                    className={cn(
+                      "block truncate text-xs font-medium",
+                      e.past && "text-muted-foreground line-through decoration-border",
+                    )}
+                  >
+                    {e.title}
+                  </span>
+                  <span
+                    data-numeric
+                    className="block truncate font-mono text-2xs tabular-nums text-muted-foreground"
+                  >
+                    {e.detail}
+                  </span>
+                </span>
+              </span>
+            );
+            return e.courseId ? (
+              <Link
+                key={e.key}
+                to={`/courses/${e.courseId}`}
+                className="rounded-lg px-1 py-0.5 transition-colors duration-micro hover:bg-fill-ghost"
+              >
+                {body}
+              </Link>
+            ) : (
+              <span key={e.key} className="px-1 py-0.5">
+                {body}
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </aside>
+  );
+}
 
 /** Review detected class slots and save the checked ones as weekly blocks. */
 function DetectDialog({
@@ -1018,7 +1254,7 @@ function BlockDialog({
   onSaved: () => void;
 }) {
   const editing = dialog.mode === "edit" ? dialog.block : null;
-  const [kind, setKind] = useState<"class" | "event">(editing?.kind ?? "event");
+  const [kind, setKind] = useState<"class" | "study" | "event">(editing?.kind ?? "event");
   const [courseId, setCourseId] = useState<string>(editing?.courseId ?? courses[0]?.id ?? "");
   const [title, setTitle] = useState(editing?.title ?? "");
   const [location, setLocation] = useState(editing?.location ?? "");
@@ -1090,19 +1326,23 @@ function BlockDialog({
         <DialogHeader>
           <DialogTitle>{editing ? "Edit block" : "Add to your week"}</DialogTitle>
           <DialogDescription>
-            Class meetings repeat weekly and wear their course color. Events are yours — gym,
-            homework sessions, anything.
+            Class meetings repeat weekly and wear their course color. Study sessions go purple,
+            personal blocks green — gym, work, anything.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
-            <Select value={kind} onValueChange={(v) => setKind(v === "class" ? "class" : "event")}>
-              <SelectTrigger className="w-32">
+            <Select
+              value={kind}
+              onValueChange={(v) => setKind(v === "class" ? "class" : v === "study" ? "study" : "event")}
+            >
+              <SelectTrigger className="w-36">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="event">Event</SelectItem>
+                <SelectItem value="event">Personal</SelectItem>
+                <SelectItem value="study">Study session</SelectItem>
                 <SelectItem value="class">Class time</SelectItem>
               </SelectContent>
             </Select>
@@ -1123,7 +1363,7 @@ function BlockDialog({
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Gym · HW session · …"
+                placeholder={kind === "study" ? "Study — CS 146 · review session…" : "Gym · work · …"}
                 className="flex-1 rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             )}
@@ -1139,7 +1379,7 @@ function BlockDialog({
           )}
 
           <div className="flex items-center gap-2">
-            {kind === "event" && (
+            {kind !== "class" && (
               <Select
                 value={repeat}
                 onValueChange={(v) => setRepeat(v === "weekly" ? "weekly" : "once")}

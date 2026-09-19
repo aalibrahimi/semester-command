@@ -343,9 +343,12 @@ pub async fn save_planner_block(
     end_min: i64,
     note: Option<String>,
 ) -> CommandResult<i64> {
-    if !matches!(kind.as_str(), "class" | "event") {
+    // 'study' arrived with the calendar redesign — same recurrence rules as
+    // 'event', its own color lane in the UI. No migration needed: the
+    // column is unconstrained TEXT and old rows stay 'event' (Personal).
+    if !matches!(kind.as_str(), "class" | "event" | "study") {
         return Err(CommandError::internal(
-            "Block kind must be 'class' or 'event'.",
+            "Block kind must be 'class', 'study' or 'event'.",
         ));
     }
     if weekday.is_some() == date.is_some() {
