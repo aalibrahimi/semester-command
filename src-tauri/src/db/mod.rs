@@ -55,9 +55,45 @@ pub async fn open(data_dir: &Path) -> Result<Db, sqlx::Error> {
         .connect_with(opts)
         .await?;
 
-    sqlx::migrate!("./migrations").run(&pool).await?;
+    let migrator = sqlx::migrate!("./migrations");
+    if let Err(e) = migrator.run(&pool).await {
+        repair_migration_six(&pool, &migrator, e).await?;
+    }
     tracing::info!(db = %path.display(), "database open, migrations current");
     Ok(pool)
+}
+
+/// Self-repair for one specific historical accident.
+///
+/// In Sept 2026 a commit edited the header *comment* of the already-applied
+/// `0006_graduation.sql` (and was reverted a day later) — so databases in
+/// the wild recorded one of two checksums for version 6, and whichever
+/// variant a checkout carries, somebody's app refuses to start with
+/// "migration 6 was previously applied but has been modified". The two
+/// variants are semantically identical, so re-stamping the recorded
+/// checksum with the embedded file's is safe. Scoped to version 6 only:
+/// any other mismatch is a real problem and still fails loudly.
+async fn repair_migration_six(
+    pool: &Db,
+    migrator: &sqlx::migrate::Migrator,
+    err: sqlx::migrate::MigrateError,
+) -> Result<(), sqlx::Error> {
+    let sqlx::migrate::MigrateError::VersionMismatch(6) = err else {
+        return Err(err.into());
+    };
+    let embedded = migrator
+        .iter()
+        .find(|m| m.version == 6)
+        .expect("migration 6 is embedded in this binary");
+    tracing::warn!(
+        "migration 6 checksum mismatch (the Sept 2026 comment-edit accident) — re-stamping and retrying"
+    );
+    sqlx::query("UPDATE _sqlx_migrations SET checksum = ?1 WHERE version = 6")
+        .bind(embedded.checksum.as_ref())
+        .execute(pool)
+        .await?;
+    migrator.run(pool).await?;
+    Ok(())
 }
 
 /// Now, as the RFC 3339 UTC string every timestamp column stores.
