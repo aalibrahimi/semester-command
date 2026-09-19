@@ -13,7 +13,9 @@ export default defineConfig({
   resolve: {
     alias: {
       // Kept in lockstep with tsconfig.json / tsconfig.app.json `paths`.
-      "@": path.resolve(__dirname, "./src"),
+      // import.meta.dirname, not __dirname: Vite 8's native config loader
+      // doesn't provide CJS globals and warns on every start.
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
 
