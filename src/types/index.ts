@@ -700,6 +700,9 @@ export interface PlannerBlock {
   startMin: number;
   endMin: number;
   note: string | null;
+  /** Events only: 'fitness' | 'work' | 'personal' (null = personal).
+   *  Class/study blocks color by course and ignore this. */
+  category: "fitness" | "work" | "personal" | null;
 }
 
 /** One proposed class meeting slot from detection (Canvas events or

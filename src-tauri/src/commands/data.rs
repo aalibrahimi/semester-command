@@ -342,6 +342,7 @@ pub async fn save_planner_block(
     start_min: i64,
     end_min: i64,
     note: Option<String>,
+    category: Option<String>,
 ) -> CommandResult<i64> {
     // 'study' arrived with the calendar redesign — same recurrence rules as
     // 'event', its own color lane in the UI. No migration needed: the
@@ -350,6 +351,16 @@ pub async fn save_planner_block(
         return Err(CommandError::internal(
             "Block kind must be 'class', 'study' or 'event'.",
         ));
+    }
+    // Category exists for events only (0013): the color lane inside green.
+    // NULL means personal; class/study store NULL regardless of input.
+    let category = if kind == "event" { category } else { None };
+    if let Some(c) = &category {
+        if !matches!(c.as_str(), "fitness" | "work" | "personal") {
+            return Err(CommandError::internal(
+                "Event category must be 'fitness', 'work' or 'personal'.",
+            ));
+        }
     }
     if weekday.is_some() == date.is_some() {
         return Err(CommandError::internal(
@@ -378,7 +389,8 @@ pub async fn save_planner_block(
         Some(id) => {
             sqlx::query(
                 "UPDATE planner_blocks SET kind=?1, course_id=?2, title=?3, location=?4,
-                 weekday=?5, date=?6, start_min=?7, end_min=?8, note=?9 WHERE id=?10",
+                 weekday=?5, date=?6, start_min=?7, end_min=?8, note=?9, category=?10
+                 WHERE id=?11",
             )
             .bind(&kind)
             .bind(&course_id)
@@ -389,6 +401,7 @@ pub async fn save_planner_block(
             .bind(start_min)
             .bind(end_min)
             .bind(&note)
+            .bind(&category)
             .bind(id)
             .execute(&db)
             .await
@@ -398,7 +411,7 @@ pub async fn save_planner_block(
         None => {
             let res = sqlx::query(
                 "INSERT INTO planner_blocks (kind, course_id, title, location, weekday, date,
-                 start_min, end_min, note) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)",
+                 start_min, end_min, note, category) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)",
             )
             .bind(&kind)
             .bind(&course_id)
@@ -409,6 +422,7 @@ pub async fn save_planner_block(
             .bind(start_min)
             .bind(end_min)
             .bind(&note)
+            .bind(&category)
             .execute(&db)
             .await
             .map_err(storage_err)?;

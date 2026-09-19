@@ -142,7 +142,7 @@ pub struct EstimateRow {
 #[serde(rename_all = "camelCase")]
 pub struct PlannerBlockRow {
     pub id: i64,
-    /// 'class' | 'event'.
+    /// 'class' | 'study' | 'event'.
     pub kind: String,
     pub course_id: Option<String>,
     pub title: String,
@@ -154,6 +154,9 @@ pub struct PlannerBlockRow {
     pub start_min: i64,
     pub end_min: i64,
     pub note: Option<String>,
+    /// For 'event' blocks: 'fitness' | 'work' | 'personal' (NULL = personal).
+    /// Class/study blocks ignore it — their color is the course (0013).
+    pub category: Option<String>,
 }
 
 #[derive(Debug, Clone, FromRow, Serialize)]

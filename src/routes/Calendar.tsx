@@ -403,23 +403,33 @@ function dateKey(d: Date): string {
 
 const HOUR_H = 48; // px per hour
 
-/** The calendar's color language: COLOR MEANS COURSE. A class and a study
- *  session for the same course wear the same hue — class as a strong fill
- *  with a solid edge, study as a faint fill with a dashed edge. Green is
- *  reserved for genuinely personal blocks (gym, work), red for deadlines,
- *  purple only for study sessions linked to no course. The legend's dots
- *  are category emblems (classes are really per-course colors). */
+/** The calendar's color language: COLOR MEANS COURSE for coursework — a
+ *  class and a study session for the same course wear the same hue (class:
+ *  strong fill, solid edge; study: faint fill, dashed edge). Everything
+ *  else gets one hue per life-category: fitness green, work copper,
+ *  personal a quiet slate; red is deadlines only, purple only a study
+ *  session with no course. Hues deliberately dodge the course-color deck
+ *  (217/330/172/282/48/200/255) so nothing masquerades as a course. */
 const CATEGORY = {
   class: { label: "Classes", dot: "hsl(217 70% 58%)" },
   study: { label: "Study", dot: "hsl(258 60% 62%)" },
-  event: { label: "Personal", dot: "hsl(150 45% 45%)" },
+  fitness: { label: "Fitness", dot: "hsl(145 50% 42%)" },
+  work: { label: "Work", dot: "hsl(25 60% 48%)" },
+  personal: { label: "Personal", dot: "hsl(222 12% 55%)" },
   deadline: { label: "Deadlines", dot: "hsl(350 70% 58%)" },
 } as const;
 type Category = keyof typeof CATEGORY;
 
-/** Fill/border for the non-class block kinds. */
-function kindStyle(kind: "study" | "event"): React.CSSProperties {
-  const dot = CATEGORY[kind].dot;
+/** Which category a block filters and colors under. */
+function categoryOf(b: PlannerBlock): Category {
+  if (b.kind === "class") return "class";
+  if (b.kind === "study") return "study";
+  return b.category ?? "personal";
+}
+
+/** Fill/border for the non-course categories. */
+function catStyle(cat: Category): React.CSSProperties {
+  const dot = CATEGORY[cat].dot;
   return {
     backgroundColor: dot.replace(")", " / 0.14)"),
     borderColor: dot.replace(")", " / 0.45)"),
@@ -614,7 +624,7 @@ function WeekView({ items }: { items: CalendarItem[] }) {
       if (b.kind === "class" && b.courseId) return courseHsla(b.courseId, 0.9);
       const study = courseOfStudy(b);
       if (study) return courseHsla(study, 0.9);
-      return CATEGORY[b.kind].dot;
+      return CATEGORY[categoryOf(b)].dot;
     },
     [courseOfStudy],
   );
@@ -874,7 +884,7 @@ function WeekView({ items }: { items: CalendarItem[] }) {
             const noClass = noClassSpan(d);
             const dayBlocks = withLanes(
               blocks
-                .filter((b) => !hiddenCats.has(b.kind))
+                .filter((b) => !hiddenCats.has(categoryOf(b)))
                 .filter((b) =>
                   b.date
                     ? b.date === key
@@ -967,10 +977,11 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                             borderLeftStyle: "dashed" as const,
                           };
                         }
+                        const cat = categoryOf(b);
                         return {
                           ...frame,
-                          ...kindStyle(b.kind === "study" ? "study" : "event"),
-                          borderLeftColor: CATEGORY[b.kind].dot,
+                          ...catStyle(cat),
+                          borderLeftColor: CATEGORY[cat].dot,
                           ...(b.kind === "study" ? { borderLeftStyle: "dashed" as const } : {}),
                         };
                       })()}
@@ -1001,7 +1012,7 @@ function WeekView({ items }: { items: CalendarItem[] }) {
       {/* ── Today's agenda rail (reference design) ──────────────────────── */}
       <TodayAgendaRail
         now={now}
-        blocks={blocks.filter((b) => !hiddenCats.has(b.kind))}
+        blocks={blocks.filter((b) => !hiddenCats.has(categoryOf(b)))}
         due={hiddenCats.has("deadline") ? [] : (dueByDay.get(todayKey) ?? [])}
         labelFor={labelFor}
         dotFor={dotFor}
@@ -1342,6 +1353,9 @@ function BlockDialog({
   const editing = dialog.mode === "edit" ? dialog.block : null;
   const [kind, setKind] = useState<"class" | "study" | "event">(editing?.kind ?? "event");
   const [courseId, setCourseId] = useState<string>(editing?.courseId ?? "");
+  const [category, setCategory] = useState<"fitness" | "work" | "personal">(
+    editing?.category ?? "personal",
+  );
   const [title, setTitle] = useState(editing?.title ?? "");
   const [location, setLocation] = useState(editing?.location ?? "");
   const [repeat, setRepeat] = useState<"weekly" | "once">(
@@ -1386,6 +1400,7 @@ function BlockDialog({
       kind,
       // Study keeps its (optional) course link — that's what colors it.
       courseId: kind === "event" ? null : courseId || null,
+      category: kind === "event" ? category : null,
       title: resolvedTitle,
       location: location.trim() === "" ? null : location.trim(),
       weekday: repeat === "weekly" || kind === "class" ? weekday : null,
@@ -1467,6 +1482,26 @@ function BlockDialog({
               placeholder="Label (optional — defaults to the course name)"
               className="rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
+          )}
+
+          {/* Personal blocks split into life-categories — that's the color
+              (fitness green, work copper, personal slate). */}
+          {kind === "event" && (
+            <Select
+              value={category}
+              onValueChange={(v) =>
+                setCategory(v === "fitness" ? "fitness" : v === "work" ? "work" : "personal")
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="personal">Personal</SelectItem>
+                <SelectItem value="fitness">Fitness — gym, runs</SelectItem>
+                <SelectItem value="work">Work — shifts, internship</SelectItem>
+              </SelectContent>
+            </Select>
           )}
 
           {/* A study session linked to its course wears that course's color

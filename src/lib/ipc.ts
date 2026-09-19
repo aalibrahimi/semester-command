@@ -289,6 +289,7 @@ export async function savePlannerBlock(block: {
   startMin: number;
   endMin: number;
   note?: string | null;
+  category?: "fitness" | "work" | "personal" | null;
 }): Promise<number> {
   return call<number>("save_planner_block", block);
 }
