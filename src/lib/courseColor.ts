@@ -64,3 +64,10 @@ export function chipStyle(courseId: string): CSSProperties {
     border: `1px solid hsl(${h} ${s}% ${l}% / 0.45)`,
   };
 }
+
+/** The course's color at an arbitrary alpha — for surfaces that grade the
+ *  same hue by intensity (the calendar: class = strong, study = faint). */
+export function courseHsla(courseId: string, alpha: number): string {
+  const [h, s, l] = slotOf(courseId);
+  return `hsl(${h} ${s}% ${l}% / ${alpha})`;
+}

@@ -49,7 +49,8 @@ import {
 } from "@/components/ui/select";
 import { useCourses } from "@/hooks/useCourses";
 import { useNicknames } from "@/lib/localPrefs";
-import { chipStyle, tickStyle } from "@/lib/courseColor";
+import { courseHsla, tickStyle } from "@/lib/courseColor";
+import { parseCourseLabel } from "@/lib/courseLabel";
 import { academicOn, noClassSpan, upcomingAcademic } from "@/lib/academicCalendar";
 import {
   autoDetectAttempted,
@@ -402,11 +403,12 @@ function dateKey(d: Date): string {
 
 const HOUR_H = 48; // px per hour
 
-/** The calendar's category color language (per the reference design).
- *  Classes wear their per-course identity color instead of one flat blue —
- *  telling CS-146 from LING-112 at a glance is worth more than uniformity;
- *  the legend represents them with the deck's blue. Literal hsl like
- *  lib/courseColor, readable on both themes. */
+/** The calendar's color language: COLOR MEANS COURSE. A class and a study
+ *  session for the same course wear the same hue — class as a strong fill
+ *  with a solid edge, study as a faint fill with a dashed edge. Green is
+ *  reserved for genuinely personal blocks (gym, work), red for deadlines,
+ *  purple only for study sessions linked to no course. The legend's dots
+ *  are category emblems (classes are really per-course colors). */
 const CATEGORY = {
   class: { label: "Classes", dot: "hsl(217 70% 58%)" },
   study: { label: "Study", dot: "hsl(258 60% 62%)" },
@@ -585,6 +587,38 @@ function WeekView({ items }: { items: CalendarItem[] }) {
     runDetect(true);
   }, [blocksLoaded, blocks, runDetect]);
 
+  // Which course does a study block belong to? Prefer the stored link;
+  // fall back to reading the title ("Study — LING 112 · syntax trees" →
+  // LING-112), so blocks created before study sessions could carry a
+  // course still get that course's color. Display-level inference only.
+  const courseOfStudy = useCallback(
+    (b: PlannerBlock): string | null => {
+      if (b.kind !== "study") return null;
+      if (b.courseId) return b.courseId;
+      const norm = (s: string) =>
+        s.toUpperCase().replace(/[—–-]/g, " ").replace(/\s+/g, " ");
+      const title = norm(b.title);
+      for (const c of courses) {
+        const code = parseCourseLabel(c.courseCode ?? c.name).code;
+        if (code && title.includes(norm(code))) return c.id;
+      }
+      return null;
+    },
+    [courses],
+  );
+
+  /** One block's identity color — the dot in the rail, the left edge on
+   *  the grid. Course hue when the block has one, category color when not. */
+  const dotFor = useCallback(
+    (b: PlannerBlock): string => {
+      if (b.kind === "class" && b.courseId) return courseHsla(b.courseId, 0.9);
+      const study = courseOfStudy(b);
+      if (study) return courseHsla(study, 0.9);
+      return CATEGORY[b.kind].dot;
+    },
+    [courseOfStudy],
+  );
+
   const labelFor = useCallback(
     (b: PlannerBlock) => {
       if (b.kind === "class" && b.courseId) {
@@ -677,10 +711,17 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                 off && "opacity-40",
               )}
             >
+              {/* Study's emblem is a ring: study blocks take their course's
+                  hue (faint fill, dashed edge), so a solid purple dot would
+                  promise a color the grid rarely shows. */}
               <span
                 aria-hidden
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: CATEGORY[c].dot }}
+                className={cn("h-2 w-2 rounded-full", c === "study" && "border-2 bg-transparent")}
+                style={
+                  c === "study"
+                    ? { borderColor: CATEGORY[c].dot }
+                    : { backgroundColor: CATEGORY[c].dot }
+                }
               />
               {CATEGORY[c].label}
             </button>
@@ -897,23 +938,42 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                         setDialog({ mode: "edit", block: b });
                       }}
                       className="absolute z-10 overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left leading-tight transition-opacity duration-micro hover:opacity-80"
-                      style={{
+                      style={(() => {
                         // Inset from the column edges and the neighbor below
                         // — breathing room is most of what "clean" means on
                         // a dense grid.
-                        top: top + 1,
-                        height: height - 3,
-                        left: `calc(${b.lane * width}% + 2px)`,
-                        width: `calc(${width}% - 6px)`,
-                        backgroundColor:
-                          b.kind === "class" && b.courseId
-                            ? String(chipStyle(b.courseId).backgroundColor)
-                            : String(kindStyle(b.kind === "study" ? "study" : "event").backgroundColor),
-                        borderLeftColor:
-                          b.kind === "class" && b.courseId
-                            ? String(tickStyle(b.courseId).backgroundColor)
-                            : CATEGORY[b.kind].dot,
-                      }}
+                        const frame = {
+                          top: top + 1,
+                          height: height - 3,
+                          left: `calc(${b.lane * width}% + 2px)`,
+                          width: `calc(${width}% - 6px)`,
+                        };
+                        // Color = course; intensity + edge style = kind.
+                        // Class: strong fill, solid edge. Study: faint fill,
+                        // dashed edge, SAME hue as its course's class.
+                        const study = courseOfStudy(b);
+                        if (b.kind === "class" && b.courseId) {
+                          return {
+                            ...frame,
+                            backgroundColor: courseHsla(b.courseId, 0.16),
+                            borderLeftColor: courseHsla(b.courseId, 0.9),
+                          };
+                        }
+                        if (study) {
+                          return {
+                            ...frame,
+                            backgroundColor: courseHsla(study, 0.08),
+                            borderLeftColor: courseHsla(study, 0.9),
+                            borderLeftStyle: "dashed" as const,
+                          };
+                        }
+                        return {
+                          ...frame,
+                          ...kindStyle(b.kind === "study" ? "study" : "event"),
+                          borderLeftColor: CATEGORY[b.kind].dot,
+                          ...(b.kind === "study" ? { borderLeftStyle: "dashed" as const } : {}),
+                        };
+                      })()}
                       title={`${labelFor(b)} · ${minLabel(b.startMin)}–${minLabel(b.endMin)}${b.location ? ` · ${b.location}` : ""}`}
                     >
                       <span className="block truncate text-[11px] font-semibold">
@@ -944,6 +1004,7 @@ function WeekView({ items }: { items: CalendarItem[] }) {
         blocks={blocks.filter((b) => !hiddenCats.has(b.kind))}
         due={hiddenCats.has("deadline") ? [] : (dueByDay.get(todayKey) ?? [])}
         labelFor={labelFor}
+        dotFor={dotFor}
       />
       </div>
 
@@ -993,11 +1054,13 @@ function TodayAgendaRail({
   blocks,
   due,
   labelFor,
+  dotFor,
 }: {
   now: Date;
   blocks: PlannerBlock[];
   due: CalendarItem[];
   labelFor: (b: PlannerBlock) => string;
+  dotFor: (b: PlannerBlock) => string;
 }) {
   const todayKey = localDateKey(now);
   const todayWeekIdx = (now.getDay() + 6) % 7;
@@ -1022,10 +1085,7 @@ function TodayAgendaRail({
       .map((b) => ({
         key: `b${b.id}`,
         atMin: b.startMin,
-        dot:
-          b.kind === "class" && b.courseId
-            ? String(tickStyle(b.courseId).backgroundColor)
-            : CATEGORY[b.kind].dot,
+        dot: dotFor(b),
         title: labelFor(b),
         detail: `${minLabel(b.startMin)}–${minLabel(b.endMin)}${b.location ? ` · ${b.location}` : ""}`,
         courseId: b.kind === "class" ? b.courseId : null,
@@ -1278,9 +1338,10 @@ function BlockDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const NO_COURSE = "__none";
   const editing = dialog.mode === "edit" ? dialog.block : null;
   const [kind, setKind] = useState<"class" | "study" | "event">(editing?.kind ?? "event");
-  const [courseId, setCourseId] = useState<string>(editing?.courseId ?? courses[0]?.id ?? "");
+  const [courseId, setCourseId] = useState<string>(editing?.courseId ?? "");
   const [title, setTitle] = useState(editing?.title ?? "");
   const [location, setLocation] = useState(editing?.location ?? "");
   const [repeat, setRepeat] = useState<"weekly" | "once">(
@@ -1310,6 +1371,10 @@ function BlockDialog({
       toast.error("Times look wrong — use HH:MM.");
       return;
     }
+    if (kind === "class" && courseId === "") {
+      toast.error("Pick which course this class meeting belongs to.");
+      return;
+    }
     const picked = courses.find((c) => c.id === courseId);
     const resolvedTitle =
       kind === "class" && title.trim() === "" && picked
@@ -1319,7 +1384,8 @@ function BlockDialog({
     savePlannerBlock({
       id: editing?.id,
       kind,
-      courseId: kind === "class" ? courseId : null,
+      // Study keeps its (optional) course link — that's what colors it.
+      courseId: kind === "event" ? null : courseId || null,
       title: resolvedTitle,
       location: location.trim() === "" ? null : location.trim(),
       weekday: repeat === "weekly" || kind === "class" ? weekday : null,
@@ -1401,6 +1467,27 @@ function BlockDialog({
               placeholder="Label (optional — defaults to the course name)"
               className="rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
+          )}
+
+          {/* A study session linked to its course wears that course's color
+              on the grid — same hue as the class, fainter. */}
+          {kind === "study" && (
+            <Select
+              value={courseId === "" ? NO_COURSE : courseId}
+              onValueChange={(v) => setCourseId(v === NO_COURSE ? "" : v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Course (for the color)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_COURSE}>No course — general study</SelectItem>
+                {courses.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {courseLabel(c)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
 
           <div className="flex items-center gap-2">
