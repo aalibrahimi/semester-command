@@ -13,9 +13,12 @@ version *recorded in the database* goes missing from this directory. Do not
 
 Two rules:
 
-- **Migrations are append-only.** Once a migration has run on the machine
-  holding your real grades, editing it does nothing — sqlx records the version
-  and skips it. Fix a mistake with a new migration.
+- **Migrations are append-only, down to the byte.** sqlx records a checksum
+  of each applied file and refuses to start when one changes — even a
+  comment edit bricks the app with "migration N was previously applied but
+  has been modified" (learned the hard way: fixing 0006's header comment,
+  which says "0005" from the renumber and must stay saying it). Fix a
+  mistake with a new migration; never touch an applied file.
 - **No destructive statements against synced tables.** `targets` and `estimates`
   hold data that exists nowhere else; a `DROP TABLE` in a migration is
   unrecoverable. See `src/db/mod.rs` for the full invariant.
