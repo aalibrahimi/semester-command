@@ -400,10 +400,7 @@ function dateKey(d: Date): string {
 
 /* ── Week planner ────────────────────────────────────────────────────────── */
 
-const START_HOUR = 7;
-const END_HOUR = 23;
 const HOUR_H = 48; // px per hour
-const GRID_H = (END_HOUR - START_HOUR) * HOUR_H;
 
 /** The calendar's category color language (per the reference design).
  *  Classes wear their per-course identity color instead of one flat blue —
@@ -545,6 +542,21 @@ function WeekView({ items }: { items: CalendarItem[] }) {
     [anchor],
   );
 
+  // The grid fits the life on it: 8am–9pm baseline, stretched (never
+  // shrunk) to cover the earliest and latest block anywhere in the week's
+  // roster. A 7am–11pm grid over a 9-to-8 schedule is mostly empty rows.
+  const [START_HOUR, END_HOUR, GRID_H] = useMemo(() => {
+    let earliest = 8 * 60;
+    let latest = 21 * 60;
+    for (const b of blocks) {
+      earliest = Math.min(earliest, b.startMin);
+      latest = Math.max(latest, b.endMin);
+    }
+    const s = Math.max(6, Math.floor(earliest / 60));
+    const e = Math.min(24, Math.ceil(latest / 60));
+    return [s, e, (e - s) * HOUR_H];
+  }, [blocks]);
+
   const runDetect = useCallback(
     (auto: boolean) => {
       if (!auto) setDetect({ phase: "loading" });
@@ -577,6 +589,12 @@ function WeekView({ items }: { items: CalendarItem[] }) {
     (b: PlannerBlock) => {
       if (b.kind === "class" && b.courseId) {
         return nicknames[b.courseId] ?? b.title;
+      }
+      if (b.kind === "study") {
+        // Purple already says "study" — a "Study — " prefix just eats the
+        // half of the block where the actual subject would fit.
+        const trimmed = b.title.replace(/^study\s*[—–-]\s*/i, "").trim();
+        return trimmed || b.title;
       }
       return b.title;
     },
@@ -762,6 +780,10 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                         className="truncate rounded-md border-l-2 border-critical bg-critical/10 px-1.5 py-0.5 text-[10px] font-medium leading-tight text-critical-fg hover:bg-critical/20"
                         title={`${item.name ?? "Untitled"} · due ${minLabel(new Date(item.dueAt).getHours() * 60 + new Date(item.dueAt).getMinutes())}`}
                       >
+                        {/* Course first: a truncated "Quiz #1 (Chapter 8 an…"
+                            says less than "HIST-15 · Quiz #1". */}
+                        <span className="font-semibold">{courseShort(item.courseCode)}</span>
+                        {" · "}
                         {item.name ?? "Untitled"}
                       </Link>
                     ))}
@@ -824,6 +846,9 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                 className={cn(
                   "relative cursor-crosshair border-l border-border/40",
                   isToday && "bg-brand/[0.04]",
+                  // Weekends recede a step — the eye should land on the
+                  // teaching week first.
+                  !isToday && dayIdx >= 5 && "bg-fill-ghost/25",
                   noClass && "bg-fill-ghost/40",
                 )}
                 style={{ height: GRID_H }}
@@ -871,23 +896,23 @@ function WeekView({ items }: { items: CalendarItem[] }) {
                         e.stopPropagation();
                         setDialog({ mode: "edit", block: b });
                       }}
-                      className={cn(
-                        "absolute z-10 overflow-hidden rounded-md border border-l-[3px] px-1.5 py-0.5 text-left leading-tight transition-opacity duration-micro hover:opacity-85",
-                      )}
+                      className="absolute z-10 overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left leading-tight transition-opacity duration-micro hover:opacity-80"
                       style={{
-                        top,
-                        height,
-                        left: `${b.lane * width}%`,
-                        width: `calc(${width}% - 3px)`,
-                        ...(b.kind === "class" && b.courseId
-                          ? {
-                              ...chipStyle(b.courseId),
-                              borderLeftColor: String(tickStyle(b.courseId).backgroundColor),
-                            }
-                          : {
-                              ...kindStyle(b.kind === "study" ? "study" : "event"),
-                              borderLeftColor: CATEGORY[b.kind].dot,
-                            }),
+                        // Inset from the column edges and the neighbor below
+                        // — breathing room is most of what "clean" means on
+                        // a dense grid.
+                        top: top + 1,
+                        height: height - 3,
+                        left: `calc(${b.lane * width}% + 2px)`,
+                        width: `calc(${width}% - 6px)`,
+                        backgroundColor:
+                          b.kind === "class" && b.courseId
+                            ? String(chipStyle(b.courseId).backgroundColor)
+                            : String(kindStyle(b.kind === "study" ? "study" : "event").backgroundColor),
+                        borderLeftColor:
+                          b.kind === "class" && b.courseId
+                            ? String(tickStyle(b.courseId).backgroundColor)
+                            : CATEGORY[b.kind].dot,
                       }}
                       title={`${labelFor(b)} · ${minLabel(b.startMin)}–${minLabel(b.endMin)}${b.location ? ` · ${b.location}` : ""}`}
                     >
