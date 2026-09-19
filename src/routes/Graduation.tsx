@@ -35,10 +35,10 @@ import {
   AlertTriangle,
   CalendarClock,
   CheckCircle2,
+  ChevronRight,
   ClipboardPaste,
   Clock,
   Flame,
-  GraduationCap,
   Info,
   Layers,
   RotateCcw,
@@ -165,134 +165,97 @@ export default function Graduation() {
   }
 
   const { unitTotals: u, criticalLeft } = plan;
-  const anyFailed = plan.terms.flatMap((t) => t.rows).some((r) => r.status === "failed");
   const notApplied = audit?.header.graduationStatus?.toLowerCase() === "not applied";
   const breakCount = plan.breaks.length;
-  const onTrack = !anyFailed && breakCount === 0;
+
+  // The validator already runs live inside mergePlan; the button makes its
+  // verdict explicit and points at the evidence.
+  const validatePlan = () => {
+    if (breakCount === 0) {
+      toast.success(`Plan validates clean against ${plan.primaryTargetLabel}.`);
+    } else {
+      toast.error(
+        `${breakCount} break${breakCount === 1 ? "" : "s"} against ${plan.primaryTargetLabel} — see Plan warnings.`,
+      );
+      setTab("timeline");
+      window.setTimeout(
+        () => document.getElementById("plan-warnings")?.scrollIntoView({ behavior: "smooth", block: "center" }),
+        60,
+      );
+    }
+  };
 
   return (
     <div className="pb-16">
-      {/* ═══ 1 · HERO ═════════════════════════════════════════════════ */}
+      {/* ═══ 1 · HERO (per the reference: title, program, target, actions) ═ */}
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="px-10 pb-6 pt-8"
+        className="px-10 pb-5 pt-8"
       >
-        <div className="flex items-start justify-between gap-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="mb-4 flex items-center gap-2.5">
-              <div className="rounded-sm border border-brand/30 bg-brand/10 p-2">
-                <GraduationCap className="h-4 w-4 text-brand-fg" />
-              </div>
-              <span className="text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/70">
-                Personal Education Plan
-              </span>
-            </div>
             <h1 className="font-display text-[34px] font-bold leading-[1.05] tracking-tight">
+              Graduation
+            </h1>
+            <p className="mt-1 text-lg font-semibold text-foreground/90">
               BS Computer Science <span className="text-muted-foreground/70">&amp;</span>{" "}
               Linguistics
-            </h1>
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground/75">San José State University</span>
-              <span className="text-muted-foreground/40">·</span>
+            </p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span>San José State University</span>
+              <span className="text-muted-foreground/40">|</span>
               <span className="inline-flex items-center gap-1.5">
                 <Target className="h-4 w-4" />
                 Target graduation:{" "}
                 <span className="font-semibold text-foreground">{plan.primaryTargetLabel}</span>
-                {plan.primaryTargetLabel !== "Spring 2028" && (
-                  <span className="text-muted-foreground/70">· fallback Spring 2028</span>
-                )}
               </span>
             </div>
           </div>
 
-          {/* The ping-dot status badge — the CWA signature. */}
-          <div
-            className={cn(
-              "inline-flex shrink-0 items-center gap-2.5 rounded-sm border px-4 py-2 text-xs font-semibold tracking-wide",
-              onTrack
-                ? "border-on-track/40 bg-on-track/10 text-on-track-fg"
-                : "border-critical/40 bg-critical/10 text-critical-fg",
+          <div className="flex flex-wrap items-center gap-2">
+            {/* The one-glance verdict: critical courses outstanding, plan
+                breaks, or all clear. Clicking goes to the evidence. */}
+            {criticalLeft.length > 0 || breakCount > 0 ? (
+              <button
+                type="button"
+                onClick={() => setTab(breakCount > 0 ? "timeline" : "risk")}
+                className="inline-flex items-center gap-2 rounded-lg border border-critical/40 bg-critical/10 px-3 py-1.5 text-xs font-semibold text-critical-fg transition-colors duration-micro hover:bg-critical/20"
+              >
+                <AlertTriangle className="h-3.5 w-3.5" />
+                {breakCount > 0
+                  ? `${breakCount} plan break${breakCount === 1 ? "" : "s"}`
+                  : `${criticalLeft.length} critical course${criticalLeft.length === 1 ? "" : "s"}`}
+              </button>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-lg border border-on-track/40 bg-on-track/10 px-3 py-1.5 text-xs font-semibold text-on-track-fg">
+                <CheckCircle2 className="h-3.5 w-3.5" /> On track
+              </span>
             )}
-          >
-            <span className="relative inline-flex h-2 w-2">
-              <span
-                className={cn(
-                  "absolute inline-flex h-full w-full animate-ping rounded-full opacity-80",
-                  onTrack ? "bg-on-track" : "bg-critical",
-                )}
-              />
-              <span
-                className={cn(
-                  "relative inline-flex h-2 w-2 rounded-full",
-                  onTrack ? "bg-on-track" : "bg-critical",
-                )}
-              />
-            </span>
-            {breakCount > 0
-              ? `${breakCount} plan break${breakCount === 1 ? "" : "s"}`
-              : onTrack
-                ? "On Track"
-                : "At Risk"}
+            <Button size="sm" onClick={validatePlan}>
+              Validate plan
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setTab("blocks")}>
+              View requirements
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+              <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" />
+              {audit ? "Re-import audit" : "Import MyProgress"}
+            </Button>
           </div>
         </div>
-
-        {/* GPA strip — real numbers from the imported MyProgress report. */}
-        {audit && (audit.header.sjsuGpa !== null || audit.header.overallGpa !== null) && (
-          <div className="mt-6 flex flex-wrap items-center gap-10 border-t border-border pt-5">
-            {audit.header.sjsuGpa !== null && (
-              <div>
-                <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                  SJSU GPA
-                </div>
-                <div className="mt-1 flex items-baseline gap-2.5">
-                  <span
-                    data-numeric
-                    className={cn(
-                      "font-mono text-[30px] font-bold leading-none tabular-nums tracking-tight",
-                      audit.header.sjsuGpa < 2.0 && "text-critical-fg",
-                    )}
-                  >
-                    {audit.header.sjsuGpa.toFixed(3)}
-                  </span>
-                  {audit.header.sjsuGpa < 2.0 && (
-                    <span className="flex items-center gap-1 text-xs font-medium text-critical-fg">
-                      <AlertTriangle className="h-3.5 w-3.5" /> below 2.0 minimum
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-            {audit.header.overallGpa !== null && (
-              <>
-                <div className="h-10 w-px bg-border" />
-                <div>
-                  <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                    Overall GPA
-                  </div>
-                  <div
-                    data-numeric
-                    className="mt-1 font-mono text-[30px] font-bold leading-none tabular-nums tracking-tight"
-                  >
-                    {audit.header.overallGpa.toFixed(3)}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        )}
       </motion.section>
 
-      {/* ═══ 2 · STAT STRIP ═══════════════════════════════════════════ */}
+      {/* ═══ 2 · STAT CARD — the four numbers + the segmented bar ═════ */}
       <motion.section
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
         className="px-10 pb-6"
       >
-        <div className="border-y border-border">
-          <div className="grid grid-cols-2 divide-x divide-border md:grid-cols-4">
+        <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
+          <div className="grid grid-cols-2 divide-x divide-border/60 md:grid-cols-4">
             <Stat label="Plan Units" value={String(u.required)} sub={`${u.remaining} remaining`} />
             <Stat label="Completed" value={String(u.completed)} sub={`${u.inProgress} in progress`} />
             <Stat
@@ -307,56 +270,46 @@ export default function Graduation() {
               accent={criticalLeft.length ? "critical" : "onTrack"}
             />
           </div>
-        </div>
-      </motion.section>
 
-      {/* ═══ 3 · UNIT BAR ═════════════════════════════════════════════ */}
-      <motion.section
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
-        className="px-10 pb-8"
-      >
-        <div className="mb-3 flex items-baseline justify-between">
-          <h3 className="text-2xs font-semibold uppercase tracking-[0.2em] text-foreground/80">
-            Unit Progress
-          </h3>
-          <span className="text-sm tabular-nums text-muted-foreground">
-            <span className="font-semibold text-foreground">{u.completed}</span>
-            <span className="text-muted-foreground/60"> / </span>
-            <span className="text-foreground/85">{u.required}</span> plan units done
-          </span>
-        </div>
-        <div className="flex h-10 w-full overflow-hidden rounded-sm border border-border bg-card">
-          <Segment
-            pct={(u.completed / u.required) * 100}
-            n={u.completed}
-            cls="border-r border-on-track/60 bg-on-track/40 text-on-track-fg"
-            delay={0.15}
-          />
-          <Segment
-            pct={(u.inProgress / u.required) * 100}
-            n={u.inProgress}
-            cls="border-r border-at-risk/60 bg-at-risk/40 text-at-risk-fg"
-            delay={0.35}
-          />
-          <Segment
-            pct={(u.remaining / u.required) * 100}
-            n={u.remaining}
-            cls="bg-fill-ghost text-muted-foreground"
-            delay={0.5}
-          />
-        </div>
-        <div className="mt-3 flex items-center gap-5 text-2xs text-muted-foreground">
-          <Legend cls="bg-on-track" label="Completed" />
-          <Legend cls="bg-at-risk" label="In progress" />
-          <Legend cls="bg-muted-foreground/30" label="Remaining" />
+          <div className="mt-4 flex h-8 w-full overflow-hidden rounded-lg border border-border/60 bg-fill-ghost/40">
+            <Segment
+              pct={(u.completed / u.required) * 100}
+              n={u.completed}
+              cls="border-r border-on-track/60 bg-on-track/40 text-on-track-fg"
+              delay={0.15}
+            />
+            <Segment
+              pct={(u.inProgress / u.required) * 100}
+              n={u.inProgress}
+              cls="border-r border-at-risk/60 bg-at-risk/40 text-at-risk-fg"
+              delay={0.35}
+            />
+            <Segment
+              pct={(u.remaining / u.required) * 100}
+              n={u.remaining}
+              cls="text-muted-foreground"
+              delay={0.5}
+            />
+          </div>
+          <div className="mt-2.5 flex items-center gap-5 text-2xs text-muted-foreground">
+            <Legend cls="bg-on-track" label="Completed" />
+            <Legend cls="bg-at-risk" label="In progress" />
+            <Legend cls="bg-muted-foreground/30" label="Remaining" />
+            <span className="ml-auto tabular-nums">
+              <span className="font-semibold text-foreground">{u.completed}</span>
+              <span className="text-muted-foreground/60"> / </span>
+              {u.required} plan units done
+            </span>
+          </div>
         </div>
       </motion.section>
 
       {/* ═══ PLAN BREAKS — the validator, loudly ═════════════════ */}
       {plan.breaks.length > 0 && (
-        <div className="mx-10 mb-6 border-l-[3px] border-critical/70 bg-critical/[0.05] py-3 pl-4 pr-3">
+        <div
+          id="plan-warnings"
+          className="mx-10 mb-6 border-l-[3px] border-critical/70 bg-critical/[0.05] py-3 pl-4 pr-3"
+        >
           <div className="mb-1.5 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-critical-fg">
             <AlertTriangle className="h-3.5 w-3.5" />
             Plan validation failed — {plan.breaks.length} break
@@ -386,6 +339,8 @@ export default function Graduation() {
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="px-10 pb-10 pt-6"
       >
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="flex min-w-0 flex-col">
         {/* Overdue strip: registrar says owed, the slot is already gone. */}
         {plan.overdue.length > 0 && (
           <div className="mb-6 border-l-[3px] border-critical/70 bg-critical/[0.04] py-3 pl-4 pr-3">
@@ -423,110 +378,78 @@ export default function Graduation() {
           </div>
         )}
 
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="font-display text-lg font-bold tracking-tight">Term Timeline</h2>
-          <span className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
-            Click a course for intelligence · click a status pill to mark it
-          </span>
+        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h2 className="font-display text-lg font-bold tracking-tight">Planning overview</h2>
+            <p className="text-2xs text-muted-foreground">
+              Your path to graduation. Click a course for intelligence · click a status pill to
+              mark it.
+            </p>
+          </div>
         </div>
 
-        <div className="border-t border-border">
-          {plan.terms.map((term, idx) => {
-            const past =
-              plan.currentTermId !== null &&
-              plan.terms.findIndex((t) => t.id === term.id) <
-                plan.terms.findIndex((t) => t.id === plan.currentTermId);
-            return (
-            <motion.div
-              key={term.id}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.1 + idx * 0.04, ease: "easeOut" }}
-              className={cn(
-                "grid grid-cols-1 gap-x-8 border-b border-border py-6 last:border-b-0 lg:grid-cols-[190px_1fr]",
-                // Shading does the wayfinding: history recedes, the present
-                // is warm, the finish line is green — all at whisper opacity.
-                past && "opacity-55 transition-opacity hover:opacity-100",
-                term.isCurrent && "-mx-4 bg-at-risk/[0.045] px-4",
-                term.isTarget && "-mx-4 bg-on-track/[0.035] px-4",
-              )}
-            >
-              {/* Left rail — the CWA accent bar. */}
-              <div className="relative pl-5">
-                <div
-                  className={cn(
-                    "absolute bottom-0 left-0 top-0 w-[3px] rounded-full",
-                    term.isCurrent
-                      ? "bg-at-risk/70"
-                      : term.isTarget
-                        ? "bg-on-track/70"
-                        : "bg-border",
-                  )}
-                />
-                <div className="text-xl font-bold leading-tight tracking-tight">{term.label}</div>
-                {(term.tag || term.isCurrent || term.isTarget) && (
-                  <div
-                    className={cn(
-                      "mt-1.5 text-2xs font-semibold uppercase tracking-[0.15em]",
-                      term.isCurrent
-                        ? "text-at-risk-fg"
-                        : term.isTarget
-                          ? "text-on-track-fg"
-                          : "text-muted-foreground",
-                    )}
-                  >
-                    {term.isCurrent
-                      ? "Current term"
-                      : term.isTarget
-                        ? (term.tag ?? "Target graduation")
-                        : term.tag}
-                  </div>
-                )}
-                <div className="mt-2.5 flex items-center gap-2 text-xs tabular-nums text-muted-foreground">
-                  <span className="font-semibold text-foreground">{term.totalUnits}</span>
-                  <span>units</span>
-                  <span className="text-muted-foreground/40">·</span>
-                  <span>{term.rows.length} courses</span>
-                </div>
-                {term.isCurrent && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 text-2xs font-medium text-at-risk-fg">
-                    <Clock className="h-3.5 w-3.5" /> active
-                  </div>
-                )}
-                {term.isTarget && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 text-2xs font-medium text-on-track-fg">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> graduation
-                  </div>
-                )}
-              </div>
-
-              {/* Course table. */}
-              <div className="min-w-0">
-                <div className="grid grid-cols-[96px_minmax(0,1fr)_44px_minmax(100px,auto)] items-center gap-x-4 border-b border-border px-2 pb-2 md:grid-cols-[110px_minmax(0,1fr)_44px_minmax(150px,auto)_minmax(100px,auto)]">
-                  <Th>Code</Th>
-                  <Th>Course</Th>
-                  <Th right>Units</Th>
-                  <Th className="hidden md:block">Category</Th>
-                  <Th right>Status</Th>
-                </div>
-                {term.rows.map((row) => (
-                  <CourseLine
-                    key={row.code}
-                    row={row}
-                    onOpen={() => setOpenCode(row.code)}
-                    onCycleStatus={() => cycleStatus(row)}
+        {/* The near horizon as cards: last term, now, next (reference
+            design). Everything further lives in the folds below. */}
+        {(() => {
+          const currentIdx = Math.max(
+            0,
+            plan.terms.findIndex((t) => t.id === plan.currentTermId),
+          );
+          const from = Math.max(0, currentIdx - 1);
+          const cardTerms = plan.terms.slice(from, from + 3);
+          const completedTerms = plan.terms.slice(0, from);
+          const futureTerms = plan.terms.slice(from + 3);
+          return (
+            <>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {cardTerms.map((term) => (
+                  <TermCard
+                    key={term.id}
+                    term={term}
+                    onOpen={setOpenCode}
+                    onCycleStatus={(row) => cycleStatus(row)}
                   />
                 ))}
-                {term.rows.length === 0 && (
-                  <div className="px-2 py-4 text-xs italic text-muted-foreground/60">
-                    Nothing slotted this term.
-                  </div>
-                )}
               </div>
-            </motion.div>
-            );
-          })}
-        </div>
+
+              {futureTerms.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="mb-2 text-2xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Future terms
+                  </h3>
+                  <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
+                    {futureTerms.map((term) => (
+                      <TermFold
+                        key={term.id}
+                        term={term}
+                        onOpen={setOpenCode}
+                        onCycleStatus={(row) => cycleStatus(row)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {completedTerms.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="mb-2 text-2xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Completed terms
+                  </h3>
+                  <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
+                    {completedTerms.map((term) => (
+                      <TermFold
+                        key={term.id}
+                        term={term}
+                        onOpen={setOpenCode}
+                        onCycleStatus={(row) => cycleStatus(row)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
 
         {/* Parked, not planned: courses waiting on an advisor answer. */}
         {PENDING_ADVISOR.length > 0 && (
@@ -552,6 +475,88 @@ export default function Graduation() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ═══ Degree health rail (reference design) ═════════════════════ */}
+      <aside className="flex min-w-0 flex-col gap-4">
+        <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-card">
+          <h3 className="mb-3 font-display text-sm font-semibold tracking-tight">Degree health</h3>
+
+          {audit && (audit.header.sjsuGpa !== null || audit.header.overallGpa !== null) ? (
+            <div className="mb-3 grid grid-cols-2 divide-x divide-border/60 rounded-xl bg-fill-ghost/50 py-3">
+              <div className="px-3">
+                <div
+                  data-numeric
+                  className={cn(
+                    "font-mono text-xl font-bold tabular-nums",
+                    audit.header.sjsuGpa !== null && audit.header.sjsuGpa < 2.0 && "text-critical-fg",
+                  )}
+                >
+                  {audit.header.sjsuGpa?.toFixed(3) ?? "—"}
+                </div>
+                <div className="text-2xs text-muted-foreground">SJSU GPA</div>
+              </div>
+              <div className="px-3">
+                <div data-numeric className="font-mono text-xl font-bold tabular-nums">
+                  {audit.header.overallGpa?.toFixed(3) ?? "—"}
+                </div>
+                <div className="text-2xs text-muted-foreground">Overall GPA</div>
+              </div>
+            </div>
+          ) : (
+            <p className="mb-3 rounded-xl bg-fill-ghost/50 p-3 text-2xs text-muted-foreground">
+              Import your MyProgress report to see GPA and registrar status here.
+            </p>
+          )}
+
+          <div className="flex flex-col gap-1.5">
+            <RailLink
+              icon={Layers}
+              title="Required blocks"
+              sub="Track your progress through degree requirements."
+              onClick={() => setTab("blocks")}
+            />
+            <RailLink
+              icon={AlertTriangle}
+              tone={criticalLeft.length > 0 ? "critical" : undefined}
+              title="Critical prerequisites"
+              sub={
+                criticalLeft.length > 0
+                  ? `${criticalLeft.length} course${criticalLeft.length === 1 ? "" : "s"} remaining · ${criticalLeft.join(" · ")}`
+                  : "All critical-path courses are on schedule."
+              }
+              onClick={() => setTab("risk")}
+            />
+            <RailLink
+              icon={Clock}
+              tone={breakCount > 0 ? "critical" : undefined}
+              title="Plan warnings"
+              sub={
+                breakCount > 0
+                  ? `${breakCount} break${breakCount === 1 ? "" : "s"} to review.`
+                  : "No warnings — the plan validates clean."
+              }
+              onClick={validatePlan}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-card">
+          <h3 className="mb-3 font-display text-sm font-semibold tracking-tight">Quick actions</h3>
+          <div className="flex flex-col gap-1.5">
+            <Button size="sm" onClick={validatePlan}>
+              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Validate plan
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setTab("blocks")}>
+              <Layers className="mr-1.5 h-3.5 w-3.5" /> View requirements
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+              <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" /> Import MyProgress
+            </Button>
+          </div>
+        </div>
+      </aside>
+      </div>
       </motion.section>
       )}
 
@@ -761,6 +766,242 @@ function TabStrip({
         })}
       </div>
     </div>
+  );
+}
+
+type PlanTerm = MergedPlan["terms"][number];
+
+/** A term's one-word verdict, for card footers and fold rows. */
+function termChip(term: PlanTerm): { label: string; cls: string; icon?: React.ReactNode } {
+  if (term.rows.length === 0)
+    return { label: "Not planned", cls: "border-border/60 text-muted-foreground" };
+  if (term.rows.every((r) => r.status === "passed" || r.status === "dropped"))
+    return {
+      label: "Completed",
+      cls: "border-on-track/40 bg-on-track/10 text-on-track-fg",
+      icon: <CheckCircle2 className="h-3 w-3" />,
+    };
+  if (term.isCurrent)
+    return {
+      label: "In progress",
+      cls: "border-at-risk/40 bg-at-risk/10 text-at-risk-fg",
+      icon: <Clock className="h-3 w-3" />,
+    };
+  return { label: "Planned", cls: "border-border/60 text-muted-foreground" };
+}
+
+/** Dot colors matching STATUS_PILL, for the compact card rows. */
+const STATUS_DOT: Record<GradStatus, string> = {
+  planned: "border border-muted-foreground/50 bg-transparent",
+  in_progress: "bg-at-risk",
+  passed: "bg-on-track",
+  failed: "bg-critical",
+  dropped: "bg-muted-foreground/40",
+};
+
+/** One near-horizon term as a card (reference design): label, units, the
+ *  course list, a verdict chip. The current term wears the brand ring. */
+function TermCard({
+  term,
+  onOpen,
+  onCycleStatus,
+}: {
+  term: PlanTerm;
+  onOpen: (code: string) => void;
+  onCycleStatus: (row: PlanRow) => void;
+}) {
+  const chip = termChip(term);
+  return (
+    <div
+      className={cn(
+        "flex min-w-0 flex-col rounded-2xl border bg-card p-4 shadow-card",
+        term.isCurrent ? "border-brand/60 ring-1 ring-brand/30" : "border-border/60",
+        term.isTarget && !term.isCurrent && "border-on-track/50",
+      )}
+    >
+      <div className="mb-1 flex items-center gap-2">
+        <span className="font-display text-base font-bold tracking-tight">{term.label}</span>
+        {term.isCurrent && (
+          <span className="chip border border-brand/40 bg-brand/10 text-2xs font-semibold text-brand-fg">
+            Current term
+          </span>
+        )}
+        {term.isTarget && (
+          <span className="chip border border-on-track/40 bg-on-track/10 text-2xs font-semibold text-on-track-fg">
+            {term.tag ?? "Graduation"}
+          </span>
+        )}
+      </div>
+      <div className="mb-3 text-2xs tabular-nums text-muted-foreground">
+        {term.totalUnits} units · {term.rows.length} course{term.rows.length === 1 ? "" : "s"}
+      </div>
+
+      {term.rows.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border/60 px-3 py-6 text-center">
+          <p className="text-xs font-medium">No courses planned</p>
+          <p className="text-2xs text-muted-foreground">
+            Move a course here from its term picker to fill this slot.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-1 flex-col gap-0.5">
+          {term.rows.map((row) => (
+            <div key={row.code} className="group flex items-center gap-2 rounded-md px-1 py-1">
+              <button
+                type="button"
+                onClick={() => onCycleStatus(row)}
+                title={`${STATUS_PILL[row.status].label} — click to mark: auto → passed → failed → dropped`}
+                className={cn("h-2.5 w-2.5 shrink-0 rounded-full", STATUS_DOT[row.status])}
+              />
+              <button
+                type="button"
+                onClick={() => onOpen(row.code)}
+                className="shrink-0 font-mono text-xs font-semibold hover:underline"
+              >
+                {row.code}
+                {row.critical && (
+                  <span className="ml-0.5 text-critical-fg" title="Critical path">
+                    ●
+                  </span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => onOpen(row.code)}
+                className="min-w-0 flex-1 truncate text-left text-xs text-muted-foreground hover:text-foreground"
+                title={row.name}
+              >
+                {row.name}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-3">
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-2xs font-semibold",
+            chip.cls,
+          )}
+        >
+          {chip.icon}
+          {chip.label}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** A far-horizon term as a fold row: closed it's one line; open it's the
+ *  full course table with the same status pills as before. */
+function TermFold({
+  term,
+  onOpen,
+  onCycleStatus,
+}: {
+  term: PlanTerm;
+  onOpen: (code: string) => void;
+  onCycleStatus: (row: PlanRow) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const chip = termChip(term);
+  return (
+    <div className="border-b border-border/60 last:border-b-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors duration-micro hover:bg-fill-ghost/50"
+      >
+        <ChevronRight
+          className={cn(
+            "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro",
+            open && "rotate-90",
+          )}
+        />
+        <span className="font-display text-sm font-bold tracking-tight">{term.label}</span>
+        {term.isTarget && (
+          <span className="chip border border-on-track/40 bg-on-track/10 text-2xs font-semibold text-on-track-fg">
+            {term.tag ?? "Graduation"}
+          </span>
+        )}
+        <span className="ml-auto text-2xs tabular-nums text-muted-foreground">
+          {term.rows.length === 0
+            ? "Not planned yet"
+            : `${term.totalUnits} units · ${term.rows.length} course${term.rows.length === 1 ? "" : "s"}`}
+        </span>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-2xs font-semibold",
+            chip.cls,
+          )}
+        >
+          {chip.icon}
+          {chip.label}
+        </span>
+      </button>
+      {open && term.rows.length > 0 && (
+        <div className="px-4 pb-3">
+          <div className="grid grid-cols-[96px_minmax(0,1fr)_44px_minmax(100px,auto)] items-center gap-x-4 border-b border-border px-2 pb-2 md:grid-cols-[110px_minmax(0,1fr)_44px_minmax(150px,auto)_minmax(100px,auto)]">
+            <Th>Code</Th>
+            <Th>Course</Th>
+            <Th right>Units</Th>
+            <Th className="hidden md:block">Category</Th>
+            <Th right>Status</Th>
+          </div>
+          {term.rows.map((row) => (
+            <CourseLine
+              key={row.code}
+              row={row}
+              onOpen={() => onOpen(row.code)}
+              onCycleStatus={() => onCycleStatus(row)}
+            />
+          ))}
+        </div>
+      )}
+      {open && term.rows.length === 0 && (
+        <p className="px-11 pb-3 text-xs italic text-muted-foreground/60">
+          Nothing slotted this term yet.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** One Degree-health rail row: icon tile, title, sub, chevron. */
+function RailLink({
+  icon: Icon,
+  title,
+  sub,
+  tone,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  sub: string;
+  tone?: "critical";
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-full items-start gap-2.5 rounded-xl border border-border/50 px-3 py-2.5 text-left transition-colors duration-micro hover:bg-fill-ghost/60"
+    >
+      <span
+        className={cn(
+          "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+          tone === "critical" ? "bg-critical/15 text-critical-fg" : "bg-brand/10 text-brand-fg",
+        )}
+      >
+        <Icon className="h-3.5 w-3.5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold">{title}</span>
+        <span className="block text-2xs leading-snug text-muted-foreground">{sub}</span>
+      </span>
+      <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
+    </button>
   );
 }
 
