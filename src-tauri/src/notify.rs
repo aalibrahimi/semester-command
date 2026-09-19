@@ -63,6 +63,22 @@ pub async fn tick(app: &AppHandle) {
     if let Err(e) = daily_digest(app, &db).await {
         tracing::warn!(error = %e, "daily digest pass failed");
     }
+    if let Err(e) = prune_ledger(&db).await {
+        tracing::warn!(error = %e, "notification ledger prune failed");
+    }
+}
+
+/// Drop ledger rows older than 90 days. Every key embeds something that
+/// stops mattering within a semester (a deadline, a grade transition, a
+/// calendar day), so an unpruned ledger is pure growth with no dedupe value.
+async fn prune_ledger(db: &Db) -> Result<(), sqlx::Error> {
+    let cutoff = (chrono::Utc::now() - chrono::Duration::days(90))
+        .to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    sqlx::query("DELETE FROM notifications_sent WHERE sent_at < ?1")
+        .bind(cutoff)
+        .execute(db)
+        .await?;
+    Ok(())
 }
 
 async fn deadline_reminders(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
@@ -112,10 +128,16 @@ async fn deadline_reminders(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error>
 }
 
 /// The 8am digest: what's due today, and the top of the triage list. Fires
-/// on the first tick at-or-after 08:00 local, once per calendar day.
+/// on the first tick inside the morning window, once per calendar day.
+///
+/// The window has an upper bound on purpose: "at or after 08:00" alone means
+/// launching the app at 11pm delivers the *morning* digest at 11pm. A digest
+/// the morning already ended is not a digest, it's a notification with no
+/// job — skip the day instead.
 async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
     let local = chrono::Local::now();
-    if local.format("%H:%M").to_string().as_str() < "08:00" {
+    use chrono::Timelike;
+    if !(8..12).contains(&local.hour()) {
         return Ok(());
     }
     let key = format!("daily:{}", local.format("%Y-%m-%d"));
@@ -206,13 +228,9 @@ pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
     }
 
     for f in &changes.missing_flips {
-        // No stable id on the event; course+name is stable enough for a
-        // once-per-flip ping.
-        let key = format!(
-            "missing:{}:{}",
-            f.course_code.as_deref().unwrap_or("?"),
-            f.assignment_name.as_deref().unwrap_or("?")
-        );
+        // Keyed on the assignment id: a renamed assignment is the same
+        // assignment, and must not re-fire.
+        let key = format!("missing:{}", f.assignment_id);
         match already_sent(&db, &key).await {
             Ok(false) => {
                 let _ = mark_sent(&db, &key).await;

@@ -6,7 +6,7 @@
 //! an authenticated API; it deliberately does not go through `CanvasClient`,
 //! whose redirect-refusing, cookie-attaching behaviour is wrong here).
 //!
-//! # Export (TODO(M4))
+//! # Export
 //!
 //! Every event carries a stable UID: `canvas-assignment-{id}@semester-command`.
 //! That is what makes re-exporting after a sync *update* the events already in

@@ -78,7 +78,17 @@ async fn serve_inner() -> Result<(), Box<dyn std::error::Error>> {
             })),
             "ping" => Ok(json!({})),
             "tools/list" => Ok(json!({ "tools": tool_definitions() })),
-            "tools/call" => call_tool(&db, msg.get("params").unwrap_or(&Value::Null)).await,
+            // Tool-level failures ("no course matches") are results with
+            // isError, not protocol errors — that is what MCP hosts render
+            // as a tool failure the model can react to. Only an unknown
+            // method is a JSON-RPC error.
+            "tools/call" => Ok(match call_tool(&db, msg.get("params").unwrap_or(&Value::Null)).await {
+                Ok(result) => result,
+                Err(message) => json!({
+                    "content": [{ "type": "text", "text": message }],
+                    "isError": true,
+                }),
+            }),
             _ => Err(format!("method not supported: {method}")),
         };
 
@@ -97,29 +107,37 @@ async fn serve_inner() -> Result<(), Box<dyn std::error::Error>> {
 
 /// The desktop app's data directory, resolved without Tauri. Must mirror
 /// `tauri.conf.json`'s identifier — the two resolve the same folder.
-fn app_data_dir() -> std::path::PathBuf {
+///
+/// Errors instead of panicking on a missing env var: some MCP hosts launch
+/// servers with a scrubbed environment, and "APPDATA is not set — launch
+/// with a normal user environment" beats a panic backtrace on stderr.
+fn app_data_dir() -> Result<std::path::PathBuf, String> {
     const IDENTIFIER: &str = "dev.codewithali.semester-command";
+    fn env(key: &str) -> Result<String, String> {
+        std::env::var(key).map_err(|_| {
+            format!("{key} is not set — launch the MCP server with a normal user environment")
+        })
+    }
     #[cfg(target_os = "windows")]
     {
-        std::path::PathBuf::from(std::env::var("APPDATA").expect("APPDATA is always set"))
-            .join(IDENTIFIER)
+        Ok(std::path::PathBuf::from(env("APPDATA")?).join(IDENTIFIER))
     }
     #[cfg(target_os = "macos")]
     {
-        std::path::PathBuf::from(std::env::var("HOME").expect("HOME is always set"))
+        Ok(std::path::PathBuf::from(env("HOME")?)
             .join("Library/Application Support")
-            .join(IDENTIFIER)
+            .join(IDENTIFIER))
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
-        std::path::PathBuf::from(std::env::var("HOME").expect("HOME is always set"))
+        Ok(std::path::PathBuf::from(env("HOME")?)
             .join(".local/share")
-            .join(IDENTIFIER)
+            .join(IDENTIFIER))
     }
 }
 
 async fn open_db_read_only() -> Result<Db, Box<dyn std::error::Error>> {
-    let path = app_data_dir().join("semester-command.db");
+    let path = app_data_dir()?.join("semester-command.db");
     if !path.exists() {
         return Err(format!(
             "no database at {} — run the Semester Command app and sync once first",
@@ -159,15 +177,16 @@ fn tool_definitions() -> Value {
         },
         {
             "name": "what_do_i_need",
-            "description": "Solve for the score needed to hit a target percentage in a course — averaged over everything remaining, or on one named assignment with everything else held at zero.",
+            "description": "Solve for the score needed to hit a target grade in a course — averaged over everything remaining, or on one named assignment with everything else held at zero. Give the target as a letter or a percentage.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "course": { "type": "string" },
-                    "target_pct": { "type": "number", "description": "Target course percentage, e.g. 90" },
+                    "target": { "type": "string", "description": "Target letter grade on the course's scale, e.g. 'A-'" },
+                    "target_pct": { "type": "number", "description": "Target course percentage, e.g. 90. Give this or target." },
                     "assignment": { "type": "string", "description": "Optional assignment name fragment to solve for specifically" }
                 },
-                "required": ["course", "target_pct"]
+                "required": ["course"]
             }
         },
         {
@@ -212,12 +231,8 @@ async fn call_tool(db: &Db, params: &Value) -> Result<Value, String> {
         }
         "what_do_i_need" => {
             let course = str_arg(&args, "course")?;
-            let target = args
-                .get("target_pct")
-                .and_then(|v| v.as_f64())
-                .ok_or("target_pct is required")?;
             let assignment = args.get("assignment").and_then(|v| v.as_str());
-            what_do_i_need(&bundle, &course, target, assignment)?
+            what_do_i_need(&bundle, &course, &args, assignment)?
         }
         "upcoming" => {
             let days = args.get("days").and_then(|v| v.as_f64()).unwrap_or(7.0);
@@ -272,8 +287,17 @@ fn fmt_pct(p: Option<f64>) -> String {
 }
 
 fn list_courses(bundle: &Bundle) -> String {
+    let now = chrono::Utc::now();
     let mut out = String::new();
+    let mut dormant: Vec<&str> = Vec::new();
     for c in &bundle.courses {
+        // Dormant enrollments (announcement shells, Title IX trainings,
+        // stale terms) are noise in a grades listing — one trailer line
+        // names them so nothing is silently invisible.
+        if bundle.is_hidden(&c.id) || !bundle.is_active(&c.id, now) {
+            dormant.push(c.course_code.as_deref().or(c.name.as_deref()).unwrap_or("?"));
+            continue;
+        }
         let input = bundle.course_input(&c.id);
         let s = grades::standing(&input);
         let (target, letter) = bundle.target_of(&c.id);
@@ -291,6 +315,13 @@ fn list_courses(bundle: &Bundle) -> String {
     }
     if out.is_empty() {
         out.push_str("No courses synced yet.");
+    }
+    if !dormant.is_empty() {
+        out.push_str(&format!(
+            "\n({} dormant/hidden not shown: {} — ask get_course_grades by name if needed)\n",
+            dormant.len(),
+            dormant.join(", ")
+        ));
     }
     out
 }
@@ -330,11 +361,38 @@ fn course_grades(bundle: &Bundle, needle: &str) -> Result<String, String> {
 fn what_do_i_need(
     bundle: &Bundle,
     needle: &str,
-    target_pct: f64,
+    args: &Value,
     assignment: Option<&str>,
 ) -> Result<String, String> {
     let c = find_course(bundle, needle)?;
     let input = bundle.course_input(&c.id);
+    let scale = bundle.scale_of(&c.id);
+
+    // The target arrives as a percentage or a letter — agents say "A-", not
+    // "90". A letter resolves to its cutoff on this course's scale.
+    let target_pct = match (
+        args.get("target_pct").and_then(|v| v.as_f64()),
+        args.get("target").and_then(|v| v.as_str()),
+    ) {
+        (Some(pct), _) => pct,
+        (None, Some(letter)) => {
+            let want = letter.trim().to_uppercase().replace('−', "-");
+            scale
+                .iter()
+                .find(|(_, l)| l.to_uppercase() == want)
+                .map(|(cutoff, _)| *cutoff)
+                .ok_or_else(|| {
+                    format!(
+                        "\"{letter}\" is not on this course's scale ({})",
+                        scale.iter().map(|(_, l)| l.as_str()).collect::<Vec<_>>().join(", ")
+                    )
+                })?
+        }
+        (None, None) => return Err("give a target: a letter ('A-') or target_pct (90)".into()),
+    };
+    if !(0.0..=110.0).contains(&target_pct) {
+        return Err("target_pct must be between 0 and 110".into());
+    }
 
     let scope = match assignment {
         Some(frag) => {
@@ -351,7 +409,7 @@ fn what_do_i_need(
     };
 
     // The borrow of `a.id` above ties scope to bundle — solve immediately.
-    let answer = grades::solve(&input, target_pct, scope, grades::DEFAULT_SCALE);
+    let answer = grades::solve(&input, target_pct, scope, &scale);
     Ok(match answer {
         grades::SolverAnswer::Required { pct, points_needed, points_possible } => {
             let pts = match (points_needed, points_possible) {
@@ -375,6 +433,9 @@ fn upcoming(bundle: &Bundle, days: f64) -> String {
     let mut rows: Vec<(String, String)> = Vec::new();
 
     for a in &bundle.assignments {
+        if bundle.is_hidden(&a.course_id) || !bundle.is_active(&a.course_id, now) {
+            continue;
+        }
         let Some(due) = a.due_at.as_deref().and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
         else {
             continue;

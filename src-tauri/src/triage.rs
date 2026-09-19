@@ -59,6 +59,11 @@ pub struct TriageRow {
     pub html_url: Option<String>,
     /// The ranking score, exposed so the debug view can sanity-check order.
     pub score: f64,
+    /// True when the row sits in the pinned zone above the ranked list.
+    /// Missing/overdue alone is not enough: a 0-point overdue checklist must
+    /// not outrank a 37%-of-grade assignment due tomorrow, so pinning also
+    /// requires actual stake (grade impact or points on the line).
+    pub pinned: bool,
 }
 
 /// Rank everything not yet submitted. Pinned states first (most overdue at
@@ -69,7 +74,10 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
     for course in &bundle.courses {
         // Hidden courses are out of triage entirely — hiding FA25 LING-101
         // must also remove its leftover deadlines from the top of the list.
-        if bundle.is_hidden(&course.id) {
+        // Dormant courses (no recent due dates or grading — Title IX shells,
+        // stale terms Canvas still calls active) are out for the same
+        // reason: their leftovers are noise, not work.
+        if bundle.is_hidden(&course.id) || !bundle.is_active(&course.id, now) {
             continue;
         }
         let input = bundle.course_input(&course.id);
@@ -127,6 +135,12 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
             let est_hours = est_minutes.map(|m| m as f64 / 60.0).unwrap_or(1.0).max(0.25);
             let score = (impact * urgency) / est_hours;
 
+            // Pinned = urgent state AND something actually at stake. A
+            // zero-point, zero-impact overdue row keeps its red pill but
+            // ranks on score like everything else (≈ the bottom).
+            let pinned = state != TriageState::Open
+                && (impact > 0.0 || a.points_possible.unwrap_or(0.0) > 0.0);
+
             rows.push(TriageRow {
                 assignment_id: a.id.clone(),
                 course_id: course.id.clone(),
@@ -139,22 +153,24 @@ pub fn rank(bundle: &Bundle, now: chrono::DateTime<chrono::Utc>) -> Vec<TriageRo
                 state,
                 html_url: a.html_url.clone(),
                 score,
+                pinned,
             });
         }
     }
 
     rows.sort_by(|a, b| {
-        let pin = |r: &TriageRow| u8::from(r.state == TriageState::Open);
+        let pin = |r: &TriageRow| u8::from(!r.pinned);
         pin(a)
             .cmp(&pin(b))
-            .then_with(|| match (a.state, b.state) {
-                // Pinned zone: oldest deadline first — the longest-overdue
-                // item is the most on fire.
-                (x, y) if x != TriageState::Open && y != TriageState::Open => {
+            .then_with(|| {
+                if a.pinned && b.pinned {
+                    // Pinned zone: oldest deadline first — the longest-overdue
+                    // item is the most on fire.
                     a.due_at.cmp(&b.due_at)
+                } else {
+                    // Ranked zone: highest score first.
+                    b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal)
                 }
-                // Ranked zone: highest score first.
-                _ => b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal),
             })
     });
     rows

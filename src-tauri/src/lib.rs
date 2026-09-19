@@ -121,6 +121,7 @@ pub fn run() {
             commands::grades::course_detail,
             commands::grades::course_summaries,
             commands::grades::set_course_hidden,
+            commands::grades::set_grade_scale,
             commands::grades::set_target,
             commands::grades::what_do_i_need,
             commands::settings::get_calendar_feed_url,
@@ -225,19 +226,18 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
                     // death; the footer picks it up as ReconnectRequired.
                     tracing::info!(error = %e, "restored credential no longer works");
                     if matches!(e, canvas::client::CanvasError::SessionExpired) {
-                        let ctx = app.state::<commands::auth::AuthCtx>();
-                        if !ctx
-                            .death_notified
-                            .swap(true, std::sync::atomic::Ordering::SeqCst)
-                        {
-                            notify::session_died(&app);
-                        }
+                        // Overnight expiry is the common case — the silent
+                        // re-auth usually restores it before the user has
+                        // read the sidebar. Escalates to the banner itself
+                        // if SSO wants a human.
+                        commands::auth::handle_session_death(app.clone()).await;
+                    } else {
+                        commands::auth::emit_status(
+                            &app,
+                            Some("Your saved Canvas session has expired — sign in again.".into()),
+                        )
+                        .await;
                     }
-                    commands::auth::emit_status(
-                        &app,
-                        Some("Your saved Canvas session has expired — sign in again.".into()),
-                    )
-                    .await;
                 }
             }
         });

@@ -1,4 +1,4 @@
--- 0005 — graduation plan overrides.
+-- 0006 — graduation plan overrides.
 --
 -- The degree plan itself (terms, course slots, prereq intelligence) is
 -- static frontend data ported from CWA-Manager's GraduationPlan. What must

@@ -43,7 +43,11 @@ use crate::db::{self, schema::*, upsert, Db};
 pub const SYNC_EVENT: &str = "sync:status-changed";
 
 /// Auto-sync floor (§2.0). Manual syncs ignore it.
-const AUTO_FLOOR_SECS: u64 = 30 * 60;
+///
+/// One minute *under* the timer's 30-minute period: `last_attempt` is stamped
+/// a beat after the interval fires, so a floor equal to the period loses the
+/// race at every tick and the "30-minute" sync silently ran hourly.
+const AUTO_FLOOR_SECS: u64 = 29 * 60;
 
 /// Engine state, Tauri-managed. One sync at a time, ever.
 pub struct SyncState {
@@ -112,6 +116,9 @@ impl SyncChanges {
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GradeEvent {
+    /// Canvas assignment id — the stable dedupe key. A renamed assignment
+    /// must not re-fire its "marked missing" ping.
+    pub assignment_id: String,
     pub course_code: Option<String>,
     pub assignment_name: Option<String>,
     pub score: Option<f64>,
@@ -170,12 +177,14 @@ pub async fn run(app: &AppHandle, manual: bool) -> Option<Result<SyncSummary, Ca
         }
         Ok(_) => {}
         Err(CanvasError::SessionExpired) => {
-            // Session death is only dangerous when nobody notices — ping the
-            // OS once per death, re-armed on the next successful sign-in.
-            let ctx = app.state::<AuthCtx>();
-            if !ctx.death_notified.swap(true, Ordering::SeqCst) {
-                crate::notify::session_died(app);
-            }
+            // Try to ride the login webview's persistent SSO cookies to a
+            // fresh session before telling anyone anything — most session
+            // deaths are routine expiry and fix themselves in seconds. The
+            // handler escalates to the OS ping + banner only if that fails.
+            let app = app.clone();
+            tauri::async_runtime::spawn(async move {
+                crate::commands::auth::handle_session_death(app).await;
+            });
         }
         Err(e) => tracing::warn!(error = %e, "sync run failed"),
     }
@@ -381,6 +390,7 @@ async fn sync_one_course(
                 .unwrap_or((None, None));
 
             let event = || GradeEvent {
+                assignment_id: a.parsed.id.clone(),
                 course_code: course_code.clone(),
                 assignment_name: a.parsed.name.clone(),
                 score: sub.score,

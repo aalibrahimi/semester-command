@@ -314,6 +314,10 @@ fn totals(assignments: &[AssignmentInput], policy: Ungraded) -> (f64, f64) {
         if a.excused || a.omit_from_final_grade {
             continue;
         }
+        // NOTE: a null `points_possible` (Canvas allows it) is deliberately
+        // treated like a zero-point assignment — any score counts toward the
+        // numerator, nothing joins the denominator. That is Canvas's own
+        // extra-credit arithmetic, not an unwrap_or_default accident (§2.2).
         let pts = a.points_possible.unwrap_or(0.0);
         match (a.score, policy) {
             (Some(s), _) => {
@@ -418,11 +422,11 @@ pub enum SolveScope<'a> {
 }
 
 /// Answer "what do I need to hit `target_pct`" (0–100).
-pub fn solve(
+pub fn solve<S: AsRef<str>>(
     input: &CourseInput,
     target_pct: f64,
     scope: SolveScope<'_>,
-    scale: &[(f64, &str)],
+    scale: &[(f64, S)],
 ) -> SolverAnswer {
     // The two evaluation points. For the single-assignment case only that
     // assignment moves; for the uniform case all remaining work moves.
@@ -523,12 +527,70 @@ pub const DEFAULT_SCALE: &[(f64, &str)] = &[
 
 /// Letter for a percentage under a scale of descending `(cutoff, letter)`
 /// pairs. Below every cutoff is an F.
-pub fn letter_for(scale: &[(f64, &str)], pct: f64) -> String {
+pub fn letter_for<S: AsRef<str>>(scale: &[(f64, S)], pct: f64) -> String {
     scale
         .iter()
         .find(|(cutoff, _)| pct >= *cutoff)
-        .map(|(_, l)| (*l).to_string())
+        .map(|(_, l)| l.as_ref().to_string())
         .unwrap_or_else(|| "F".to_string())
+}
+
+/// Parse a stored per-course scale (§4.4): a JSON array of `[cutoff, letter]`
+/// pairs, e.g. `[[94.0,"A"],[89.0,"A-"]]`. Returns `None` (→ caller falls
+/// back to [`DEFAULT_SCALE`]) for missing, malformed or empty input rather
+/// than half-applying a broken scale. Pairs are sorted descending here so a
+/// hand-edited row can't corrupt lookups.
+pub fn scale_from_json(json: Option<&str>) -> Option<Vec<(f64, String)>> {
+    let mut scale: Vec<(f64, String)> = serde_json::from_str(json?).ok()?;
+    if scale.is_empty() || scale.iter().any(|(c, _)| !c.is_finite()) {
+        return None;
+    }
+    scale.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
+    Some(scale)
+}
+
+/// Each group's nominal share of the final grade, as percentage points —
+/// the Composition card's numbers, computed here so the frontend never
+/// normalises weights itself (§10).
+///
+/// Weighted mode: `weight / Σweights`, over the weights as declared — no
+/// graded-work renormalisation, because composition describes the syllabus,
+/// not the current denominator. Points mode: the group's possible points
+/// over the course's. Groups that cannot earn a share (zero weight, zero
+/// points) report 0.
+pub fn group_shares(input: &CourseInput) -> Vec<(String, f64)> {
+    match input.mode {
+        GradingMode::Weighted => {
+            let total: f64 = input.groups.iter().filter_map(|g| g.weight).sum();
+            input
+                .groups
+                .iter()
+                .map(|g| {
+                    let w = g.weight.unwrap_or(0.0);
+                    let share = if total > 0.0 { w / total * 100.0 } else { 0.0 };
+                    (g.id.clone(), share)
+                })
+                .collect()
+        }
+        GradingMode::Points => {
+            let points_of = |g: &GroupInput| -> f64 {
+                g.assignments
+                    .iter()
+                    .filter(|a| !a.excused && !a.omit_from_final_grade)
+                    .filter_map(|a| a.points_possible)
+                    .sum()
+            };
+            let total: f64 = input.groups.iter().map(points_of).sum();
+            input
+                .groups
+                .iter()
+                .map(|g| {
+                    let share = if total > 0.0 { points_of(g) / total * 100.0 } else { 0.0 };
+                    (g.id.clone(), share)
+                })
+                .collect()
+        }
+    }
 }
 
 /// The sidebar's signal vocabulary (§9.1). Serialised as the camelCase

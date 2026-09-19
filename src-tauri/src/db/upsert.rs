@@ -285,6 +285,26 @@ pub async fn target(
     Ok(())
 }
 
+/// Set or clear a course's grade scale (local-only, on `targets`). `None`
+/// returns the course to the default scale.
+pub async fn grade_scale(
+    db: &Db,
+    course_id: &str,
+    scale_json: Option<&str>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        INSERT INTO targets (course_id, grade_scale_json) VALUES (?1, ?2)
+        ON CONFLICT(course_id) DO UPDATE SET grade_scale_json = excluded.grade_scale_json
+        "#,
+    )
+    .bind(course_id)
+    .bind(scale_json)
+    .execute(db)
+    .await?;
+    Ok(())
+}
+
 /// Hide or unhide a course (local-only view preference on `targets`).
 pub async fn course_hidden(db: &Db, course_id: &str, hidden: bool) -> Result<(), sqlx::Error> {
     sqlx::query(

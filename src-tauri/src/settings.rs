@@ -8,14 +8,9 @@
 //!
 //! # Why a JSON file and not the database
 //!
-//! SPEC.md §9.6 says the theme preference is persisted to the DB, and it will
-//! be. But the database and its migrations arrive in M1, and the theme toggle
-//! has to work in M0 — so M0 uses a small JSON file in the app config
-//! directory, with the same interface the SQLite-backed version will have.
-//!
-//! TODO(M1): move this to a `settings` table, keeping `get`/`set` identical so
-//! nothing above this module changes. Migrate the file's contents on first run
-//! and delete it.
+//! SPEC.md §9.6 said the theme persists to the DB; the accepted deviation
+//! (SPEC appendix) keeps it in this JSON file permanently — same interface,
+//! zero user-visible difference, and a migration would add risk for nothing.
 //!
 //! # Failure policy
 //!

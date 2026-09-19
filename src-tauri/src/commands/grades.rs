@@ -116,20 +116,69 @@ impl Bundle {
 
     /// The course's target percentage and letter (user-set, or the default).
     pub fn target_of(&self, course_id: &str) -> (f64, String) {
+        let scale = self.scale_of(course_id);
         match self.targets.get(course_id) {
             Some(t) => {
                 let pct = t.target_pct.unwrap_or(DEFAULT_TARGET_PCT);
                 let letter = t
                     .target_letter
                     .clone()
-                    .unwrap_or_else(|| grades::letter_for(grades::DEFAULT_SCALE, pct));
+                    .unwrap_or_else(|| grades::letter_for(&scale, pct));
                 (pct, letter)
             }
             None => (
                 DEFAULT_TARGET_PCT,
-                grades::letter_for(grades::DEFAULT_SCALE, DEFAULT_TARGET_PCT),
+                grades::letter_for(&scale, DEFAULT_TARGET_PCT),
             ),
         }
+    }
+
+    /// The course's grade scale (§4.4): the user's stored cutoffs, or the
+    /// default A/A−/B+/… scale. Owned pairs either way, so every caller
+    /// letters percentages through one code path.
+    pub fn scale_of(&self, course_id: &str) -> Vec<(f64, String)> {
+        self.targets
+            .get(course_id)
+            .and_then(|t| grades::scale_from_json(t.grade_scale_json.as_deref()))
+            .unwrap_or_else(|| {
+                grades::DEFAULT_SCALE
+                    .iter()
+                    .map(|(c, l)| (*c, (*l).to_string()))
+                    .collect()
+            })
+    }
+
+    /// Does this course still have a live pulse this term?
+    ///
+    /// Canvas's `enrollment_state=active` list is full of things that are not
+    /// coursework — announcement shells, Title IX trainings, last term's
+    /// courses never archived. Rather than asking the user to hide each one,
+    /// a course is *active* when anything about it is recent: an assignment
+    /// due in the last 30 days or the future, or work graded in the last 60.
+    /// Inactive courses stay synced and visible on the Courses page; triage,
+    /// the sidebar and the MCP tools skip them.
+    pub fn is_active(&self, course_id: &str, now: chrono::DateTime<chrono::Utc>) -> bool {
+        let recent_due = now - chrono::Duration::days(30);
+        let recent_grade = now - chrono::Duration::days(60);
+        self.assignments
+            .iter()
+            .filter(|a| a.course_id == course_id)
+            .any(|a| {
+                let due_recent = a
+                    .due_at
+                    .as_deref()
+                    .and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
+                    .map(|d| d.with_timezone(&chrono::Utc) >= recent_due)
+                    .unwrap_or(false);
+                let graded_recent = self
+                    .submissions
+                    .get(&a.id)
+                    .and_then(|s| s.graded_at.as_deref())
+                    .and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
+                    .map(|d| d.with_timezone(&chrono::Utc) >= recent_grade)
+                    .unwrap_or(false);
+                due_recent || graded_recent
+            })
     }
 
     /// Is this course hidden (local view preference)?
@@ -189,6 +238,10 @@ pub struct CourseSummary {
     /// True when the course has any assignment worth points — the shells
     /// (announcements, advising) are false and the UI can de-emphasise them.
     pub gradeable: bool,
+    /// True when the course shows recent life (see [`Bundle::is_active`]).
+    /// Stale-but-still-"active" Canvas enrollments are false; the UI groups
+    /// them with the shells instead of alongside this term's work.
+    pub active: bool,
     /// Local view preference: hidden courses render only in the Courses
     /// page's collapsed section; every other surface skips them.
     pub hidden: bool,
@@ -214,6 +267,7 @@ fn summary_of(bundle: &Bundle, course: &CourseRow) -> CourseSummary {
     let standing = grades::standing(&input);
     let grade = grades::course_grade(&input, course.current_score);
     let (target_pct, target_letter) = bundle.target_of(&course.id);
+    let scale = bundle.scale_of(&course.id);
     let missing = bundle.missing_count(&course.id);
     let gradeable = input
         .groups
@@ -227,10 +281,8 @@ fn summary_of(bundle: &Bundle, course: &CourseRow) -> CourseSummary {
         name: course.name.clone(),
         term: course.term.clone(),
         source: course.source.clone(),
-        current_letter: grade
-            .current_pct
-            .map(|p| grades::letter_for(grades::DEFAULT_SCALE, p)),
-        projected_letter: grades::letter_for(grades::DEFAULT_SCALE, grade.projected_pct),
+        current_letter: grade.current_pct.map(|p| grades::letter_for(&scale, p)),
+        projected_letter: grades::letter_for(&scale, grade.projected_pct),
         max_possible_pct: standing.max_possible_pct,
         status: grades::signal(&standing, target_pct, missing),
         grade,
@@ -239,6 +291,7 @@ fn summary_of(bundle: &Bundle, course: &CourseRow) -> CourseSummary {
         open_count: bundle.open_count(&course.id),
         missing_count: missing,
         gradeable,
+        active: bundle.is_active(&course.id, chrono::Utc::now()),
         hidden: bundle.is_hidden(&course.id),
     }
 }
@@ -256,8 +309,9 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         .collect();
 
     // Risk order (§5): the course closest to falling short sits on top.
-    // Shells sink below everything gradeable; hidden courses below that
-    // (they still ship so the Courses page can offer an unhide section).
+    // Dormant courses (shells, stale enrollments) sink below everything
+    // live; hidden courses below that (they still ship so the Courses page
+    // can offer an unhide section).
     fn rank(s: &CourseSummary) -> (u8, u8, u8) {
         let status = match s.status {
             SignalStatus::Critical => 0,
@@ -265,7 +319,7 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
             SignalStatus::OnTrack => 2,
             SignalStatus::Locked => 3,
         };
-        (u8::from(s.hidden), u8::from(!s.gradeable), status)
+        (u8::from(s.hidden), u8::from(!s.gradeable || !s.active), status)
     }
     courses.sort_by(|a, b| {
         rank(a).cmp(&rank(b)).then(
@@ -276,22 +330,45 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         )
     });
 
-    // Counts describe what the user actually watches — hidden courses are
-    // out of both.
-    let open_total = courses.iter().filter(|c| !c.hidden).map(|c| c.open_count).sum();
-    // Same to_rfc3339_opts rendering as every stored timestamp ("…Z"), so
-    // the string comparison below is a real time comparison.
-    let now = crate::db::now_rfc3339();
-    let week_out = (chrono::Utc::now() + chrono::Duration::days(7))
-        .to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    // Counts describe what the user actually watches — hidden and dormant
+    // courses are out of both.
+    let watched: std::collections::HashSet<&str> = courses
+        .iter()
+        .filter(|c| !c.hidden && c.active)
+        .map(|c| c.id.as_str())
+        .collect();
+    let open_total = courses
+        .iter()
+        .filter(|c| watched.contains(c.id.as_str()))
+        .map(|c| c.open_count)
+        .sum();
+    // Parsed comparison, not lexicographic: API rows render "…Z" but the ICS
+    // path historically wrote "+00:00" offsets, and a string compare quietly
+    // mixes the two.
+    let now = chrono::Utc::now();
+    let week_out = now + chrono::Duration::days(7);
+    // "Due this week" = OPEN work due in the next 7 days. One definition,
+    // exported once — the Triage tile, its hover preview and the week rail
+    // all render this number's set, never a local recount.
     let due_this_week = bundle
         .assignments
         .iter()
-        .filter(|a| !bundle.is_hidden(&a.course_id))
+        .filter(|a| watched.contains(a.course_id.as_str()))
+        .filter(|a| {
+            let s = bundle.submissions.get(&a.id);
+            let submitted = s.map(|s| s.submitted_at.is_some()).unwrap_or(false);
+            let graded = s.map(|s| s.score.is_some()).unwrap_or(false);
+            let excused = s.and_then(|s| s.excused).unwrap_or(false);
+            !submitted && !graded && !excused
+        })
         .filter(|a| {
             a.due_at
                 .as_deref()
-                .map(|d| d > now.as_str() && d <= week_out.as_str())
+                .and_then(|d| chrono::DateTime::parse_from_rfc3339(d).ok())
+                .map(|d| {
+                    let d = d.with_timezone(&chrono::Utc);
+                    d > now && d <= week_out
+                })
                 .unwrap_or(false)
         })
         .count();
@@ -340,6 +417,10 @@ pub struct GroupDetail {
     pub id: String,
     pub name: Option<String>,
     pub weight: Option<f64>,
+    /// This group's share of the final grade, 0–100, from
+    /// [`grades::group_shares`]. The Composition card renders this verbatim
+    /// — a share computed in TypeScript is the §10 bug.
+    pub share_pct: f64,
     /// Earned / possible over the group's *graded* work — its current pct.
     pub current_pct: Option<f64>,
     pub graded_count: usize,
@@ -353,6 +434,17 @@ pub struct CourseDetailPayload {
     pub groups: Vec<GroupDetail>,
     pub assignments: Vec<AssignmentDetail>,
     pub instructors: Vec<InstructorRow>,
+    /// The scale letters are computed with: the stored per-course cutoffs,
+    /// or the default. Descending `[cutoff, letter]` pairs.
+    pub scale: Vec<(f64, String)>,
+    /// True when `scale` came from the user, not the default — the editor
+    /// offers "reset to default" only then.
+    pub custom_scale: bool,
+    /// In a weighted course, assignments outside any weighted group cannot
+    /// count toward the grade. The count ships so the UI says so out loud
+    /// instead of the rows being silently inert (they are still listed,
+    /// still in triage, still reminded about).
+    pub uncounted_count: usize,
 }
 
 /// Everything the course-detail screen needs, in one read.
@@ -373,6 +465,7 @@ pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<C
     // Per-group current percentages, from the engine's own arithmetic (a
     // one-group CourseInput in points mode is exactly "earned over possible
     // for the graded work in this group").
+    let shares: HashMap<String, f64> = grades::group_shares(&input).into_iter().collect();
     let groups = bundle
         .groups
         .iter()
@@ -388,12 +481,28 @@ pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<C
                 id: g.id.clone(),
                 name: g.name.clone(),
                 weight: g.group_weight,
+                share_pct: shares.get(&g.id).copied().unwrap_or(0.0),
                 current_pct: grades::standing(&solo).current_pct,
                 graded_count: assignments.iter().filter(|a| a.score.is_some()).count(),
                 total_count: assignments.len(),
             }
         })
         .collect();
+
+    // The synthetic orphan group (empty id) holds ICS/manual assignments
+    // with no Canvas group. In weighted mode those cannot count (§3) — say
+    // how many, so the UI can warn instead of the user wondering why a
+    // manual assignment moves nothing.
+    let uncounted_count = match input.mode {
+        GradingMode::Weighted => input
+            .groups
+            .iter()
+            .filter(|g| g.id.is_empty() || g.weight.is_none())
+            .flat_map(|g| &g.assignments)
+            .filter(|a| a.points_possible.unwrap_or(0.0) > 0.0)
+            .count(),
+        GradingMode::Points => 0,
+    };
 
     let assignments = bundle
         .assignments
@@ -437,7 +546,22 @@ pub async fn course_detail(app: AppHandle, course_id: String) -> CommandResult<C
         .filter(|i| i.course_id == course_id)
         .collect();
 
-    Ok(CourseDetailPayload { summary, groups, assignments, instructors })
+    let custom_scale = bundle
+        .targets
+        .get(&course_id)
+        .and_then(|t| grades::scale_from_json(t.grade_scale_json.as_deref()))
+        .is_some();
+    let scale = bundle.scale_of(&course_id);
+
+    Ok(CourseDetailPayload {
+        summary,
+        groups,
+        assignments,
+        instructors,
+        scale,
+        custom_scale,
+        uncounted_count,
+    })
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -461,7 +585,39 @@ pub async fn what_do_i_need(
         Some(id) => SolveScope::SingleAssignment(id),
         None => SolveScope::EverythingRemaining,
     };
-    Ok(grades::solve(&input, target_pct, scope, grades::DEFAULT_SCALE))
+    Ok(grades::solve(&input, target_pct, scope, &bundle.scale_of(&course_id)))
+}
+
+/// Set or clear a course's grade scale (§4.4). `scale: None` resets to the
+/// default. Cutoffs are validated here — a scale that can't letter anything
+/// should fail at the dialog, not corrupt every later render.
+#[tauri::command]
+pub async fn set_grade_scale(
+    app: AppHandle,
+    course_id: String,
+    scale: Option<Vec<(f64, String)>>,
+) -> CommandResult<()> {
+    let json = match &scale {
+        None => None,
+        Some(pairs) => {
+            if pairs.is_empty() {
+                return Err(CommandError::internal("A scale needs at least one cutoff."));
+            }
+            if pairs.iter().any(|(c, l)| !(0.0..=110.0).contains(c) || l.trim().is_empty()) {
+                return Err(CommandError::internal(
+                    "Each cutoff must be 0–110% and carry a letter.",
+                ));
+            }
+            Some(
+                serde_json::to_string(pairs)
+                    .map_err(|e| CommandError::internal(format!("could not encode scale: {e}")))?,
+            )
+        }
+    };
+    let db = app.state::<Db>().inner().clone();
+    upsert::grade_scale(&db, &course_id, json.as_deref())
+        .await
+        .map_err(storage_err)
 }
 
 /// Hide or unhide a course everywhere. A view preference, never a deletion —
@@ -490,8 +646,14 @@ pub async fn set_target(
         return Err(CommandError::internal("Target must be between 0 and 110%."));
     }
     let db = app.state::<Db>().inner().clone();
-    let letter = target_letter
-        .unwrap_or_else(|| grades::letter_for(grades::DEFAULT_SCALE, target_pct));
+    let letter = match target_letter {
+        Some(l) => l,
+        // Letter the percentage on this course's own scale, not the default.
+        None => {
+            let bundle = load_bundle(&db).await.map_err(storage_err)?;
+            grades::letter_for(&bundle.scale_of(&course_id), target_pct)
+        }
+    };
     upsert::target(&db, &course_id, &letter, target_pct)
         .await
         .map_err(storage_err)?;
