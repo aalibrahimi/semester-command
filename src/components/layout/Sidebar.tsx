@@ -21,7 +21,7 @@
  * The course list and nav counts come from `useCourses()` — every number and
  * every status colour was computed in Rust (§10).
  */
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useMatch } from "react-router-dom";
 import {
   Landmark,
   CheckCheck,
@@ -73,6 +73,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { courses: allCourses, openTotal, dueThisWeek, loaded } = useCourses();
   const { status, isReconnectRequired } = useSync();
   const nicknames = useNicknames();
+  const location = useLocation();
   // Hidden courses live only in the Courses page's own section, and dormant
   // enrollments (Title IX shells, stale terms) don't earn sidebar rows at
   // all — the rail is a glance surface for THIS term. Live-but-ungradeable
@@ -85,7 +86,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   // Zero-count badges render as no badge at all — a "0" chip is noise. Before
   // the first load counts stay null for the same reason.
   const items: NavItem[] = [
-    { to: "/", label: "Triage", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
+    { to: "/", label: "Today", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
     { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
     { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },
@@ -167,20 +168,22 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
             <div className="flex flex-col gap-0.5">
               {courses.map((c, i) => {
                 const parsed = parseCourseLabel(c.courseCode ?? c.name ?? c.id);
+                // Plain-string className — the collapsed rail wraps this in
+                // TooltipTrigger asChild, whose Slot stringifies a
+                // function-form className into source code (see NavItemLink).
+                const isActive = location.pathname === `/courses/${c.id}`;
                 const row = (
                   <NavLink
                     key={c.id}
                     to={`/courses/${c.id}`}
-                    className={({ isActive }) =>
-                      cn(
-                        "group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors duration-micro",
-                        collapsed && "justify-center px-0 py-2",
-                        isActive
-                          ? "bg-card text-foreground shadow-card"
-                          : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
-                        !c.gradeable && "opacity-55",
-                      )
-                    }
+                    className={cn(
+                      "group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors duration-micro",
+                      collapsed && "justify-center px-0 py-2",
+                      isActive
+                        ? "bg-card text-foreground shadow-card"
+                        : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
+                      !c.gradeable && "opacity-55",
+                    )}
                   >
                     <CourseStatusDot status={c.status} emphasize={c.status === "critical"} />
                     {!collapsed && (
@@ -285,49 +288,52 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
 }
 
 /** One nav row. Active state gets the `--fill-ghost-selected` background and an
- *  accent left indicator, per §5. */
+ *  accent left indicator, per §5.
+ *
+ *  NOTE: active state comes from `useMatch`, NOT NavLink's function-form
+ *  `className`. TooltipTrigger's `asChild` Slot merges className props as
+ *  strings, which stringifies a function into its own source code — the nav
+ *  rows silently lost every theme class (invisible in dark, white-on-white
+ *  in light). Plain strings are Slot-safe. */
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const Icon = item.icon;
+  const matchExact = useMatch(item.to);
+  const matchChild = useMatch(item.to === "/" ? "/" : `${item.to}/*`);
+  const isActive = Boolean(matchExact || (item.to !== "/" && matchChild));
 
   const link = (
     <NavLink
       to={item.to}
       end={item.to === "/"}
-      className={({ isActive }) =>
-        cn(
-          "group relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-micro",
-          collapsed && "justify-center px-0",
-          // Active state is a floating white pill (card + soft shadow), the
-          // reference pattern. In dark the same classes resolve to the raised
-          // #161923 pill — one rule, both themes.
-          isActive
-            ? "bg-card font-medium text-foreground shadow-card"
-            : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
-        )
-      }
+      className={cn(
+        "group relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-micro",
+        collapsed && "justify-center px-0",
+        // Active state is a floating white pill (card + soft shadow), the
+        // reference pattern. In dark the same classes resolve to the raised
+        // #161923 pill — one rule, both themes.
+        isActive
+          ? "bg-card font-medium text-foreground shadow-card"
+          : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
+      )}
     >
-      {({ isActive }) => (
-        <>
-          {/* The accent indicator. Periwinkle means "interactive", and an
-              active nav row is exactly that (§9.1). */}
-          <span
-            aria-hidden
-            className={cn(
-              "absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-brand transition-opacity duration-micro",
-              isActive ? "opacity-100" : "opacity-0",
-            )}
-          />
-          <Icon className="h-4 w-4 shrink-0" />
-          {!collapsed && <span className="truncate">{item.label}</span>}
-          {!collapsed && item.count !== null && (
-            <span
-              data-numeric
-              className="chip ml-auto bg-fill-ghost font-mono text-muted-foreground"
-            >
-              {item.count}
-            </span>
-          )}
-        </>
+      {/* The accent indicator. Periwinkle means "interactive", and an
+          active nav row is exactly that (§9.1). */}
+      <span
+        aria-hidden
+        className={cn(
+          "absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-brand transition-opacity duration-micro",
+          isActive ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <Icon className="h-4 w-4 shrink-0" />
+      {!collapsed && <span className="truncate">{item.label}</span>}
+      {!collapsed && item.count !== null && (
+        <span
+          data-numeric
+          className="chip ml-auto bg-fill-ghost font-mono text-muted-foreground"
+        >
+          {item.count}
+        </span>
       )}
     </NavLink>
   );

@@ -94,7 +94,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandGroup heading="Go to">
           <CommandItem onSelect={() => go("/")}>
             <ListChecks className="mr-2 h-4 w-4" />
-            Triage
+            Today
             <CommandShortcut>{shortcut("1")}</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go("/courses")}>

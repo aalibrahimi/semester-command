@@ -213,7 +213,7 @@ export async function saveManualScore(assignmentId: string, score: number | null
 /** Every course graded and ranked by risk, plus the nav counts. Outside
  *  Tauri: an empty dashboard so the shell renders in browser-only work. */
 export async function courseSummaries(): Promise<Dashboard> {
-  if (!IS_TAURI) return { courses: [], openTotal: 0, dueThisWeek: 0 };
+  if (!IS_TAURI) return { courses: [], openTotal: 0, dueThisWeek: 0, overallCurrentPct: null };
   return call<Dashboard>("course_summaries");
 }
 

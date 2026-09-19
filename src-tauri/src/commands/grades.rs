@@ -272,6 +272,11 @@ pub struct Dashboard {
     pub courses: Vec<CourseSummary>,
     pub open_total: usize,
     pub due_this_week: usize,
+    /// Mean of `current_pct` across live gradeable courses — the home
+    /// page's "overall" ring. A display aggregate (per-course numbers stay
+    /// the real story), but still grade arithmetic, so it lives here, not
+    /// in TypeScript (§10). None until anything is graded anywhere.
+    pub overall_current_pct: Option<f64>,
 }
 
 fn storage_err(e: sqlx::Error) -> CommandError {
@@ -393,10 +398,19 @@ pub async fn course_summaries(app: AppHandle) -> CommandResult<Dashboard> {
         })
         .count();
 
+    let graded: Vec<f64> = courses
+        .iter()
+        .filter(|c| watched.contains(c.id.as_str()) && c.gradeable)
+        .filter_map(|c| c.grade.current_pct)
+        .collect();
+    let overall_current_pct =
+        (!graded.is_empty()).then(|| graded.iter().sum::<f64>() / graded.len() as f64);
+
     Ok(Dashboard {
         courses,
         open_total,
         due_this_week,
+        overall_current_pct,
     })
 }
 

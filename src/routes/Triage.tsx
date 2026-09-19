@@ -46,8 +46,9 @@ import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
 import { ImpactBar } from "@/components/triage/ImpactBar";
-import { Briefing } from "@/components/triage/Briefing";
+import { TodayView } from "@/components/today/TodayView";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/useAuth";
 import { urgencyTier } from "@/lib/urgency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,7 +69,9 @@ type QueueView = "ranked" | "course" | "due";
 const QUEUE_VIEW_KEY = "triage-queue-view";
 const LAYOUT_KEY = "triage-layout";
 type TileFilter = null | "week" | "missing";
-type Layout = "brief" | "board";
+/** "today" is the home dashboard; "board" is the dense power view. The old
+ *  stored value "brief" migrates to "today". */
+type Layout = "today" | "board";
 
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
@@ -83,11 +86,12 @@ export default function Triage() {
   });
   const [filter, setFilter] = useState<TileFilter>(null);
   const [layout, setLayout] = useState<Layout>(() =>
-    localStorage.getItem(LAYOUT_KEY) === "board" ? "board" : "brief",
+    localStorage.getItem(LAYOUT_KEY) === "board" ? "board" : "today",
   );
   const [selIdx, setSelIdx] = useState(0);
   const [estimateEditId, setEstimateEditId] = useState<string | null>(null);
-  const { courses, openTotal, loaded } = useCourses();
+  const { courses, openTotal, overallCurrentPct, loaded } = useCourses();
+  const { status: auth } = useAuth();
   const nicknames = useNicknames();
   const doneSet = useDoneSet();
   const navigate = useNavigate();
@@ -187,8 +191,8 @@ export default function Triage() {
   const pickLayout = (l: Layout) => {
     setLayout(l);
     localStorage.setItem(LAYOUT_KEY, l);
-    // Stat-tile filters have no UI in the brief — never filter invisibly.
-    if (l === "brief") setFilter(null);
+    // Stat-tile filters have no UI on Today — never filter invisibly.
+    if (l === "today") setFilter(null);
   };
 
   /** Groups in display order — also the keyboard traversal order. */
@@ -269,7 +273,7 @@ export default function Triage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [displayOrder, selIdx, openAssignment, markDone, openSheet, layout]);
 
-  const visible = courses.filter((c) => !c.hidden && c.gradeable);
+  const visible = courses.filter((c) => !c.hidden && c.gradeable && c.active);
   const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
   const anyGraded = visible.some((c) => c.grade.currentPct !== null);
   const anyEstimates = (visibleRows ?? []).some((r) => r.estMinutes !== null);
@@ -282,6 +286,19 @@ export default function Triage() {
     return dues[0] ?? null;
   };
 
+  const layoutToggle = (
+    <Tabs value={layout} onValueChange={(v) => pickLayout(v === "board" ? "board" : "today")}>
+      <TabsList className="h-8">
+        <TabsTrigger value="today" className="text-xs">
+          Today
+        </TabsTrigger>
+        <TabsTrigger value="board" className="text-xs">
+          Board
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
+
   if (visibleRows === null || !loaded) {
     return (
       <>
@@ -293,6 +310,41 @@ export default function Triage() {
           <Skeleton className="h-72 rounded-3xl xl:col-span-3" />
           <Skeleton className="h-72 rounded-3xl" />
         </div>
+      </>
+    );
+  }
+
+  // The Today dashboard renders whole even with an empty queue — course
+  // health and the week ahead still matter on a caught-up day.
+  if (layout === "today") {
+    return (
+      <>
+        <ScreenHeader
+          title="Today"
+          subtitle={new Date().toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })}
+          actions={layoutToggle}
+        />
+        <TodayView
+          rows={visibleRows}
+          courses={visible}
+          openTotal={openTotal}
+          missingTotal={missingTotal}
+          overallPct={overallCurrentPct}
+          weekRows={weekRows}
+          weekItems={week}
+          labelOf={labelOf}
+          userName={auth.validatedAs}
+          onOpen={openSheet}
+        />
+        <AssignmentSheet
+          assignment={openAssignment}
+          onOpenChange={(open) => !open && setOpenAssignment(null)}
+          onChanged={refresh}
+        />
       </>
     );
   }
@@ -326,45 +378,6 @@ export default function Triage() {
   }
 
   const [hero, ...queue] = visibleRows;
-
-  const layoutToggle = (
-    <Tabs value={layout} onValueChange={(v) => pickLayout(v === "board" ? "board" : "brief")}>
-      <TabsList className="h-8">
-        <TabsTrigger value="brief" className="text-xs">
-          Brief
-        </TabsTrigger>
-        <TabsTrigger value="board" className="text-xs">
-          Board
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
-  );
-
-  if (layout === "brief") {
-    return (
-      <>
-        <ScreenHeader
-          title="Triage"
-          subtitle="Your day, talked through."
-          actions={layoutToggle}
-        />
-        <Briefing
-          rows={visibleRows}
-          courses={visible}
-          openTotal={openTotal}
-          dueThisWeek={weekRows.length}
-          labelOf={labelOf}
-          onOpen={openSheet}
-          onShowBoard={() => pickLayout("board")}
-        />
-        <AssignmentSheet
-          assignment={openAssignment}
-          onOpenChange={(open) => !open && setOpenAssignment(null)}
-          onChanged={refresh}
-        />
-      </>
-    );
-  }
 
   return (
     <>

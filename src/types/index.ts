@@ -384,6 +384,9 @@ export interface Dashboard {
   courses: CourseSummary[];
   openTotal: number;
   dueThisWeek: number;
+  /** Mean current % across live gradeable courses (Rust-computed) — the
+   *  home page's "overall" ring. Null until anything is graded. */
+  overallCurrentPct: number | null;
 }
 
 export interface GroupDetail {

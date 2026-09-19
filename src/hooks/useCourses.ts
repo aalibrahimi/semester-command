@@ -16,7 +16,7 @@ import { courseSummaries, IS_TAURI } from "@/lib/ipc";
 import { registerCourses } from "@/lib/courseColor";
 import type { Dashboard } from "@/types";
 
-const EMPTY: Dashboard = { courses: [], openTotal: 0, dueThisWeek: 0 };
+const EMPTY: Dashboard = { courses: [], openTotal: 0, dueThisWeek: 0, overallCurrentPct: null };
 
 /** Keep in sync with SYNC_EVENT in src-tauri/src/sync.rs. */
 const SYNC_EVENT = "sync:status-changed";
