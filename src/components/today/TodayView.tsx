@@ -9,9 +9,11 @@
  * the main column, with an Upcoming agenda rail on the right. Every number
  * arrives computed from Rust (§10); this file arranges and phrases.
  */
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
+  Check,
   ChevronRight,
   CircleAlert,
   Inbox,
@@ -38,6 +40,7 @@ export function TodayView({
   labelOf,
   userName,
   onOpen,
+  onDone,
 }: {
   /** Triage rows, done-filtered, Rust-ranked — index 0 is the answer. */
   rows: TriageRow[];
@@ -53,9 +56,15 @@ export function TodayView({
   labelOf: (courseId: string, courseCode: string | null) => string;
   userName: string | null;
   onOpen: (row: TriageRow) => void;
+  /** Local done-mark (view state) — the check that appears on row hover. */
+  onDone: (row: TriageRow) => void;
 }) {
   const now = new Date();
   const first = firstNameOf(userName);
+  // The full ranked queue lives behind one honest button — three focused
+  // rows by default, everything on demand, still one visual language.
+  const [showAll, setShowAll] = useState(false);
+  const focusRows = showAll ? rows : rows.slice(0, 3);
 
   return (
     <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
@@ -98,7 +107,9 @@ export function TodayView({
         <div className="mb-1 flex items-baseline justify-between gap-2">
           <h2 className="font-display text-lg font-semibold tracking-tight">Focus for today</h2>
           <span className="text-2xs text-muted-foreground">
-            {rows.length > 3 ? `top 3 of ${rows.length} — ranked by what skipping costs` : "ranked by what skipping costs"}
+            {rows.length > 3 && !showAll
+              ? `top 3 of ${rows.length} — ranked by what skipping costs`
+              : "ranked by what skipping costs"}
           </span>
         </div>
 
@@ -107,11 +118,29 @@ export function TodayView({
             Nothing open. Either you're ahead, or a sync is due — check the footer.
           </p>
         ) : (
-          <div className="mt-3 flex flex-col gap-2">
-            {rows.slice(0, 3).map((r) => (
-              <FocusRow key={r.assignmentId} row={r} label={labelOf(r.courseId, r.courseCode)} onOpen={() => onOpen(r)} now={now} />
-            ))}
-          </div>
+          <>
+            <div className="mt-3 flex flex-col gap-2">
+              {focusRows.map((r) => (
+                <FocusRow
+                  key={r.assignmentId}
+                  row={r}
+                  label={labelOf(r.courseId, r.courseCode)}
+                  onOpen={() => onOpen(r)}
+                  onDone={() => onDone(r)}
+                  now={now}
+                />
+              ))}
+            </div>
+            {rows.length > 3 && (
+              <button
+                type="button"
+                onClick={() => setShowAll((s) => !s)}
+                className="mt-3 w-full rounded-xl border border-dashed border-border/60 py-2 text-center text-xs font-medium text-muted-foreground transition-colors duration-micro hover:border-border hover:text-foreground"
+              >
+                {showAll ? "Show the top 3" : `Show all ${rows.length} open items`}
+              </button>
+            )}
+          </>
         )}
       </section>
 
@@ -272,19 +301,28 @@ function FocusRow({
   row,
   label,
   onOpen,
+  onDone,
   now,
 }: {
   row: TriageRow;
   label: string;
   onOpen: () => void;
+  onDone: () => void;
   now: Date;
 }) {
   const chip = statusChip(row, now);
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onOpen}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border/50 px-4 py-3 text-left transition-colors duration-micro hover:bg-fill-ghost/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+      className="group flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-border/50 px-4 py-3 text-left transition-colors duration-micro hover:bg-fill-ghost/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full" style={tickStyle(row.courseId)} />
       <span className="min-w-0 flex-1">
@@ -298,8 +336,19 @@ function FocusRow({
       <span data-numeric className="w-14 shrink-0 text-right font-mono text-2xs tabular-nums text-muted-foreground">
         {row.dueAt ? dueShort(row.dueAt) : "—"}
       </span>
+      <button
+        type="button"
+        title="Mark done"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDone();
+        }}
+        className="shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity duration-micro hover:bg-fill-ghost hover:text-on-track-fg group-hover:opacity-100"
+      >
+        <Check className="h-4 w-4" />
+      </button>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
-    </button>
+    </div>
   );
 }
 
