@@ -45,6 +45,8 @@ import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
+import { CourseBrief } from "@/components/grade/CourseBrief";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImpactBar } from "@/components/triage/ImpactBar";
 import { urgencyTier } from "@/lib/urgency";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -194,6 +196,9 @@ function targetsFrom(scale: [number, string][]): [string, number][] {
  *  identity colors, applied per group here. */
 const SEGMENT_HUES = [217, 330, 172, 282, 48, 255, 200];
 
+/** localStorage key for the Brief/Everything preference. */
+const COURSE_LAYOUT_KEY = "course-layout";
+
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -205,7 +210,18 @@ export default function CourseDetail() {
   const [openAssignmentId, setOpenAssignmentId] = useState<string | null>(null);
   const [hoverGroupId, setHoverGroupId] = useState<string | null>(null);
   const [filterGroupId, setFilterGroupId] = useState<string | null>(null);
+  // "brief" = the course talked through + a clean homework list (default —
+  // the first thing loading a course should show is the homework).
+  // "full" = the hero, donut, and grouped table. One preference, all courses.
+  const [mode, setMode] = useState<"brief" | "full">(() =>
+    localStorage.getItem(COURSE_LAYOUT_KEY) === "full" ? "full" : "brief",
+  );
   const nicknames = useNicknames();
+
+  const pickMode = (m: "brief" | "full") => {
+    setMode(m);
+    localStorage.setItem(COURSE_LAYOUT_KEY, m);
+  };
 
   const refresh = useCallback(() => {
     if (!courseId) return;
@@ -291,6 +307,16 @@ export default function CourseDetail() {
         subtitle={label.code && label.title !== label.code ? label.title : undefined}
         actions={
           <div className="flex items-center gap-2">
+            <Tabs value={mode} onValueChange={(v) => pickMode(v === "full" ? "full" : "brief")}>
+              <TabsList className="h-8">
+                <TabsTrigger value="brief" className="text-xs">
+                  Brief
+                </TabsTrigger>
+                <TabsTrigger value="full" className="text-xs">
+                  Everything
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
             <Button
               variant="ghost"
               size="sm"
@@ -348,10 +374,12 @@ export default function CourseDetail() {
         }
       />
 
-      <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
+      {/* Warnings live above BOTH layouts — a degree-floor problem or a
+          math mismatch must be unmissable whichever view is on. */}
+      <div className="mx-8 mb-4 flex flex-col gap-3 empty:hidden">
         {/* Degree-floor warning: class grade and DEGREE are different ledgers. */}
         {(currentBelowFloor || maxBelowFloor) && floor && (
-          <Alert className="border-critical/50 xl:col-span-3">
+          <Alert className="border-critical/50">
             <AlertTriangle className="h-4 w-4 text-critical-fg" />
             <AlertTitle>
               {maxBelowFloor
@@ -370,7 +398,7 @@ export default function CourseDetail() {
 
         {/* Reconciliation warning (§4.2): our math vs Canvas's, never silent. */}
         {s.grade.reconciliationDelta !== null && (
-          <Alert className="border-at-risk/40 xl:col-span-3">
+          <Alert className="border-at-risk/40">
             <AlertTriangle className="h-4 w-4 text-at-risk-fg" />
             <AlertTitle>Our math disagrees with Canvas here</AlertTitle>
             <AlertDescription>
@@ -387,7 +415,7 @@ export default function CourseDetail() {
             so once, loudly — a manual assignment that silently moves nothing
             is worse than no manual assignment at all. */}
         {data.uncountedCount > 0 && (
-          <Alert className="border-at-risk/40 xl:col-span-3">
+          <Alert className="border-at-risk/40">
             <AlertTriangle className="h-4 w-4 text-at-risk-fg" />
             <AlertTitle>
               {data.uncountedCount} assignment{data.uncountedCount === 1 ? " doesn't" : "s don't"}{" "}
@@ -400,7 +428,12 @@ export default function CourseDetail() {
             </AlertDescription>
           </Alert>
         )}
+      </div>
 
+      {mode === "brief" ? (
+        <CourseBrief summary={s} assignments={assignments} onOpen={setOpenAssignmentId} />
+      ) : (
+      <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* ── Grade hero (§ design review: honest empty state) ──────────── */}
         <Card
           className={cn(
@@ -506,6 +539,7 @@ export default function CourseDetail() {
         {/* ── Syllabus knowledge (mined from imported documents) ────────── */}
         <SyllabusCard courseId={s.id} />
       </div>
+      )}
 
       <SolverDialog
         open={solverOpen}

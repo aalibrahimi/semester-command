@@ -10,7 +10,7 @@
  * in each signal state, gaps wide enough to make the hatch region visible, and
  * one course where the target is already unreachable.
  */
-import type { SignalStatus } from "@/types";
+import type { AssignmentDetail, CourseSummary, SignalStatus } from "@/types";
 
 export interface SampleCourse {
   id: string;
@@ -134,4 +134,113 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
     state: "missing",
     status: "atRisk",
   },
+];
+
+/* ── Course Brief sample (real shapes, fabricated values) ─────────────────
+   These use the REAL CourseSummary/AssignmentDetail types so the preview
+   exercises the exact component the app ships. Due dates are relative to
+   "now" so the casual phrasing ("due tomorrow night") stays alive. */
+
+function hoursFromNow(h: number): string {
+  return new Date(Date.now() + h * 3_600_000).toISOString();
+}
+
+export const SAMPLE_BRIEF_SUMMARY: CourseSummary = {
+  id: "sample-hist",
+  courseCode: "HIST 15",
+  name: "Essential US History",
+  term: "Fall 2026",
+  source: "api",
+  grade: {
+    currentPct: 87.5,
+    projectedPct: 41.2,
+    gapPct: 46.3,
+    mode: "weighted",
+    canvasCurrentPct: 87.5,
+    reconciliationDelta: null,
+  },
+  maxPossiblePct: 94.1,
+  currentLetter: "B+",
+  projectedLetter: "F",
+  targetPct: 90,
+  targetLetter: "A-",
+  status: "atRisk",
+  openCount: 5,
+  missingCount: 1,
+  gradeable: true,
+  active: true,
+  hidden: false,
+};
+
+function briefAssignment(
+  over: Partial<AssignmentDetail> & { id: string; name: string },
+): AssignmentDetail {
+  return {
+    groupId: "g1",
+    dueAt: null,
+    pointsPossible: 15,
+    score: null,
+    excused: false,
+    missing: false,
+    late: false,
+    submitted: false,
+    omitted: false,
+    htmlUrl: null,
+    source: "api",
+    hasRubric: false,
+    rubricJson: null,
+    descriptionHtml: null,
+    submissionTypes: null,
+    impactPct: 17.6,
+    estMinutes: null,
+    ...over,
+  };
+}
+
+export const SAMPLE_BRIEF_ASSIGNMENTS: AssignmentDetail[] = [
+  briefAssignment({
+    id: "sb1",
+    name: "Class Exercise: U.S. Constitution",
+    dueAt: hoursFromNow(-9 * 24),
+    missing: true,
+  }),
+  briefAssignment({
+    id: "sb2",
+    name: "Quiz #1 (Chapter 8 and Chapter 9)",
+    dueAt: hoursFromNow(40),
+  }),
+  briefAssignment({
+    id: "sb3",
+    name: "Class Discussion #3: The Early Republic",
+    dueAt: hoursFromNow(6 * 24),
+    impactPct: 8.8,
+    pointsPossible: 10,
+  }),
+  briefAssignment({
+    id: "sb4",
+    name: "Week 4 Reading Checklist",
+    dueAt: hoursFromNow(8 * 24),
+    impactPct: 0,
+    pointsPossible: 0,
+  }),
+  briefAssignment({
+    id: "sb5",
+    name: "Class Discussion #2: Slavery and the Making of America",
+    dueAt: hoursFromNow(-3 * 24),
+    submitted: true,
+  }),
+  briefAssignment({
+    id: "sb6",
+    name: "Quiz #0: Syllabus",
+    dueAt: hoursFromNow(-14 * 24),
+    score: 14,
+    submitted: true,
+  }),
+  briefAssignment({
+    id: "sb7",
+    name: "Class Exercise: Colonial Economies",
+    dueAt: hoursFromNow(-20 * 24),
+    score: 13.5,
+    submitted: true,
+  }),
 ];

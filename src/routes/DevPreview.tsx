@@ -14,7 +14,14 @@ import { AlertTriangle, CalendarClock, FlaskConical, Target, Timer } from "lucid
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { StatTile } from "@/components/layout/StatTile";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
-import { SAMPLE_COURSES, SAMPLE_TRIAGE, type SampleTriageRow } from "@/lib/sampleData";
+import { CourseBrief } from "@/components/grade/CourseBrief";
+import {
+  SAMPLE_BRIEF_ASSIGNMENTS,
+  SAMPLE_BRIEF_SUMMARY,
+  SAMPLE_COURSES,
+  SAMPLE_TRIAGE,
+  type SampleTriageRow,
+} from "@/lib/sampleData";
 import { cn } from "@/lib/utils";
 import type { SignalStatus } from "@/types";
 
@@ -44,6 +51,15 @@ export default function DevPreview() {
         <div className="chip w-fit gap-1.5 bg-at-risk/10 text-at-risk-fg">
           <FlaskConical className="h-3 w-3" />
           Every number below is fabricated sample data
+        </div>
+
+        {/* ── Course Brief (the default course view) on fabricated data ──── */}
+        <div className="-mx-8">
+          <CourseBrief
+            summary={SAMPLE_BRIEF_SUMMARY}
+            assignments={SAMPLE_BRIEF_ASSIGNMENTS}
+            onOpen={() => {}}
+          />
         </div>
 
         {/* ── Overview tiles ─────────────────────────────────────────────── */}
