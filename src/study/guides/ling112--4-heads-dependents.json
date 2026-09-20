@@ -17,7 +17,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**What 'several large books' is** Week 2 gave you categories for words. But 'several large books' behaves like one thing — it can be a subject, you can replace all three words with 'they'. What category is the *group*? The answer: a group takes its category from one word inside it. 'Several large books' is about books, and it's a noun-ish thing (a noun phrase), because **books** is its **head**. Take away 'several' or 'large' and you still have a books-phrase; take away 'books' and you have nothing.",
+          "md": "**What 'several large books' is** Week 2 gave you categories for words. But 'several large books' behaves like one thing — it can be a subject, you can replace all three words with 'they'. What category is the *group*? The answer: ==a group takes its category from one word inside it==. 'Several large books' is about books, and it's a noun-ish thing (a noun phrase), because **books** is its **head**. Take away 'several' or 'large' and you still have a books-phrase; take away 'books' and you have nothing.",
           "slide": "The question",
           "id": "why.5a5dd6bf"
         },
@@ -39,6 +39,11 @@
           "md": "Two facts from the handout. **Heads pick the category of their dependents**: 'the loud yawn' ✓ / '*the loudly yawn' ✗ — the noun 'yawn' takes an adjective; 'loudly yawned' ✓ / '*loud yawned' ✗ — the verb takes an adverb. **Heads can also pick the meaning**: 'The speaker informed the audience' ✓ but '#The earthquake informed the audience' — grammatical, but 'inform' wants a dependent that can intend to inform. The `#` marks that.",
           "slide": "Heads select their dependents",
           "id": "why.22ce94ba"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** 'Find the head' is the daily bread of language technology. Search engines reduce your query to its head noun before matching ('cheap flights to Osaka' is about *flights*, not Osaka). Grammar checkers catch '*the loudly yawn' by checking what the head licenses. Dependency parsers — spaCy, Stanza, everything built on Universal Dependencies — output exactly the head→dependent arrows of this chapter, and downstream systems read 'who did what to whom' straight off them. Even autocomplete leans on the idea: ==the head is the word that decides what may come next==, whether it's 'fond' selecting 'of' or a verb still owed its object.",
+          "id": "why.7e2c4b9a"
         }
       ]
     },
@@ -48,7 +53,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "'[The bear] yawned [loudly]' — delete 'loudly' and it's fine; delete 'the bear' and it isn't (*'Yawned loudly' as a sentence). '[The bear] [slowly] savored [the berries]' — delete 'slowly', fine; delete 'the berries', *'The bear savored' is broken. '[The bear] gave [me] [a huge fright] [last weekend]' — 'last weekend' can go; 'me' and 'a huge fright' cannot.",
+          "md": "'[The bear] yawned [loudly]' — delete 'loudly' and it's fine; delete 'the bear' and it isn't (*'Yawned loudly' as a sentence). '[The bear] [slowly] savored [the berries]' — delete 'slowly', fine; delete 'the berries', *'The bear savored' is broken. '[The bear] gave [me] [a huge fright] [last weekend]' — 'last weekend' can go; 'me' and 'a huge fright' cannot. The deletion probe in one line: ==what you can drop is optional; what you can't is an argument==.",
           "slide": "Handout (6): which brackets can you delete?",
           "id": "args.86e2e463"
         },
@@ -66,7 +71,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "'Argument' is about the verb's meaning. **Complement** is the syntactic version: a dependent the head *selects*, sitting right next to it. Most complements are arguments and vice versa, with one big exception the handout flags: **subjects are arguments but NOT complements** — they sit on the other side of the verb and behave differently (you'll see why when trees arrive in Week 6).",
+          "md": "'Argument' is about the verb's meaning. **Complement** is the syntactic version: a dependent the head *selects*, sitting right next to it. Most complements are arguments and vice versa, with one big exception the handout flags: !!subjects are arguments but NOT complements!! — they sit on the other side of the verb and behave differently (you'll see why when trees arrive in Week 6).",
           "slide": "A finer cut",
           "id": "comp.46a67817"
         },
@@ -119,9 +124,22 @@
         },
         {
           "type": "prose",
-          "md": "'What position(s) can complements appear in relative to the head? What about adjuncts?' In English, complements come **immediately after** the head (V–NP, P–NP, Adj–PP, N–PP). Adjuncts can come **before or after** and outside the complement: 'quietly serenaded [his beloved] in the garden' — adjunct, head, complement, adjunct. That asymmetry is the whole reason X-bar theory (Week 7) puts complements as sisters of the head and adjuncts one level up.",
+          "md": "'What position(s) can complements appear in relative to the head? What about adjuncts?' In English, complements come **immediately after** the head (V–NP, P–NP, Adj–PP, N–PP). Adjuncts can come **before or after** and outside the complement: 'quietly serenaded [his beloved] in the garden' — adjunct, head, complement, adjunct. That asymmetry is the whole reason X-bar theory (Week 7) puts complements as sisters of the head and adjuncts one level up. In short: ##complements hug the head; adjuncts stack and float##.",
           "slide": "Position question from the handout",
           "id": "comp.62066a5e"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 690 230",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Adjunct: 'quietly' is optional and could just as well appear elsewhere ('He serenaded her quietly').</title><text x='69' y='78' text-anchor='middle' font-size='10' fill='rgb(var(--at-risk))'>adjunct</text><rect x='30' y='90' width='78' height='34' rx='8' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='69' y='112' text-anchor='middle' font-size='13'>quietly</text></g><g><title>The head: the verb 'serenaded' selects everything else in the phrase.</title><text x='179' y='78' text-anchor='middle' font-size='10' font-weight='700' fill='rgb(var(--on-track))'>HEAD V</text><rect x='124' y='90' width='110' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='179' y='112' text-anchor='middle' font-size='13' font-weight='700'>serenaded</text></g><g><title>Complement: 'his beloved' is selected by 'serenade', obligatory, and glued to the head's right side.</title><text x='310' y='78' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>complement</text><rect x='250' y='90' width='120' height='34' rx='8' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='310' y='112' text-anchor='middle' font-size='13'>his beloved</text><path d='M130 132 L130 140 L364 140 L364 132' stroke='rgb(var(--accent-fg))' stroke-width='1.4' fill='none'/><text x='247' y='158' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>selected · adjacent · obligatory</text></g><g><title>Adjunct: 'in the garden' can be dropped, moved to the front, or joined by more PPs.</title><text x='451' y='78' text-anchor='middle' font-size='10' fill='rgb(var(--at-risk))'>adjunct</text><rect x='386' y='90' width='130' height='34' rx='8' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='451' y='112' text-anchor='middle' font-size='13'>in the garden</text></g><g><title>Adjunct: 'with a guitar' — a third dependent, and you could still add 'for an hour, on Tuesday…'.</title><text x='596' y='78' text-anchor='middle' font-size='10' fill='rgb(var(--at-risk))'>adjunct</text><rect x='532' y='90' width='128' height='34' rx='8' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='596' y='112' text-anchor='middle' font-size='13'>with a guitar</text></g><g><title>The adjunct behavior in one line: droppable, stackable, movable — none of that is true of the complement.</title><text x='345' y='188' text-anchor='middle' font-size='10.5' fill='rgb(var(--at-risk))'>amber = droppable · stackable (…for an hour, on Tuesday) · movable: 'In the garden, he quietly serenaded his beloved'</text><text x='345' y='208' text-anchor='middle' font-size='10.5' opacity='0.7'>blue = try deleting it: 'He quietly serenaded in the garden' is broken — 'serenade' owes an NP</text></g></g>",
+          "caption": "Handout (12)'s serenade sentence, color-coded. The head (green) selects exactly one complement (blue): 'his beloved', obligatory and glued to its right side. Everything amber is an adjunct: drop any of them, add three more, or float one to the front — the sentence survives. When you sort dependents on a homework, this geometry is the four-diagnostic table drawn as a picture. Hover any phrase.",
+          "slide": "One head, one complement, endless adjuncts",
+          "id": "comp.3d8f6a1c"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Dictionaries encode complements as *valency* ('resort TO sth'); NLP calls the same fact a subcategorization frame — it's how a grammar checker knows '*She put the keys' is missing something while 'She slept' isn't. Voice assistants run it in reverse: hearing 'remind me', the parser knows 'remind' is still owed a complement, so the assistant asks 'what should I remind you about?'. And the complement/adjunct line has legal teeth: !!whether a trailing phrase modifies the nearest item or the whole clause!! is exactly what contract-ambiguity fights are about, and the diagnostics you just learned are the arguments both sides run.",
+          "id": "comp.9b5e2d7f"
         }
       ]
     },
@@ -235,11 +253,24 @@
                 "with → thud,  thud → a,  thud → loud"
               ],
               "active": 6,
-              "caption": "'with' → 'thud', and 'thud' → 'a', 'loud'. Ten words, nine arrows, one root. Her note: a dependency diagram is a connected directed acyclic graph with maximum in-degree 1 — every word has one incoming arrow except the root."
+              "caption": "'with' → 'thud', and 'thud' → 'a', 'loud'. Eleven words, ten arrows, one root. Her note: a dependency diagram is a connected directed acyclic graph with maximum in-degree 1 — every word has one incoming arrow except the root."
             }
           ],
           "slide": true,
           "id": "dep.ff373928"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 640 260",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='depA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6.5' markerHeight='6.5' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='depC' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6.5' markerHeight='6.5' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>The root: 'fell' is the head of the whole sentence — the only word with no incoming arrow. Its three arrows go to the subject 'books' and to the prepositions heading the two PPs.</title><text x='230' y='215' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>fell</text><text x='230' y='236' text-anchor='middle' font-size='10' fill='rgb(var(--on-track))'>root</text><path d='M226 192 C 220 165, 186 165, 180 192' stroke='rgb(var(--accent-fg))' stroke-width='1.5' fill='none' marker-end='url(#depA)'/><path d='M234 192 C 240 172, 264 172, 269 192' stroke='rgb(var(--accent-fg))' stroke-width='1.5' fill='none' marker-end='url(#depA)'/><path d='M236 192 C 262 80, 394 80, 419 192' stroke='rgb(var(--accent-fg))' stroke-width='1.5' fill='none' marker-end='url(#depA)'/></g><g><title>Inside the subject NP: 'books' is the head; 'several' and 'large' both depend on it. A head can have many dependents, but each dependent has exactly one head.</title><text x='58' y='215' text-anchor='middle' font-size='14'>Several</text><text x='122' y='215' text-anchor='middle' font-size='14'>large</text><text x='178' y='215' text-anchor='middle' font-size='14'>books</text><path d='M172 192 C 148 148, 84 148, 62 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/><path d='M174 192 C 160 170, 138 170, 125 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/></g><g><title>The first PP: 'to' is its head, so the verb's arrow lands on 'to', not on 'ground'. 'ground' is the complement of 'to', and 'the' depends on 'ground'.</title><text x='272' y='215' text-anchor='middle' font-size='14'>to</text><text x='310' y='215' text-anchor='middle' font-size='14'>the</text><text x='362' y='215' text-anchor='middle' font-size='14'>ground</text><path d='M276 192 C 292 152, 344 152, 358 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/><path d='M358 192 C 346 172, 324 172, 313 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/></g><g><title>The second PP: 'with' heads it; its complement is 'thud', which carries its own dependents 'a' and 'loud'. A dependent can itself be a head.</title><text x='422' y='215' text-anchor='middle' font-size='14'>with</text><text x='462' y='215' text-anchor='middle' font-size='14'>a</text><text x='504' y='215' text-anchor='middle' font-size='14'>loud</text><text x='556' y='215' text-anchor='middle' font-size='14'>thud</text><path d='M426 192 C 450 128, 530 128, 552 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/><path d='M552 192 C 530 152, 482 152, 466 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/><path d='M553 192 C 540 172, 518 172, 507 192' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.75' marker-end='url(#depC)'/></g><g><title>The invariant to check your own diagrams against: n words → n − 1 arrows, and only the root has no arrow in.</title><text x='320' y='252' text-anchor='middle' font-size='10.5' opacity='0.7'>arrow = head → dependent · every word has exactly one arrow in, except the root · 11 words, 10 arrows</text></g></g>",
+          "caption": "The stepper's arrow list, drawn the way parsers draw it. Blue arcs leave the root 'fell'; the smaller arcs live inside the subject NP and the two PPs. Notice where the verb's arrows land: on 'to' and 'with' — the heads of their phrases — never on 'ground' or 'thud' directly. If your homework diagram has an arrow landing inside a phrase from outside, you've skipped a head. Hover any word cluster.",
+          "slide": "Handout (8) as arcs",
+          "id": "dep.4a7c9e2b"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** This exact diagram, with this exact head→dependent convention, is the Universal Dependencies format — the treebank standard behind spaCy, Stanza, and most parsed text on the planet. Run a parser on a sentence and the output IS your homework answer: one root, one head per word, arcs. Relation extraction ('who acquired whom?'), knowledge-graph builders, and grammar checkers all read facts off these arcs, because ##the arrows survive word-order changes that break plain string matching##. When Week 6 introduces constituency trees, remember: they encode the same facts the other way around, and parsers exist for both.",
+          "id": "dep.6f1d8b3e"
         },
         {
           "type": "check",
@@ -306,8 +337,16 @@
           "id": "dir.0546d5e4"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 620 285",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='dirA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><text x='160' y='28' text-anchor='middle' font-size='12' font-weight='600'>English · head-initial</text><text x='460' y='28' text-anchor='middle' font-size='12' font-weight='600'>Japanese · head-final</text><line x1='310' y1='14' x2='310' y2='250' stroke='currentColor' opacity='0.12'/><g><title>Verb and object: English says the head verb first ('ate an apple'); Japanese says the object first ('ringo-o tabeta', apple-ACC eat-PAST). Same head→complement arrow, opposite direction.</title><rect x='55' y='60' width='70' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='90' y='82' text-anchor='middle' font-size='13' font-weight='700'>ate</text><path d='M127 77 L156 77' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><rect x='160' y='60' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='220' y='82' text-anchor='middle' font-size='13'>an apple</text><rect x='360' y='60' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='420' y='82' text-anchor='middle' font-size='13'>ringo-o</text><rect x='515' y='60' width='80' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='555' y='82' text-anchor='middle' font-size='13' font-weight='700'>tabeta</text><path d='M513 77 L484 77' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><text x='477' y='112' text-anchor='middle' font-size='9' opacity='0.55'>apple-ACC eat-PAST</text></g><g><title>Adposition and noun: English 'to Tokyo' is a PREposition; Japanese 'Tokyo e' is a POSTposition. Same head, mirrored placement.</title><rect x='55' y='130' width='70' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='90' y='152' text-anchor='middle' font-size='13' font-weight='700'>to</text><path d='M127 147 L156 147' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><rect x='160' y='130' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='220' y='152' text-anchor='middle' font-size='13'>Tokyo</text><rect x='360' y='130' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='420' y='152' text-anchor='middle' font-size='13'>Tokyo</text><rect x='515' y='130' width='80' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='555' y='152' text-anchor='middle' font-size='13' font-weight='700'>e</text><path d='M513 147 L484 147' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><text x='477' y='182' text-anchor='middle' font-size='9' opacity='0.55'>Tokyo to — a postposition</text></g><g><title>Noun and its PP complement: English 'picture of a robot' puts the noun first; Japanese 'robotto no shasin' puts it last. Third pair, same setting.</title><rect x='45' y='200' width='90' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='90' y='222' text-anchor='middle' font-size='13' font-weight='700'>picture</text><path d='M137 217 L156 217' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><rect x='160' y='200' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='220' y='222' text-anchor='middle' font-size='13'>of a robot</text><rect x='360' y='200' width='120' height='34' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='420' y='222' text-anchor='middle' font-size='13'>robotto no</text><rect x='515' y='200' width='80' height='34' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='555' y='222' text-anchor='middle' font-size='13' font-weight='700'>shasin</text><path d='M513 217 L484 217' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#dirA)'/><text x='477' y='252' text-anchor='middle' font-size='9' opacity='0.55'>robot of picture</text></g><g><title>The parameter: one switch, set once per language, predicts all three rows. Arabic patterns with English; Korean and Turkish with Japanese.</title><text x='310' y='276' text-anchor='middle' font-size='11' opacity='0.7'>same head→complement arrow in every row — one language flips it everywhere at once</text></g></g>",
+          "caption": "Handout (13)–(15) as mirror images. Green boxes are heads; the blue arrow always runs head → complement. English aims every arrow rightward (head-initial); Japanese aims every arrow leftward (head-final) — verb, adposition, and noun all flip together. That all-at-once consistency is what makes directionality a parameter rather than three coincidences. Hover any row.",
+          "slide": "One parameter, three mirrored pairs",
+          "id": "dir.5c9a3f7d"
+        },
+        {
           "type": "prose",
-          "md": "The point for the oral exam: directionality is *consistent* within a language. Japanese puts every head last — verb after object, postposition after noun, noun after its PP. English and Arabic put every head first. Once you know a language's setting from one pair, you can predict the others. That's what 'parameter' means.",
+          "md": "The point for the oral exam: directionality is *consistent* within a language. Japanese puts every head last — verb after object, postposition after noun, noun after its PP. English and Arabic put every head first. ##Once you know a language's setting from one pair, you can predict the others.## That's what 'parameter' means.",
           "id": "dir.055c8ac2"
         },
         {
@@ -316,6 +355,11 @@
           "answer": "After. Korean is head-final throughout, so 'picture of a robot' will be [robot-of] picture, like Japanese.",
           "sectionRef": "dir",
           "id": "dir.03a29e6a"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Head directionality is why translation is reordering, not substitution. English→Japanese MT must move every head to the end of its phrase — the 'word salad' of early systems was failed reordering, and even modern neural systems degrade on long sentences where the verb's dependents pile up before the verb arrives. Simultaneous interpreters working Japanese→English are forced to wait for that sentence-final verb before they can start speaking: ==the parameter sets the latency of understanding==. And if you ever build voice interfaces for a head-final language, the intent word ('play', 'delete') arrives LAST, which reshapes the whole streaming design.",
+          "id": "dir.8d2b6e4f"
         }
       ]
     },

@@ -17,7 +17,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The handout's opening argument** 'I *walked* quickly around the park' and 'I took three quick *walks* around the park' describe the same event. Same meaning, but *walked* is a verb and *walks* is a noun. Tagalog does it the other way: *Matalino ang doktor* ('the doctor is smart') and *Doktor ang matalino* ('the smart one is a doctor') swap which word is the predicate. If meaning decided category, none of that could happen. So category is decided by **distribution**: where the word can appear and what can attach to it.",
+          "md": "**The handout's opening argument** 'I *walked* quickly around the park' and 'I took three quick *walks* around the park' describe the same event. Same meaning, but *walked* is a verb and *walks* is a noun. Tagalog does it the other way: *Matalino ang doktor* ('the doctor is smart') and *Doktor ang matalino* ('the smart one is a doctor') swap which word is the predicate. If meaning decided category, none of that could happen. So category is decided by ==distribution==: where the word can appear and what can attach to it.",
           "slide": "Meaning can't tell you the category",
           "id": "why.6e589af4"
         },
@@ -29,9 +29,14 @@
         },
         {
           "type": "prose",
-          "md": "**Derivational** morphemes *create* a word of a category: -tion makes nouns (isolat-ion), -ize makes verbs (real-ize), -able makes adjectives (read-able). **Inflectional** morphemes attach to a category *without changing it*: plural -s on nouns, -ed/-ing/-s on verbs, -er/-est on adjectives. Both are tests: if a word takes -est, it's an adjective; if it takes plural -s, it's a noun.",
+          "md": "**Derivational** morphemes *create* a word of a category: -tion makes nouns (isolat-ion), -ize makes verbs (real-ize), -able makes adjectives (read-able). **Inflectional** morphemes attach to a category *without changing it*: plural -s on nouns, -ed/-ing/-s on verbs, -er/-est on adjectives. Both are tests: ##if a word takes -est, it's an adjective; if it takes plural -s, it's a noun##.",
           "slide": "Two kinds of affix",
           "id": "why.33da0b6b"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Part-of-speech tagging — this exact labeling task, automated — is the first stage of almost every NLP pipeline, and taggers fail exactly where the tests get interesting: words that live in two categories. A voice assistant hearing 'Book me a flight' must decide *book* is a verb before it can do anything else; a grammar checker flagging 'their going home' needs the category of *going* first. And LLMs, which are never told what a noun is, develop internal features that track category anyway — because ==distribution is precisely what a next-word predictor learns==. The tests in this chapter are the hand-run version of what those models induce from data.",
+          "id": "why.3f7d9a2c"
         }
       ]
     },
@@ -41,7 +46,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "**Lexical** categories carry content and are **open class** — new words get coined (the handout cites 'rage-bait', 'chopped'). **Functional** categories carry grammar and are **closed class** — you can't invent a new preposition. Functional words matter for tests because they create the *context* the lexical words appear in: a determiner tells you a noun is coming.",
+          "md": "**Lexical** categories carry content and are **open class** — new words get coined (the handout cites 'rage-bait', 'chopped'). **Functional** categories carry grammar and are **closed class** — you can't invent a new preposition. Functional words matter for tests because they create the *context* the lexical words appear in: ##a determiner tells you a noun is coming##.",
           "slide": "Lexical vs functional",
           "id": "list.ae31240f"
         },
@@ -114,7 +119,7 @@
         },
         {
           "type": "prose",
-          "md": "**Three traps in that list** Pronouns (they, him) and wh-words used as arguments (who, what) are **nouns**. Possessives (his, our) and numbers (two) are **determiners**. Infinitival *to* is **T**, not a preposition — 'to eat' vs 'to Paris': only the second is P.",
+          "md": "**Three traps in that list** Pronouns (they, him) and wh-words used as arguments (who, what) are **nouns**. Possessives (his, our) and numbers (two) are **determiners**. !!Infinitival *to* is T, not a preposition!! — 'to eat' vs 'to Paris': only the second is P.",
           "id": "list.f728c4ad"
         }
       ]
@@ -161,6 +166,14 @@
           "source": "Quiz",
           "points": null,
           "id": "tests.46eed9b2"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 600 230",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The frame itself: a determiner, a blank, a noun. Whatever fits the blank is an adjective.</title><text x='300' y='30' text-anchor='middle' font-size='13' font-weight='600'>The frame: D ___ N</text></g><g><title>'quick' fits between 'the' and 'run' — it passes the frame, so it is an adjective.</title><rect x='110' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='80' text-anchor='middle' font-size='15'>the</text><rect x='200' y='55' width='130' height='40' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='265' y='80' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--on-track))'>quick</text><rect x='350' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='80' text-anchor='middle' font-size='15'>run</text><text x='445' y='80' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>✓ Adjective</text></g><g><title>'quickly' cannot sit between a determiner and a noun — the frame rejects it, so it is an adverb.</title><text x='96' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>*</text><rect x='110' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='150' text-anchor='middle' font-size='15'>the</text><rect x='200' y='125' width='130' height='40' rx='8' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='265' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>quickly</text><rect x='350' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='150' text-anchor='middle' font-size='15'>run</text><text x='445' y='150' font-size='14' font-weight='700' fill='rgb(var(--critical))'>✗ Adverb</text></g><g><title>'very quick' and 'very quickly' both work, so 'very' cannot separate the two categories — only this frame can.</title><text x='300' y='205' text-anchor='middle' font-size='11' opacity='0.7'>'very' passes both, so it proves nothing. The D ___ N frame is the one that decides.</text></g></g>",
+          "caption": "Her sharpest test, drawn. 'very' modifies both adjectives and adverbs, so it can't tell them apart — but only an adjective can stand between a determiner and its noun. 'The quick run' is fine; '*the quickly run' is out. When the quiz asks you to prove Adj vs Adv, this frame is the proof to cite. Hover any row.",
+          "slide": "The D ___ N frame",
+          "id": "tests.8e4b7c1d"
         },
         {
           "type": "stepper",
@@ -463,6 +476,11 @@
           ],
           "slide": true,
           "id": "tests.36413070"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** These frames are, almost verbatim, the features early POS taggers ran on, and modern taggers still make their errors exactly where the frames conflict: 'her back', 'that', 'like'. When a grammar checker suggests 'quick → quickly' after a verb, it just ran the same distributional logic you ran on the alligator sentence. Headline double-takes — 'Police help dog bite victim' — happen because !!readers commit to a category early and refuse to re-assign it!!, the same failure pattern as a greedy tagger. And in any annotation job (LING 115 trains you for exactly this), the guidelines settle disputes by distribution tests, never by meaning.",
+          "id": "tests.5a9d3e7f"
         }
       ]
     },
@@ -472,7 +490,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "The tests above are for English. The handout's second half lists the properties categories tend to have in *any* language, so you can identify categories in Zulu or Japanese data on a homework — and so you can explain, on the oral exam, what makes a verb a verb across languages.",
+          "md": "The tests above are for English. The handout's second half lists the properties categories tend to have in *any* language, so you can identify categories in Zulu or Japanese data on a homework — and so you can explain, on the oral exam, ==what makes a verb a verb across languages==.",
           "slide": "Why this section exists",
           "id": "props.2caaf284"
         },
@@ -537,6 +555,11 @@
           "id": "props.db5b4829"
         },
         {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** This checklist of properties is the feature inventory of modern language tech. Machine translation lives or dies on agreement and case: rendering 'the doctor… she' into Arabic forces a gender choice English never made, which is exactly where MT systems guess wrong. The Universal Dependencies treebanks tag every word with these properties (Tense=Past, Number=Dual, Case=Acc) so one parser design can run on a hundred languages. And morphologically rich languages — Arabic above all — are why NLP can't just split text on spaces: one Arabic word can carry ==definiteness, case, gender, and a possessor all at once==, which the glossed sentence in the trap below makes visible.",
+          "id": "props.2b6f8d4a"
+        },
+        {
           "type": "trap",
           "body": "**Arabic for the oral exam** Arabic shows nearly every property on the handout in one sentence: *al-bint-u l-ṣaġīr-at-u qaraʔ-at kitāb-a-hā* ('the little girl read her book'). Definiteness (*al-*), gender agreement on the adjective (*-at*), case (*-u* NOM, *-a* ACC), verb agreement (*-at* 3SG.F), a possessive clitic (*=hā*). Bring one glossed Arabic sentence and you can demonstrate five properties in a minute.",
           "source": "Oral exam",
@@ -549,6 +572,14 @@
       "id": "practice",
       "heading": "Practice: the diagnostic quiz and handout (23)–(24)",
       "blocks": [
+        {
+          "type": "figure",
+          "viewBox": "0 0 620 430",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='catflY' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='catflN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>Noun test: nouns take plural -s and possessive 's, and follow determiners.</title><rect x='40' y='30' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='50' text-anchor='middle' font-size='12'>takes plural -s or possessive 's?</text><text x='195' y='67' text-anchor='middle' font-size='12'>sits after 'the' ('the ___')?</text><path d='M352 54 L438 54' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='46' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='36' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='59' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Noun</text><path d='M195 78 L195 108' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='97' font-size='10' opacity='0.6'>no</text></g><g><title>Verb test: verbs inflect for tense and follow modals or infinitival 'to'.</title><rect x='40' y='114' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='134' text-anchor='middle' font-size='12'>takes -ed / -ing / 3SG -s?</text><text x='195' y='151' text-anchor='middle' font-size='12'>follows 'will ___' or 'to ___'?</text><path d='M352 138 L438 138' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='130' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='120' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='143' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Verb</text><path d='M195 162 L195 192' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='181' font-size='10' opacity='0.6'>no</text></g><g><title>Adjective test: the D ___ N frame plus 'very' and -er/-est.</title><rect x='40' y='198' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='218' text-anchor='middle' font-size='12'>fits 'the ___ dog' (D ___ N)?</text><text x='195' y='235' text-anchor='middle' font-size='12'>takes 'very', -er / -est?</text><path d='M352 222 L438 222' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='214' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='204' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='227' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adjective</text><path d='M195 246 L195 276' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='265' font-size='10' opacity='0.6'>no</text></g><g><title>Adverb test: takes 'very' but is blocked from the D ___ N slot; usually -ly.</title><rect x='40' y='282' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='302' text-anchor='middle' font-size='12'>takes 'very' but ✗ in D ___ N?</text><text x='195' y='319' text-anchor='middle' font-size='12'>usually ends in -ly?</text><path d='M352 306 L438 306' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='298' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='288' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='311' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adverb</text><path d='M195 330 L195 360' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='349' font-size='10' opacity='0.6'>no</text></g><g><title>No lexical test fired: the word is closed-class. Don't test it — find it on her list.</title><rect x='40' y='366' width='535' height='48' rx='10' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='307' y='386' text-anchor='middle' font-size='12'>none of these → the word is functional (closed class):</text><text x='307' y='403' text-anchor='middle' font-size='12' font-weight='600'>match it against her lists — D · P · C · Aux · Mod · T · Neg</text></g></g>",
+          "caption": "The quiz answer, as a decision path. Run the frames top to bottom and stop at the first yes — each arrow is a test you can name in your justification ('takes plural -s', 'fits D ___ N'). If nothing fires, the word is closed-class: find it on her list instead of testing it. Hover any step.",
+          "slide": "Which category? Run the frames in order",
+          "id": "practice.7c3e9b5d"
+        },
         {
           "type": "example",
           "title": "Maurice very slowly dried the dishes with some worn red towels.",

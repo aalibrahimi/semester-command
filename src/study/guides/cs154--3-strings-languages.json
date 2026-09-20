@@ -17,9 +17,14 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The idea** In this course a *language* is not English. It's a **set of strings** — any set of strings. {ab, aabb, aaabbb, …} is a language. Why care? Because every yes/no question about text can be rewritten as 'is this string in that set?' *Is this a valid email?* → is it in the set of valid emails. *Does this program compile?* → is it in the set of well-formed programs. So 'which languages can a machine recognize' is the same question as 'which problems can a machine solve'. Strings and languages are the vocabulary for asking that.",
+          "md": "**The idea** In this course a *language* is not English. It's a **set of strings** — any set of strings. {ab, aabb, aaabbb, …} is a language. Why care? Because ==every yes/no question about text can be rewritten as 'is this string in that set?'== *Is this a valid email?* → is it in the set of valid emails. *Does this program compile?* → is it in the set of well-formed programs. So 'which languages can a machine recognize' is the same question as 'which problems can a machine solve'. Strings and languages are the vocabulary for asking that.",
           "slide": "A language is a yes/no problem in disguise",
           "id": "why.be42a6cc"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** This 'problems are languages' move is the course's biggest export. A regex is nothing but a finite description of a language, and a regex engine is a machine answering membership — when you write `/^a+b$/.test(s)` you are asking whether s ∈ { aⁿb | n ≥ 1 }. A JSON validator decides membership in the language of well-formed JSON; the interview classic 'valid parentheses' is a membership question too. ==Knowing which of these languages a simple machine can decide== — and which, like arbitrarily nested parentheses, it provably cannot — is exactly what the next five lessons build toward.",
+          "id": "why.5a3e8c72"
         },
         {
           "type": "trap",
@@ -93,6 +98,14 @@
           ],
           "slide": "The three empties — never confuse them",
           "id": "strings.b3ad79ed"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 600 235",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>ϕ, the empty SET: a container with nothing inside. As a language it accepts no string at all — not even the empty one. |ϕ| = 0.</title><text x='110' y='52' text-anchor='middle' font-size='20' font-weight='700'>ϕ</text><rect x='40' y='70' width='140' height='100' rx='10' fill='none' stroke='currentColor' stroke-width='1.6'/><text x='110' y='125' text-anchor='middle' font-size='11' opacity='0.45'>(nothing inside)</text><text x='110' y='196' text-anchor='middle' font-size='11' opacity='0.7'>|ϕ| = 0 · a set, no strings</text></g><g><title>λ, the empty STRING: not a container at all — a string that happens to have zero symbols. Being a string, it can sit INSIDE a language, and concatenating it changes nothing.</title><text x='300' y='52' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>λ</text><rect x='268' y='102' width='64' height='36' rx='18' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='300' y='125' text-anchor='middle' font-size='10' fill='rgb(var(--on-track))' opacity='0.8'>0 symbols</text><text x='300' y='196' text-anchor='middle' font-size='11' opacity='0.7'>|λ| = 0 · a string, no symbols</text></g><g><title>{λ}, a set containing exactly one thing — and that thing is the empty string. |{λ}| = 1, not 0. As a language it accepts exactly one input: the empty one.</title><text x='490' y='52' text-anchor='middle' font-size='20' font-weight='700'>{λ}</text><rect x='420' y='70' width='140' height='100' rx='10' fill='none' stroke='currentColor' stroke-width='1.6'/><rect x='458' y='102' width='64' height='36' rx='18' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='490' y='125' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>λ</text><text x='490' y='196' text-anchor='middle' font-size='11' opacity='0.7'>|{λ}| = 1 · a set with ONE string</text></g><g><title>The visual convention of this figure: square boxes are sets (things with braces), rounded pills are strings (things made of symbols). A pill can live inside a box; a box cannot be a pill.</title><text x='300' y='224' text-anchor='middle' font-size='10' opacity='0.5'>square box = set · rounded pill = string</text></g></g>",
+          "caption": "The three empties, drawn so they can't be confused: square boxes are sets, rounded pills are strings. ϕ is an empty box; λ is a zero-length pill (a string — so it can sit inside a box); {λ} is a box holding exactly one pill. |ϕ| = 0 but |{λ}| = 1, and every quiz asks some version of this. Hover any part.",
+          "slide": "ϕ, λ, {λ} — boxes and pills",
+          "id": "strings.7d3a5c91"
         },
         {
           "type": "stepper",
@@ -198,6 +211,19 @@
           "id": "strings.6cb1be6f"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 640 245",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The string w = abaaba: six symbols in a row. Any consecutive run of these cells is a substring.</title><rect x='120' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='168' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='216' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='264' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='312' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='360' y='40' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><text x='144' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='192' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='240' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='288' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='336' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='384' y='68' text-anchor='middle' font-size='16' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='84' y='68' text-anchor='middle' font-size='12' opacity='0.55'>w =</text></g><g><title>Every gap is a legal cut — including before the first symbol and after the last. 6 symbols means 7 cuts, so |w| + 1 (prefix, suffix) pairs; the two end cuts give (λ, w) and (w, λ).</title><line x1='120' y1='26' x2='120' y2='36' stroke='currentColor' opacity='0.4'/><line x1='168' y1='26' x2='168' y2='36' stroke='currentColor' opacity='0.4'/><line x1='216' y1='26' x2='216' y2='36' stroke='currentColor' opacity='0.4'/><line x1='312' y1='26' x2='312' y2='36' stroke='currentColor' opacity='0.4'/><line x1='360' y1='26' x2='360' y2='36' stroke='currentColor' opacity='0.4'/><line x1='408' y1='26' x2='408' y2='36' stroke='currentColor' opacity='0.4'/><text x='480' y='34' font-size='10' opacity='0.55'>7 cuts = |w| + 1 pairs</text><line x1='264' y1='22' x2='264' y2='100' stroke='rgb(var(--accent-fg))' stroke-width='1.8' stroke-dasharray='5 4'/><text x='264' y='16' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>this cut: after 3 symbols</text></g><g><title>One cut, one pair: everything left of the cut is a prefix, everything right is a suffix. This cut gives u = aba and v = aba; the end cuts would give λ and w itself, which both count.</title><line x1='122' y1='96' x2='260' y2='96' stroke='rgb(var(--on-track))' stroke-width='2.2'/><text x='191' y='114' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>prefix u = aba</text><line x1='268' y1='96' x2='406' y2='96' stroke='rgb(var(--accent-fg))' stroke-width='2.2'/><text x='337' y='114' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>suffix v = aba</text><text x='264' y='140' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' opacity='0.7'>w = uv · |w| = |u| + |v| = 3 + 3</text></g><g><title>Concatenation writes u then v: ab · ba = abba, and lengths add: |uv| = |u| + |v|. Order matters — ba · ab would be baab, a different string.</title><rect x='120' y='165' width='48' height='44' rx='6' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><rect x='168' y='165' width='48' height='44' rx='6' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='144' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='192' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='240' y='196' text-anchor='middle' font-size='16'>·</text><rect x='264' y='165' width='48' height='44' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><rect x='312' y='165' width='48' height='44' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='288' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='336' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='384' y='196' text-anchor='middle' font-size='16'>=</text><rect x='408' y='165' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='456' y='165' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='504' y='165' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><rect x='552' y='165' width='48' height='44' rx='6' fill='none' stroke='currentColor' opacity='0.45'/><text x='432' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>a</text><text x='480' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='528' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>b</text><text x='576' y='193' text-anchor='middle' font-size='15' font-weight='700' font-family='ui-monospace, monospace'>a</text></g><g><title>λ is the neutral element of concatenation — gluing on a zero-length string changes nothing, the way adding 0 changes no number.</title><text x='360' y='234' text-anchor='middle' font-size='11' opacity='0.6'>λv = v and uλ = u — gluing on the empty string changes nothing</text></g></g>",
+          "caption": "The anatomy of w = abaaba. Top: six cells, seven cut positions; the dashed cut after position 3 splits w into prefix aba (green) and suffix aba (blue) — one cut, one (prefix, suffix) pair, |w| + 1 pairs in all. Bottom: concatenation glues cells end to end, so lengths add. Hover any part.",
+          "slide": "Cuts, prefixes, suffixes, concatenation",
+          "id": "strings.4e8c2b67"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** String operations are the daily bread of systems code, and the edge cases Chen drills are the ones that bite. Every URL router does prefix matching (is `/api` a prefix of `/api/users`?); autocomplete is 'all strings with this prefix'; a file-extension check is a suffix test. The length law |uv| = |u| + |v| is the invariant behind every buffer-size calculation, and ==λ being the neutral element== is why `''.join(parts)` and `s + \"\"` are safe no-ops. Lexers in compilers live on 'the longest prefix that is a valid token'. Get λ right here and a whole family of empty-input, off-by-one bugs never happens to you.",
+          "id": "strings.2f7b9e14"
+        },
+        {
           "type": "check",
           "prompt": "Can these be alphabets: {a, 1}, { }, {ab}, {λ}?",
           "answer": "{a, 1} yes. { } no — must be nonempty. {ab} yes — here 'ab' is one indivisible symbol. {λ} no — λ can't be a symbol.",
@@ -226,7 +252,7 @@
         },
         {
           "type": "prose",
-          "md": "L = { aⁿbⁿ | n ≥ 0 } = {λ, ab, aabb, aaabbb, …}: some a's, then *the same number* of b's. Compare { aⁿbᵐ | n, m ≥ 0 }: any number of a's, then any number of b's — n and m are independent, so aab is in it but not in the first. That one letter of difference is the whole distinction between what a DFA can and cannot do (Lesson 12).",
+          "md": "L = { aⁿbⁿ | n ≥ 0 } = {λ, ab, aabb, aaabbb, …}: some a's, then *the same number* of b's. Compare { aⁿbᵐ | n, m ≥ 0 }: any number of a's, then any number of b's — n and m are independent, so aab is in it but not in the first. ==That one letter of difference is the whole distinction between what a DFA can and cannot do== (Lesson 12).",
           "slide": "The celebrity language",
           "id": "languages.fffcbf27"
         },
@@ -344,9 +370,14 @@
         },
         {
           "type": "prose",
-          "md": "- Set operations as usual. **Complement** L̄ = Σ∗ − L — the universal set is Σ∗.",
+          "md": "A language is a set, so all of Lesson 1 applies for free: union, intersection, and difference work on languages unchanged. The one operation that needs care is **complement**, because a complement always needs a universal set — and for languages that universe is Σ∗: ==L̄ = Σ∗ − L==, every string over the same alphabet that L doesn't contain. This is why 'name the alphabet' is one of the notation rules: !!without Σ, L̄ literally has no meaning!!.",
           "slide": "Language operations, collected",
           "id": "languages.189a875e"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Concatenating languages is what happens when you write two regexes side by side: `ab*` then `c+` matches exactly L₁L₂ — every string that splits into a piece from each. That hidden 'every possible split' is why regex engines backtrack, and why one bad pattern can melt a server hunting through exponentially many splits — the Cloudflare and Stack Overflow outages known as ==catastrophic backtracking== were precisely this. And the independent-index rule (L² is aⁿbⁿaᵐbᵐ, *not* a²ⁿb²ⁿ) is your first taste of a deep fact: repetition can't force two far-apart parts of a string to agree. That inability is exactly what the pumping lemma will turn into a proof.",
+          "id": "languages.6b1d9f38"
         },
         {
           "type": "check",
@@ -364,7 +395,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**How to write 'at least one a'** Assignment 3 asked for languages in set-builder and their complements, and the key wants specific shapes. The trick for all of them: describe the string as a *template* — some free stuff, the thing you require, more free stuff — where 'free stuff' is bⁿ (only b's) or w ∈ Σ∗ (anything). 'At least one a' becomes: any b's, then an a, then anything: { bⁿaw | n ≥ 0, w ∈ Σ∗ }. Once you see the template idea, the whole table writes itself.",
+          "md": "**How to write 'at least one a'** Assignment 3 asked for languages in set-builder and their complements, and the key wants specific shapes. The trick for all of them: ==describe the string as a *template*== — some free stuff, the thing you require, more free stuff — where 'free stuff' is bⁿ (only b's) or w ∈ Σ∗ (anything). 'At least one a' becomes: any b's, then an a, then anything: { bⁿaw | n ≥ 0, w ∈ Σ∗ }. Once you see the template idea, the whole table writes itself.",
           "slide": "Why this table exists",
           "id": "patterns.b2cd2d15"
         },
@@ -466,6 +497,11 @@
           "id": "patterns.2a9e9909"
         },
         {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** English → set-builder is the skill of turning a requirement into a checkable pattern, and industry has a name for it: writing validators. 'Starts with a' is the regex `^a`; 'exactly one @' is the template bⁿ@bᵐ with 'anything but @' playing the role of b — squint and the email check you'll paste into a form one day is this table's rows composed. The complement column is the security half of the job: !!a validator that only describes the good strings, and never asks how a string can fail, is where injection bugs live!!. Firewall rules, log filters, and schema checks all get written twice — once for L, once for L̄ — exactly like Assignment 3.",
+          "id": "patterns.8e5a3d76"
+        },
+        {
           "type": "check",
           "prompt": "Over Σ = {a, b}, write 'more than one a' and its complement in set-builder.",
           "answer": "L = { bⁿabᵐaw | n, m ≥ 0, w ∈ Σ∗ } (two a's guaranteed, anything after). Complement = zero or one a: { bⁿ | n ≥ 0 } ∪ { bⁿabᵐ | n, m ≥ 0 }.",
@@ -480,7 +516,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Every one of these is a deduction from the Assignment 1–3 keys. Assignment 2 lost 7.5 of 24 points, almost all on these. Write them on a card and check every quiz answer against the card before submitting — it's the cheapest grade recovery in any of your classes.",
+          "md": "Every one of these is a deduction from the Assignment 1–3 keys. Assignment 2 lost 7.5 of 24 points, almost all on these. Write them on a card and check every quiz answer against the card before submitting — ##it's the cheapest grade recovery in any of your classes##.",
           "slide": "Where these come from",
           "id": "rules.d1750f47"
         },
@@ -574,7 +610,7 @@
         },
         {
           "type": "prose",
-          "md": "**Lessons 3–4 in one breath.** Σ is a finite nonempty set of symbols; a string is a finite sequence of them; Σ∗ is all strings; a language is any subset of Σ∗. Strings concatenate, reverse, and take exponents (w⁰ = λ); languages do too (L⁰ = {λ}, independent indices). Complement is relative to Σ∗. Three empties: ϕ, λ, {λ}. Templates like bⁿaw turn English into set-builder.",
+          "md": "**Lessons 3–4 in one breath.** Σ is a finite nonempty set of symbols; a string is a finite sequence of them; Σ∗ is all strings; ==a language is any subset of Σ∗==. Strings concatenate, reverse, and take exponents (w⁰ = λ); languages do too (L⁰ = {λ}, independent indices). Complement is relative to Σ∗. Three empties: ϕ, λ, {λ}. Templates like bⁿaw turn English into set-builder.",
           "id": "rules.e9fd9896"
         }
       ]

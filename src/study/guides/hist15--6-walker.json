@@ -33,7 +33,7 @@
         },
         {
           "type": "prose",
-          "md": "Her rubric rewards one thing above all: **quote, then explain**. 'Identify' means copy the phrase in quotation marks; 'discuss' means one sentence on what that phrase does for the argument. Three quoted phrases each followed by a sentence is a 10/10 answer. General statements without quotes score in the 6–7 band.",
+          "md": "Her rubric rewards one thing above all: ==quote, then explain==. 'Identify' means copy the phrase in quotation marks; 'discuss' means one sentence on what that phrase does for the argument. Three quoted phrases each followed by a sentence is a 10/10 answer. General statements without quotes score in the 6–7 band.",
           "id": "how.6c751651"
         }
       ]
@@ -44,21 +44,26 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "**David Walker** was born free in Wilmington, North Carolina, around 1796 — free because his mother was free, even though his father was enslaved. He traveled through the South, saw slavery up close, and settled in **Boston** in the 1820s, where he ran a used-clothing shop near the docks, joined the Massachusetts General Colored Association, and wrote for *Freedom's Journal*, the first Black-owned newspaper in the country (1827).",
+          "md": "**David Walker** was born free in Wilmington, North Carolina, around 1796 — free because his mother was free, even though his father was enslaved. He traveled through the South, saw slavery up close, and settled in **Boston** in the 1820s, where he ran a used-clothing shop near the docks, joined the Massachusetts General Colored Association, and wrote for *Freedom's Journal*, ==the first Black-owned newspaper in the country (1827)==. Each step matters for what comes next: because he had *seen* the South, he could testify; because Boston had an organized free Black community, he had readers; because he worked the docks, he had a distribution network.",
           "slide": "The man",
           "id": "who.eaf461be"
         },
         {
           "type": "prose",
-          "md": "In September **1829** he published the *Appeal to the Coloured Citizens of the World*, a 76-page pamphlet in four 'Articles'. He revised it twice; the third edition came out in June 1830. He got it into the South by sewing copies into the linings of coats he sold to Black sailors. Georgia and Louisiana passed laws against it; Georgia put a price on his head — $10,000 alive, $1,000 dead. He died in Boston in August 1830, probably of tuberculosis, though many believed he was poisoned.",
+          "md": "In ==September 1829== he published the *Appeal to the Coloured Citizens of the World*, a 76-page pamphlet in four 'Articles'. He revised it twice; the third edition came out in June 1830. He got it into the South by sewing copies into the linings of coats he sold to Black sailors — and that distribution is *why* the South reacted: because the pamphlet reached enslaved readers, Georgia and Louisiana passed laws against it, and Georgia put a price on his head, $10,000 alive, $1,000 dead. He died in Boston in August 1830, probably of tuberculosis, though many believed he was poisoned.",
           "slide": "The pamphlet",
           "id": "who.5033a5b6"
         },
         {
           "type": "prose",
-          "md": "Notice the title: *to the Coloured Citizens of the World*. He is not writing to white reformers to persuade them. He is writing to Black people — enslaved and free — to wake them up, and letting white America overhear. The headnote in your excerpt says exactly this: he 'encouraged his fellow African Americans… to see themselves as human beings and to do something to elevate themselves from their wretched state.'",
+          "md": "Notice the title: *to the Coloured Citizens of the World*. He is not writing to white reformers to persuade them. ==He is writing to Black people — enslaved and free — to wake them up, and letting white America overhear.== That double audience explains the style: the tenderness ('my dearly beloved Brethren') is for the first audience; the sarcasm and the threats are for the second. The headnote in your excerpt says exactly this: he 'encouraged his fellow African Americans… to see themselves as human beings and to do something to elevate themselves from their wretched state.'",
           "slide": "Its audience",
           "id": "who.e7371a8c"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Walker's playbook — a movement text addressed to the community itself, written knowing the powerful will read over its shoulder — is now standard. Frederick Douglass's 'What to the Slave Is the Fourth of July?' (1852), the Black Panthers' Ten-Point Program, and the open letters of Black Lives Matter all speak *to* their own people first and let the mainstream overhear, exactly as Walker did. His distribution problem is also permanently modern: a censored text moving through informal networks (coats sold to sailors then; samizdat, burner apps, and mirror sites now), and a state responding by punishing the *carriers* — Southern ports jailed Black sailors, the way regimes today go after couriers and platforms. And Dr. Jeffrey's essay questions are built on this section's skill: every 'analyze this primary source' prompt in this course, and in any upper-division history class, starts with who wrote it, for whom, and who was meant to overhear.",
+          "id": "who.8e2c4f1a"
         }
       ]
     },
@@ -69,19 +74,19 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The spine** White Christian Americans, who declare that all men are created equal, have made Black Americans the most degraded people in history — and that hypocrisy, not any defect in Black people, is the sin; God will end it, and Black Americans must be ready to act.",
+          "md": "**The spine** White Christian Americans, who declare that all men are created equal, have made Black Americans the most degraded people in history — and ==that hypocrisy, not any defect in Black people, is the sin==; God will end it, and Black Americans must be ready to act. Every paragraph of the excerpt is one link in that chain: name the condition → assign the blame → prove it → invoke the Revolution → indict the church → read the verdict from the Declaration itself.",
           "slide": "The argument in one sentence",
           "id": "argument.41fd4b44"
         },
         {
           "type": "prose",
-          "md": "He opens 'My dearly beloved Brethren and Fellow Citizens' — *citizens*, a word the law denied them — and says that having traveled the country he is convinced that 'we, (coloured people of these United States,) are the **most degraded, wretched, and abject set of beings that ever lived** since the world began.' This is not self-hatred. Read the next line: he prays 'that none like us ever may live again.' He is naming a condition that was *done* to them, and the rest of the excerpt says by whom.",
+          "md": "He opens 'My dearly beloved Brethren and Fellow Citizens' — *citizens*, a word the law denied them — and says that having traveled the country he is convinced that 'we, (coloured people of these United States,) are the **most degraded, wretched, and abject set of beings that ever lived** since the world began.' !!Reading this as self-hatred is the standard misreading!! — the next line prays 'that none like us ever may live again.' He is naming a condition that was *done* to them, and the rest of the excerpt says by whom. Cause and effect run one way: white America produced the degradation; the degradation is the evidence against white America.",
           "slide": "Paragraph 1: the claim of degradation",
           "id": "argument.2668b537"
         },
         {
           "type": "prose",
-          "md": "'Can our condition be any worse?' Then the phrase to quote: he writes to awaken his brethren to inquire into 'our miseries and wretchedness in this **Republican Land of Liberty!!!!!!**' — six exclamation points. That's the whole argument compressed into irony: a country that calls itself the land of liberty holds millions in slavery. Every time he says 'Republican' or 'Liberty' in the excerpt, he means the opposite.",
+          "md": "'Can our condition be any worse?' Then the phrase to quote: he writes to awaken his brethren to inquire into 'our miseries and wretchedness in this **Republican Land of Liberty!!!!!!**' — six exclamation points. ==That's the whole argument compressed into irony==: a country that calls itself the land of liberty holds millions in slavery, so the nation's own self-description becomes the indictment. Every time he says 'Republican' or 'Liberty' in the excerpt, he means the opposite.",
           "slide": "Paragraph 2: the sarcasm that carries the argument",
           "id": "argument.f7419fec"
         },

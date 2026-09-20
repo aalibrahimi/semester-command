@@ -17,7 +17,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The idea** A raw corpus is a pile of strings. Ask it 'how often is *book* a verb?' and it can't answer — it doesn't know what a verb is. **Annotation** adds a layer of linguistic interpretation on top of the text (this token is a verb; these four tokens are a noun phrase; this pronoun refers to that name) so questions about *structure* become countable. It's the difference between preprocessing — technical access to the text — and analysis.",
+          "md": "**The idea** A raw corpus is a pile of strings. Ask it 'how often is *book* a verb?' and it can't answer — it doesn't know what a verb is. **Annotation** adds a layer of linguistic interpretation on top of the text (this token is a verb; these four tokens are a noun phrase; this pronoun refers to that name) so that ==questions about structure become countable==. It's the difference between preprocessing — technical access to the text — and analysis.",
           "slide": "Raw text can't answer linguistic questions",
           "id": "why.a5d489ed"
         },
@@ -44,6 +44,11 @@
           "term": "Multi-functionality",
           "body": "one annotated corpus serves many later questions.",
           "id": "why.1aa05993"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Annotation is the 'labeled' in *labeled data* — the supervised half of machine learning trains on somebody's annotations. Content moderation runs on annotation guidelines and lives with inter-annotator disagreement; the human-feedback ratings behind chat assistants are annotation at industrial scale; and data labeling is a billion-dollar industry (Scale AI, Appen, and armies of contractors). ##The person who writes the labeling guidelines — deciding what counts as 'toxic' or 'a verb' — is doing this lecture's work for a salary, and the ambiguity section below is why the job is hard.##",
+          "id": "why.4c8e63a1"
         }
       ]
     },

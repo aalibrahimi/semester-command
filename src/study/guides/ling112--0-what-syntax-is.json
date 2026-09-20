@@ -14,21 +14,34 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "The obvious view of a sentence is that it's a list of words in a row: *the cat in the hat sat on the mat*. Reverse the list and it's garbage — *mat the on sat hat the in cat the* — which the handout marks with an asterisk: `*` means **ungrammatical**, a sentence that violates a rule of the language. So order clearly matters. Syntax is the claim that order isn't the whole story: words are grouped into units, and the units are nested inside bigger units, like a tree.",
+          "md": "The obvious view of a sentence is that it's a list of words in a row: *the cat in the hat sat on the mat*. Reverse the list and it's garbage — *mat the on sat hat the in cat the* — which the handout marks with an asterisk: `*` means **ungrammatical**, a sentence that violates a rule of the language. So order clearly matters. Syntax is the claim that ==order isn't the whole story==: words are grouped into units, and the units are nested inside bigger units, like a tree.",
           "slide": "The obvious view, and why it's wrong",
           "id": "why.5d3ce763"
         },
         {
           "type": "prose",
           "label": "why",
-          "md": "**Dr. Nie's proof from the handout** 'Sherlock will ask Watson to destroy the evidence' is fine. 'Will Sherlock ask Watson to destroy?' is not — the verb *destroy* needs an object. But 'What will Sherlock ask Watson to destroy?' IS fine, and *destroy* still has no word after it. The object is *what*, sitting eight words away at the front. If sentences were only linear strings, the same string 'ask Watson to destroy' couldn't be good in one case and bad in another. Something links 'what' to the empty slot after 'destroy' across all that distance. That something is structure.",
+          "md": "**Dr. Nie's proof from the handout** 'Sherlock will ask Watson to destroy the evidence' is fine. 'Will Sherlock ask Watson to destroy?' is not — the verb *destroy* needs an object. But 'What will Sherlock ask Watson to destroy?' IS fine, and *destroy* still has no word after it. The object is *what*, sitting eight words away at the front. If sentences were only linear strings, the same string 'ask Watson to destroy' couldn't be good in one case and bad in another. Something links 'what' to the empty slot after 'destroy' across all that distance. That something is ==structure==.",
           "slide": "The evidence: long-distance dependencies",
           "id": "why.91ba15dc"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 640 240",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='lddA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The filler: 'what' is pronounced at the front, far from the verb that needs it.</title><rect x='30' y='118' width='60' height='30' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='60' y='139' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--accent-fg))'>What</text><text x='60' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>filler</text></g><g><title>Eight words separate the filler from the verb it belongs to.</title><text x='130' y='139' text-anchor='middle' font-size='15'>will</text><text x='210' y='139' text-anchor='middle' font-size='15'>Sherlock</text><text x='285' y='139' text-anchor='middle' font-size='15'>ask</text><text x='350' y='139' text-anchor='middle' font-size='15'>Watson</text><text x='405' y='139' text-anchor='middle' font-size='15'>to</text><text x='465' y='139' text-anchor='middle' font-size='15'>destroy</text></g><g><title>The gap: the object slot of 'destroy' is empty, and the grammar knows 'what' fills it.</title><rect x='515' y='118' width='50' height='30' rx='6' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' stroke-dasharray='5 4'/><text x='540' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>the gap</text><path d='M60 112 C 150 34, 450 34, 536 114' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#lddA)'/><text x='300' y='40' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>'what' is the object of 'destroy' — linked across the whole sentence</text></g><g><title>Remove the filler and the same string of words becomes ungrammatical: the gap must be filled by something.</title><text x='40' y='207' font-size='13' fill='rgb(var(--critical))'>*Will Sherlock ask Watson to destroy?</text><text x='40' y='227' font-size='11' opacity='0.7'>Same words after 'ask' — bad alone, fine with a filler. Only structure can link the two positions.</text></g></g>",
+          "caption": "Dr. Nie's Sherlock argument, drawn. 'Destroy' needs an object; in the question there is nothing after it, because the object — 'what' — sits at the front. The dependency (blue arrow) crosses eight words. A flat word-list grammar has no way to say 'this empty slot is filled by that word over there'; a grammar with structure does. Hover any part.",
+          "slide": "The Sherlock sentence: filler and gap",
+          "id": "why.b7d21f4e"
+        },
+        {
           "type": "prose",
-          "md": "Two more things the handout wants you to hold. **Ungrammatical is not the same as unlikely**: 'Colorless green ideas sleep furiously' (Chomsky's example) is grammatical nonsense; 'I want that you leave' is ungrammatical English even though you understand it. **Most rules are unconscious**: you have never been taught the rule that blocks *'Will Sherlock ask Watson to destroy?', yet you know it instantly. Syntax is the project of writing down the rules you already follow.",
+          "md": "Two more things the handout wants you to hold. **Ungrammatical is not the same as unlikely**: 'Colorless green ideas sleep furiously' (Chomsky's example) is grammatical nonsense, and 'I want that you leave' is ungrammatical English even though you understand it perfectly — !!judging sentences by whether they sound sensible instead of whether they follow the rules!! is the classic Week 1 error. **Most rules are unconscious**: you were never taught the rule that blocks *'Will Sherlock ask Watson to destroy?', yet you know it instantly. Syntax is the project of writing down the rules you already follow.",
           "id": "why.97dd1383"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Every grammar checker and every NLP parser is built on this chapter's claim: they build a tree over your sentence, not a list. Voice assistants misparse commands for exactly the reasons named here — 'Call me an ambulance' famously fails because two structures fit one string, and the assistant picks the naming one. Headline writers fight ==crash blossoms== — headlines like 'Squad helps dog bite victim' that go viral because readers build the wrong tree. And large language models, which are never shown a tree, turn out to rediscover structure on their own: probing studies find filler–gap links like the Sherlock arrow encoded inside them, because predicting the next word well is impossible without them.",
+          "id": "why.8ac4e9d1"
         },
         {
           "type": "definition",
@@ -68,11 +81,16 @@
         },
         {
           "type": "figure",
-          "svg": "<g font-family=\"ui-sans-serif, system-ui\" font-size=\"11\" fill=\"currentColor\">\n<text x=\"20\" y=\"20\" font-weight=\"600\">Reading A: tripped [with a cane]</text>\n<line x1=\"90\" y1=\"45\" x2=\"40\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"90\" y1=\"45\" x2=\"150\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"90\" y1=\"45\" x2=\"230\" y2=\"80\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"75\" y=\"40\">tripped</text><text x=\"20\" y=\"95\">that unlucky man</text><text x=\"200\" y=\"95\">with a cane</text>\n<text x=\"340\" y=\"20\" font-weight=\"600\">Reading B: [that unlucky man with a cane]</text>\n<line x1=\"420\" y1=\"45\" x2=\"380\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"420\" y1=\"45\" x2=\"500\" y2=\"80\" stroke=\"currentColor\" opacity=\".5\"/>\n<line x1=\"500\" y1=\"80\" x2=\"460\" y2=\"120\" stroke=\"currentColor\" opacity=\".5\"/><line x1=\"500\" y1=\"80\" x2=\"560\" y2=\"120\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"400\" y=\"40\">tripped</text><text x=\"360\" y=\"95\">(subject)</text><text x=\"475\" y=\"95\">NP</text><text x=\"410\" y=\"135\">that unlucky man</text><text x=\"530\" y=\"135\">with a cane</text>\n</g>",
-          "viewBox": "0 0 620 190",
-          "caption": "'The thief tripped that unlucky man with a cane.' Left: the cane is the instrument (with a cane groups with the verb). Right: the man has the cane (with a cane groups with man). Same string, two trees, two meanings.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Reading A: the verb phrase has three daughters — the verb, the object NP, and the PP. The cane belongs to the tripping.</title><text x='40' y='20' font-size='12' font-weight='600'>Reading A: tripped [with a cane]</text><text x='150' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='150' y1='60' x2='55' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='150' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='258' y2='112' stroke='currentColor' opacity='0.5'/><text x='55' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='55' y1='132' x2='55' y2='164' stroke='currentColor' opacity='0.5'/><text x='55' y='182' text-anchor='middle' font-size='12'>tripped</text><text x='150' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M150 132 L102 164 L198 164 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='150' y='181' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>In reading A the PP attaches to the VP, beside the object: it answers 'tripped HOW?' — with a cane, the instrument.</title><text x='258' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M258 132 L214 164 L302 164 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='258' y='181' text-anchor='middle' font-size='10.5'>with a cane</text><text x='160' y='258' text-anchor='middle' font-size='11' opacity='0.7'>the thief used the cane</text></g><line x1='330' y1='14' x2='330' y2='266' stroke='currentColor' opacity='0.12'/><g><title>Reading B: the verb has only ONE dependent — a bigger NP that contains the PP inside it.</title><text x='370' y='20' font-size='12' font-weight='600'>Reading B: [that unlucky man with a cane]</text><text x='475' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='475' y1='60' x2='390' y2='112' stroke='currentColor' opacity='0.5'/><line x1='475' y1='60' x2='520' y2='112' stroke='currentColor' opacity='0.5'/><text x='390' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='390' y1='132' x2='390' y2='196' stroke='currentColor' opacity='0.5'/><text x='390' y='214' text-anchor='middle' font-size='12'>tripped</text></g><g><title>The whole object NP: 'that unlucky man with a cane'. Because the PP sits inside it, the man is the one holding the cane.</title><text x='520' y='126' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><line x1='520' y1='132' x2='455' y2='166' stroke='currentColor' opacity='0.5'/><line x1='520' y1='132' x2='592' y2='166' stroke='currentColor' opacity='0.5'/><text x='455' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M455 184 L408 216 L502 216 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='455' y='233' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>In reading B the PP attaches inside the NP: it answers 'WHICH man?' — the one with a cane.</title><text x='592' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M592 184 L550 216 L634 216 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='592' y='233' text-anchor='middle' font-size='10.5'>with a cane</text><text x='490' y='258' text-anchor='middle' font-size='11' opacity='0.7'>the man carries the cane</text></g></g>",
+          "viewBox": "0 0 660 280",
+          "caption": "'The thief tripped that unlucky man with a cane.' One string, two trees. Left: the PP is the verb's own dependent — the cane is the instrument of tripping. Right: the same PP sits inside the object NP — the cane is the man's. Nothing about the word order changed; only the grouping did, and the meaning followed it. Hover any node.",
           "slide": "Hierarchy: the same words, two structures",
           "id": "universals.aa4a2660"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Hierarchy and recursion are the two properties that make language look like code, and computer scientists noticed: the grammar formalism behind every programming-language parser (context-free grammars) came out of Chomsky's work on exactly this nesting. Attachment ambiguity — the cane figure above — is still ==the single most common parse error in NLP systems==, and it has real teeth in contracts: disputes turn on whether a trailing phrase groups with the last item or the whole list. Recursion is also why no grammar checker can work from a fixed list of sentence patterns: 'the house that Jack built that the rat ate' can grow forever, so the checker needs rules that nest, not templates.",
+          "id": "universals.6d2f8b3a"
         },
         {
           "type": "check",
@@ -131,6 +149,11 @@
           "source": "Exam",
           "points": null,
           "id": "variation.4d81abbc"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Parameters are the reason machine translation is harder than word substitution: going from English to Japanese means ==reversing the order of head and complement in nearly every phrase==, which is why early systems produced word salad and modern ones learn reordering. They're also a localization bug generator: UI templates that glue 'You' + verb break in null-subject languages that conjugate instead, while a bare 'Sent!' translates cleanly into Spanish precisely because the subject can drop. When a voice assistant supports a wh-in-situ language, even its question detection has to change — there's no fronted 'what' to listen for.",
+          "id": "variation.9e7c1b5f"
         }
       ]
     },
@@ -141,7 +164,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why this exists** If Dr. Nie shows you a Japanese sentence, you can't tell which word is the subject. A gloss is the standard three-line format that lets anyone read the structure of any language without speaking it. Every non-English example in this course — on handouts, homework, and the oral exam — is in this format, and homework answers in Arabic must be too.",
+          "md": "**Why this exists** If Dr. Nie shows you a Japanese sentence, you can't tell which word is the subject. A gloss is ==the standard three-line format that lets anyone read the structure of any language without speaking it==. Every non-English example in this course — on handouts, homework, and the oral exam — is in this format, and homework answers in Arabic must be too.",
           "slide": "Why linguists gloss",
           "id": "gloss.cb03fdda"
         },
@@ -195,6 +218,11 @@
           "source": "Exam",
           "points": null,
           "id": "gloss.00ada89d"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** The gloss is the interchange format of the whole field: every dataset of the world's languages — from fieldwork archives to the Universal Dependencies treebanks that train multilingual NLP models — stores its examples this way. If you ever work on low-resource NLP (where Arabic dialect work lives), glossed data is often all the data there is. Translation QA teams use glosses to argue about what a source sentence actually says without trusting either side's fluency. And in this course the return is immediate: ##every homework example you gloss correctly is an oral-exam example you already own##.",
+          "id": "gloss.4f8a2c6d"
         },
         {
           "type": "check",

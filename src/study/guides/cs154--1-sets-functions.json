@@ -15,7 +15,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The plan behind the preliminaries** CS 154 asks a strange question: *what can a machine compute at all?* To answer it, Chen replaces real computers with mathematical toys — automata — and every toy is defined as a handful of sets and one function between them. A DFA (Lesson 5) is literally (Q, Σ, δ, q₀, F): a set of states, a set of symbols, a function, a state, and a subset. So Lessons 1–2 aren't a review; they're the parts list. Everything below reappears as a piece of a machine.",
+          "md": "**The plan behind the preliminaries** CS 154 asks a strange question: *what can a machine compute at all?* To answer it, Chen replaces real computers with mathematical toys — automata — and every toy is defined as a handful of sets and one function between them. A DFA (Lesson 5) is literally (Q, Σ, δ, q₀, F): a set of states, a set of symbols, a function, a state, and a subset. So Lessons 1–2 aren't a review; ==they're the parts list==. Everything below reappears as a piece of a machine.",
           "slide": "The whole course is built from sets",
           "id": "why.3692bb5d"
         },
@@ -120,6 +120,11 @@
           "id": "reading.a4967fc2"
         },
         {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Set-builder is the one notation from this course you will type almost daily, wearing different punctuation. Python's `[3*n for n in range(7)]` is { 3n | 0 ≤ n ≤ 6 } read left to right; SQL's `SELECT * FROM requests WHERE status = 500` is { r | r.status = 500 }; a TypeScript `.filter(x => x >= 1 && x <= 5)` is the condition side of the bar, comma-as-and included. ==Pattern on the left, condition on the right== is the shape of every query language ever shipped — learn to read it here and list comprehensions stop being magic.",
+          "id": "reading.5f2ce8a1"
+        },
+        {
           "type": "check",
           "prompt": "List the elements of { 2n + 1 | 0 ≤ n ≤ 3 }, and write {1, 4, 9, 16, …} in set-builder.",
           "answer": "{1, 3, 5, 7}. Squares: { n² | n ≥ 1 }.",
@@ -195,7 +200,7 @@
         },
         {
           "type": "prose",
-          "md": "- Element to set: x ∈ A (is in), x ∉ A (is not in).",
+          "md": "Two different kinds of claims need two different symbols, and mixing them is a classic deduction. **∈ relates an element to a set**: x ∈ A says the *thing* x is one of A's members; x ∉ A says it isn't. **⊆ relates two sets** (previous definition): every member of the left one is in the right one. So 1 ∈ {1, 2} is true, but !!{1} ∈ {1, 2} is false!! — the elements are 1 and 2, and the *set* {1} is neither of them. The true statement there is {1} ⊆ {1, 2}. Before writing either symbol, ask: is the thing on my left an element or a set?",
           "slide": "Relations between sets",
           "id": "sets.46fc475c"
         },
@@ -207,9 +212,14 @@
         },
         {
           "type": "prose",
-          "md": "- Union A ∪ B = { x | x ∈ A or x ∈ B }. Intersection A ∩ B = { x | x ∈ A, x ∈ B }. Difference A − B = { x | x ∈ A, x ∉ B }. Complement Ā = U − A.\n- Union and intersection are commutative, associative, distributive. Difference is none of those (A − B ≠ B − A).\n- Identity A ∪ ϕ = A, A ∩ U = A. Domination A ∪ U = U, A ∩ ϕ = ϕ. Idempotent A ∪ A = A. Complement A ∪ Ā = U, A ∩ Ā = ϕ. Double complement gives A back.",
+          "md": "Why drill these now? In two weeks a *language* will be defined as a set of strings — so every way of combining sets becomes a way of combining languages, for free. The operations, each written in the set-builder you just learned:\n- **Union** A ∪ B = { x | x ∈ A or x ∈ B } (in either). **Intersection** A ∩ B = { x | x ∈ A, x ∈ B } (in both — note the comma meaning *and*). **Difference** A − B = { x | x ∈ A, x ∉ B } (in A but not B). **Complement** Ā = U − A.\n- Union and intersection are commutative, associative, distributive. !!Difference is none of those!! — A − B ≠ B − A, the sanity check worth two seconds on every quiz.\n- Identity A ∪ ϕ = A, A ∩ U = A. Domination A ∪ U = U, A ∩ ϕ = ϕ. Idempotent A ∪ A = A. Complement A ∪ Ā = U, A ∩ Ā = ϕ. Double complement gives A back.",
           "slide": "Operations and the identities he lists",
           "id": "sets.4f4e515a"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Set algebra is boolean logic wearing braces, and it escapes the classroom constantly. Every time you refactor `!(isAdmin && isActive)` into `!isAdmin || !isActive`, that's ==De Morgan== — the same law, the same flip. SQL ships UNION, INTERSECT, and EXCEPT as keywords; `grep -v` is complement; a permission system intersects the roles you have with the roles a route requires. And ϕ-versus-{ϕ} is the difference between `[]` and `[[]]` in code, or between an API returning 'no results' and returning one empty result — a gap real bugs live in.",
+          "id": "sets.7a91d3f4"
         },
         {
           "type": "check",
@@ -330,9 +340,14 @@
         },
         {
           "type": "prose",
-          "md": "In Lesson 8, a nondeterministic automaton's transition function will map to a *set of states* rather than a single state. Its range is 2^Q — the power set of the state set. When Chen asks 'what is the range of δ for an NFA', this is the answer, and this is where he taught it.",
+          "md": "In Lesson 8, a nondeterministic automaton's transition function will map to a *set of states* rather than a single state. Its range is ==2^Q — the power set of the state set==. When Chen asks 'what is the range of δ for an NFA', this is the answer, and this is where he taught it.",
           "slide": "Why you'll need this: NFAs",
           "id": "power.88c9b179"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** |2ᴬ| = 2^|A| is the formula behind every combinatorial explosion you'll ever be warned about. n boolean feature flags give 2ⁿ possible configurations — the power set of the flag set — which is why nobody tests every combination. An n-bit integer enumerates exactly the subsets of an n-element set, one bit per 'in or out?' answer, which is why bitmask tricks work at all: subset ↔ number. And in three weeks the NFA's δ lands in 2^Q — ##learn power sets now and Lesson 8 costs you nothing##.",
+          "id": "power.2c8e6b57"
         },
         {
           "type": "check",
@@ -350,7 +365,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Where pairs come from** A DFA's brain makes a decision from two things at once: *which state am I in* and *which symbol did I just read*. A decision that depends on two inputs is a function of the **pair** (state, symbol). The Cartesian product is how you build the set of all such pairs — so the transition function has a domain to be defined on.",
+          "md": "**Where pairs come from** A DFA's brain makes a decision from two things at once: *which state am I in* and *which symbol did I just read*. A decision that depends on two inputs is a function of the **pair** (state, symbol). The Cartesian product is how you build ==the set of all such pairs== — so the transition function has a domain to be defined on.",
           "slide": "Why pairs",
           "id": "product.002df2a4"
         },
@@ -446,6 +461,19 @@
           ]
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 520 250",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The first coordinate comes from Q = {m, n} — one grid row per element of Q</title><text x='120' y='117' text-anchor='middle' font-size='16' font-weight='700' fill='rgb(var(--on-track))'>m</text><text x='120' y='177' text-anchor='middle' font-size='16' font-weight='700' fill='rgb(var(--on-track))'>n</text><text x='56' y='150' text-anchor='middle' font-size='11' opacity='0.55'>from Q</text></g><g><title>The second coordinate comes from Σ ∪ {λ} = {x, y, λ} — one column per element</title><text x='210' y='66' text-anchor='middle' font-size='16' font-weight='700' fill='rgb(var(--accent-fg))'>x</text><text x='325' y='66' text-anchor='middle' font-size='16' font-weight='700' fill='rgb(var(--accent-fg))'>y</text><text x='440' y='66' text-anchor='middle' font-size='16' font-weight='700' fill='rgb(var(--accent-fg))'>λ</text><text x='325' y='36' text-anchor='middle' font-size='11' opacity='0.55'>from Σ ∪ {λ}</text></g><g><title>Every place a row meets a column is one ordered pair — 2 rows × 3 columns = 6 pairs, no more, no fewer</title><rect x='160' y='90' width='100' height='44' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='275' y='90' width='100' height='44' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='390' y='90' width='100' height='44' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='275' y='150' width='100' height='44' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='390' y='150' width='100' height='44' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><text x='210' y='117' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(m, x)</text><text x='325' y='117' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(m, y)</text><text x='440' y='117' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(m, λ)</text><text x='325' y='177' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(n, y)</text><text x='440' y='177' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(n, λ)</text></g><g><title>Ordered means ordered: (n, x) is in the product, but (x, n) is not — the first slot must come from Q. That is why A × B ≠ B × A</title><rect x='160' y='150' width='100' height='44' rx='8' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='210' y='177' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>(n, x)</text></g><g><title>The size check before you list: |A × B| = |A| · |B|. Count first, then make sure you wrote that many pairs</title><text x='300' y='232' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' opacity='0.7'>|Q × (Σ ∪ {λ})| = 2 · 3 = 6</text></g></g>",
+          "caption": "Assignment 1 Q16 drawn as a grid: Q = {m, n} down the side, Σ ∪ {λ} = {x, y, λ} across the top, and the product IS the grid — every row-element paired with every column-element, first coordinate always from Q. Two rows times three columns: |A × B| = |A|·|B| = 6. Hover any part.",
+          "slide": "The product is a grid",
+          "id": "product.3b7e5c29"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Pairing every element of one set with every element of another is a pattern you'll recognize everywhere once it has a name. SQL's CROSS JOIN is literally A × B (and an accidental one is the classic query that returns a million rows). A tuple type like `[string, number]` is an element of String × Number — type theorists call these ==product types== for exactly this reason. Nested loops `for a in A: for b in B:` enumerate a Cartesian product. And next week a DFA's transition function takes its input from Q × Σ — every (state, symbol) pair — which is why this grid, rows as states and columns as symbols, is about to become the transition table.",
+          "id": "product.9d4f1a83"
+        },
+        {
           "type": "check",
           "prompt": "A = {1, 2}, B = {p}. Write A × B and B × A. Are they equal?",
           "answer": "A × B = {(1, p), (2, p)}. B × A = {(p, 1), (p, 2)}. Not equal — (1, p) ≠ (p, 1).",
@@ -460,14 +488,22 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "f : D → R takes each element of the **domain** D to **one** element of the **range** R. One input, at most one output — that's the rule. Several inputs may share an output (f(1) = f(2) = 5 is fine); one input may not have two outputs. You can write a function as algebra (f(x) = 2x), as arrows in a diagram, or as a set of ordered pairs (input, output) — and that set of pairs is a subset of D × R. That's the link to the Cartesian product.",
+          "md": "f : D → R takes each element of the **domain** D to **one** element of the **range** R. ==One input, at most one output== — that's the rule. Several inputs may share an output (f(1) = f(2) = 5 is fine); one input may not have two outputs. You can write a function as algebra (f(x) = 2x), as arrows in a diagram, or as a set of ordered pairs (input, output) — and that set of pairs is a subset of D × R. That's the link to the Cartesian product.",
           "slide": "A function is a rule with one answer",
           "id": "functions.394cff89"
         },
         {
           "type": "prose",
-          "md": "**♥ Total and partial — the exact wording** **Total function**: a function where **all elements of its domain are defined**. **Partial function**: at least one domain element is undefined (has no output). The key accepted 'a function that all of its domain elements are defined' and rejected 'all domains are defined', 'the function is defined', 'all elements are defined'. The words *domain elements* must be there.",
+          "md": "**♥ Total and partial — the exact wording** **Total function**: a function where **all elements of its domain are defined**. **Partial function**: at least one domain element is undefined (has no output). The key accepted 'a function that all of its domain elements are defined' and rejected 'all domains are defined', 'the function is defined', 'all elements are defined'. !!The words *domain elements* must be there.!!",
           "id": "functions.05e86616"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 660 250",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='fmG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker><marker id='fmB' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='fmR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><line x1='220' y1='30' x2='220' y2='230' stroke='currentColor' opacity='0.15'/><line x1='440' y1='30' x2='440' y2='230' stroke='currentColor' opacity='0.15'/><g><title>Total function: every domain element fires exactly one arrow. Two inputs sharing an output (1 and 2 both go to a) is perfectly legal — many-to-one is fine; it is two arrows LEAVING one input that is forbidden.</title><text x='110' y='36' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>total function ✓</text><circle cx='60' cy='80' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='60' y='84' text-anchor='middle' font-size='12'>1</text><circle cx='60' cy='130' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='60' y='134' text-anchor='middle' font-size='12'>2</text><circle cx='60' cy='180' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='60' y='184' text-anchor='middle' font-size='12'>3</text><circle cx='160' cy='100' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='160' y='104' text-anchor='middle' font-size='12'>a</text><circle cx='160' cy='160' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='160' y='164' text-anchor='middle' font-size='12'>b</text><path d='M73 82 L145 97' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#fmG)'/><path d='M73 127 L145 103' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#fmG)'/><path d='M73 178 L145 163' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#fmG)'/></g><g><title>Partial function: still a function (no input has two arrows), but domain element 2 has no output at all — it is undefined. One undefined domain element is all it takes to make a function partial.</title><text x='330' y='36' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--at-risk))'>partial function</text><circle cx='280' cy='80' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='280' y='84' text-anchor='middle' font-size='12'>1</text><circle cx='280' cy='130' r='13' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.6' stroke-dasharray='4 3'/><text x='280' y='134' text-anchor='middle' font-size='12'>2</text><text x='280' y='158' text-anchor='middle' font-size='9' fill='rgb(var(--at-risk))'>undefined</text><circle cx='280' cy='180' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='280' y='184' text-anchor='middle' font-size='12'>3</text><circle cx='380' cy='100' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='380' y='104' text-anchor='middle' font-size='12'>a</text><circle cx='380' cy='160' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='380' y='164' text-anchor='middle' font-size='12'>b</text><path d='M293 82 L365 97' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' marker-end='url(#fmB)'/><path d='M293 178 L365 163' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' marker-end='url(#fmB)'/></g><g><title>Not a function at all: input 1 fires TWO arrows, to a and to b. One input with two outputs breaks the rule, no matter how well-behaved the rest of the diagram is. This is exactly the Assignment 1 δ that could not be a function.</title><text x='550' y='36' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))'>not a function ✗</text><circle cx='500' cy='80' r='13' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='500' y='84' text-anchor='middle' font-size='12'>1</text><circle cx='500' cy='130' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='500' y='134' text-anchor='middle' font-size='12'>2</text><circle cx='500' cy='180' r='13' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='500' y='184' text-anchor='middle' font-size='12'>3</text><circle cx='600' cy='100' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='600' y='104' text-anchor='middle' font-size='12'>a</text><circle cx='600' cy='160' r='13' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='600' y='164' text-anchor='middle' font-size='12'>b</text><path d='M513 79 L585 96' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#fmR)'/><path d='M512 87 L587 152' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#fmR)'/><text x='543' y='128' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>✕</text><path d='M513 132 L585 102' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' marker-end='url(#fmB)'/><path d='M513 178 L585 163' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' marker-end='url(#fmB)'/></g></g>",
+          "caption": "The one rule, drawn three ways: f : D → R with D = {1, 2, 3}, R = {a, b}. Left: total — every domain element has exactly one arrow out (two arrows arriving at a is fine). Middle: partial — element 2 fires no arrow, so it's undefined. Right: not a function at all — element 1 fires two. Hover each panel for what makes it legal or illegal.",
+          "slide": "Total, partial, not a function",
+          "id": "functions.8c5b3f17"
         },
         {
           "type": "example",
@@ -482,6 +518,11 @@
           "md": "Read it aloud: 'delta is a function from Q cross Sigma to Q.' Domain: the set of (state, symbol) pairs — the Cartesian product from the previous section. Range: the set of states. In words: *given a state and a symbol, δ tells you the next state.* That is the entire brain of a DFA, and if δ is **total** (every pair has an answer), the machine always knows what to do. Lesson 5 will draw it as arrows; this is what the arrows mean.",
           "slide": "The one function that matters: δ : Q × Σ → Q",
           "id": "functions.a6d45052"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** 'One input, exactly one output' is the contract of every lookup you'll ever write: a hash map is a function stored as data — `Map<K, V>` gives one value per key, by construction. A *partial* function is any function that can throw or come back empty — `parseInt` on 'hello', a cache miss — and half of defensive programming is handling the domain elements someone left undefined. TypeScript's exhaustive `switch` with a `never` check is a ==totality check the compiler runs for you==: the same 'is every domain element defined?' question Chen asks about δ, and the question that decides whether a state machine can ever be surprised by its input.",
+          "id": "functions.6e2a9d41"
         },
         {
           "type": "check",
@@ -499,7 +540,7 @@
         {
           "type": "definition",
           "term": "One-dimensional projection",
-          "body": "stretch a walk out in a line — v₁ → v₃ → v₁ → v₃ → v₂ — so its length is obvious (4 here).",
+          "body": "a walk can revisit vertices, so drawn on the graph it tangles over itself. The projection untangles it: write the walk out as a straight line — v₁ → v₃ → v₁ → v₃ → v₂ — repeats and all. Now its length (the number of edges, 4 here) is countable at a glance. This is exactly the trace format for running a DFA on a string.",
           "id": "graphs.11bf1a65"
         },
         {
@@ -510,9 +551,14 @@
         },
         {
           "type": "prose",
-          "md": "A DFA's control unit is drawn as a directed graph: vertices are states, edges are transitions labelled with symbols. Running the machine on a string is *taking a walk* — one edge per symbol read — and the one-dimensional projection of that walk is the machine's trace. When Lesson 5 says 'the machine follows the transition', it means 'takes the next edge in the walk'.",
+          "md": "A DFA's control unit is drawn as a directed graph: vertices are states, edges are transitions labelled with symbols. ==Running the machine on a string is *taking a walk*== — one edge per symbol read — and the one-dimensional projection of that walk is the machine's trace. When Lesson 5 says 'the machine follows the transition', it means 'takes the next edge in the walk'.",
           "slide": "Why graphs are here",
           "id": "graphs.79b35476"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Directed graphs are the most reused picture in computing: package dependency trees (an `npm` cycle is a walk that comes home), git's commit graph, routing tables, build pipelines. The 'we cannot jump' rule is exactly how you debug a redirect chain — each hop must start where the last one ended, and the chain's length is its projection. And next lesson makes the connection literal: a protocol like TCP's connection setup is published *as* a directed graph of states, and a handshake is nothing but a three-edge walk through it.",
+          "id": "graphs.4d7a2e95"
         },
         {
           "type": "prose",
