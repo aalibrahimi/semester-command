@@ -25,6 +25,7 @@
           "type": "prose",
           "md": "That's the entire chapter: **(1)** write the equation, **(2)** solve it. Writing it is easy once you can read T(n) as a sentence. Solving it has three methods — the recursion tree (draw it), substitution (guess and prove), the master method (look it up in a three-case table). Poon teaches them in that order because each one explains the next.",
           "slide": "The whole chapter in one line",
+          "slideNotes": "Keep the pipeline straight and this chapter stops feeling like three unrelated tricks: **recursion tree** is how you GUESS the answer (draw levels, add them up), **substitution** is how you PROVE the guess (induction from Chapter 0 wearing a costume), and the **master theorem** is the shortcut once you notice most homework recurrences have the same aT(n/b)+f(n) shape. On the exam, read the question's verb: 'solve' or 'find Θ' usually wants tree or master; 'prove' or 'show by induction' demands substitution.",
           "id": "why.b341e8cc"
         },
         {
@@ -393,6 +394,7 @@
             ]
           ],
           "slide": "Poon's table (Lecture 6 slide 24) — this is what HW 6 asks for",
+          "slideNotes": "Fill the table columns in this order and it never goes wrong: (1) nodes at level i — usually aⁱ; (2) size of each subproblem — n/bⁱ; (3) cost per node — plug that size into the non-recursive term; (4) row total = column 1 × column 3. Then the answer is the SUM of the row totals, and the whole game is recognizing whether rows are constant (multiply by the level count), growing (last row dominates), or shrinking (first row dominates). This table is merge sort's recursion-tree figure from Lecture 4, converted to algebra.",
           "id": "tree.cd65f2da"
         },
         {
@@ -447,6 +449,7 @@
           "viewBox": "0 0 600 180",
           "caption": "Row cost by level. Left: rows grow (leaves win — Case 1). Middle: rows equal (multiply by #levels — Case 2). Right: rows shrink (root wins — Case 3). This picture IS the master method.",
           "slide": "Three shapes, one picture",
+          "slideNotes": "This picture is the secret decoder for the master theorem one section ahead: **rows even** → every level contributes equally → multiply one row by log n (that's case 2); **rows grow** → the bottom of the tree does almost all the work → the leaf count n^(log_b a) wins (case 1); **rows shrink** → the first row already did most of the work → f(n) at the root wins (case 3). If you remember one image from this chapter, make it this one — the theorem is just this figure with inequalities attached.",
           "id": "tree.a8b1f3df"
         },
         {
@@ -568,6 +571,10 @@
             ]
           ],
           "slide": "The three cases — printed on the exam",
+          "slideNotes": "Even though the cases are printed on the exam, the POINTS are in executing the comparison cleanly: compute the watershed n^(log_b a) first, write it next to f(n), and say out loud which one is polynomially bigger. The three cases are just the three tree shapes — leaves dominate (case 1), every level ties (case 2), root dominates (case 3). Abdul Bari's video below runs six full examples through exactly this ritual; watch two of them and the pattern locks in.",
+          "resources": [
+            { "label": "Master theorem, worked examples (Abdul Bari)", "url": "https://www.youtube.com/watch?v=OynWkEj0S-s", "kind": "video" }
+          ],
           "id": "master.093117b9"
         },
         {
