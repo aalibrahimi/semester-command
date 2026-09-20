@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import type { GuideBlock } from "@/study/guide";
 import { Inline } from "./Blocks";
 import { CodeHighlight } from "./CodeHighlight";
+import { ResourceChips } from "./ResourceChips";
 import { Stepper } from "./Stepper";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
@@ -209,7 +210,10 @@ export function GuideBlocks({ blocks }: { blocks: GuideBlock[] }) {
             ))}
           </div>
         ) : (
-          <GuideBlockView key={g[0].id} block={g[0]} />
+          <div key={g[0].id} className="flex flex-col gap-2">
+            <GuideBlockView block={g[0]} />
+            <ResourceChips resources={g[0].resources} />
+          </div>
         ),
       )}
     </div>

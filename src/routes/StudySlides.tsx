@@ -11,8 +11,9 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { BookOpen, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { GuideBlockView } from "@/components/study/GuideBlocks";
+import { BookOpen, ChevronDown, ChevronLeft, ChevronRight, Lightbulb, X } from "lucide-react";
+import { GuideBlockView, Markdown } from "@/components/study/GuideBlocks";
+import { ResourceChips } from "@/components/study/ResourceChips";
 import { FrameView } from "@/components/study/Stepper";
 import { cn } from "@/lib/utils";
 import { buildDeck, courseBySlug } from "@/study";
@@ -25,8 +26,15 @@ export default function StudySlides() {
   const chapter = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
   const deck = useMemo(() => (chapter ? buildDeck(chapter) : []), [chapter]);
   const [i, setI] = useState(0);
+  const [notesOpen, setNotesOpen] = useState(false);
   const slide = deck[i];
   const bookHref = chapter ? `/study/${chapter.id}` : "/study";
+
+  // Each slide starts with its notes folded — the slide speaks first.
+  useEffect(() => {
+    // oxlint-disable-next-line set-state-in-effect -- reset tied to navigation
+    setNotesOpen(false);
+  }, [i]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -34,6 +42,7 @@ export default function StudySlides() {
       if (e.key === "ArrowRight" || e.key === " " || e.key === "ArrowLeft") e.preventDefault();
       if (e.key === "ArrowRight" || e.key === " ") setI((v) => Math.min(deck.length - 1, v + 1));
       if (e.key === "ArrowLeft") setI((v) => Math.max(0, v - 1));
+      if (e.key === "m") setNotesOpen((o) => !o);
       if (e.key === "Escape") navigate(bookHref);
     };
     window.addEventListener("keydown", onKey);
@@ -98,6 +107,40 @@ export default function StudySlides() {
               </div>
             )}
           </div>
+
+          {/* The study shelf: presenter notes behind a button (press m),
+              and verified go-deeper links. Absent when a slide has neither. */}
+          {(slide.notes || (slide.resources?.length ?? 0) > 0) && (
+            <div className="border-t border-border/60 px-8 py-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                {slide.notes && (
+                  <button
+                    type="button"
+                    onClick={() => setNotesOpen((o) => !o)}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-2xs font-medium transition-colors duration-micro",
+                      notesOpen
+                        ? "border-brand/50 bg-brand/10 text-brand-fg"
+                        : "border-border/70 bg-card text-foreground/85 hover:border-brand/50 hover:text-brand-fg",
+                    )}
+                    title="Toggle the deeper explanation (m)"
+                  >
+                    <Lightbulb className="h-3 w-3" />
+                    {notesOpen ? "Less" : "More explanation"}
+                    <ChevronDown
+                      className={cn("h-3 w-3 transition-transform duration-micro", notesOpen && "rotate-180")}
+                    />
+                  </button>
+                )}
+                <ResourceChips resources={slide.resources} />
+              </div>
+              {notesOpen && slide.notes && (
+                <div className="mt-2.5 rounded-xl bg-fill-ghost/60 px-4 py-3 text-sm leading-relaxed">
+                  <Markdown md={slide.notes} />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

@@ -58,6 +58,15 @@ export type GuideBlock =
   | StepperBlock
   | FigureBlock;
 
+/** A verified external link that teaches this exact block's idea — an
+ *  interactive visualization or a video. Curated and CHECKED (the URL was
+ *  actually opened before being committed), never a search-results dump. */
+export interface GuideResource {
+  label: string;
+  url: string;
+  kind?: "video" | "site";
+}
+
 interface BlockBase {
   /** `${sectionId}.${hash8}` — what mastery records and Recall cards point at. */
   id: string;
@@ -67,6 +76,14 @@ interface BlockBase {
    * slide per frame.
    */
   slide?: true | string;
+  /**
+   * Presenter notes: the deeper explanation behind a "More" button on the
+   * slide — context that would crowd the slide but rescues a confused
+   * reader. Same inline markup as prose.
+   */
+  slideNotes?: string;
+  /** External links shown as chips under the block (book and slides). */
+  resources?: GuideResource[];
 }
 
 /** A markdown paragraph. Lists and sub-headings are markdown too. */

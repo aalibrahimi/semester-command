@@ -49,6 +49,14 @@ for (const f of readdirSync(dir)) {
       else if (seen.has(id)) at(`duplicate block id ${id}`);
       else seen.add(id);
       if (b.slide !== undefined && b.slide !== true && !isStr(b.slide)) at(`${id}: slide must be true or a string`);
+      if (b.slideNotes !== undefined && !isStr(b.slideNotes)) at(`${id}: slideNotes must be a string`);
+      if (b.resources !== undefined) {
+        if (!isArr(b.resources)) at(`${id}: resources must be an array`);
+        else for (const r of b.resources as Record<string, unknown>[]) {
+          if (!isStr(r.label) || !isStr(r.url) || !/^https:\/\//.test(r.url as string)) at(`${id}: resource needs a label and an https url`);
+          if (r.kind !== undefined && r.kind !== "video" && r.kind !== "site") at(`${id}: resource.kind must be video|site`);
+        }
+      }
       switch (b.type) {
         case "prose": if (!isStr(b.md)) at(`${id}: prose.md`); if (b.label !== undefined && b.label !== "why") at(`${id}: prose.label`); break;
         case "definition":

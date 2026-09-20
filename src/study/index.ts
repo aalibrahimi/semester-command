@@ -35,11 +35,21 @@ export function buildDeck(guide: Guide): Slide[] {
             sectionId: section.id,
             anchor: block.id,
             title: title ?? block.title,
+            notes: block.slideNotes,
+            resources: block.resources,
             content: { kind: "frame", stepperTitle: block.title, frame, index: fi + 1, total: block.frames.length },
           });
         });
       } else {
-        slides.push({ section: section.heading, sectionId: section.id, anchor: block.id, title, content: { kind: "block", block } });
+        slides.push({
+          section: section.heading,
+          sectionId: section.id,
+          anchor: block.id,
+          title,
+          notes: block.slideNotes,
+          resources: block.resources,
+          content: { kind: "block", block },
+        });
       }
     }
   });

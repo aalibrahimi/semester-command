@@ -4,7 +4,7 @@
  * the deck derives from a guide. Guide content lives in study/guide.ts and
  * ships as JSON under study/guides/.
  */
-import type { GuideBlock } from "./guide";
+import type { GuideBlock, GuideResource } from "./guide";
 
 
 export type Frame =
@@ -52,6 +52,10 @@ export interface Slide {
   /** Block id (or section id) this slide came from — "Read in the book" is exact. */
   anchor: string;
   title?: string;
+  /** Presenter notes from the source block — the slide's "More" panel. */
+  notes?: string;
+  /** Verified external links from the source block, as chips. */
+  resources?: GuideResource[];
   content:
     | { kind: "section-title"; title: string; index: number; total: number }
     | { kind: "block"; block: GuideBlock }
