@@ -20,6 +20,7 @@ import { AlertOctagon, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { GuideBlock } from "@/study/guide";
 import { Inline } from "./Blocks";
+import { CodeHighlight } from "./CodeHighlight";
 import { Stepper } from "./Stepper";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
@@ -112,7 +113,7 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
             <span className="mr-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Example</span>
             <span className="text-sm font-medium">{block.title}</span>
           </figcaption>
-          <pre className="overflow-x-auto whitespace-pre-wrap px-4 py-3.5 font-mono text-[12.5px] leading-relaxed text-foreground/90">{block.body}</pre>
+          <pre className="overflow-x-auto whitespace-pre-wrap px-4 py-3.5 font-mono text-[12.5px] leading-relaxed text-foreground/90"><CodeHighlight text={block.body} /></pre>
           {block.answer && (
             <div className="border-t border-border/60 px-4 py-2.5 text-sm">
               <span className="mr-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Answer</span>

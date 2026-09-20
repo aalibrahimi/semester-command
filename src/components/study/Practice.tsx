@@ -15,6 +15,7 @@ import { Check, ChevronRight, Compass, Eye, Lightbulb, RotateCcw, TriangleAlert,
 import { cn } from "@/lib/utils";
 import type { GuideExercise as Exercise } from "@/study/guide";
 import { Inline } from "./Blocks";
+import { CodeHighlight } from "./CodeHighlight";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
 const RUNGS = [
@@ -74,7 +75,7 @@ function ExerciseCard({ ex, n, storageKey }: { ex: Exercise; n: number; storageK
         </p>
         {ex.code && (
           <pre className="overflow-x-auto rounded-lg border border-border/60 bg-background px-3.5 py-3 font-mono text-[12.5px] leading-relaxed">
-            {ex.code}
+            <CodeHighlight text={ex.code} />
           </pre>
         )}
 

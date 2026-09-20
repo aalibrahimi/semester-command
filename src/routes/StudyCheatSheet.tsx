@@ -21,6 +21,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Printer } from "lucide-react";
 import { Inline } from "@/components/study/Blocks";
+import { CodeHighlight } from "@/components/study/CodeHighlight";
 import { GuideTopRow } from "@/components/study/GuideChrome";
 import { cn } from "@/lib/utils";
 import { courseBySlug } from "@/study";
@@ -151,7 +152,7 @@ function TileView({ tile }: { tile: Tile }) {
       return (
         <section className={TILE} aria-label={tile.label}>
           <div className={LABEL}>{tile.label}</div>
-          <pre className="whitespace-pre-wrap font-mono text-xs leading-snug text-foreground/85">{tile.example.body}</pre>
+          <pre className="whitespace-pre-wrap font-mono text-xs leading-snug text-foreground/85"><CodeHighlight text={tile.example.body} /></pre>
           {tile.example.answer && <div className="mt-1.5 font-mono text-xs text-on-track-fg">= {tile.example.answer}</div>}
         </section>
       );
