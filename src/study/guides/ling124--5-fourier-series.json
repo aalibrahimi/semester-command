@@ -17,20 +17,33 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The claim** Take any periodic wave — a vowel, a square wave, a triangle wave — with fundamental frequency F₀ (period T₀ = 1/F₀). Fourier's theorem: you can build it exactly by adding sinusoids whose frequencies are **whole-number multiples of F₀**: F₀, 2F₀, 3F₀, … (the **harmonics**), each with its own amplitude and phase. Going from the wave to the list of amplitudes and phases is **Fourier analysis**; going back is **Fourier synthesis**. The list *is* the spectrum from Chapter 0.",
+          "md": "**The claim** Take any periodic wave — a vowel, a square wave, a triangle wave — with fundamental frequency F₀ (period T₀ = 1/F₀). Fourier's theorem: ==you can build it exactly by adding sinusoids at whole-number multiples of F₀==: F₀, 2F₀, 3F₀, … (the **harmonics**), each with its own amplitude and phase. Going from the wave to the list of amplitudes and phases is **Fourier analysis**; going back is **Fourier synthesis**. The list *is* the spectrum from Chapter 0.",
           "slide": "Any periodic wave is a sum of sinusoids",
           "id": "why.13cf5e9e"
         },
         {
           "type": "prose",
-          "md": "Why would that be true? Intuition: a periodic wave repeats every T₀. Any sinusoid at kF₀ also repeats every T₀ (it completes exactly k cycles). So the harmonics are exactly the set of 'ingredients' that share the wave's period; Fourier showed they're enough. Lab 4 Q5 is this in action — add more harmonics of a triangle wave and the sum gets closer and closer.",
+          "md": "Why would that be true? Intuition: a periodic wave repeats every T₀. Any sinusoid at kF₀ also repeats every T₀ (it completes exactly k whole cycles inside it). So ==the harmonics are exactly the set of ingredients that share the wave's period==; Fourier showed they're enough. Lab 4 Q5 is this in action — add more harmonics of a triangle wave and the sum gets closer and closer.",
           "id": "why.3fb8b53c"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 640 290",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><g><title>Harmonic 1: the fundamental, sin(2πF₀t), amplitude 1. It sets the period — everything below repeats at this rate.</title><line x1='70' y1='48' x2='590' y2='48' opacity='.15'/><path d='M70 48 C91.7 34.4,113.3 22,135 22 C182.3 22,217.7 74,265 74 C312.3 74,347.7 22,395 22 C442.3 22,477.7 74,525 74 C546.7 74,568.3 61.6,590 48' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='62' y='52' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>A₁=1</text></g><g><title>Harmonic 3: three times the frequency, one third the amplitude. A square wave's recipe uses odd harmonics only.</title><line x1='70' y1='112' x2='590' y2='112' opacity='.15'/><path d='M70 112 C77.2 107.5,84.5 103.3,91.7 103.3 C107.5 103.3,119.4 120.7,135 120.7 C150.8 120.7,162.6 103.3,178.3 103.3 C194.1 103.3,206 120.7,221.7 120.7 C237.5 120.7,249.3 103.3,265 103.3 C280.8 103.3,292.6 120.7,308.3 120.7 C324.1 120.7,336 103.3,351.7 103.3 C367.5 103.3,379.3 120.7,395 120.7 C410.8 120.7,422.6 103.3,438.3 103.3 C454.1 103.3,466 120.7,481.7 120.7 C497.5 120.7,509.3 103.3,525 103.3 C540.8 103.3,552.6 120.7,568.3 120.7 C575.5 120.7,582.8 116.5,590 112' stroke='rgb(var(--at-risk))' stroke-width='2'/><text x='62' y='116' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))' stroke='none'>A₃=1/3</text></g><g><title>Harmonic 5: five times the frequency, one fifth the amplitude. Higher harmonics are quieter — but they carry the sharp corners.</title><line x1='70' y1='162' x2='590' y2='162' opacity='.15'/><path d='M70 162 C74.7 159,78.3 156.8,83 156.8 C92.5 156.8,99.5 167.2,109 167.2 C118.5 167.2,125.5 156.8,135 156.8 C144.5 156.8,151.5 167.2,161 167.2 C170.5 167.2,177.5 156.8,187 156.8 C196.5 156.8,203.5 167.2,213 167.2 C222.5 167.2,229.5 156.8,239 156.8 C248.5 156.8,255.5 167.2,265 167.2 C274.5 167.2,281.5 156.8,291 156.8 C300.5 156.8,307.5 167.2,317 167.2 C326.5 167.2,333.5 156.8,343 156.8 C352.5 156.8,359.5 167.2,369 167.2 C378.5 167.2,385.5 156.8,395 156.8 C404.5 156.8,411.5 167.2,421 167.2 C430.5 167.2,437.5 156.8,447 156.8 C456.5 156.8,463.5 167.2,473 167.2 C482.5 167.2,489.5 156.8,499 156.8 C508.5 156.8,515.5 167.2,525 167.2 C534.5 167.2,541.5 156.8,551 156.8 C560.5 156.8,567.5 167.2,577 167.2 C581.7 167.2,585.3 165,590 162' stroke='currentColor' opacity='.8' stroke-width='2'/><text x='62' y='166' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='currentColor' opacity='.7' stroke='none'>A₅=1/5</text></g><g><title>The sum of just those three sines: already recognizably a square wave. Adding harmonics 7, 9, 11… straightens the flats and sharpens the edges further — Lab 4 Q5's answer in one picture.</title><line x1='70' y1='240' x2='590' y2='240' opacity='.15'/><path d='M70 240 C77.2 226.4,84.5 215.7,91.7 215.7 C99.6 215.7,105.4 222,113.3 222 C121.2 222,127.1 217.5,135 217.5 C142.9 217.5,148.8 222,156.7 222 C164.6 222,170.4 215.7,178.3 215.7 C185.5 215.7,192.8 226.4,200 240 C207.2 253.6,214.5 264.3,221.7 264.3 C229.6 264.3,235.4 258,243.3 258 C251.2 258,257.1 262.5,265 262.5 C272.9 262.5,278.8 258,286.7 258 C294.6 258,300.4 264.3,308.3 264.3 C315.5 264.3,322.8 253.6,330 240 C337.2 226.4,344.5 215.7,351.7 215.7 C359.6 215.7,365.4 222,373.3 222 C381.2 222,387.1 217.5,395 217.5 C402.9 217.5,408.8 222,416.7 222 C424.6 222,430.4 215.7,438.3 215.7 C445.5 215.7,452.8 226.4,460 240 C467.2 253.6,474.5 264.3,481.7 264.3 C489.6 264.3,495.4 258,503.3 258 C511.2 258,517.1 262.5,525 262.5 C532.9 262.5,538.8 258,546.7 258 C554.6 258,560.4 264.3,568.3 264.3 C575.5 264.3,582.8 253.6,590 240' stroke='rgb(var(--on-track))' stroke-width='2.4'/><text x='62' y='244' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>sum</text></g><g><title>Stack them: at every instant t, the sum's value is simply the three values above it added together. Fourier synthesis is nothing more than this addition.</title><text x='34' y='92' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='142' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='206' font-size='14' fill='currentColor' stroke='none' opacity='.6'>=</text></g></g>",
+          "caption": "Fourier synthesis, one harmonic at a time: sines at F₀ (amplitude 1), 3F₀ (1/3), and 5F₀ (1/5), and their sum — already close to a square wave after three terms. Each extra odd harmonic straightens the flats and sharpens the corners; the sharpness lives entirely in the high harmonics, which is why cutting the highs (a phone line, a heavy low-pass) rounds sounds off. Hover any row.",
+          "slide": "Three harmonics building a square wave",
+          "id": "why.e7a3c1f5"
         },
         {
           "type": "prose",
           "md": "- x(t) is real-valued (pressure is real).\n- It's periodic with fundamental period T₀ and fundamental frequency F₀ = 1/T₀.\n- It's piecewise smooth. At a jump (a square wave's edge) the series converges to the midpoint of the two sides.",
           "slide": "Assumptions (note §2)",
           "id": "why.61cfe5e9"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Additive synthesis — the sound of classic organs and half the pads in your DAW — is Fourier synthesis performed live: one oscillator per harmonic, a volume slider per amplitude. Guitar 'distortion' is new harmonics being created on top of a clean wave, which is why it sounds richer, not just louder. And the reason MP3 and AAC can throw away ~90% of a file is that they do Fourier analysis first: once music is a list of component amplitudes, ==the encoder simply deletes the components your ear won't miss== (Chapter 0's equal-loudness curve decides which). Your ear agrees with the math — the cochlea is physically a bank of frequency detectors doing a running analysis of everything you hear.",
+          "id": "why.2d9b64c8"
         }
       ]
     },
@@ -47,7 +60,7 @@
         },
         {
           "type": "prose",
-          "md": "k is the harmonic number. The k-th term is a cosine at frequency k·F₀ with amplitude A_k and phase ϕ_k — exactly the formula from Chapter 0, once per harmonic. A₀ is the constant offset (the average level); the note shows it's the k = 0 term with ϕ₀ = 0, since cos(0) = 1.",
+          "md": "Reading form (1) symbol by symbol: k is the harmonic number, so the k-th term is a cosine at frequency k·F₀ with amplitude A_k and phase ϕ_k — exactly Chapter 0's formula, once per harmonic. A₀ is the constant offset (the average level of the wave); the note shows it's the k = 0 term with ϕ₀ = 0, since cos(0) = 1. ==The list (A₀, A₁, ϕ₁, A₂, ϕ₂, …) IS the wave== — knowing the list and knowing x(t) are the same knowledge, written in different domains.",
           "slide": "Reading (1)",
           "id": "forms.b2629394"
         },
@@ -102,6 +115,11 @@
           "answer": "X₁ = (A/2)e^{jϕ} = 1·e^{jπ/2} = j (since e^{jπ/2} = cos π/2 + j sin π/2 = j). X₋₁ = conjugate = −j. Check with the a,b route: a₁ = 2cos(π/2) = 0, b₁ = −2sin(π/2) = −2 → X₁ = (0 − j(−2))/2 = j. ✓",
           "sectionRef": "forms",
           "id": "forms.62cdad0e"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** All three forms are alive in working code, and converting between them is a daily chore: `np.fft.fft` hands you form (3) — complex X_k, negative frequencies included — while every plot you show a human is form (1), so ##A_k = 2|X_k| and ϕ_k = ∠X_k is the conversion you will type for the rest of your career##. Form (2) is what filter textbooks and DSP libraries mean by 'in-phase and quadrature components'. When a spectrum looks mysteriously half as tall as expected, someone forgot the factor of 2 in this table.",
+          "id": "forms.9a1c47e6"
         }
       ]
     },
@@ -111,7 +129,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Given a wave, how do you find how much of harmonic k it contains? **Multiply x(t) by the harmonic you're testing for, integrate over one period, and divide by the period.** The result is nonzero only if x(t) actually contains that harmonic. It's a detector.",
+          "md": "Given a wave, how do you find how much of harmonic k it contains? The recipe comes first, so you can see where the formulas below come from: **multiply x(t) by the harmonic you're testing for, integrate over one period, and divide by the period.** The result is nonzero only if x(t) actually contains that harmonic. ==Each coefficient formula is a detector tuned to exactly one frequency==.",
           "slide": "The recipe (slide 11)",
           "id": "coef.5ec06407"
         },
@@ -125,7 +143,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The one fact that makes Fourier analysis possible** A sinusoid with no offset, integrated over a whole number of its own cycles, gives **zero** — every positive hump cancels a negative hump. So when you multiply x(t) (a sum of harmonics) by cos(2πF₀kt) and integrate, every product of two *different* harmonics is itself a sum of sinusoids at nonzero frequencies and integrates to zero. Only the product of harmonic k with itself survives — cos² has a positive average of ½, giving T₀/2 (hence the 2/T₀ in front). The harmonics are **orthogonal**: the test for k ignores everything that isn't k.",
+          "md": "**The one fact that makes Fourier analysis possible** A sinusoid with no offset, integrated over a whole number of its own cycles, gives **zero** — every positive hump cancels a negative hump. So when you multiply x(t) (a sum of harmonics) by cos(2πF₀kt) and integrate, every product of two *different* harmonics is itself a sum of sinusoids at nonzero frequencies and integrates to zero. Only the product of harmonic k with itself survives — cos² has a positive average of ½, giving T₀/2 (hence the 2/T₀ in front). The harmonics are **orthogonal**: ==the test for k ignores everything that isn't k==.",
           "slide": "Why it works: orthogonality",
           "id": "coef.2a33eca3"
         },
@@ -252,6 +270,11 @@
           "body": "Substitute the series for x(t) and watch everything but one term vanish.\n\n1. ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt = ∫ Σ_n X_n e^{j2πF₀nt} e^{−j2πF₀kt} dt.\n2. Swap sum and integral: Σ_n X_n ∫ e^{j2πF₀(n−k)t} dt.\n3. If n ≠ k, the integrand is a complex sinusoid at a nonzero frequency over T₀/|n−k| — whole cycles — so it integrates to 0.\n4. If n = k, the exponent is 0, the integrand is the constant X_k, and the integral is X_k·T₀.\n5. So the whole thing equals X_k·T₀. Divide by T₀: X_k = (1/T₀)∫ x(t) e^{−j2πF₀kt} dt.",
           "slide": "The derivation in Koo's note, §4.1 (for the exam's 'why')",
           "id": "coef.4d9bbcde"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** 'Multiply by a template and average' is one of the most reused moves in all of engineering. Pitch trackers and Shazam-style fingerprinting correlate audio against reference frequencies exactly this way. Wi-Fi and 4G/5G are OFDM: your data rides on hundreds of harmonically spaced carriers at once, and the receiver can separate them because ##orthogonality guarantees each carrier's detector ignores all the others## — the same integral table you just learned, running in your phone billions of times a second. And the DFT in the next chapter is this identical recipe with the integral swapped for a sum.",
+          "id": "coef.6b8e04d1"
         }
       ]
     },
@@ -261,7 +284,7 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "**Magnitude spectrum**: A_k (or 2|X_k|) at each frequency k·F₀ — stems at F₀, 2F₀, 3F₀… **Phase spectrum**: ϕ_k = ∠X_k at each k·F₀. In the two-sided (exponential) picture, the stems are |X_k| at both +kF₀ and −kF₀, each half as tall.",
+          "md": "**Magnitude spectrum**: plot A_k (or 2|X_k|) at each frequency k·F₀ — stems at F₀, 2F₀, 3F₀… **Phase spectrum**: ϕ_k = ∠X_k at each k·F₀. In the two-sided (exponential) picture, the stems are |X_k| at both +kF₀ and −kF₀, each half as tall — so to quote a real amplitude you must ==put the two halves back together: A_k = 2|X_k|==.",
           "slide": "Two plots",
           "id": "spectrum.c782b2ec"
         },
@@ -280,6 +303,14 @@
           "id": "spectrum.e7b9b2d0"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 640 235",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='fs5a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>Time domain: the triangle wave at F₀ = 5 Hz, so T₀ = 0.2 s per period. Straight sides, sharp corners, repeating five times a second.</title><line x1='30' y1='110' x2='312' y2='110' opacity='.3'/><path d='M40 40 L105 180 L170 40 L235 180 L300 40' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='170' y='205' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>time → (0.4 s shown)</text></g><g><title>Fourier analysis carries the wave to its recipe; synthesis (Lab 4 Q13's rebuild) carries the recipe back to the wave.</title><line x1='318' y1='100' x2='350' y2='100' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#fs5a)'/><text x='334' y='90' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))' stroke='none'>analysis</text></g><g><title>Frequency domain: stems only at the ODD harmonics — 5, 15, 25, 35, 45 Hz — with amplitudes 8/(π²k²), falling off as 1/k². This is exactly the sketch Lab 4 Q4 asks for.</title><line x1='355' y1='180' x2='620' y2='180' opacity='.4'/><line x1='368' y1='45' x2='368' y2='180' opacity='.4'/><line x1='390' y1='180' x2='390' y2='50' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='390' cy='50' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='435' y1='180' x2='435' y2='165.6' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='435' cy='165.6' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='480' y1='180' x2='480' y2='174.8' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='480' cy='174.8' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='525' y1='180' x2='525' y2='177.3' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='525' cy='177.3' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='570' y1='180' x2='570' y2='178.4' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='570' cy='178.4' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><text x='390' y='42' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>8/π²</text><text x='390' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>5</text><text x='435' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>15</text><text x='480' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>25</text><text x='525' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>35</text><text x='570' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>45</text><text x='490' y='218' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>frequency (Hz) →</text></g><g><title>The even harmonics — 10, 20, 30, 40 Hz — are exactly zero: the triangle wave's symmetry cancels them. Nothing is hiding there; those slots are truly empty.</title><text x='412.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='457.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='502.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='547.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text></g></g>",
+          "caption": "Lab 4's triangle wave in both domains. Left: the waveform — straight sides, sharp corners, period 0.2 s. Right: its magnitude spectrum — stems at the odd harmonics of 5 Hz with amplitudes 8/(π²k²), and exact zeros (red) at the even ones. The first stem towers over the rest because of the 1/k² decay, yet without the tiny high stems the corners would round off. Hover any part.",
+          "slide": "The triangle wave and its spectrum",
+          "id": "spectrum.a4c8e2f7"
+        },
+        {
           "type": "check",
           "prompt": "x(t) = 4cos(2π·10t − π/3). Give X₁ and X₋₁ (F₀ = 10 Hz) and the one-sided magnitude spectrum.",
           "answer": "X₁ = 2e^{−jπ/3} = 1 − j√3; X₋₁ = 2e^{jπ/3} = 1 + j√3. Magnitude spectrum: one stem of height 4 at 10 Hz (or two stems of height 2 at ±10 Hz two-sided). Phase −π/3 at 10 Hz.",
@@ -291,6 +322,11 @@
           "term": "Fourier series",
           "body": "A periodic signal written as a sum of harmonically related sinusoids (frequencies kF₀). Coefficients come from multiplying by the harmonic, integrating over one period, and normalizing; orthogonality makes each test isolate one harmonic. Two-sided coefficient X_k has |X_k| = A_k/2 and ∠X_k = ϕ_k.",
           "id": "spectrum.6638de49"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** A harmonic comb is what the fine horizontal lines in any narrow-band spectrogram are: their spacing IS F₀, which is how pitch trackers (and Praat's pitch contour) measure intonation. Timbre is the pattern of stem heights — a violin and a flute playing the same 440 Hz note have stems in the same places with different heights, and so do two people saying the same vowel. ==Change the stem heights and you change the vowel or instrument; change the spacing and you change the pitch== — that one sentence is a surprising fraction of speech acoustics.",
+          "id": "spectrum.5e1d93ab"
         }
       ]
     }

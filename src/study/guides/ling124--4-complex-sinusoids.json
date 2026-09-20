@@ -17,7 +17,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why complex numbers** Chapter 0 said a sinusoid is a rotating point seen from the side. The cosine is its x-coordinate; the sine is its y-coordinate. Tracking a point on a plane means tracking two numbers at once. Complex numbers are the trick that packs two numbers into one so you can write the *whole rotating point* as one symbol — and then the formulas for Fourier analysis become one line instead of two. Koo's note: 'a single complex sinusoid captures both the cosine and sine waves at the same time.' That's the entire reason j exists in this course.",
+          "md": "**Why complex numbers** Chapter 0 said a sinusoid is a rotating point seen from the side. The cosine is its x-coordinate; the sine is its y-coordinate. Tracking a point on a plane means tracking two numbers at once. ==Complex numbers pack those two numbers into one symbol== so you can write the *whole rotating point* as a single object — and then the formulas for Fourier analysis become one line instead of two. Koo's note: 'a single complex sinusoid captures both the cosine and sine waves at the same time.' That's the entire reason j exists in this course.",
           "slide": "The circle picture, upgraded",
           "id": "why.76a68b14"
         },
@@ -41,9 +41,9 @@
         },
         {
           "type": "figure",
-          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"40\" y1=\"115\" x2=\"400\" y2=\"115\" opacity=\".4\"/><line x1=\"220\" y1=\"20\" x2=\"220\" y2=\"210\" opacity=\".4\"/>\n<text x=\"380\" y=\"130\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">real</text><text x=\"228\" y=\"30\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">imaginary (j)</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"45\" stroke=\"rgb(59 130 246)\" stroke-width=\"2.5\"/><circle cx=\"340\" cy=\"45\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<line x1=\"340\" y1=\"45\" x2=\"340\" y2=\"115\" stroke-dasharray=\"3 3\" opacity=\".5\"/><line x1=\"220\" y1=\"45\" x2=\"340\" y2=\"45\" stroke-dasharray=\"3 3\" opacity=\".5\"/>\n<text x=\"345\" y=\"40\" fill=\"rgb(59 130 246)\" stroke=\"none\">z = x + jy</text>\n<text x=\"336\" y=\"130\" fill=\"currentColor\" stroke=\"none\">x</text><text x=\"205\" y=\"50\" fill=\"currentColor\" stroke=\"none\">y</text>\n<text x=\"265\" y=\"90\" fill=\"currentColor\" stroke=\"none\">r = |z|</text>\n<path d=\"M 250 115 A 30 30 0 0 0 246 100\" fill=\"none\" stroke=\"currentColor\"/><text x=\"254\" y=\"108\" fill=\"currentColor\" stroke=\"none\">θ</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"185\" stroke=\"currentColor\" stroke-width=\"2\" opacity=\".45\"/><circle cx=\"340\" cy=\"185\" r=\"4\" fill=\"currentColor\" opacity=\".45\" stroke=\"none\"/>\n<text x=\"345\" y=\"195\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">z̄ = x − jy  (angle −θ)</text>\n</g>",
+          "svg": "<g stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The complex plane: the horizontal axis holds the real part, the vertical axis the imaginary part. j is just the label for 'up'.</title><line x1='40' y1='115' x2='400' y2='115' opacity='.4'/><line x1='220' y1='20' x2='220' y2='210' opacity='.4'/><text x='380' y='130' fill='currentColor' stroke='none' opacity='.7'>real</text><text x='228' y='30' fill='currentColor' stroke='none' opacity='.7'>imaginary (j)</text></g><g><title>The number z = x + jy, drawn as an arrow from the origin to the point (x, y). One symbol, two coordinates.</title><line x1='220' y1='115' x2='340' y2='45' stroke='rgb(var(--accent-fg))' stroke-width='2.5'/><circle cx='340' cy='45' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><text x='345' y='40' fill='rgb(var(--accent-fg))' stroke='none'>z = x + jy</text></g><g><title>Rectangular form reads the two coordinates: x = Re(z) along the real axis, y = Im(z) up the imaginary axis.</title><line x1='340' y1='45' x2='340' y2='115' stroke-dasharray='3 3' opacity='.5'/><line x1='220' y1='45' x2='340' y2='45' stroke-dasharray='3 3' opacity='.5'/><text x='336' y='130' fill='currentColor' stroke='none'>x</text><text x='205' y='50' fill='currentColor' stroke='none'>y</text></g><g><title>Polar form reads the arrow itself: length r = |z| = √(x² + y²) (Pythagoras) and direction θ = ∠z, measured counterclockwise from the positive real axis.</title><text x='265' y='90' fill='currentColor' stroke='none'>r = |z|</text><path d='M 250 115 A 30 30 0 0 0 246 100' fill='none' stroke='currentColor'/><text x='254' y='108' fill='currentColor' stroke='none'>θ</text></g><g><title>The conjugate z̄ = x − jy: the same arrow mirrored across the real axis. Same length, negated angle — flip the sign of the imaginary part and nothing else changes.</title><line x1='220' y1='115' x2='340' y2='185' stroke='currentColor' stroke-width='2' opacity='.45'/><circle cx='340' cy='185' r='4' fill='currentColor' opacity='.45' stroke='none'/><text x='345' y='195' fill='currentColor' stroke='none' opacity='.7'>z̄ = x − jy  (angle −θ)</text></g></g>",
           "viewBox": "0 0 420 230",
-          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis.",
+          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis. Hover any part.",
           "slide": "The complex plane",
           "id": "numbers.f5d409a9"
         },
@@ -155,9 +155,14 @@
         },
         {
           "type": "prose",
-          "md": "e^{jθ} = cos θ + j sin θ. Read it as: *the point on the unit circle at angle θ*. That's all. The exponential form r·e^{jθ} is then 'a point at distance r and angle θ' — the polar form written compactly. Why an exponential? Because exponentials multiply by adding exponents (e^a·e^b = e^{a+b}), which will let us pull frequency and phase apart in a moment. You don't need to know why Euler's formula is true for this course; you need to be able to translate it.",
+          "md": "e^{jθ} = cos θ + j sin θ. Where this comes from is a calculus fact you don't need for this course; what you must be able to do is translate it: ==e^{jθ} is the point on the unit circle at angle θ==. Reading the symbols: the j in the exponent is what makes the exponential rotate instead of grow, θ is the angle in radians, and the result's real and imaginary parts are exactly the point's (cos θ, sin θ) coordinates. The exponential form r·e^{jθ} is then 'a point at distance r, direction θ' — polar form written compactly. Why bother with an exponential? Because exponentials multiply by adding exponents (e^a·e^b = e^{a+b}), which is about to let us pull frequency and phase apart cleanly.",
           "slide": "Euler's formula, in the circle picture",
           "id": "numbers.46b7a057"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Run `np.fft.fft()` on any recording and the array that comes back is complex numbers — `np.abs()` of it is the magnitude spectrum, `np.angle()` the phase spectrum, exactly |z| and ∠z from this section. Radio is even more literal: ##Wi-Fi, 5G, and GPS receivers sample two voltages, I and Q, which are nothing but Re(z) and Im(z) of the incoming wave## — 'IQ data' is complex numbers coming off an antenna. And every plugin that edits audio by frequency (EQ, pitch correction, denoisers) is doing arithmetic on these z's under the hood.",
+          "id": "numbers.8d3f5a27"
         },
         {
           "type": "check",
@@ -181,15 +186,23 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Take z = r·e^{jθ} and let θ increase. The point goes around a circle of radius r, counterclockwise. That moving point is a **complex sinusoid**: z(θ) = r·e^{jθ} = r(cos θ + j sin θ). Its real part traces a cosine, its imaginary part traces a sine. One object, both waves. (Lab 3 Q9–Q10: plotted against θ it's a helix; θ from 0 to 8π = four full circles.)",
+          "md": "Take z = r·e^{jθ} and let θ increase. The point goes around a circle of radius r, counterclockwise. That moving point is a **complex sinusoid**: z(θ) = r·e^{jθ} = r(cos θ + j sin θ). Its real part traces a cosine, its imaginary part traces a sine — ==one object, carrying both waves at once==. (Lab 3 Q9–Q10: plotted against θ it's a helix; θ from 0 to 8π = four full circles.)",
           "slide": "Let the angle grow",
           "id": "spinner.57520639"
         },
         {
           "type": "prose",
-          "md": "- z̄(θ) = r·e^{−jθ} = r(cos θ − j sin θ) = r(cos(−θ) + j sin(−θ)) — same circle, **clockwise** (Q11: 'spirals clockwise').\n- Add them: z + z̄ = 2r·cos θ. The imaginary parts cancel; you're left with a real cosine along the real axis (Q12, Q16).\n- Subtract them: z − z̄ = 2jr·sin θ — a sine along the imaginary axis (Q13).\n- So **r·cos θ = (r·e^{jθ} + r·e^{−jθ}) / 2**. A real cosine is the average of a counterclockwise spinner and a clockwise one.",
+          "md": "- z̄(θ) = r·e^{−jθ} = r(cos θ − j sin θ) = r(cos(−θ) + j sin(−θ)) — same circle, **clockwise** (Q11: 'spirals clockwise').\n- Add them: z + z̄ = 2r·cos θ. The imaginary parts cancel; you're left with a real cosine along the real axis (Q12, Q16).\n- Subtract them: z − z̄ = 2jr·sin θ — a sine along the imaginary axis (Q13).\n- So **r·cos θ = (r·e^{jθ} + r·e^{−jθ}) / 2**. ##A real cosine is the average of a counterclockwise spinner and a clockwise one## — that one sentence explains every symmetric spectrum you will ever plot.",
           "slide": "Its conjugate spins the other way",
           "id": "spinner.d7e86244"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 560 300",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='cs4b' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='cs4m' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--at-risk))'/></marker><marker id='cs4g' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><g><title>The complex plane with the unit circle. Both spinners ride this circle forever; only their directions differ.</title><line x1='140' y1='150' x2='470' y2='150' opacity='.3'/><line x1='280' y1='30' x2='280' y2='270' opacity='.3'/><circle cx='280' cy='150' r='100' opacity='.35'/><text x='448' y='167' font-size='11' fill='currentColor' stroke='none' opacity='.7'>real</text><text x='288' y='42' font-size='11' fill='currentColor' stroke='none' opacity='.7'>imaginary</text></g><g><title>z = e^{jθ}: the counterclockwise spinner — the positive-frequency component. With θ = 2πFt + ϕ it makes F laps per second.</title><line x1='280' y1='150' x2='344.3' y2='73.4' stroke='rgb(var(--accent-fg))' stroke-width='2.2' marker-end='url(#cs4b)'/><path d='M270.2 38.4 A112 112 0 0 0 224 53' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#cs4b)'/><text x='352' y='64' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>z = e^jθ  (+F)</text></g><g><title>z̄ = e^{−jθ}: the mirror twin, running clockwise — the negative-frequency component. At every instant its imaginary part is the exact opposite of z's.</title><line x1='280' y1='150' x2='344.3' y2='226.6' stroke='rgb(var(--at-risk))' stroke-width='2.2' marker-end='url(#cs4m)'/><path d='M270.2 261.6 A112 112 0 0 1 224 247' stroke='rgb(var(--at-risk))' stroke-width='1.6' marker-end='url(#cs4m)'/><text x='352' y='248' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))' stroke='none'>z̄ = e^−jθ  (−F)</text></g><g><title>Vector addition: slide one arrow to the tip of the other. The vertical (imaginary) parts cancel; the horizontal (real) parts add.</title><line x1='344.3' y1='73.4' x2='408.6' y2='150' stroke='currentColor' stroke-dasharray='4 4' opacity='.5'/><line x1='344.3' y1='226.6' x2='408.6' y2='150' stroke='currentColor' stroke-dasharray='4 4' opacity='.5'/></g><g><title>The sum z + z̄ = 2cos θ lands ON the real axis — for every θ, at every instant. That is why adding the two spinners produces a purely real cosine.</title><line x1='280' y1='150' x2='408.6' y2='150' stroke='rgb(var(--on-track))' stroke-width='2.6' marker-end='url(#cs4g)'/><text x='414' y='140' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>z + z̄ = 2cos θ</text></g><g><title>The angles: θ above the axis for z, −θ below for z̄. As time runs, both grow in size but in opposite directions — the two arrows stay mirror images forever.</title><path d='M310 150 A30 30 0 0 0 299.3 127' stroke='currentColor' opacity='.6'/><text x='316' y='130' font-size='11' fill='currentColor' stroke='none'>θ</text><path d='M310 150 A30 30 0 0 1 299.3 173' stroke='currentColor' opacity='.6'/><text x='314' y='188' font-size='11' fill='currentColor' stroke='none'>−θ</text></g></g>",
+          "caption": "Euler's two spinners, frozen mid-rotation. z (blue) turns counterclockwise at +F; its conjugate z̄ (amber) turns clockwise at −F. Their imaginary parts are equal and opposite at every instant, so the sum (green) never leaves the real axis: z + z̄ = 2cos θ. Halve it and you have a real cosine — which is why a real wave always shows up at BOTH +F and −F in a two-sided spectrum, half the amplitude at each. Hover any part.",
+          "slide": "Two spinners make a cosine",
+          "id": "spinner.3c7e91d5"
         },
         {
           "type": "example",
@@ -201,7 +214,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why this matters for every later lab** In Fourier analysis, each frequency gets ONE complex number X. Its magnitude is 'how much of this frequency' and its angle is 'what phase'. That's why Lab 4 asked for X₁ and got 'j' as an answer, and why a magnitude spectrum plots |X| and a phase spectrum plots ∠X. If you can read |X| and ∠X off a complex number, you can read a spectrum.",
+          "md": "**Why this matters for every later lab** In Fourier analysis, each frequency gets ONE complex number X. Its magnitude is 'how much of this frequency' and its angle is 'what phase'. That's why Lab 4 asked for X₁ and got 'j' as an answer, and why a magnitude spectrum plots |X| and a phase spectrum plots ∠X. ==If you can read |X| and ∠X off a complex number, you can read a spectrum== — that's the whole payoff of this chapter.",
           "id": "spinner.411cb4c6"
         },
         {
@@ -218,6 +231,11 @@
           "body": "x(t) = A·e^{j(2πFt + ϕ)}, plotted as a spiral in 3D (time, real, imaginary).\n\n1. Q14: double the frequency of e^{j2π·20·t} → e^{j2π·40·t}. Same spiral, twice as many turns per second.\n2. Q16: e^{j2πFt} + e^{−j2πFt} = 2cos(2πFt). Two opposite spinners sum to a real cosine.\n3. Q17: A = 10 instead of 1 → the spiral traces a circle of radius 10. Amplitude is the radius.\n4. Q18: ϕ = π instead of 0 → the point starts on the opposite side of the circle: a half-cycle head start.\n5. Q19: A is the **magnitude** of the vector, ϕ is its **angle**.\n6. Q20: given X = A·e^{jϕ} numerically (e.g. 4·e^{jπ/2}), read A = 4 from the coefficient and ϕ = π/2 from the exponent.",
           "slide": "Lab 3 Q14–Q20, answered",
           "id": "spinner.223327fb"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Negative frequencies stop being philosophical the first time you plot a raw FFT: the mirror half of every real signal's spectrum is the clockwise spinners, which is why numpy offers `rfft` to hand you just the positive side. The complex amplitude X = A·e^{jϕ} is what a spectrogram cell actually stores before being squared into a picture — ==magnitude and phase per frequency is precisely what Whisper's front end and every vocoder consume==. And phase vocoders — the tool that slows audio without chipmunking it, in every DJ deck and transcription app — work by carefully rotating exactly these X's from frame to frame.",
+          "id": "spinner.b91e4c38"
         }
       ]
     },
