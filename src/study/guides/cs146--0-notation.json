@@ -317,8 +317,13 @@
         },
         {
           "type": "prose",
-          "md": "So 1 + 2 + … + n = n(n+1)/2, and the insertion-sort version 1 + 2 + … + (n−1) = (n−1)·n/2 = (n² − n)/2. When n is big, the n² term dominates and the /2 is a constant, so this is \"about n²\" — which is the honest content of the phrase O(n²).",
+          "md": "So 1 + 2 + … + n = n(n+1)/2, and the insertion-sort version 1 + 2 + … + (n−1) = (n−1)·n/2 = (n² − n)/2. When n is big, the n² term dominates and the /2 is a constant, so this is \"about n²\" — which is the honest content of the phrase O(n²). ==This is where O(n²) comes from==: not a rule to memorize, but a staircase you counted.",
           "id": "sum.772e1a4c"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this sum after the exam** Any time work grows with progress. Comparing every pair of n things (users, points, files) is this sum — n(n−1)/2 pairs, which is why 'compare all pairs' code dies on big inputs. Appending n items to a structure that shifts or rewrites what's already there: same staircase. Even the party trick is real: n people all shaking hands is n(n−1)/2 handshakes. When you see nested loops where the inner one runs `i` times, ==your brain should say 'staircase, so about n²/2'== before you've finished reading the code.",
+          "id": "sum.4b8f2ea7"
         },
         {
           "type": "check",
@@ -500,21 +505,73 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why it exists** Exact step counts are useless: they depend on the language, the CPU, whether a[i] counts as one step or two. What survives all of that is the *shape* of growth — does doubling n double the time, or quadruple it, or barely change it? Big-O is the notation for the shape, with every irrelevant detail thrown away on purpose.",
+          "md": "**Why this exists — the problem it solves** Suppose you write a search and your friend writes a different one, and you race them. Yours wins. What did you learn? Almost nothing: maybe your laptop is faster, maybe your test array was tiny, maybe your language's `for` loop compiles tighter. Exact timings are ==contaminated by everything that isn't the algorithm== — the CPU, the language, whether `a[i]` counts as one step or three. The question that actually separates algorithms is: **what happens as the input grows?** Double n — does the time double (linear), quadruple (quadratic), or barely move (logarithmic)? That *shape of growth* is the algorithm's own property; it survives every hardware and language change. Big-O is nothing more than a notation for the shape with the contaminated details thrown away on purpose. !!It deliberately cannot tell you which of two O(n) programs is faster!! — that's the detail it discards to say something machine-independent.",
           "slide": "Why we don't count exact steps",
           "id": "bigo.4dce2007"
         },
         {
           "type": "prose",
-          "md": "Poon's definition (Lecture 4 slide 15): **f(n) = O(g(n)) if there exist positive constants c and n₀ such that f(n) ≤ c·g(n) for all n ≥ n₀.** Here's that sentence in plain words. \"f is O of g\" means: *once n is big enough (past some n₀), f never rises above some fixed multiple (c) of g.* g is a ceiling for f — not a tight fit, just a ceiling — and you're allowed to scale the ceiling by any constant and ignore small inputs.",
-          "slide": "The definition as a sentence",
+          "md": "**When you actually reach for it** Three moments, and they'll repeat for your whole career. **Before writing code**: choosing — 'contacts are sorted, so binary search O(log n) instead of scanning O(n)'; 'this needs lookups by key, so a hash map O(1) instead of a list walk O(n)'. **After writing code**: explaining — a code review that says ==\"this is O(n²) in cart size; it dies at 10k items\"== ends an argument that 'it felt fast on my machine' never will. **Predicting**: your endpoint handles 1,000 users today; will it survive 100,000? If it's O(n) you buy one bigger box; if it's O(n²) ##no box exists## — you rewrite. Interviews are just this three-way skill compressed into 45 minutes: every LeetCode 'Time Limit Exceeded' is the grader telling you your shape is wrong, not your code.",
+          "slide": "When you reach for Big-O",
+          "id": "bigo.8e12f4a7"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 560 300",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><line x1='42' y1='262' x2='545' y2='262' stroke='currentColor' opacity='0.4'/><line x1='42' y1='262' x2='42' y2='24' stroke='currentColor' opacity='0.4'/><text x='545' y='280' text-anchor='end' font-size='11' opacity='0.6'>input size n →</text><text x='30' y='20' font-size='11' opacity='0.6'>time</text><g><title>Your patience budget. Every curve eventually crosses any horizontal line — the question is at what n. The whole game of algorithm choice is pushing that crossing past the n you will ever see.</title><line x1='42' y1='90' x2='545' y2='90' stroke='currentColor' stroke-dasharray='5 5' opacity='0.45'/><text x='58' y='82' font-size='10' opacity='0.6'>your one-second budget</text></g><g><title>O(1) and O(log n): flat and almost-flat. A billion items is ~30 halvings — log n barely notices input size. Hash lookups, binary search, balanced-tree operations live here.</title><path d='M42 250 L 545 250' stroke='rgb(var(--on-track))' stroke-width='2' fill='none'/><path d='M42 252 C 160 240, 340 234, 545 228' stroke='rgb(var(--on-track))' stroke-width='2' stroke-dasharray='7 4' fill='none'/><text x='548' y='253' font-size='11' fill='rgb(var(--on-track))' text-anchor='end' dx='-4' dy='14'>1</text><text x='544' y='224' font-size='11' fill='rgb(var(--on-track))' text-anchor='end'>log n</text></g><g><title>O(n) and O(n log n): the honest workhorses. n = touch everything once (a scan). n log n = touch everything once per halving-level (good sorts: merge sort, and every library sort). Doubling n roughly doubles the time.</title><path d='M42 256 L 545 150' stroke='rgb(var(--accent-fg))' stroke-width='2' fill='none'/><path d='M42 256 C 220 224, 420 150, 545 84' stroke='rgb(var(--accent-fg))' stroke-width='2' stroke-dasharray='7 4' fill='none'/><text x='500' y='142' font-size='11' fill='rgb(var(--accent-fg))'>n</text><text x='480' y='80' font-size='11' fill='rgb(var(--accent-fg))'>n log n</text></g><g><title>O(n²): every item against every item — nested loops, insertion sort's worst case, comparing all pairs. Doubling n QUADRUPLES the time. Fine for hundreds, hours for millions.</title><path d='M42 258 C 220 246, 380 170, 452 30' stroke='rgb(var(--at-risk))' stroke-width='2' fill='none'/><text x='458' y='40' font-size='11' fill='rgb(var(--at-risk))'>n²</text></g><g><title>O(2ⁿ): the input's every subset. Adding ONE element doubles the time. Usable to about n = 40, then never again. If your solution is 2ⁿ, the interview answer is 'and now let me do better'.</title><path d='M42 258 C 170 254, 250 220, 292 28' stroke='rgb(var(--critical))' stroke-width='2' fill='none'/><text x='298' y='36' font-size='11' fill='rgb(var(--critical))'>2ⁿ</text></g></g>",
+          "caption": "The six shapes you'll meet, on one axis — hover any curve for what it means. Reading order: green (flat — size barely matters), blue (grows with n — the honest workhorses), amber (n² — doubling input quadruples time), red (2ⁿ — adding one element doubles time). Every algorithm in CS 146 is a fight to move down this chart: sorting from n² to n log n, searching from n to log n.",
+          "slide": "The shapes, on one axis",
+          "id": "bigo.9a4c7e21"
+        },
+        {
+          "type": "table",
+          "title": "Same million items, different shapes (at 100M steps/second)",
+          "columns": [
+            "Shape",
+            "Steps at n = 1,000,000",
+            "Wall clock"
+          ],
+          "rows": [
+            [
+              "log n",
+              "≈ 20",
+              "0.0000002 s — unmeasurable"
+            ],
+            [
+              "n",
+              "1,000,000",
+              "0.01 s"
+            ],
+            [
+              "n log n",
+              "≈ 20,000,000",
+              "0.2 s"
+            ],
+            [
+              "n²",
+              "1,000,000,000,000",
+              "≈ 2.8 hours"
+            ],
+            [
+              "2ⁿ",
+              "a number with 301,030 digits",
+              "the universe ends first"
+            ]
+          ],
+          "slide": "Why the shape is the whole ballgame",
+          "id": "bigo.5c2d8f13"
+        },
+        {
+          "type": "prose",
+          "md": "**Where the definition comes from** — it isn't handed down; it's built from the two things we agreed to ignore. We want 'f grows no faster than g' to be a claim about *shape*, so it must survive two attacks. Attack 1: 'my computer runs every step 3× slower, so your f just tripled.' Fine — the definition allows a constant multiplier: we only demand ==f(n) ≤ c·g(n)== for *some* fixed c, and a 3× slowdown just means a bigger c. Attack 2: 'for n = 2 your f is actually bigger than g.' Also fine — small inputs are noise, everything is fast at n = 5. So the definition only promises things ==past some starting line n₀==. Put both allowances into one sentence and you get Poon's Lecture 4 slide 15 definition, exactly: **f(n) = O(g(n)) if there exist positive constants c and n₀ such that f(n) ≤ c·g(n) for all n ≥ n₀.** Read it as: *once n is big enough, f never rises above some fixed multiple of g.* The c and the n₀ aren't decoration — they ARE the two agreed blind spots, written as math.",
+          "slide": "The definition, derived not decreed",
           "id": "bigo.dc2bcc6d"
         },
         {
           "type": "figure",
-          "svg": "<g font-family=\"ui-monospace, monospace\" font-size=\"12\">\n<line x1=\"40\" y1=\"170\" x2=\"440\" y2=\"170\" stroke=\"currentColor\" opacity=\".4\"/><line x1=\"40\" y1=\"170\" x2=\"40\" y2=\"20\" stroke=\"currentColor\" opacity=\".4\"/>\n<path d=\"M40 165 Q 200 150 440 30\" fill=\"none\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<path d=\"M40 150 Q 140 140 220 110 T 440 60\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>\n<line x1=\"180\" y1=\"170\" x2=\"180\" y2=\"30\" stroke=\"currentColor\" stroke-dasharray=\"4 4\" opacity=\".5\"/>\n<text x=\"172\" y=\"188\" fill=\"currentColor\">n₀</text>\n<text x=\"360\" y=\"28\" fill=\"rgb(59 130 246)\">c·g(n)</text>\n<text x=\"380\" y=\"80\" fill=\"currentColor\">f(n)</text>\n<text x=\"440\" y=\"188\" fill=\"currentColor\" opacity=\".6\">n →</text>\n</g>",
+          "svg": "<g font-family='ui-monospace, monospace' font-size='12' fill='currentColor'><g><title>The promise zone: everywhere to the right of n₀, the blue ceiling c·g(n) stays above f(n), forever. This shaded region is the entire content of the definition.</title><rect x='180' y='20' width='260' height='150' fill='rgb(var(--on-track) / 0.07)'/></g><line x1='40' y1='170' x2='440' y2='170' stroke='currentColor' opacity='0.4'/><line x1='40' y1='170' x2='40' y2='20' stroke='currentColor' opacity='0.4'/><g><title>c·g(n): the ceiling. Not g alone — g scaled by whatever constant c you needed. Scaling is allowed because a constant is exactly what changing hardware does to a runtime.</title><path d='M40 165 Q 200 150 440 30' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='360' y='28' fill='rgb(var(--accent-fg))'>c·g(n)</text></g><g><title>f(n): your algorithm's actual step count. Notice it may sit ABOVE the ceiling before n₀ — that is legal, small inputs are outside the promise.</title><path d='M40 150 Q 140 140 220 110 T 440 60' fill='none' stroke='currentColor' stroke-width='2'/><text x='380' y='80'>f(n)</text></g><g><title>n₀: the starting line. Left of it, no promises — f can spike, cross, misbehave. Big-O only speaks about sufficiently large inputs, because growth is a large-n phenomenon.</title><line x1='180' y1='170' x2='180' y2='30' stroke='rgb(var(--at-risk))' stroke-dasharray='4 4' opacity='0.8'/><text x='172' y='188' fill='rgb(var(--at-risk))'>n₀</text></g><text x='440' y='188' opacity='0.6'>n →</text><text x='60' y='34' font-size='10' opacity='0.55'>no promises here</text></g>",
           "viewBox": "0 0 460 200",
-          "caption": "Past n₀, the curve c·g(n) stays above f(n) forever. That's all the definition says. Below n₀ nothing is promised.",
+          "caption": "The definition as one picture — hover each part. Left of n₀ (amber line): no promises, f may even sit above the ceiling. Right of n₀ (green zone): c·g(n) stays above f(n) forever. Finding a Big-O proof (like 5n + 10 = O(n) below) is literally naming a c and an n₀ that make this picture true.",
           "slide": "The picture",
           "id": "bigo.681d6017"
         },
@@ -531,6 +588,12 @@
           "md": "In practice nobody hunts for c and n₀ except on an exam question that asks for them. Day to day, you simplify by throwing away what the definition lets you ignore. **Drop lower-order terms** (n² + 100n + 500 → n²: for big n the n² dwarfs the rest). **Drop constants** (the +500). **Drop coefficients** (2n² → n²: that's the c). Poon's slide 23 is exactly these three moves.",
           "slide": "The three-step simplification",
           "id": "bigo.11c27c16"
+        },
+        {
+          "type": "prose",
+          "md": "**One misconception to kill early** !!Big-O does not mean 'worst case'!! — they're independent ideas that usually travel together. O/Ω/Θ describe a *bound direction* (ceiling / floor / tight); worst/best/average describe *which input* you're measuring. You can put a ceiling on the best case ('even the best case is O(n) — it must read the input') or a floor on the worst case. The reason people conflate them: the most USEFUL sentence in practice is 'a ceiling on the worst case' — ==no input, ever, exceeds this== — so that's the pairing everyone says out loud. When Poon asks for insertion sort's cases: best is Ω(n) (already sorted), worst is O(n²) (reversed) — two different inputs, two different bounds.",
+          "slide": "O is a ceiling, not 'the worst case'",
+          "id": "bigo.7d3e5a90"
         },
         {
           "type": "table",

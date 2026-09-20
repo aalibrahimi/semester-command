@@ -33,6 +33,11 @@
           "source": "HW 6",
           "points": null,
           "id": "why.420b6bee"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet recurrences after the exam** Every time you write a recursive function and someone asks how it scales — which in interviews is every time. A filesystem walker, a JSON parser, a React component tree render: each is 'T(n) = (calls on children) + (work at this node)', and the recurrence is ==the only honest way to answer 'what's the complexity of your solution'== for recursive code. It's also how you diagnose disasters: quicksort with a bad pivot becomes T(n) = T(n−1) + n — unroll it and the staircase sum from Chapter 0 appears, so !!n² out of an algorithm advertised as n log n!!. Write the equation, solve it with any of this chapter's three methods, and you've replaced a guess with a fact.",
+          "id": "why.f3a8d956"
         }
       ]
     },
