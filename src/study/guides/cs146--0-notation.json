@@ -577,11 +577,25 @@
         },
         {
           "type": "example",
+          "title": "Where the 'random' polynomials come from — count a real program",
+          "body": "Those homework functions like 3n² + 5n + 7 look invented. They're not — they're what falls out when you charge a program one step per operation. Count this:\n\nint sum = 0;                    // 1 step, once\nint count = 0;                  // 1 step, once\nfor (int i = 0; i < n; i++) {   // the check+increment: ~2 steps, n times\n  sum += a[i];                  // read + add + store: ~3 steps, n times\n  for (int j = 0; j < i; j++)   // runs i times → the staircase!\n    count++;                    //   ~2 steps each\n}\n\n1. The two setup lines: 2 steps → the constant term.\n2. The outer loop's own bookkeeping plus the sum line: about 5 steps, n times → the 5n term.\n3. The inner loop: 2 steps, and it runs 0+1+2+…+(n−1) = n(n−1)/2 times → the n² term (times 1, after the ×2 and ÷2 shake out).\n\nTotal: f(n) ≈ n² + 4n + 2. THAT is a 'random polynomial' — every term is a receipt from a piece of the code. The coefficients (was it 3 steps or 5 per iteration?) depend on how you count — which is machine-and-taste-dependent noise, and exactly what O(...) exists to throw away. Simplify: O(n²).",
+          "answer": "f(n) ≈ n² + 4n + 2 = O(n²)",
+          "slide": "Polynomials are receipts from code",
+          "id": "bigo.2f6b8d41"
+        },
+        {
+          "type": "example",
           "title": "Poon's proof pattern, step by step",
           "body": "Show 5n + 10 = O(n). That means: find a c and an n₀ so that 5n + 10 ≤ c·n whenever n ≥ n₀.\n\n1. Guess a c bigger than the leading coefficient. The 5n needs at least 5; pick c = 6 to leave room for the +10.\n2. Write the inequality with that c: 5n + 10 ≤ 6n.\n3. Simplify: subtract 5n from both sides → 10 ≤ n.\n4. That's true whenever n ≥ 10. So n₀ = 10, c = 6, and the definition is satisfied. Done — 5n + 10 = O(n).",
           "answer": "c = 6, n₀ = 10",
           "slide": "Proving 5n + 10 = O(n) (Lecture 4 slides 18–19)",
           "id": "bigo.bc6a0a7a"
+        },
+        {
+          "type": "prose",
+          "md": "**So what was the point of hunting c and n₀?** Not the numbers — !!c = 6 and n₀ = 10 are disposable!!; c = 7, n₀ = 100 works just as well, and infinitely many other pairs do too. The exercise is a ==one-time license to simplify==. Every time you casually say '5n + 10 is just O(n)' or 'drop the 40n²', the definition is what makes that legal — and finding one concrete (c, n₀) pair is you *watching the legality happen*: the constant got absorbed into c, the small-n misbehavior got absorbed into n₀. Do it two or three times on paper and something clicks: you'll never need to do it again outside an exam, because ##you now know exactly why dropping terms isn't cheating##. It's the same reason you compute one derivative from the limit definition in calculus and then never touch limits again: the ritual is what earns the shortcut.",
+          "slide": "The c and n₀ hunt is a one-time license",
+          "id": "bigo.6d94e7a2"
         },
         {
           "type": "prose",
