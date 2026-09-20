@@ -3,8 +3,8 @@
   "course": "cs146",
   "lessons": "Lectures 2–3",
   "title": "ADTs, loop invariants, and insertion sort",
-  "summary": "Say what an ADT is and pick stack vs queue for a scenario; write an array stack and a circular queue; prove a loop correct with a three-part invariant; trace insertion sort the way Poon grades it and explain its best and worst case.",
-  "estimatedMinutes": 60,
+  "summary": "Say what an ADT is and pick stack vs queue for a scenario; write an array stack and a circular queue; draw a singly linked list node-by-node and splice into it without losing the tail; prove a loop correct with a three-part invariant; trace insertion sort the way Poon grades it and explain its best and worst case.",
+  "estimatedMinutes": 75,
   "sourceNote": "Lecture 2 (Aug 24) and Lecture 3 (Aug 26) slides, HW 2, HW 3, Project 1 Part 1.",
   "requires": [],
   "sections": [
@@ -18,6 +18,11 @@
           "md": "**The whole lecture in one idea** You can drive a car without knowing whether the engine is gas or electric. The pedals are a **contract**: press this, the car goes. An **Abstract Data Type** is a contract like that for data: it lists the operations you can do (push, pop, peek…) and what they promise, and says nothing about how they're built inside. The 'how' is the **implementation** — and the same contract can have several implementations with very different speeds. Almost every exam question in this course is, underneath, 'which contract does this problem need, and which implementation makes those operations cheap?'",
           "slide": "The car-pedal idea",
           "id": "why.30f9d804"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Every language ships these contracts as libraries, and picking the right one IS the job. In Java: `ArrayDeque` when you need a stack or queue, `ArrayList` when you need a list, and `Stack` exists but is legacy — knowing *why* (it locks on every call) is exactly the ADT-vs-implementation distinction. In interviews, half the medium questions are a story like the tunnel problem below: the interviewer never says the word 'stack'; they describe a behavior and watch whether you hear LIFO or FIFO in it. And in real systems: your editor's undo, the browser's back button, a printer's job list, and the task queue behind every web server are these four contracts, deployed billions of times.",
+          "id": "why.7c3e91a2"
         },
         {
           "type": "trap",
@@ -163,7 +168,7 @@
         },
         {
           "type": "prose",
-          "md": "A **linked list** version keeps the top as the head node. push: make a new node, point it at the old head, make it the head. pop: save the head's value, move head to head.next. Same four operations, same O(1) cost. Differences: no overflow (it grows as needed), no fixed capacity, but every node costs an extra pointer of memory and the nodes are scattered around memory instead of side by side. Underflow check becomes `head == null`.",
+          "md": "A **linked list** version keeps the top as the head node (the full node-and-arrow picture gets its own section below). push: make a new node, point its next at the old head, make it the new head — that's the two-write splice at the head position. pop: save the head's value, move head to head.next. Same four operations, same O(1) cost. Differences: no overflow (it grows as needed), no fixed capacity, but every node costs an extra pointer of memory and the nodes are scattered around memory instead of side by side. Underflow check becomes `head == null`.",
           "slide": "Linked stack: same contract, different insides",
           "id": "stack.a3187b1b"
         },
@@ -285,6 +290,14 @@
           "id": "queue.834809ff"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 640 240",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='cqA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='cqG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><rect x='32' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='104' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='176' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='248' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='320' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='392' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='464' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='536' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='64' y='101' text-anchor='middle' font-size='17' font-weight='700'>F</text><text x='424' y='101' text-anchor='middle' font-size='17' font-weight='700'>C</text><text x='496' y='101' text-anchor='middle' font-size='17' font-weight='700'>D</text><text x='568' y='101' text-anchor='middle' font-size='17' font-weight='700'>E</text><text x='64' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>0</text><text x='136' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>1</text><text x='208' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>2</text><text x='280' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>3</text><text x='352' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>4</text><text x='424' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>5</text><text x='496' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>6</text><text x='568' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>7</text><text x='424' y='34' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>head = 5</text><path d='M424 40 L424 64' stroke='rgb(var(--on-track))' stroke-width='1.6' fill='none' marker-end='url(#cqG)'/><text x='64' y='34' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>tail = 0</text><path d='M64 40 L64 64' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cqA)'/><path d='M568 126 C 520 192, 112 192, 68 128' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cqA)'/><text x='318' y='188' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>(7 + 1) % 8 = 0 — tail wrapped</text><text x='318' y='222' text-anchor='middle' font-size='11' opacity='0.7'>logical queue order, starting at head: C → D → E → F</text></g>",
+          "caption": "The stepper's queue, grown to capacity 8 and one wrap later. Green cells are occupied; F physically sits at index 0 even though it's the LAST item, because (7 + 1) % 8 = 0. The queue's logical order starts at head and follows the arithmetic, not the picture: C, D, E, F. Slots 1–4 hold garbage from old dequeues, waiting to be overwritten. Real systems call this exact structure a ring buffer — your keyboard driver, sound card, and network card each run one right now.",
+          "slide": "Why it's called circular",
+          "id": "queue.b1c2d3e4"
+        },
+        {
           "type": "example",
           "title": "The `%` keeps head and tail inside 0..capacity−1. `size` tells full from empty (both have head == tail otherwise).",
           "body": "public class ArrayQueue {\n  private int[] a; private int head = 0, tail = -1, size = 0;\n  public ArrayQueue(int capacity) { a = new int[capacity]; }\n\n  public void enqueue(int x) {\n    if (size == a.length) throw new RuntimeException(\"overflow\");\n    tail = (tail + 1) % a.length;    // wrap around\n    a[tail] = x; size++;\n  }\n  public int dequeue() {\n    if (size == 0) throw new RuntimeException(\"underflow\");\n    int x = a[head];\n    head = (head + 1) % a.length;    // wrap around\n    size--; return x;\n  }\n}",
@@ -348,6 +361,68 @@
       ]
     },
     {
+      "id": "linked",
+      "heading": "Linked lists: boxes, arrows, and addresses",
+      "blocks": [
+        {
+          "type": "prose",
+          "label": "why",
+          "md": "**The mental model, before any code** An array is a row of numbered lockers: locker 7 is always right next to locker 6, so 'go to locker k' is instant. A **linked list** throws the lockers anywhere in memory and instead gives each box a forwarding address. Every **node** is a little struct with two fields: the **data** it holds, and **next** — the memory address of the following node. The only thing you keep is **head**, the address of the first node. To reach anything else you *follow the arrows*, one hop at a time. That one design choice explains every cost in the comparison table you saw earlier: no jumping to position k (you must walk k hops), but splicing a node in or out is just rewriting two addresses — no shifting, ever.",
+          "slide": "Boxes with forwarding addresses",
+          "id": "linked.a17e40b3"
+        },
+        {
+          "type": "definition",
+          "term": "Node · head · null",
+          "body": "**Node**: one box holding `data` and `next` (the address of the following node). **head**: the variable holding the first node's address — lose it and the entire list is unreachable. **null** in a `next` field means 'the chain ends here'; the last node always carries it. An empty list is simply `head == null`.",
+          "id": "linked.d41a7b22"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 690 320",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='llA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='llH' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><text x='24' y='34' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>Node&lt;E&gt; head = 0x1A4;</text><path d='M62 42 C 56 60, 50 74, 46 92' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llH)'/><text x='55' y='88' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='120' y='88' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='28' y='96' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='82' y='96' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='55' y='130' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>A</text><text x='120' y='128' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x2B8</text><text x='93' y='170' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x1A4</text><path d='M158 123 C 182 123, 186 208, 196 216' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/><text x='227' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='292' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='200' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='254' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='227' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>B</text><text x='292' y='222' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x47C</text><text x='265' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x2B8</text><path d='M330 217 C 354 217, 356 132, 366 124' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/><text x='397' y='88' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='462' y='88' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='370' y='96' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='424' y='96' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='397' y='130' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>C</text><text x='462' y='128' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9D0</text><text x='435' y='170' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x47C</text><path d='M500 123 C 524 123, 526 208, 534 216' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/><text x='565' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='630' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='538' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='592' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='565' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>D</text><text x='630' y='222' text-anchor='middle' font-size='12' font-style='italic' opacity='0.8'>null</text><text x='603' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x9D0</text><text x='345' y='302' text-anchor='middle' font-size='11' opacity='0.7'>each next field literally CONTAINS the address written under the node it points to</text></g>",
+          "caption": "A singly linked list of A → B → C → D, drawn the way memory actually holds it. Under each node is its own address (@ 0x1A4, @ 0x2B8, …); inside each next cell is the address of the following node — match them and you can see the arrows are just numbers. head is a single variable holding 0x1A4. D's next is null: end of the chain. Note the nodes are deliberately NOT in a straight line — in real memory they're scattered wherever the allocator put them, and only the addresses connect them.",
+          "slide": "A singly linked list, drawn honestly",
+          "id": "linked.f1a2b3c4"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** More places than any other structure in this course, usually wearing a costume. **Git**: every commit stores the hash of its parent commit — `git log` is literally walking a linked list from head. **Blockchains**: same trick, where 'next' is a cryptographic hash, which is why you can't quietly edit a block in the middle. **Your OS's memory allocator** keeps free chunks of RAM as a linked list threaded through the free memory itself. **LRU caches** (the thing that decides what stays in Redis or your CPU cache) are a linked list plus a hash map — move-to-front is O(1) precisely because splicing is two pointer writes. And **the trap**: in interviews, 'reverse a linked list' and 'detect a cycle' are rites of passage because they test whether you can rewire next pointers without dropping the chain — exactly the skill the next figure drills.",
+          "slide": "Git, blockchains, allocators, LRU",
+          "id": "linked.3e8b91c7"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 640 310",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='llS' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='llR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><text x='57' y='52' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='122' y='52' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='30' y='60' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='84' y='60' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='57' y='94' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>B</text><text x='122' y='92' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9E0</text><text x='95' y='134' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x2B8</text><text x='503' y='52' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='568' y='52' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='476' y='60' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='530' y='60' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='503' y='94' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>C</text><text x='568' y='92' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9D0</text><text x='541' y='134' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x47C</text><path d='M160 87 C 264 87, 372 87, 474 87' stroke='rgb(var(--critical))' stroke-width='1.5' fill='none' stroke-dasharray='6 5' opacity='0.85' marker-end='url(#llR)'/><text x='318' y='78' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>✕</text><text x='318' y='106' text-anchor='middle' font-size='10' fill='rgb(var(--critical))'>old link 0x47C — overwritten by ②</text><text x='267' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='332' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='240' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><rect x='294' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='267' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--accent-fg))'>X</text><text x='332' y='222' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x47C</text><text x='305' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x9E0 · the new node</text><path d='M370 217 C 430 217, 478 168, 500 120' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llS)'/><circle cx='452' cy='196' r='10' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='452' y='200' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--accent-fg))'>1</text><path d='M160 92 C 196 106, 204 190, 236 214' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llS)'/><circle cx='192' cy='156' r='10' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='192' y='160' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--accent-fg))'>2</text><text x='318' y='298' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>① X.next = B.next;   ② B.next = X;   — in that order</text></g>",
+          "caption": "Splicing X between B and C is exactly two address writes, and the ORDER is everything. Step ①: point X.next at C (copy B's next, 0x47C, into X). Step ②: point B.next at X (write 0x9E0). Nothing shifted, nothing copied — O(1) however long the list is. Do it backwards and step ② overwrites 0x47C before anything else holds it: C, D, and the whole rest of the chain become unreachable garbage. That's not a slow bug; it's data gone.",
+          "slide": "The splice: two writes, one order",
+          "id": "linked.f2c4d5e6"
+        },
+        {
+          "type": "trap",
+          "body": "**Rewire in the wrong order, lose the list** When inserting after node B, `X.next = B.next` MUST come before `B.next = X`. Write B's next first and the old address is destroyed with nothing else pointing at the rest of the chain — in Java it silently becomes garbage; in a 'what does this code do' exam question it's the intended wrong answer. Same discipline when deleting: save `node.next` before you cut the node out.",
+          "source": "Exam material",
+          "points": null,
+          "id": "linked.aa11bb22"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is get(k) O(n) on a linked list when it's O(1) on an array?",
+          "answer": "An array's elements sit side by side, so element k lives at a computable address (start + k × size) — one multiplication, one jump. A linked list's nodes are scattered; the ONLY way to find node k is to start at head and follow next k times. The addresses are inside the nodes, so you can't skip ahead.",
+          "sectionRef": "linked",
+          "id": "linked.c0ffee12"
+        },
+        {
+          "type": "check",
+          "prompt": "You're holding a reference to node B in a long singly linked list. What does it cost to insert a node AFTER B? To insert one BEFORE B?",
+          "answer": "After B: O(1) — the two-write splice from the figure. Before B: O(n) — you need the node whose next points at B, and in a SINGLY linked list the only way to find that predecessor is to walk from head. (This exact pain is why doubly linked lists exist: a prev pointer makes 'before' O(1) too, at the cost of a third field per node.)",
+          "sectionRef": "linked",
+          "id": "linked.e5d7a2f0"
+        }
+      ]
+    },
+    {
       "id": "invariants",
       "heading": "Loop invariants: proving a loop is right",
       "blocks": [
@@ -357,6 +432,11 @@
           "md": "**Why anyone bothers** You can run a sort on a thousand arrays and it works every time. Does it work on the thousand-and-first? Testing can only show that bugs *are* there, never that they *aren't*. Poon's definition of **correct**: the algorithm terminates and produces the desired output for *every* valid input. To claim that, you need an argument, not a test. The argument for loops is the **loop invariant**.",
           "slide": "Why testing isn't enough",
           "id": "invariants.38aadffe"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Invariants are the one proof technique that escapes the classroom. When a reviewer asks 'why does this loop terminate?' or 'can `balance` ever go negative here?', the professional answer is an invariant, stated in one sentence. `assert` statements in production code are invariants the machine re-checks on every run. Database constraints ('total debits equal total credits') are invariants the engine enforces. And when you debug a loop at 2am, the fastest question is: 'what should be true here every single iteration?' — then print exactly that and find the first iteration where it lies to you.",
+          "id": "invariants.5b8d02e1"
         },
         {
           "type": "definition",
