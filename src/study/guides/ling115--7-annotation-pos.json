@@ -99,10 +99,23 @@
           "id": "levels.dcaa1723"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 690 330",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='anD' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>Syntactic annotation: phrase structure. The tree from syntax class stored as brackets — a treebank is a corpus where every sentence carries one of these.</title><path d='M46 50 L46 44 L466 44 L466 50' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.5'/><text x='256' y='38' text-anchor='middle' font-size='10' opacity='0.7'>S</text><path d='M118 80 L118 74 L466 74 L466 80' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.5'/><text x='292' y='68' text-anchor='middle' font-size='10' opacity='0.7'>VP</text><path d='M50 110 L50 104 L94 104 L94 110' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.5'/><text x='72' y='98' text-anchor='middle' font-size='10' opacity='0.7'>NP</text><path d='M186 110 L186 104 L274 104 L274 110' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.5'/><text x='230' y='98' text-anchor='middle' font-size='10' opacity='0.7'>NP</text><path d='M288 110 L288 104 L466 104 L466 110' stroke='currentColor' stroke-width='1.3' fill='none' opacity='0.5'/><text x='377' y='98' text-anchor='middle' font-size='10' opacity='0.7'>PP</text></g><g><title>The tokens themselves — the output of last chapter's pipeline. Every layer above and below this row is interpretation somebody added on top.</title><text x='72' y='150' text-anchor='middle' font-size='14' font-weight='600'>Sam</text><text x='145' y='150' text-anchor='middle' font-size='14' font-weight='600'>booked</text><text x='205' y='150' text-anchor='middle' font-size='14' font-weight='600'>a</text><text x='250' y='150' text-anchor='middle' font-size='14' font-weight='600'>flight</text><text x='310' y='150' text-anchor='middle' font-size='14' font-weight='600'>to</text><text x='385' y='150' text-anchor='middle' font-size='14' font-weight='600'>Istanbul</text><text x='445' y='150' text-anchor='middle' font-size='14' font-weight='600'>.</text><text x='490' y='150' text-anchor='middle' font-size='14' font-weight='600' opacity='0.75'>It</text><text x='540' y='150' text-anchor='middle' font-size='14' font-weight='600' opacity='0.75'>was</text><text x='600' y='150' text-anchor='middle' font-size='14' font-weight='600' opacity='0.75'>cheap</text><text x='645' y='150' text-anchor='middle' font-size='14' font-weight='600' opacity='0.75'>.</text></g><g><title>Lexical annotation: one Penn Treebank POS tag per token. This layer alone turns 'how often is book a verb?' into a countable query.</title><rect x='53' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='72' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>NNP</text><rect x='126' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='145' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>VBD</text><rect x='186' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='205' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>DT</text><rect x='231' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='250' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>NN</text><rect x='291' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='310' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>IN</text><rect x='366' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='385' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>NNP</text><rect x='426' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='445' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>.</text><rect x='471' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='490' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>PRP</text><rect x='521' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='540' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>VBD</text><rect x='581' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='600' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>JJ</text><rect x='626' y='168' width='38' height='18' rx='4' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.2'/><text x='645' y='181' text-anchor='middle' font-size='9' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>.</text></g><g><title>Morphological annotation: morpheme boundaries and glosses — booked = book + -ed (past). Phonetic annotation (time-aligned sounds, as in TIMIT) would be one more layer, but needs audio.</title><text x='56' y='212' font-size='9' fill='rgb(var(--on-track))'>book·ed — stem + past (morphology)</text><text x='20' y='322' font-size='9' opacity='0.5'>not shown: phonetic — time-aligned sounds over audio, same idea, one more layer</text></g><g><title>Semantic annotation: named entities and roles. Istanbul is marked as a CITY, so a search for 'sentences mentioning cities' finds this one even though the word city never appears.</title><path d='M353 216 L353 222 L417 222 L417 216' stroke='rgb(var(--at-risk))' stroke-width='1.4' fill='none'/><text x='385' y='236' text-anchor='middle' font-size='9' fill='rgb(var(--at-risk))'>CITY — named entity</text></g><g><title>Discourse annotation: 'It' in the next sentence refers back to the flight. Coreference chains are what let a system answer WHAT was cheap.</title><path d='M490 192 C 490 285, 258 285, 252 196' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#anD)'/><text x='372' y='302' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>It → the flight (discourse: anaphora)</text></g></g>",
+          "caption": "One pair of sentences wearing five of the six annotation layers (phonetic needs audio). Bottom to top: a morphological gloss, POS-tag chips, the tokens, a named-entity span, and a phrase-structure bracketing — plus a discourse link reaching in from the next sentence. Each layer is somebody's labeling decisions, which is why each has its own guidelines and its own disagreements. Hover any layer.",
+          "slide": "Five layers on one sentence",
+          "id": "levels.9d2b75f8"
+        },
+        {
           "type": "prose",
           "md": "The morphological and syntactic rows are LING 112's interlinear glosses and phrase-structure trees, stored as data. A treebank is a corpus where every sentence has the tree you'd draw in syntax class. That's why the Penn Treebank tagset is 'theoretically committed to constituency grammar' — its designers had a syntax theory in mind.",
           "slide": "How this connects to LING 112",
           "id": "levels.feaade6b"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** The six levels are a product map. Lexical: grammar checkers and predictive keyboards. Phonetic: every voice assistant's recognizer is trained on TIMIT-style time-aligned speech. Semantic: the 'add flight to calendar' chip popping up in your email is named-entity annotation cashed in, and search knows Istanbul is a city for the same reason. Discourse: a summarizer is useless until it can resolve who 'she' is. ==A job posting that says 'NLP pipeline' means software that adds these layers, in roughly this order.==",
+          "id": "levels.3a6f18c4"
         }
       ]
     },
@@ -130,13 +143,13 @@
         },
         {
           "type": "prose",
-          "md": "- **1. Research question and hypotheses.**\n- **4. Data documentation.**",
+          "md": "The full loop, in order: **1. research question and hypotheses → 2. data design decisions → 3. data collection and shaping → 4. data documentation → 5. analysis and evaluation** — then iterate. The cards above flesh out steps 2, 3, and 5; step 1 is where the 'design the dataset around the question' thesis lives, and ==step 4 is the step everyone skips and later regrets== — it gets its own block below.",
           "slide": "The five steps (Lecture 7 slide 6)",
           "id": "process.f54c4be9"
         },
         {
           "type": "prose",
-          "md": "**The shift she keeps naming** Traditional corpus work: *'here is a dataset — what can I do with it?'* Contemporary work: *'what dataset do I need, and how do I design it?'* The linguist as **data architect**. Her Lecture 7 line: 'Data cleaning and shaping is actually linguistic theory in disguise.'",
+          "md": "**The shift she keeps naming** Traditional corpus work: *'here is a dataset — what can I do with it?'* Contemporary work: *'what dataset do I need, and how do I design it?'* The linguist as **data architect**. Her Lecture 7 line: =='Data cleaning and shaping is actually linguistic theory in disguise.'==",
           "id": "process.1d4ef9b9"
         },
         {
@@ -145,6 +158,11 @@
           "md": "**Why document** A datasheet is a standard description of a dataset: who made it, why, from what, how it was cleaned, what it should and shouldn't be used for. Two framings: it's **ethical accounting** (biases and provenance on the record) and it's a **QA document** (the dataset becomes inspectable, testable, reusable). Without one, a dataset has no lineage, no known biases, no clear use case, no interpretive constraints. That last sentence is the answer to 'give one reason documenting datasets is important.'",
           "slide": "Datasheets for Datasets (Gebru et al. 2018)",
           "id": "process.e96637e2"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** Datasheets escaped the seminar room: HuggingFace expects a dataset card on every upload, Google popularized model cards for the same reason, and the EU AI Act turns data documentation into a legal requirement for high-risk systems. The five-step loop is the shape of every data-science project you'll ever run, and interviewers probe for exactly the shift Kraus names — ##candidates who ask 'what dataset does this question need?' read as senior; candidates who grab whatever CSV exists read as junior##.",
+          "id": "process.7e9a42d6"
         },
         {
           "type": "check",
@@ -265,6 +283,14 @@
           "id": "pos.8af71b32"
         },
         {
+          "type": "figure",
+          "viewBox": "0 0 640 250",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Unambiguous: I is a personal pronoun (PRP) in every context. Most tokens are this easy — taggers score ~97% per token largely because of words like this.</title><text x='90' y='70' text-anchor='middle' font-size='20' font-weight='700'>I</text><rect x='64' y='92' width='52' height='22' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='90' y='107' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>PRP</text></g><g><title>The ambiguity: read could be VBD (past — yesterday I read it) or VBP (present — I read every night). The sentence gives no evidence either way; a statistical tagger just bets on whichever was more frequent in its training data.</title><text x='210' y='34' text-anchor='middle' font-size='18' font-weight='700' fill='rgb(var(--at-risk))'>?</text><path d='M210 40 L210 50' stroke='rgb(var(--at-risk))' stroke-width='1.2'/><text x='210' y='70' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--at-risk))'>read</text><rect x='184' y='92' width='52' height='22' rx='6' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='210' y='107' text-anchor='middle' font-size='11' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>VBD</text><text x='244' y='107' font-size='9' fill='rgb(var(--on-track))'>the tagger's pick</text><rect x='184' y='124' width='52' height='22' rx='6' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.4' stroke-dasharray='4 3'/><text x='210' y='139' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))'>VBP</text><text x='244' y='139' font-size='9' fill='rgb(var(--at-risk))'>equally grammatical — nothing here rules it out</text></g><g><title>Context does the disambiguating work when it can: after the determiner the, book can only be a noun. The same string is a verb in Book me a flight — the tag belongs to the token in context, not to the word.</title><text x='340' y='70' text-anchor='middle' font-size='20' font-weight='700'>the</text><rect x='314' y='92' width='52' height='22' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='340' y='107' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>DT</text><text x='450' y='70' text-anchor='middle' font-size='20' font-weight='700'>book</text><rect x='424' y='92' width='52' height='22' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='450' y='107' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>NN</text><text x='450' y='160' text-anchor='middle' font-size='9' opacity='0.6'>noun here — but a verb in Book me a flight</text></g><g><title>Even punctuation gets a tag (the Penn Treebank tag for a period is the period itself). Everything in the corpus is annotated, or queries would fall through the gaps.</title><text x='560' y='70' text-anchor='middle' font-size='20' font-weight='700'>.</text><rect x='534' y='92' width='52' height='22' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='560' y='107' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>.</text></g><g><title>The cost of tagging: the corpus records a decision, not a distribution. Downstream counts inherit the guess silently — Kraus's point that tagging papers over ambiguity rather than resolving it.</title><text x='320' y='202' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>read is spelled the same in past (VBD) and present (VBP) — only wider context or world knowledge decides</text><text x='320' y='224' text-anchor='middle' font-size='10' opacity='0.7'>a tagged corpus stores the pick, not the doubt: I read/VBD the book looks certain forever after</text></g></g>",
+          "caption": "Penn Treebank tags as chips under 'I read the book.' Four tokens commit instantly; *read* cannot — VBD and VBP are both fully grammatical here, and the green pick is a frequency bet, not knowledge. This is lexical ambiguity surviving tokenization, tagging, and everything downstream. Hover any token.",
+          "slide": "One token refuses to commit",
+          "id": "pos.1b8d59e3"
+        },
+        {
           "type": "table",
           "columns": [
             "Kind",
@@ -297,6 +323,11 @@
           "body": "Explain the ambiguity.\n\n1. Reading 1: [help [dog-bite victim]] — police help a person who was bitten by a dog. *bite* is a noun inside a compound.\n2. Reading 2: [help dog] [bite victim] — police help a dog to bite someone. *bite* is a verb.\n3. The POS tag of *bite* depends on the parse, and the parse depends on the tags — circular. What breaks the tie is world knowledge (police don't usually help dogs bite people), which a tagger doesn't have.\n4. That's the chance-quiz answer for 'say something about ambiguity and language data': ambiguity doesn't disappear when you tokenize; context is needed to resolve it, and context can mislead.",
           "slide": "Why 'Police help dog bite victim' is hard",
           "id": "pos.05de581f"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** POS tagging runs inside tools you touched today. Grammar checkers flag 'their going to lose' by tagging — a possessive directly before a verb is the tell; voice assistants tag 'Book me a flight' to hear the imperative verb before they search a single fare; search engines separate the brand *Windows* from *windows* partly on tags and casing; predictive keyboards weight the next word by its category. And every 'crash blossom' headline that fools a news aggregator — *Police help dog bite victim* — is ==this section's circularity problem, live in production==.",
+          "id": "pos.5f2c87a9"
         }
       ]
     },
@@ -355,7 +386,7 @@
         },
         {
           "type": "prose",
-          "md": "- None reaches 100%. Errors cluster on syntactically complex or rare structures and at sentence boundaries.",
+          "md": "All three families top out short of perfect: !!no tagger reaches 100%!!, and the errors are not random — they cluster on syntactically complex or rare constructions and at sentence boundaries, which is often exactly where the linguistically interesting data lives.",
           "slide": "Three families of tagger",
           "id": "tagsets.6431195e"
         },
@@ -372,6 +403,11 @@
           "source": "HW 1",
           "points": null,
           "id": "tagsets.3560989e"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this after the exam** `import spacy` puts a neural tagger one line away in any Python job, and this section's trade-off — finer categories vs consistent labeling — reappears every time a team designs a tagging scheme for support tickets, products, or content moderation. The chicken-and-egg on the slide ('trained on corpora annotated by earlier taggers') is today's synthetic-data debate in miniature. And knowing that ==errors cluster exactly where the data gets interesting== is the habit called error analysis — the single most hireable reflex in applied ML.",
+          "id": "tagsets.6d3e91b7"
         },
         {
           "type": "prose",
