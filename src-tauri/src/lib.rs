@@ -120,6 +120,8 @@ pub fn run() {
             commands::study::record_study_review,
             commands::study::record_study_attempt,
             commands::study::study_attempts_recent,
+            commands::study::record_study_exam,
+            commands::study::study_exams_recent,
             commands::grades::course_detail,
             commands::grades::course_summaries,
             commands::grades::set_course_hidden,

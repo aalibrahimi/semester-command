@@ -12,7 +12,7 @@
  */
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { AlertTriangle, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
+import { AlertTriangle, Timer, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { guidesForCourse } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
@@ -150,6 +150,12 @@ export default function StudyCourse() {
               <span className="font-medium text-foreground/80">Covers: </span>
               {c.exam.covers}
             </p>
+            <Link
+              to={`/study/${c.slug}/exam`}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand-solid px-3.5 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
+            >
+              <Timer className="h-3.5 w-3.5" /> Take a mock exam
+            </Link>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {c.weights.map((w) => (
                 <span key={w.label} className="chip bg-fill-ghost text-muted-foreground">

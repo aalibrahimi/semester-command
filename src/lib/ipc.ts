@@ -14,7 +14,7 @@
  * needs plus a sync-status read the shell footer renders.
  */
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import type { AttemptRecord, ReviewRecord, SectionRecord, SectionStatus } from "@/study/mastery";
+import type { AttemptRecord, ExamRecord, ReviewRecord, SectionRecord, SectionStatus } from "@/study/mastery";
 import type {
   AuthStatus,
   DegreeAudit,
@@ -502,4 +502,15 @@ export async function recordStudyAttempt(attempt: AttemptRecord): Promise<Attemp
 export async function studyAttemptsRecent(limit = 500): Promise<AttemptRecord[]> {
   if (!IS_TAURI) return [];
   return call<AttemptRecord[]>("study_attempts_recent", { limit });
+}
+
+/** Store a finished mock exam (migration 0015); returns it with its id. */
+export async function recordStudyExam(exam: ExamRecord): Promise<ExamRecord> {
+  return call<ExamRecord>("record_study_exam", { exam });
+}
+
+/** Recent mock exams, newest first; all courses when `course` is omitted. */
+export async function studyExamsRecent(course?: string, limit = 50): Promise<ExamRecord[]> {
+  if (!IS_TAURI) return [];
+  return call<ExamRecord[]>("study_exams_recent", { course: course ?? null, limit });
 }

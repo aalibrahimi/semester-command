@@ -1,11 +1,12 @@
 //! Study mastery commands — the one store behind the Read, Cheat sheet,
-//! Recall and Map views (migration 0010), plus the drill attempt log
-//! (migration 0014).
+//! Recall and Map views (migration 0010), the drill attempt log (0014) and
+//! mock exams (0015).
 //!
 //! Called by: `src/lib/ipc.ts` (`studyMastery`, `setStudySection`,
 //! `saveStudyScratch`, `recordStudyReview`, `recordStudyAttempt`,
-//! `studyAttemptsRecent`).
-//! Calls: `study_section`, `study_review` and `study_attempt` via sqlx.
+//! `studyAttemptsRecent`, `recordStudyExam`, `studyExamsRecent`).
+//! Calls: `study_section`, `study_review`, `study_attempt` and `study_exam`
+//! via sqlx.
 //!
 //! The frontend keeps an in-memory copy per guide and writes through; every
 //! write returns the row it stored so the copy never drifts from the disk.
@@ -70,6 +71,29 @@ pub struct StudyAttemptRow {
     pub diagnosis: Option<String>,
     pub ms: Option<i64>,
     pub at: String,
+    /// 'read' | 'focus' | 'exam' (migration 0015).
+    #[serde(default = "default_source")]
+    pub source: String,
+}
+
+fn default_source() -> String {
+    "read".to_string()
+}
+
+/// One finished (or abandoned) mock exam (migration 0015).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StudyExamRow {
+    #[serde(default)]
+    pub id: Option<i64>,
+    pub course: String,
+    pub started_at: String,
+    pub finished_at: Option<String>,
+    pub total: i64,
+    pub correct: i64,
+    pub seconds: i64,
+    /// JSON breakdown as the webview built it.
+    pub breakdown: String,
 }
 
 /// Everything the store holds for one guide.
@@ -117,8 +141,8 @@ pub async fn record_study_attempt(
 ) -> CommandResult<StudyAttemptRow> {
     let db = db_of(&app);
     let id: i64 = sqlx::query_scalar(
-        "INSERT INTO study_attempt (guide_id, section_id, drill_id, seed, correct, input, expected, diagnosis, ms, at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+        "INSERT INTO study_attempt (guide_id, section_id, drill_id, seed, correct, input, expected, diagnosis, ms, at, source)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
          RETURNING id",
     )
     .bind(&attempt.guide_id)
@@ -131,6 +155,7 @@ pub async fn record_study_attempt(
     .bind(&attempt.diagnosis)
     .bind(attempt.ms)
     .bind(&attempt.at)
+    .bind(&attempt.source)
     .fetch_one(&db)
     .await
     .map_err(storage_err)?;
@@ -245,6 +270,57 @@ pub async fn record_study_review(
     .await
     .map_err(storage_err)?;
     Ok(review)
+}
+
+/// Store a mock exam result. Returns the row with its id.
+#[tauri::command]
+pub async fn record_study_exam(app: AppHandle, exam: StudyExamRow) -> CommandResult<StudyExamRow> {
+    let db = db_of(&app);
+    let id: i64 = sqlx::query_scalar(
+        "INSERT INTO study_exam (course, started_at, finished_at, total, correct, seconds, breakdown)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+         RETURNING id",
+    )
+    .bind(&exam.course)
+    .bind(&exam.started_at)
+    .bind(&exam.finished_at)
+    .bind(exam.total)
+    .bind(exam.correct)
+    .bind(exam.seconds)
+    .bind(&exam.breakdown)
+    .fetch_one(&db)
+    .await
+    .map_err(storage_err)?;
+    Ok(StudyExamRow {
+        id: Some(id),
+        ..exam
+    })
+}
+
+/// Recent mock exams, newest first, optionally for one course.
+#[tauri::command]
+pub async fn study_exams_recent(
+    app: AppHandle,
+    course: Option<String>,
+    limit: Option<i64>,
+) -> CommandResult<Vec<StudyExamRow>> {
+    let db = db_of(&app);
+    let limit = limit.unwrap_or(50).clamp(1, 500);
+    match course {
+        Some(c) => sqlx::query_as(
+            "SELECT * FROM study_exam WHERE course = ?1 ORDER BY started_at DESC LIMIT ?2",
+        )
+        .bind(c)
+        .bind(limit)
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err),
+        None => sqlx::query_as("SELECT * FROM study_exam ORDER BY started_at DESC LIMIT ?1")
+            .bind(limit)
+            .fetch_all(&db)
+            .await
+            .map_err(storage_err),
+    }
 }
 
 async fn section_row(db: &Db, guide_id: &str, section_id: &str) -> CommandResult<StudySectionRow> {

@@ -56,6 +56,21 @@ export interface AttemptRecord {
   diagnosis: string | null;
   ms: number | null;
   at: string;
+  /** Where it happened: the panel under a section, focus mode, or a mock exam. */
+  source: "read" | "focus" | "exam";
+}
+
+/** One mock exam's result (migration 0015). */
+export interface ExamRecord {
+  id?: number | null;
+  course: string;
+  startedAt: string;
+  finishedAt: string | null;
+  total: number;
+  correct: number;
+  seconds: number;
+  /** JSON of ExamBreakdown[] (study/exam.ts). */
+  breakdown: string;
 }
 
 export interface GuideMastery {
@@ -224,12 +239,34 @@ export async function recordReview(guideId: string, itemId: string, grade: 0 | 1
   return row;
 }
 
-export async function recordAttempt(a: Omit<AttemptRecord, "at" | "id">): Promise<AttemptRecord> {
+export async function recordAttempt(a: Omit<AttemptRecord, "at" | "id" | "source"> & { source?: AttemptRecord["source"] }): Promise<AttemptRecord> {
   const m = snapshot(a.guideId);
-  const draft: AttemptRecord = { ...a, at: new Date().toISOString() };
+  const draft: AttemptRecord = { ...a, source: a.source ?? "read", at: new Date().toISOString() };
   const row = ipc.IS_TAURI ? await ipc.recordStudyAttempt(draft) : { ...draft, id: m.attempts.length + 1 };
   commit({ ...m, attempts: [...m.attempts, row] });
   return row;
+}
+
+const LOCAL_EXAMS = "sc.study.exams";
+export async function recordExam(e: Omit<ExamRecord, "id">): Promise<ExamRecord> {
+  if (ipc.IS_TAURI) return ipc.recordStudyExam(e);
+  try {
+    const all = JSON.parse(localStorage.getItem(LOCAL_EXAMS) ?? "[]") as ExamRecord[];
+    const row = { ...e, id: all.length + 1 };
+    localStorage.setItem(LOCAL_EXAMS, JSON.stringify([row, ...all]));
+    return row;
+  } catch {
+    return { ...e, id: null };
+  }
+}
+export async function examsRecent(course?: string): Promise<ExamRecord[]> {
+  if (ipc.IS_TAURI) return ipc.studyExamsRecent(course);
+  try {
+    const all = JSON.parse(localStorage.getItem(LOCAL_EXAMS) ?? "[]") as ExamRecord[];
+    return course ? all.filter((x) => x.course === course) : all;
+  } catch {
+    return [];
+  }
 }
 
 /* ── Browser fallback (vite dev only) ──────────────────────────────────── */

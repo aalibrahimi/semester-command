@@ -43,7 +43,7 @@ function pickNext(drills: Drill[], mastery: GuideMastery, sectionId: string, avo
 
 /* ── Answer inputs ─────────────────────────────────────────────────────── */
 
-function AnswerInput({
+export function AnswerInput({
   answer,
   value,
   onChange,
@@ -175,6 +175,7 @@ export function DrillCard({
   mastery,
   onAnswered,
   compact,
+  source = "read",
 }: {
   guide: { id: string };
   sectionId: string;
@@ -182,6 +183,7 @@ export function DrillCard({
   mastery: GuideMastery;
   onAnswered?: (correct: boolean) => void;
   compact?: boolean;
+  source?: "read" | "focus";
 }) {
   const [card, setCard] = useState<CardState>(() => make(pickNext(drills, mastery, sectionId)));
   const [value, setValue] = useState("");
@@ -237,8 +239,9 @@ export function DrillCard({
       expected: g.expected,
       diagnosis: diag ?? null,
       ms: Date.now() - card.shownAt,
+      source,
     });
-  }, [phase, value, card, guide.id, sectionId, onAnswered]);
+  }, [phase, value, card, guide.id, sectionId, onAnswered, source]);
 
   // Enter advances once the answer is checked.
   useEffect(() => {
@@ -412,7 +415,7 @@ export function DrillCard({
   );
 }
 
-function Steps({ steps }: { steps: string[] }) {
+export function Steps({ steps }: { steps: string[] }) {
   return (
     <ol className="mt-2 flex flex-col gap-1.5">
       {steps.map((s, i) => (
@@ -569,6 +572,7 @@ export function DrillFocus({
             sectionId={sectionId}
             drills={drills}
             mastery={mastery}
+            source="focus"
             onAnswered={(ok) => setSession((s) => ({ tries: s.tries + 1, correct: s.correct + (ok ? 1 : 0) }))}
           />
           {reached && (
