@@ -61,6 +61,7 @@ export default function App() {
               <Route path="study/:course" element={<StudyCourse />} />
               <Route path="study/mistakes" element={<StudyMistakes />} />
               <Route path="study/:course/exam" element={<StudyExam />} />
+              <Route path="study/:course/recall" element={<StudyRecall />} />
               <Route path="study/:course/:chapter" element={<StudyRead />} />
               <Route path="study/:course/:chapter/cheatsheet" element={<StudyCheatSheet />} />
               <Route path="study/:course/:chapter/recall" element={<StudyRecall />} />

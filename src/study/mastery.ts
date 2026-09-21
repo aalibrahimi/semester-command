@@ -17,6 +17,8 @@
  */
 import { useSyncExternalStore } from "react";
 import * as ipc from "@/lib/ipc";
+import { courseBySlug } from "./courses";
+import { daysUntil } from "./index";
 
 export type SectionStatus = "unread" | "shaky" | "mastered";
 
@@ -134,6 +136,20 @@ export function useMastery(guideId: string): GuideMastery {
   return m;
 }
 
+let version = 0;
+if (typeof window !== "undefined") window.addEventListener(EVENT, () => void version++);
+
+/** Live view of several guides' mastery at once (course-wide Recall). */
+export function useMasteries(guideIds: string[]): Record<string, GuideMastery> {
+  useSyncExternalStore(subscribe, () => version);
+  const out: Record<string, GuideMastery> = {};
+  for (const id of guideIds) {
+    out[id] = snapshot(id);
+    if (!out[id].loaded) void ensureLoaded(id);
+  }
+  return out;
+}
+
 /* ── Reads ─────────────────────────────────────────────────────────────── */
 
 export function sectionStatus(m: GuideMastery, sectionId: string): SectionStatus {
@@ -199,7 +215,24 @@ export async function saveScratch(guideId: string, sectionId: string, scratch: s
  * Intervals are in days; sub-day steps are fractions (1 min = 1/1440).
  */
 const MIN = 1 / 1440;
-export function nextReview(prev: ReviewRecord | undefined, guideId: string, itemId: string, grade: 0 | 1 | 2 | 3, now = new Date()): ReviewRecord {
+/**
+ * Exam-aware cap: never schedule a card past the course's next exam or
+ * quiz, and inside the last two weeks squeeze intervals to at most half the
+ * days left (so a "Good" three days out comes back tomorrow, not in six).
+ * Returns null when there is no upcoming date or it is far away.
+ */
+export function examCapDays(guideId: string, now = new Date()): number | null {
+  const slug = guideId.split("/")[0];
+  const c = courseBySlug(slug);
+  if (!c) return null;
+  const dates = [c.exam.date, ...c.deadlines.filter((d) => d.kind === "exam" || d.kind === "quiz").map((d) => d.date)];
+  const upcoming = dates.map((d) => daysUntil(d, now)).filter((d) => d >= 0).sort((a, b) => a - b)[0];
+  if (upcoming === undefined || upcoming > 30) return null;
+  if (upcoming <= 14) return Math.max(1, Math.floor(upcoming / 2));
+  return upcoming;
+}
+
+export function nextReview(prev: ReviewRecord | undefined, guideId: string, itemId: string, grade: 0 | 1 | 2 | 3, now = new Date(), capDays: number | null = null): ReviewRecord {
   const r: ReviewRecord = prev ?? { guideId, itemId, lastSeen: null, misses: 0, nextDue: null, ease: 2.5, intervalDays: 0, reps: 0 };
   let { ease, intervalDays, reps, misses } = r;
   if (grade === 0) {
@@ -221,19 +254,21 @@ export function nextReview(prev: ReviewRecord | undefined, guideId: string, item
     reps += 1;
     ease = Math.max(1.3, ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)));
   }
+  if (capDays !== null && intervalDays > capDays) intervalDays = capDays;
   const due = new Date(now.getTime() + intervalDays * 86_400_000);
   return { guideId, itemId, lastSeen: now.toISOString(), misses, nextDue: due.toISOString(), ease: Number(ease.toFixed(3)), intervalDays, reps };
 }
 
 /** The interval each grade would give — for the labels on the four buttons. */
 export function previewIntervals(prev: ReviewRecord | undefined, guideId: string, itemId: string): Record<0 | 1 | 2 | 3, number> {
-  const at = (g: 0 | 1 | 2 | 3) => nextReview(prev, guideId, itemId, g).intervalDays;
+  const cap = examCapDays(guideId);
+  const at = (g: 0 | 1 | 2 | 3) => nextReview(prev, guideId, itemId, g, new Date(), cap).intervalDays;
   return { 0: at(0), 1: at(1), 2: at(2), 3: at(3) };
 }
 
 export async function recordReview(guideId: string, itemId: string, grade: 0 | 1 | 2 | 3): Promise<ReviewRecord> {
   const m = snapshot(guideId);
-  const next = nextReview(m.reviews[itemId], guideId, itemId, grade);
+  const next = nextReview(m.reviews[itemId], guideId, itemId, grade, new Date(), examCapDays(guideId));
   const row = ipc.IS_TAURI ? await ipc.recordStudyReview(next) : next;
   commit({ ...m, reviews: { ...m.reviews, [itemId]: row } });
   return row;

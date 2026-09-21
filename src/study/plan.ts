@@ -117,10 +117,21 @@ export function plan(input: PlanInput, limit = 5): Action[] {
       }
     }
 
-    // 3. Cards due, per guide.
-    for (const g of guides) {
-      const due = input.reviews.filter((r) => r.guideId === g.id && (!r.nextDue || new Date(r.nextDue) <= now)).length;
-      if (due === 0) continue;
+    // 3. Cards due. Several chapters due → one interleaved session for the course.
+    const dueByGuide = guides.map((g) => ({ g, due: input.reviews.filter((r) => r.guideId === g.id && (!r.nextDue || new Date(r.nextDue) <= now)).length })).filter((x) => x.due > 0);
+    const dueTotal = dueByGuide.reduce((s, x) => s + x.due, 0);
+    if (dueByGuide.length >= 2) {
+      out.push({
+        kind: "recall",
+        course,
+        title: `Recall: ${dueTotal} cards due across ${dueByGuide.length} chapters`,
+        reason: `interleaved, the way the exam mixes them · ${when}`,
+        to: `/study/${course.slug}/recall`,
+        minutes: Math.min(25, 3 + Math.ceil(dueTotal / 2)),
+        score: p * (1.3 + Math.min(dueTotal, 30) / 20),
+      });
+    } else if (dueByGuide.length === 1) {
+      const { g, due } = dueByGuide[0];
       out.push({
         kind: "recall",
         course,

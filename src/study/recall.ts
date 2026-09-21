@@ -4,19 +4,27 @@
  * cluster" both call it.
  *
  * Cards per block:
- *   definition → two: term→body ("#tb") and body→term ("#bt")
+ *   definition → two: term→body ("#tb") and body→term ("#bt"), plus a
+ *                cloze ("#cloze") when the body has a bold phrase to blank:
+ *                the reader TYPES the missing words (production, not recognition)
  *   check      → one, itemId = the block id (shared with Read's "Test me")
  *   trap       → one "spot the trap" ("#trap")
  *   example    → one "compute it" ("#compute"), only when the block has an answer
+ *   drill      → one per drill in study/drills ("drill:<id>"): a fresh
+ *                generated instance each time, checked by the drill's grader
  *
  * Queue: due cards first (never-seen counts as due); within due, cards from
  * trap blocks and cards with misses > 0 first; then section order, then
- * block order. Cards not yet due are not in the queue.
+ * block order. Cards not yet due are not in the queue. Across guides
+ * (course-wide Recall) the queues are interleaved round-robin so chapters
+ * alternate, which is what makes review transfer to a mixed exam.
  */
+import type { Drill, DrillAnswer, DrillInstance } from "./drill";
+import { randomSeed, rng } from "./drill";
 import type { Guide, GuideBlock, GuideSection } from "./guide";
 import { isDue, type GuideMastery, type ReviewRecord } from "./mastery";
 
-export type CardKind = "term" | "body" | "check" | "trap" | "compute";
+export type CardKind = "term" | "body" | "check" | "trap" | "compute" | "cloze" | "drill";
 
 export const CARD_KIND_LABEL: Record<CardKind, string> = {
   term: "term → definition",
@@ -24,12 +32,15 @@ export const CARD_KIND_LABEL: Record<CardKind, string> = {
   check: "self-test question",
   trap: "spot the trap",
   compute: "compute it",
+  cloze: "fill the blank (typed)",
+  drill: "solve it (generated, checked)",
 };
 
 export interface Card {
   /** The review-record key: block id plus a suffix for generated cards. */
   itemId: string;
   blockId: string;
+  guideId: string;
   kind: CardKind;
   sectionId: string;
   sectionIndex: number;
@@ -40,16 +51,49 @@ export interface Card {
   mono?: string;
   answer: string;
   fromTrap: boolean;
+  /**
+   * Production cards: the answer is typed and checked before grading.
+   * cloze → text accept list; drill → the generated instance's answer.
+   */
+  typed?: DrillAnswer;
+  /** drill cards: the instance (steps, diagnose) and its seed. */
+  drill?: { drill: Drill; seed: number; inst: DrillInstance };
 }
 
-function cardsOfBlock(b: GuideBlock, s: GuideSection, si: number, bi: number): Card[] {
-  const base = { blockId: b.id, sectionId: s.id, sectionIndex: si, bullet: bi + 1 };
+/** The first bold phrase in a definition body that isn't the term itself and is 1 to 4 words. */
+function clozeTarget(term: string, body: string): string | null {
+  const bolds = [...body.matchAll(/\*\*([^*]+)\*\*/g)].map((m) => m[1].trim());
+  for (const b of bolds) {
+    const words = b.split(/\s+/);
+    if (words.length >= 1 && words.length <= 4 && b.toLowerCase() !== term.toLowerCase() && /[a-z0-9]/i.test(b) && !/[:=]/.test(b)) return b;
+  }
+  return null;
+}
+
+function cardsOfBlock(b: GuideBlock, s: GuideSection, si: number, bi: number, guideId: string): Card[] {
+  const base = { blockId: b.id, guideId, sectionId: s.id, sectionIndex: si, bullet: bi + 1 };
   switch (b.type) {
-    case "definition":
-      return [
+    case "definition": {
+      const cards: Card[] = [
         { ...base, itemId: `${b.id}#tb`, kind: "term", prompt: `Define: ${b.term}`, answer: b.body, fromTrap: false },
         { ...base, itemId: `${b.id}#bt`, kind: "body", prompt: "Which term is this?", mono: b.body, answer: b.term, fromTrap: false },
       ];
+      const target = clozeTarget(b.term, b.body);
+      if (target) {
+        const blank = "＿".repeat(Math.min(10, Math.max(4, target.length)));
+        cards.push({
+          ...base,
+          itemId: `${b.id}#cloze`,
+          kind: "cloze",
+          prompt: `Fill the blank: ${b.term}`,
+          mono: b.body.replace(`**${target}**`, `**${blank}**`),
+          answer: target,
+          fromTrap: false,
+          typed: { kind: "text", accept: [target], placeholder: "type the missing words" },
+        });
+      }
+      return cards;
+    }
     case "check":
       return [{ ...base, itemId: b.id, kind: "check", prompt: b.prompt, answer: b.answer, fromTrap: false }];
     case "trap": {
@@ -75,8 +119,51 @@ function cardsOfBlock(b: GuideBlock, s: GuideSection, si: number, bi: number): C
   }
 }
 
-export function cardsFor(guide: Guide): Card[] {
-  return guide.sections.flatMap((s, si) => s.blocks.flatMap((b, bi) => cardsOfBlock(b, s, si, bi)));
+/** A drill as a card: one fresh instance per call (the seed is kept on the card). */
+function drillCard(d: Drill, guide: Guide): Card | null {
+  const si = guide.sections.findIndex((s) => s.id === d.sectionRef);
+  if (si < 0) return null;
+  const seed = randomSeed();
+  const inst = d.gen(rng(seed));
+  if (inst.answer.kind === "checklist") return null;
+  return {
+    itemId: `drill:${d.id}`,
+    blockId: d.sectionRef,
+    guideId: guide.id,
+    kind: "drill",
+    sectionId: d.sectionRef,
+    sectionIndex: si,
+    bullet: 0,
+    prompt: inst.prompt,
+    mono: inst.code,
+    answer: "",
+    fromTrap: false,
+    typed: inst.answer,
+    drill: { drill: d, seed, inst },
+  };
+}
+
+export function cardsFor(guide: Guide, drills: Drill[] = []): Card[] {
+  const fromBlocks = guide.sections.flatMap((s, si) => s.blocks.flatMap((b, bi) => cardsOfBlock(b, s, si, bi, guide.id)));
+  const fromDrills = drills.map((d) => drillCard(d, guide)).filter((c): c is Card => c !== null);
+  return [...fromBlocks, ...fromDrills];
+}
+
+/** Round-robin merge of several guides' queues, so chapters alternate. */
+export function interleave(queues: Card[][]): Card[] {
+  const out: Card[] = [];
+  const idx = queues.map(() => 0);
+  for (;;) {
+    let any = false;
+    queues.forEach((q, k) => {
+      if (idx[k] < q.length) {
+        out.push(q[idx[k]++]);
+        any = true;
+      }
+    });
+    if (!any) break;
+  }
+  return out;
 }
 
 /* ── Card-level status, from the review record ─────────────────────────── */
