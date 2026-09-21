@@ -106,7 +106,7 @@ export function AnswerInput({
                 else next.delete(i);
                 onChange([...next].sort((a, b) => a - b).join(","));
               }}
-              className="mt-1 accent-[rgb(var(--brand))]"
+              className="mt-1 accent-[rgb(var(--accent))]"
             />
             <span className="min-w-0">
               <Inline text={it} />

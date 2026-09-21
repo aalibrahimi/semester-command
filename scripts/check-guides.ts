@@ -14,6 +14,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { courses } from "../src/study/courses";
+import { SIM_NAMES } from "../src/study/sims";
 
 const dir = join(process.cwd(), "src/study/guides");
 const problems: string[] = [];
@@ -49,14 +50,6 @@ for (const f of readdirSync(dir)) {
       else if (seen.has(id)) at(`duplicate block id ${id}`);
       else seen.add(id);
       if (b.slide !== undefined && b.slide !== true && !isStr(b.slide)) at(`${id}: slide must be true or a string`);
-      if (b.slideNotes !== undefined && !isStr(b.slideNotes)) at(`${id}: slideNotes must be a string`);
-      if (b.resources !== undefined) {
-        if (!isArr(b.resources)) at(`${id}: resources must be an array`);
-        else for (const r of b.resources as Record<string, unknown>[]) {
-          if (!isStr(r.label) || !isStr(r.url) || !/^https:\/\//.test(r.url as string)) at(`${id}: resource needs a label and an https url`);
-          if (r.kind !== undefined && r.kind !== "video" && r.kind !== "site") at(`${id}: resource.kind must be video|site`);
-        }
-      }
       switch (b.type) {
         case "prose": if (!isStr(b.md)) at(`${id}: prose.md`); if (b.label !== undefined && b.label !== "why") at(`${id}: prose.label`); break;
         case "definition":
@@ -77,6 +70,11 @@ for (const f of readdirSync(dir)) {
           else for (const fr of b.frames as Record<string, unknown>[]) if (!["array", "tree", "lines"].includes(fr.kind as string) || !isStr(fr.caption)) at(`${id}: bad frame`);
           break;
         case "figure": if (!isStr(b.svg) || !isStr(b.viewBox) || !isStr(b.caption)) at(`${id}: figure`); break;
+        case "sim":
+          if (!isStr(b.sim) || !isStr(b.caption)) at(`${id}: sim name/caption`);
+          else if (!(SIM_NAMES as readonly string[]).includes(b.sim)) at(`${id}: unknown sim "${b.sim}" (see src/study/sims.ts)`);
+          if (b.params !== undefined && (typeof b.params !== "object" || b.params === null || Array.isArray(b.params))) at(`${id}: sim.params must be an object`);
+          break;
         default: at(`${String(id)}: unknown block type ${String(b.type)}`);
       }
     }

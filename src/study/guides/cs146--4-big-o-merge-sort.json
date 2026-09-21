@@ -96,7 +96,11 @@
           "slide": "HW 4 Problem 3: when do constants win?",
           "slideNotes": "The general recipe for every 'which is faster' question: set the two cost functions equal, solve for n, and that crossover is where the winner flips. Below the crossover the bigger constant is just a bigger constant; above it, the faster-growing term takes over and **never gives the lead back** — that's the whole meaning of asymptotic. The Big-O Cheat Sheet below has the standard growth rates of every structure and sort in one table; it's the thing to stare at the night before the exam.",
           "resources": [
-            { "label": "Big-O Cheat Sheet", "url": "https://www.bigocheatsheet.com/", "kind": "site" }
+            {
+              "label": "Big-O Cheat Sheet",
+              "url": "https://www.bigocheatsheet.com/",
+              "kind": "site"
+            }
           ],
           "id": "bigo.0264e589"
         },
@@ -460,6 +464,26 @@
           "id": "mergesort.c0aa0b55"
         },
         {
+          "id": "mergesort.2dea72bf",
+          "type": "sim",
+          "sim": "sort",
+          "params": {
+            "algorithm": "merge",
+            "array": [
+              7,
+              3,
+              9,
+              1,
+              4,
+              8,
+              2,
+              6
+            ]
+          },
+          "caption": "Merge sort on your own array. Watch the splits go down to single elements and the merges come back up; the window shows which slice is being worked on. Count the levels for n = 8.",
+          "slide": "Try it"
+        },
+        {
           "type": "example",
           "title": "Indent by recursion depth. Under each call, show its two sub-calls, then `→ result` when it returns. Odd lengths: the left half gets the extra element (mid = (lo + hi) / 2, left = lo..mid).",
           "body": "M([50, 20, 60, 30, 10])\n  M([50, 20, 60])\n    M([50, 20])\n      M([50]) → [50]\n      M([20]) → [20]\n      → [20, 50]\n    M([60]) → [60]\n    → [20, 50, 60]\n  M([30, 10])\n    M([30]) → [30]\n    M([10]) → [10]\n    → [10, 30]\n  → [10, 20, 30, 50, 60]",
@@ -549,8 +573,16 @@
           "slide": "Every level costs n; there are log n levels",
           "slideNotes": "This one picture is worth memorizing because it comes back **twice**: Lecture 6 formalizes it as the recursion-tree method (the table you build for HW 6 IS this figure with algebra), and the master theorem's three cases describe whether the levels of a tree like this stay even, grow, or shrink. 'Cost per level × number of levels' is the template — n work per level × log₂ n levels = n log n. Abdul Bari's video below walks the same tree with different numbers if you want to hear it a second way; VisuAlgo animates the actual splits and merges on a real array.",
           "resources": [
-            { "label": "Merge sort, step by step (Abdul Bari)", "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8", "kind": "video" },
-            { "label": "Watch merge sort run (VisuAlgo)", "url": "https://visualgo.net/en/sorting", "kind": "site" }
+            {
+              "label": "Merge sort, step by step (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
+              "kind": "video"
+            },
+            {
+              "label": "Watch merge sort run (VisuAlgo)",
+              "url": "https://visualgo.net/en/sorting",
+              "kind": "site"
+            }
           ],
           "id": "mergesort.a3f7c210"
         },

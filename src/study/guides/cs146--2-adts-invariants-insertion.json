@@ -167,7 +167,11 @@
           "slide": "Array stack in Java (write it cold)",
           "slideNotes": "'Write it cold' means: close the guide, open a blank file, and type push/pop/peek from memory until it compiles in your head. The three failure points graders look for: forgetting the **full check** in push, forgetting the **empty check** in pop, and mixing up `top++` vs `++top` (does top point AT the last element or one PAST it? Pick one story and keep it). The USFCA visualizer below animates both the array and linked versions one operation at a time — race it: predict the picture before each click.",
           "resources": [
-            { "label": "Stack visualizer (USFCA)", "url": "https://www.cs.usfca.edu/~galles/visualization/Algorithms.html", "kind": "site" }
+            {
+              "label": "Stack visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/Algorithms.html",
+              "kind": "site"
+            }
           ],
           "id": "stack.c81ce0de"
         },
@@ -302,7 +306,11 @@
           "slide": "Why it's called circular",
           "slideNotes": "The one thing this picture hides is the classic gotcha: with only `front` and `rear` pointers, a **completely full** ring and a **completely empty** ring look identical (front == rear). That's why real implementations either keep a separate `size` counter or sacrifice one slot ('full' = rear is one behind front). If an exam asks 'how do you tell full from empty in a circular queue,' that's the expected answer — and it's worth trying both cases by hand on VisuAlgo's queue mode below.",
           "resources": [
-            { "label": "Play with lists, stacks & queues (VisuAlgo)", "url": "https://visualgo.net/en/list", "kind": "site" }
+            {
+              "label": "Play with lists, stacks & queues (VisuAlgo)",
+              "url": "https://visualgo.net/en/list",
+              "kind": "site"
+            }
           ],
           "id": "queue.b1c2d3e4"
         },
@@ -394,8 +402,16 @@
           "slide": "A singly linked list, drawn honestly",
           "slideNotes": "On any linked-list exam question, **draw this picture first** — boxes, arrows, the head pointer, and the slash for null. Almost every wrong answer in this topic comes from doing pointer surgery in your head instead of on paper. The Bro Code video below builds exactly this picture step by step in 13 minutes (it's the same visual style as this figure), and VisuAlgo lets you click insert/remove and watch the arrows rewire themselves — do five random operations there and predict each redraw before it happens.",
           "resources": [
-            { "label": "Linked lists in 13 minutes (Bro Code)", "url": "https://www.youtube.com/watch?v=N6dOwBde7-M", "kind": "video" },
-            { "label": "Linked list visualizer (VisuAlgo)", "url": "https://visualgo.net/en/list", "kind": "site" }
+            {
+              "label": "Linked lists in 13 minutes (Bro Code)",
+              "url": "https://www.youtube.com/watch?v=N6dOwBde7-M",
+              "kind": "video"
+            },
+            {
+              "label": "Linked list visualizer (VisuAlgo)",
+              "url": "https://visualgo.net/en/list",
+              "kind": "site"
+            }
           ],
           "id": "linked.f1a2b3c4"
         },
@@ -554,7 +570,11 @@
           "slide": "Sorting a hand of cards",
           "slideNotes": "Keep the card image and you get insertion sort's whole behavior for free: cards that arrive **already in order** slide right in (best case O(n) — this is why insertion sort is the fastest choice on nearly-sorted data), and cards that arrive in reverse order each shove past your entire hand (worst case O(n²)). VisuAlgo below lets you feed it a sorted, reversed, or random array and watch exactly those two extremes play out — try all three and count the shifts.",
           "resources": [
-            { "label": "Sorting visualizer (VisuAlgo)", "url": "https://visualgo.net/en/sorting", "kind": "site" }
+            {
+              "label": "Sorting visualizer (VisuAlgo)",
+              "url": "https://visualgo.net/en/sorting",
+              "kind": "site"
+            }
           ],
           "id": "insertion.914a621c"
         },
@@ -726,6 +746,25 @@
           "body": "public static void insertionSort(int[] a) {\n  if (a == null || a.length < 2) return;      // Project 1 guard\n  for (int j = 1; j < a.length; j++) {\n    int key = a[j];\n    int i = j - 1;\n    while (i >= 0 && a[i] > key) {\n      a[i + 1] = a[i];      // shift the bigger element right\n      i = i - 1;\n    }\n    a[i + 1] = key;         // drop key into the hole\n  }\n}",
           "slide": "The code from the slides (Project 1 Part 1)",
           "id": "insertion.12ab85a2"
+        },
+        {
+          "id": "insertion.95ae341f",
+          "type": "sim",
+          "sim": "sort",
+          "params": {
+            "algorithm": "insertion",
+            "array": [
+              7,
+              3,
+              9,
+              1,
+              4,
+              8,
+              2
+            ]
+          },
+          "caption": "Insertion sort on your own array, one shift at a time, with the comparison and shift counts live. Type a reversed array (9, 8, 7, 6, 5) and confirm n(n−1)/2 shifts; type a sorted one and confirm zero.",
+          "slide": "Try it"
         },
         {
           "type": "prose",

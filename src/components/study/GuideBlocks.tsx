@@ -10,6 +10,7 @@
  *   table       bordered table
  *   stepper     the existing click-through Stepper
  *   figure      inline SVG with caption
+ *   sim         an interactive simulator from sims/ (dials, machines, sound)
  *   check       not rendered here — the right rail's "Test me" owns checks
  *
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
@@ -22,6 +23,7 @@ import type { GuideBlock } from "@/study/guide";
 import { Inline } from "./Blocks";
 import { CodeHighlight } from "./CodeHighlight";
 import { ResourceChips } from "./ResourceChips";
+import { Sim } from "./sims";
 import { Stepper } from "./Stepper";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
@@ -177,6 +179,16 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
         <figure id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
           <svg viewBox={block.viewBox} className="mx-auto h-auto w-full max-w-[560px]" dangerouslySetInnerHTML={{ __html: block.svg }} />
           <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">{block.caption}</figcaption>
+        </figure>
+      );
+
+    case "sim":
+      return (
+        <figure id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
+          <Sim name={block.sim} params={block.params ?? {}} />
+          <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            <Inline text={block.caption} />
+          </figcaption>
         </figure>
       );
 

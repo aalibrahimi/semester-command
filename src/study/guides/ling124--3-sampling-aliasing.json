@@ -212,6 +212,18 @@
           "id": "alias.4e9a71c3"
         },
         {
+          "id": "alias.9ec32c57",
+          "type": "sim",
+          "sim": "sampling",
+          "params": {
+            "f": 7,
+            "fs": 8,
+            "bits": 3
+          },
+          "caption": "Drag F past Fₛ/2 and watch the dashed alias appear through the same dots; the buttons play the true tone and the tone the computer keeps. Turn on quantization and drop to 2 bits to hear the staircase.",
+          "slide": "Try it"
+        },
+        {
           "type": "example",
           "title": "The proof, one line at a time",
           "body": "Show that cos(2πFt) and cos(2π(F + Fₛ)t) give identical samples at rate Fₛ.\n\n1. Samples are taken at t = n/Fₛ. So the samples of the second wave are cos(2π(F + Fₛ)·n/Fₛ).\n2. Distribute: cos(2πF·n/Fₛ + 2πFₛ·n/Fₛ) = cos(2πF·n/Fₛ + 2πn).\n3. 2πn is a whole number of full turns. Cosine is 2π-periodic, so cos(x + 2πn) = cos(x).\n4. Therefore = cos(2πF·n/Fₛ) — exactly the samples of the first wave. Adding Fₛ to the frequency changes nothing after sampling.",

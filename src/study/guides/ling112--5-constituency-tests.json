@@ -22,6 +22,14 @@
           "id": "why.031ea67f"
         },
         {
+          "id": "why.0412d4c1",
+          "type": "sim",
+          "sim": "tree",
+          "params": {},
+          "caption": "The handout sentence as a tree. Click NP, VP or PP to see exactly which words that node dominates and which test would prove it: pro-form, movement, fragment. Edit the brackets to draw your own.",
+          "slide": "Try it"
+        },
+        {
           "type": "definition",
           "term": "Constituent",
           "body": "Any linguistic expression that behaves as a syntactic unit. A single word is trivially a constituent; the tests are for multi-word strings. **Constituency tests** are diagnostics: substitution, movement, and fragment answer. Not every constituent passes every test — 'you may need to try multiple tests before you find one that works' — but a string that passes *any* test is a constituent.",

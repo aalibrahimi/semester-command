@@ -193,8 +193,16 @@
           "slide": "The array IS the tree",
           "slideNotes": "Exam translation drill: given an array, you should be able to sketch the tree in under 30 seconds, and given a tree, write the array. The three formulas (parent (i−1)/2, children 2i+1 and 2i+2) are all you need — no pointers exist anywhere. This is also why heaps are so fast in practice: the whole 'tree' is one contiguous block of memory the CPU cache loves. Abdul Bari's video below covers this chapter end to end (heap, heapify, heapsort, PQ) with the same array-first view; VisuAlgo lets you insert and extract while watching the array and tree update side by side — which is exactly the skill the exam tests.",
           "resources": [
-            { "label": "Heaps & heapsort, full walkthrough (Abdul Bari)", "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U", "kind": "video" },
-            { "label": "Heap visualizer, array + tree (VisuAlgo)", "url": "https://visualgo.net/en/heap", "kind": "site" }
+            {
+              "label": "Heaps & heapsort, full walkthrough (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U",
+              "kind": "video"
+            },
+            {
+              "label": "Heap visualizer, array + tree (VisuAlgo)",
+              "url": "https://visualgo.net/en/heap",
+              "kind": "site"
+            }
           ],
           "id": "array.7b9e2c48"
         },
@@ -586,6 +594,24 @@
           "id": "build.65254e16"
         },
         {
+          "id": "build.81dc7e1a",
+          "type": "sim",
+          "sim": "sort",
+          "params": {
+            "algorithm": "buildheap",
+            "array": [
+              3,
+              9,
+              2,
+              1,
+              4,
+              5
+            ]
+          },
+          "caption": "buildHeap, bottom-up, on your array: it starts at the last non-leaf and each heapify is shown as the array and as the tree. Try the check's [3, 9, 2, 1, 4, 5] and confirm heapify runs on 2, 1, 0.",
+          "slide": "Try it"
+        },
+        {
           "type": "prose",
           "label": "why",
           "md": "**The non-obvious runtime** There are about n/2 calls to heapify, each 'O(log n)', so the lazy answer is O(n log n). But most of those calls are cheap. Half the nodes are leaves (cost 0 — we skip them). A quarter sit one level up and can sink at most 1 step. An eighth can sink at most 2. Add it up: n/4·1 + n/8·2 + n/16·3 + … — a series whose sum is about n, not n log n. Poon states O(n) on slide 25; the sentence to say is **'most nodes are near the bottom, so most heapify calls are short.'**",
@@ -774,6 +800,24 @@
           "body": "static void heapSort(int[] a) {\n  buildHeap(a);                              // O(n)\n  for (int end = a.length - 1; end > 0; end--) {\n    int t = a[0]; a[0] = a[end]; a[end] = t; // max → its final slot\n    heapify(a, 0, end);                      // heap is now a[0..end-1]; O(log n)\n  }\n}",
           "slide": "heapSort in Java",
           "id": "sort.cf39e00d"
+        },
+        {
+          "id": "sort.25e5c26e",
+          "type": "sim",
+          "sim": "sort",
+          "params": {
+            "algorithm": "heapsort",
+            "array": [
+              3,
+              9,
+              2,
+              1,
+              4,
+              5
+            ]
+          },
+          "caption": "heapSort: swap the max to the end, shrink the heap, heapify the root, repeat. The settled tail turns green; the tree shows only what is still in the heap.",
+          "slide": "Try it"
         },
         {
           "type": "table",

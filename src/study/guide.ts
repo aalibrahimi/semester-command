@@ -56,7 +56,8 @@ export type GuideBlock =
   | TrapBlock
   | CheckBlock
   | StepperBlock
-  | FigureBlock;
+  | FigureBlock
+  | SimBlock;
 
 /** A verified external link that teaches this exact block's idea — an
  *  interactive visualization or a video. Curated and CHECKED (the URL was
@@ -106,6 +107,19 @@ export interface FigureBlock extends BlockBase {
   type: "figure";
   svg: string;
   viewBox: string;
+  caption: string;
+}
+
+/**
+ * An interactive simulator: a registered React component (components/study/
+ * sims) fed by `params`. The reader changes the dials and watches, or types a
+ * string and runs the machine. `sim` must be one of study/sims.ts SIM_NAMES.
+ */
+export interface SimBlock extends BlockBase {
+  type: "sim";
+  sim: string;
+  params?: Record<string, unknown>;
+  /** What to try, in one or two sentences. */
   caption: string;
 }
 

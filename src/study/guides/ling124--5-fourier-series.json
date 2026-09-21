@@ -296,6 +296,19 @@
           "id": "spectrum.f42f5899"
         },
         {
+          "id": "spectrum.5240f4b2",
+          "type": "sim",
+          "sim": "fourier",
+          "params": {
+            "f0": 2,
+            "shape": "square",
+            "harmonics": 3,
+            "audioF0": 110
+          },
+          "caption": "Add harmonics one at a time and watch the square wave form; the stems below are the one-sided magnitude spectrum, each labelled with A_k. Switch to triangle to see why 1/k² amplitudes converge so fast, and play each.",
+          "slide": "Try it"
+        },
+        {
           "type": "example",
           "title": "F₀ = 5 Hz triangle wave with cosine amplitudes 8/(π²k²) for odd k",
           "body": "The lab's first block of questions.\n\n1. Q1: F₀ = 5 Hz → T₀ = 1/5 = 0.2 s.\n2. Q2: 5th harmonic is at 5·F₀ = 25 Hz.\n3. Q3: its amplitude is 8/(π²·25) = 8/(25π²). Even harmonics are 0 (a triangle wave is symmetric in a way that kills them).\n4. Q4 (the sketch): stems at 5, 15, 25, 35, 45 Hz with heights 8/π², 8/(9π²), 8/(25π²), 8/(49π²), 8/(81π²) — falling fast — and nothing at 10, 20, 30, 40 Hz.\n5. Q5 (essay): as you add terms, the straight sides get straighter and the rounded peaks get sharper; the remaining error is largest at the peaks and troughs, because sharp corners need the highest harmonics.\n6. Q12: two-sided coefficients X_k = A_k/2 = 4/(π²k²) for odd k > 0, zero for even k.\n7. Q13: rebuilding from X_k should **match** the cosine reconstruction, since each ±k pair of complex terms adds up to exactly the k-th cosine.",

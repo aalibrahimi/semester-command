@@ -183,6 +183,59 @@
           "id": "workflow.e80c596e"
         },
         {
+          "id": "workflow.c4d8879f",
+          "type": "sim",
+          "sim": "dfa",
+          "params": {
+            "states": [
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "start": "q0",
+            "accept": [
+              "q3"
+            ],
+            "delta": {
+              "q0": {
+                "a": "q1",
+                "b": "q4"
+              },
+              "q1": {
+                "b": "q2",
+                "a": "q4"
+              },
+              "q2": {
+                "b": "q3",
+                "a": "q4"
+              },
+              "q3": {
+                "a": "q4",
+                "b": "q4"
+              },
+              "q4": {
+                "a": "q4",
+                "b": "q4"
+              }
+            },
+            "input": "abb",
+            "editable": false,
+            "tests": [
+              "",
+              "abb",
+              "aba",
+              "ab",
+              "abbb",
+              "b",
+              "bab"
+            ]
+          },
+          "caption": "The {abb} machine, live. Type a string, press Step to consume one symbol at a time and watch the state move; Run finishes it. Try λ (empty box), abb, aba, abbb: only the walk a, b, b reaches the double circle.",
+          "slide": "Try it"
+        },
+        {
           "type": "definition",
           "term": "Start configuration",
           "body": "clock at timeframe 0; input string on the tape with the cursor on the leftmost cell; control unit in the initial state; result = Reject.",
@@ -350,6 +403,43 @@
           ],
           "slide": true,
           "id": "design.2697f08c"
+        },
+        {
+          "id": "design.773e942a",
+          "type": "sim",
+          "sim": "dfa",
+          "params": {
+            "start": "q0",
+            "accept": [
+              "q1"
+            ],
+            "delta": {
+              "q0": {
+                "a": "q1",
+                "b": "q2"
+              },
+              "q1": {
+                "a": "q1",
+                "b": "q1"
+              },
+              "q2": {
+                "a": "q2",
+                "b": "q2"
+              }
+            },
+            "input": "abba",
+            "tests": [
+              "",
+              "a",
+              "b",
+              "ab",
+              "ba",
+              "aab",
+              "bba"
+            ]
+          },
+          "caption": "Design one yourself. Edit δ (one line per transition, 'q0 a,b q1' stacks labels), set q₀ and F, and the totality check tells you which (state, symbol) pairs still have no arrow. Then read the test set: λ first. Assignment 3 style: build 'contains bb', then 'ends in ab'.",
+          "slide": "Try it"
         },
         {
           "type": "figure",
