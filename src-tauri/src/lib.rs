@@ -115,6 +115,7 @@ pub fn run() {
             commands::degree::set_target_term,
             commands::study::study_mastery,
             commands::study::study_sections_all,
+            commands::study::study_reviews_all,
             commands::study::set_study_section,
             commands::study::save_study_scratch,
             commands::study::record_study_review,

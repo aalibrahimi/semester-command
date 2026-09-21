@@ -474,6 +474,12 @@ export async function studyMastery(guideId: string): Promise<StudyMasteryPayload
   return call<StudyMasteryPayload>("study_mastery", { guideId });
 }
 
+/** Review rows across every guide, for the Study home's due count. */
+export async function studyReviewsAll(): Promise<ReviewRecord[]> {
+  if (!IS_TAURI) return [];
+  return call<ReviewRecord[]>("study_reviews_all");
+}
+
 /** Section rows across every guide, for index-page progress. */
 export async function studySectionsAll(): Promise<SectionRecord[]> {
   if (!IS_TAURI) return [];

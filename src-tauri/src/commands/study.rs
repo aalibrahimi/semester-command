@@ -180,6 +180,16 @@ pub async fn study_attempts_recent(
         .map_err(storage_err)
 }
 
+/// Every review row — the Study home counts what is due across all guides.
+#[tauri::command]
+pub async fn study_reviews_all(app: AppHandle) -> CommandResult<Vec<StudyReviewRow>> {
+    let db = db_of(&app);
+    sqlx::query_as("SELECT * FROM study_review")
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)
+}
+
 /// Section status for every guide — the Study index and course pages need
 /// progress without loading each guide.
 #[tauri::command]

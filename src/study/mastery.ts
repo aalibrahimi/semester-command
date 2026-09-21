@@ -269,6 +269,40 @@ export async function examsRecent(course?: string): Promise<ExamRecord[]> {
   }
 }
 
+/* ── Cross-guide reads (Study home, mistake log) ───────────────────────── */
+
+function localGuides(): GuideMastery[] {
+  const out: GuideMastery[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k?.startsWith("sc.study.mastery.")) out.push(readLocal(k.slice("sc.study.mastery.".length)));
+    }
+  } catch {
+    /* fine */
+  }
+  return out;
+}
+
+export async function sectionsAll(): Promise<SectionRecord[]> {
+  if (ipc.IS_TAURI) return ipc.studySectionsAll();
+  return localGuides().flatMap((m) => Object.values(m.sections));
+}
+
+export async function reviewsAll(): Promise<ReviewRecord[]> {
+  if (ipc.IS_TAURI) return ipc.studyReviewsAll();
+  return localGuides().flatMap((m) => Object.values(m.reviews));
+}
+
+/** Newest first. */
+export async function attemptsRecent(limit = 500): Promise<AttemptRecord[]> {
+  if (ipc.IS_TAURI) return ipc.studyAttemptsRecent(limit);
+  return localGuides()
+    .flatMap((m) => m.attempts)
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .slice(0, limit);
+}
+
 /* ── Browser fallback (vite dev only) ──────────────────────────────────── */
 
 const LOCAL_KEY = (g: string) => `sc.study.mastery.${g}`;

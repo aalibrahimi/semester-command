@@ -10,11 +10,13 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, BookOpen, ChevronRight } from "lucide-react";
+import { AlertTriangle, BookOpen, ChevronRight, ListX, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courses, daysUntil, formatDate } from "@/study";
 import { guidesForCourse } from "@/study/loadGuides";
 import { studySectionsAll } from "@/lib/ipc";
+import { attemptsRecent, examsRecent, reviewsAll, sectionsAll, type AttemptRecord } from "@/study/mastery";
+import { plan, type Action } from "@/study/plan";
 
 const HUES: Record<string, number> = { hist15: 330, cs146: 217, ling112: 282, ling124: 172, ling115: 48, cs154: 200 };
 export const courseTick = (slug: string) => ({ backgroundColor: `hsl(${HUES[slug] ?? 200} 60% 60% / 0.9)` });
@@ -61,6 +63,82 @@ function useCourseProgress(): Record<string, { mastered: number; shaky: number; 
   return bySlug;
 }
 
+/** The "next 45 minutes" list: exam pressure × weakness, from the stores. */
+function usePlan(): { actions: Action[]; mistakes: number; loaded: boolean } {
+  const [state, setState] = useState<{ actions: Action[]; mistakes: number; loaded: boolean }>({ actions: [], mistakes: 0, loaded: false });
+  useEffect(() => {
+    let alive = true;
+    void Promise.all([sectionsAll(), attemptsRecent(2000), reviewsAll(), examsRecent()]).then(([sections, attempts, reviews, exams]) => {
+      if (!alive) return;
+      const guidesByCourse: Record<string, ReturnType<typeof guidesForCourse>> = {};
+      for (const c of courses) guidesByCourse[c.slug] = guidesForCourse(c.slug, c.guides);
+      const actions = plan({ courses, guidesByCourse, sections, attempts, reviews, exams });
+      const weekAgo = Date.now() - 7 * 86_400_000;
+      const mistakes = attempts.filter((a: AttemptRecord) => !a.correct && new Date(a.at).getTime() > weekAgo).length;
+      setState({ actions, mistakes, loaded: true });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return state;
+}
+
+const KIND_LABEL: Record<Action["kind"], string> = { drill: "Drill", recall: "Recall", reread: "Reread", read: "Read", mock: "Mock exam", mistakes: "Mistakes" };
+
+function NextPanel() {
+  const { actions, mistakes, loaded } = usePlan();
+  if (!loaded) return null;
+  const total = actions.reduce((s, a) => s + a.minutes, 0);
+  return (
+    <section className="mt-8">
+      <div className="flex items-baseline gap-3">
+        <h2 className="flex items-center gap-1.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+          <Target className="h-3.5 w-3.5 text-brand-fg" /> What to do now
+        </h2>
+        {actions.length > 0 && (
+          <span data-numeric className="font-mono text-2xs text-muted-foreground">
+            ~{total} min
+          </span>
+        )}
+        <Link to="/study/mistakes" className="ml-auto flex items-center gap-1 text-2xs text-muted-foreground hover:text-foreground">
+          <ListX className="h-3.5 w-3.5" /> {mistakes > 0 ? `${mistakes} mistake${mistakes === 1 ? "" : "s"} this week` : "Mistake log"}
+        </Link>
+      </div>
+      {actions.length === 0 ? (
+        <p className="mt-2 rounded-xl border border-border/60 bg-card px-4 py-3 text-sm text-muted-foreground">
+          Nothing pressing. Open a course and read the next section, or drill one you finished.
+        </p>
+      ) : (
+        <ol className="mt-2 divide-y divide-border/50 rounded-xl border border-border/60 bg-card">
+          {actions.map((a, i) => (
+            <li key={a.to}>
+              <Link to={a.to} className="group flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-micro hover:bg-fill-ghost/60">
+                <span data-numeric className="w-4 shrink-0 font-mono text-2xs text-muted-foreground">
+                  {i + 1}
+                </span>
+                <span aria-hidden className="h-4 w-1 shrink-0 rounded-full" style={courseTick(a.course.slug)} />
+                <span className="w-16 shrink-0 text-2xs font-semibold text-foreground/80">{a.course.code}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate">
+                    <span className="mr-1.5 rounded bg-fill-ghost px-1 py-px font-mono text-2xs uppercase tracking-wider text-muted-foreground">{KIND_LABEL[a.kind]}</span>
+                    {a.title.replace(/^[A-Za-z ]+: /, "")}
+                  </span>
+                  <span className="block truncate text-2xs text-muted-foreground">{a.reason}</span>
+                </span>
+                <span data-numeric className="shrink-0 font-mono text-2xs text-muted-foreground">
+                  {a.minutes} min
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+}
+
 export default function Study() {
   const progress = useCourseProgress();
   const soon = courses
@@ -72,6 +150,8 @@ export default function Study() {
     <div className="mx-auto w-full max-w-[720px] px-8 pb-16 pt-7">
       <h1 className="font-display text-xl font-semibold tracking-tight">Study</h1>
       <p className="mt-1 text-sm text-muted-foreground">Each course is a book of lectures, and every lecture also plays as slides.</p>
+
+      <NextPanel />
 
       {soon.length > 0 && (
         <section className="mt-8">

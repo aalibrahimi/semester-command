@@ -163,9 +163,14 @@ interface CardState {
   shownAt: number;
 }
 
-function make(drill: Drill): CardState {
-  const seed = randomSeed();
+function make(drill: Drill, seed = randomSeed()): CardState {
   return { drill, seed, inst: drill.gen(rng(seed)), shownAt: Date.now() };
+}
+
+/** A specific instance to open with (the mistake log's "retry this exact problem"). */
+export interface DrillReplay {
+  drillId: string;
+  seed: number;
 }
 
 export function DrillCard({
@@ -176,6 +181,7 @@ export function DrillCard({
   onAnswered,
   compact,
   source = "read",
+  replay,
 }: {
   guide: { id: string };
   sectionId: string;
@@ -184,8 +190,13 @@ export function DrillCard({
   onAnswered?: (correct: boolean) => void;
   compact?: boolean;
   source?: "read" | "focus";
+  replay?: DrillReplay;
 }) {
-  const [card, setCard] = useState<CardState>(() => make(pickNext(drills, mastery, sectionId)));
+  const fromReplay = () => {
+    const d = replay && drills.find((x) => x.id === replay.drillId);
+    return d ? make(d, replay.seed) : make(pickNext(drills, mastery, sectionId));
+  };
+  const [card, setCard] = useState<CardState>(fromReplay);
   const [value, setValue] = useState("");
   const [phase, setPhase] = useState<Phase>("answering");
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -195,9 +206,9 @@ export function DrillCard({
   const [why, setWhy] = useState(false);
   const nextRef = useRef<HTMLButtonElement>(null);
 
-  // New section → new card.
+  // New section (or a replay request) → new card.
   useEffect(() => {
-    setCard(make(pickNext(drills, mastery, sectionId)));
+    setCard(fromReplay());
     setValue("");
     setPhase("answering");
     setResult(null);
@@ -206,7 +217,7 @@ export function DrillCard({
     setHint(false);
     setWhy(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionId, drills]);
+  }, [sectionId, drills, replay?.drillId, replay?.seed]);
 
   const next = useCallback(() => {
     setCard(make(pickNext(drills, mastery, sectionId, card.drill.id)));
@@ -459,18 +470,20 @@ export function DrillPanel({
   drills,
   mastery,
   onFocus,
+  replay,
 }: {
   guide: { id: string };
   sectionId: string;
   drills: Drill[];
   mastery: GuideMastery;
   onFocus: () => void;
+  replay?: DrillReplay;
 }) {
   const stats = drillStats(mastery, sectionId);
   const reached = stats.streak >= GOAL;
   const status = mastery.sections[sectionId]?.status ?? "unread";
   return (
-    <section className="mt-10">
+    <section id="drills" className="mt-10">
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <h3 className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
           <Target className="h-4 w-4 text-brand-fg" /> Put it to the test
@@ -488,7 +501,10 @@ export function DrillPanel({
       <p className={cn(BODY, "mb-4 text-muted-foreground")}>
         You just read it. Now do it, before it fades. Each answer is checked the moment you submit; a miss tells you what went wrong, not just that it did.
       </p>
-      <DrillCard guide={guide} sectionId={sectionId} drills={drills} mastery={mastery} />
+      {replay && (
+        <p className="mb-2 text-2xs text-muted-foreground">Replaying the exact problem you missed. After this one, fresh variants.</p>
+      )}
+      <DrillCard guide={guide} sectionId={sectionId} drills={drills} mastery={mastery} replay={replay} />
       {reached && status !== "mastered" && (
         <div className="mt-3 flex items-center gap-3 rounded-lg border border-on-track/50 bg-on-track/[0.08] px-3.5 py-2.5 text-sm">
           <Check className="h-4 w-4 text-on-track-fg" />

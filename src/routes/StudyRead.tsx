@@ -213,10 +213,17 @@ export default function StudyRead() {
   const drills = useMemo(() => drillsFor(guide ? drillsForGuide(guide.id) : undefined, section?.id ?? ""), [guide, section?.id]);
   const [focus, setFocus] = useState(false);
   useEffect(() => setFocus(false), [section?.id]);
+  // From the mistake log: reopen the exact problem (same drill, same seed).
+  const replayDrill = params.get("drill");
+  const replaySeed = Number(params.get("seed"));
+  const replay = useMemo(
+    () => (replayDrill && Number.isFinite(replaySeed) ? { drillId: replayDrill, seed: replaySeed } : undefined),
+    [replayDrill, replaySeed],
+  );
 
   // Arriving from Recall / Map: scroll to the block and flash it; otherwise start at the top.
   useEffect(() => {
-    const at = params.get("at");
+    const at = params.get("at") ?? (params.get("drill") ? "drills" : null);
     const el = at ? document.getElementById(at) : null;
     if (!el) {
       document.querySelector("main")?.scrollTo({ top: 0 });
@@ -339,7 +346,7 @@ export default function StudyRead() {
           </h2>
           <GuideBlocks blocks={section.blocks} />
 
-          {drills.length > 0 && <DrillPanel guide={guide} sectionId={section.id} drills={drills} mastery={mastery} onFocus={() => setFocus(true)} />}
+          {drills.length > 0 && <DrillPanel guide={guide} sectionId={section.id} drills={drills} mastery={mastery} onFocus={() => setFocus(true)} replay={replay} />}
 
           {exercises.length > 0 && (
             <section className="mt-12">
