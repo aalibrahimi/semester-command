@@ -1,9 +1,11 @@
 //! Study mastery commands — the one store behind the Read, Cheat sheet,
-//! Recall and Map views (migration 0010).
+//! Recall and Map views (migration 0010), plus the drill attempt log
+//! (migration 0014).
 //!
 //! Called by: `src/lib/ipc.ts` (`studyMastery`, `setStudySection`,
-//! `saveStudyScratch`, `recordStudyReview`).
-//! Calls: `study_section` and `study_review` via sqlx.
+//! `saveStudyScratch`, `recordStudyReview`, `recordStudyAttempt`,
+//! `studyAttemptsRecent`).
+//! Calls: `study_section`, `study_review` and `study_attempt` via sqlx.
 //!
 //! The frontend keeps an in-memory copy per guide and writes through; every
 //! write returns the row it stored so the copy never drifts from the disk.
@@ -51,6 +53,25 @@ pub struct StudyReviewRow {
     pub reps: i64,
 }
 
+/// One answer to a generated drill (migration 0014). `id` is None on the
+/// way in and set by SQLite on the way out.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StudyAttemptRow {
+    #[serde(default)]
+    pub id: Option<i64>,
+    pub guide_id: String,
+    pub section_id: String,
+    pub drill_id: String,
+    pub seed: i64,
+    pub correct: bool,
+    pub input: Option<String>,
+    pub expected: Option<String>,
+    pub diagnosis: Option<String>,
+    pub ms: Option<i64>,
+    pub at: String,
+}
+
 /// Everything the store holds for one guide.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -58,6 +79,7 @@ pub struct StudyMastery {
     pub guide_id: String,
     pub sections: Vec<StudySectionRow>,
     pub reviews: Vec<StudyReviewRow>,
+    pub attempts: Vec<StudyAttemptRow>,
 }
 
 /// Load one guide's mastery. Missing rows mean unread / never seen.
@@ -74,11 +96,63 @@ pub async fn study_mastery(app: AppHandle, guide_id: String) -> CommandResult<St
         .fetch_all(&db)
         .await
         .map_err(storage_err)?;
+    let attempts = sqlx::query_as("SELECT * FROM study_attempt WHERE guide_id = ?1 ORDER BY at")
+        .bind(&guide_id)
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)?;
     Ok(StudyMastery {
         guide_id,
         sections,
         reviews,
+        attempts,
     })
+}
+
+/// Append one drill attempt. Returns the row with its id.
+#[tauri::command]
+pub async fn record_study_attempt(
+    app: AppHandle,
+    attempt: StudyAttemptRow,
+) -> CommandResult<StudyAttemptRow> {
+    let db = db_of(&app);
+    let id: i64 = sqlx::query_scalar(
+        "INSERT INTO study_attempt (guide_id, section_id, drill_id, seed, correct, input, expected, diagnosis, ms, at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+         RETURNING id",
+    )
+    .bind(&attempt.guide_id)
+    .bind(&attempt.section_id)
+    .bind(&attempt.drill_id)
+    .bind(attempt.seed)
+    .bind(attempt.correct)
+    .bind(&attempt.input)
+    .bind(&attempt.expected)
+    .bind(&attempt.diagnosis)
+    .bind(attempt.ms)
+    .bind(&attempt.at)
+    .fetch_one(&db)
+    .await
+    .map_err(storage_err)?;
+    Ok(StudyAttemptRow {
+        id: Some(id),
+        ..attempt
+    })
+}
+
+/// The most recent attempts across every guide (newest first) — the Study
+/// home's weak-spot panel and the error log.
+#[tauri::command]
+pub async fn study_attempts_recent(
+    app: AppHandle,
+    limit: Option<i64>,
+) -> CommandResult<Vec<StudyAttemptRow>> {
+    let db = db_of(&app);
+    sqlx::query_as("SELECT * FROM study_attempt ORDER BY at DESC LIMIT ?1")
+        .bind(limit.unwrap_or(500).clamp(1, 5000))
+        .fetch_all(&db)
+        .await
+        .map_err(storage_err)
 }
 
 /// Section status for every guide — the Study index and course pages need

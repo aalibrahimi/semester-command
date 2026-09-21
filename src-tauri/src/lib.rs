@@ -118,6 +118,8 @@ pub fn run() {
             commands::study::set_study_section,
             commands::study::save_study_scratch,
             commands::study::record_study_review,
+            commands::study::record_study_attempt,
+            commands::study::study_attempts_recent,
             commands::grades::course_detail,
             commands::grades::course_summaries,
             commands::grades::set_course_hidden,

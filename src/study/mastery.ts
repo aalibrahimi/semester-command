@@ -42,10 +42,28 @@ export interface ReviewRecord {
   reps: number;
 }
 
+/** One answer to a generated drill (migration 0014). */
+export interface AttemptRecord {
+  id?: number | null;
+  guideId: string;
+  sectionId: string;
+  /** `${sectionRef}!${slug}` from study/drill.ts. */
+  drillId: string;
+  seed: number;
+  correct: boolean;
+  input: string | null;
+  expected: string | null;
+  diagnosis: string | null;
+  ms: number | null;
+  at: string;
+}
+
 export interface GuideMastery {
   guideId: string;
   sections: Record<string, SectionRecord>;
   reviews: Record<string, ReviewRecord>;
+  /** Oldest first. */
+  attempts: AttemptRecord[];
   loaded: boolean;
 }
 
@@ -56,7 +74,7 @@ const cache = new Map<string, GuideMastery>();
 const loading = new Set<string>();
 
 function empty(guideId: string): GuideMastery {
-  return { guideId, sections: {}, reviews: {}, loaded: false };
+  return { guideId, sections: {}, reviews: {}, attempts: [], loaded: false };
 }
 
 function snapshot(guideId: string): GuideMastery {
@@ -83,7 +101,7 @@ async function ensureLoaded(guideId: string) {
     for (const s of m.sections) sections[s.sectionId] = s;
     const reviews: Record<string, ReviewRecord> = {};
     for (const r of m.reviews) reviews[r.itemId] = r;
-    commit({ guideId, sections, reviews, loaded: true });
+    commit({ guideId, sections, reviews, attempts: m.attempts ?? [], loaded: true });
   } finally {
     loading.delete(guideId);
   }
@@ -113,6 +131,29 @@ export function review(m: GuideMastery, itemId: string): ReviewRecord | undefine
 
 export function isDue(r: ReviewRecord | undefined, now = new Date()): boolean {
   return !r || !r.nextDue || new Date(r.nextDue) <= now;
+}
+
+export interface DrillStats {
+  tries: number;
+  correct: number;
+  /** Consecutive correct answers ending at the latest attempt. */
+  streak: number;
+  /** The latest miss's diagnosis, if the last attempt was a miss. */
+  lastMiss: AttemptRecord | null;
+}
+
+/** Attempts for one drill, or for a whole section when `drillId` is omitted. */
+export function drillStats(m: GuideMastery, sectionId: string, drillId?: string): DrillStats {
+  const xs = m.attempts.filter((a) => a.sectionId === sectionId && (!drillId || a.drillId === drillId));
+  let streak = 0;
+  for (let i = xs.length - 1; i >= 0 && xs[i].correct; i--) streak++;
+  const last = xs[xs.length - 1];
+  return {
+    tries: xs.length,
+    correct: xs.filter((a) => a.correct).length,
+    streak,
+    lastMiss: last && !last.correct ? last : null,
+  };
 }
 
 /* ── Writes (write-through) ────────────────────────────────────────────── */
@@ -183,13 +224,23 @@ export async function recordReview(guideId: string, itemId: string, grade: 0 | 1
   return row;
 }
 
+export async function recordAttempt(a: Omit<AttemptRecord, "at" | "id">): Promise<AttemptRecord> {
+  const m = snapshot(a.guideId);
+  const draft: AttemptRecord = { ...a, at: new Date().toISOString() };
+  const row = ipc.IS_TAURI ? await ipc.recordStudyAttempt(draft) : { ...draft, id: m.attempts.length + 1 };
+  commit({ ...m, attempts: [...m.attempts, row] });
+  return row;
+}
+
 /* ── Browser fallback (vite dev only) ──────────────────────────────────── */
 
 const LOCAL_KEY = (g: string) => `sc.study.mastery.${g}`;
 function readLocal(guideId: string): GuideMastery {
   try {
     const raw = localStorage.getItem(LOCAL_KEY(guideId));
-    return raw ? (JSON.parse(raw) as GuideMastery) : empty(guideId);
+    if (!raw) return empty(guideId);
+    const m = JSON.parse(raw) as GuideMastery;
+    return { ...m, attempts: m.attempts ?? [] };
   } catch {
     return empty(guideId);
   }

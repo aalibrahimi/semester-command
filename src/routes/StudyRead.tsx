@@ -5,6 +5,7 @@
  *
  * Called by: the router, StudyCourse ("Read"), later the Map's "Read §n".
  * Calls: study/loadGuides, study/mastery (the one store), GuideBlocks,
+ * Drill (the section's generated "Put it to the test" drills + focus mode),
  * Practice (the section's "Do it yourself" exercises).
  *
  * Layout: top bar (back · title · segmented progress · "Section n of N ·
@@ -16,6 +17,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Circle, PencilLine, Presentation, X } from "lucide-react";
+import { DrillFocus, DrillPanel, drillsFor } from "@/components/study/Drill";
 import { GuideBlocks } from "@/components/study/GuideBlocks";
 import { GuideTopRow } from "@/components/study/GuideChrome";
 import { Inline } from "@/components/study/Blocks";
@@ -23,6 +25,7 @@ import { Practice } from "@/components/study/Practice";
 import { cn } from "@/lib/utils";
 import { courseBySlug } from "@/study";
 import type { CheckBlock, Guide, GuideSection } from "@/study/guide";
+import { drillsForGuide } from "@/study/drills";
 import { guideById } from "@/study/loadGuides";
 import { recordReview, saveScratch, sectionStatus, setSectionStatus, useMastery, type GuideMastery, type SectionStatus } from "@/study/mastery";
 
@@ -207,6 +210,9 @@ export default function StudyRead() {
   const wanted = params.get("s");
   const idx = Math.max(0, sections.findIndex((s) => s.id === wanted));
   const section = sections[idx];
+  const drills = useMemo(() => drillsFor(guide ? drillsForGuide(guide.id) : undefined, section?.id ?? ""), [guide, section?.id]);
+  const [focus, setFocus] = useState(false);
+  useEffect(() => setFocus(false), [section?.id]);
 
   // Arriving from Recall / Map: scroll to the block and flash it; otherwise start at the top.
   useEffect(() => {
@@ -244,6 +250,9 @@ export default function StudyRead() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1280px] flex-col px-6 pb-16 pt-4">
+      {focus && drills.length > 0 && (
+        <DrillFocus guide={guide} sectionHeading={section.heading} sectionId={section.id} drills={drills} mastery={mastery} onExit={() => setFocus(false)} />
+      )}
       {/* ── Top bar ───────────────────────────────────────────────────── */}
       <header className="mb-6 flex flex-col gap-3 border-b border-border/60 pb-4">
         <GuideTopRow
@@ -329,6 +338,8 @@ export default function StudyRead() {
             )}
           </h2>
           <GuideBlocks blocks={section.blocks} />
+
+          {drills.length > 0 && <DrillPanel guide={guide} sectionId={section.id} drills={drills} mastery={mastery} onFocus={() => setFocus(true)} />}
 
           {exercises.length > 0 && (
             <section className="mt-12">

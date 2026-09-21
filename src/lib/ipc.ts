@@ -14,7 +14,7 @@
  * needs plus a sync-status read the shell footer renders.
  */
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import type { ReviewRecord, SectionRecord, SectionStatus } from "@/study/mastery";
+import type { AttemptRecord, ReviewRecord, SectionRecord, SectionStatus } from "@/study/mastery";
 import type {
   AuthStatus,
   DegreeAudit,
@@ -465,11 +465,12 @@ interface StudyMasteryPayload {
   guideId: string;
   sections: SectionRecord[];
   reviews: ReviewRecord[];
+  attempts: AttemptRecord[];
 }
 
 /** Everything the store holds for one guide. Rows absent = unread / unseen. */
 export async function studyMastery(guideId: string): Promise<StudyMasteryPayload> {
-  if (!IS_TAURI) return { guideId, sections: [], reviews: [] };
+  if (!IS_TAURI) return { guideId, sections: [], reviews: [], attempts: [] };
   return call<StudyMasteryPayload>("study_mastery", { guideId });
 }
 
@@ -490,4 +491,15 @@ export async function saveStudyScratch(guideId: string, sectionId: string, scrat
 /** Store an SM-2 record the webview computed; echoes it back. */
 export async function recordStudyReview(review: ReviewRecord): Promise<ReviewRecord> {
   return call<ReviewRecord>("record_study_review", { review });
+}
+
+/** Append a drill attempt (migration 0014); returns it with its id. */
+export async function recordStudyAttempt(attempt: AttemptRecord): Promise<AttemptRecord> {
+  return call<AttemptRecord>("record_study_attempt", { attempt });
+}
+
+/** Newest attempts across every guide, for the Study home and the error log. */
+export async function studyAttemptsRecent(limit = 500): Promise<AttemptRecord[]> {
+  if (!IS_TAURI) return [];
+  return call<AttemptRecord[]>("study_attempts_recent", { limit });
 }
