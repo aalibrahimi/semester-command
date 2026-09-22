@@ -35,6 +35,8 @@ export interface Tally {
 export interface ChapterProgress extends Tally {
   guideId: string;
   done: boolean;
+  /** Every section in reading order, with its status. */
+  sections: { id: string; heading: string; status: SectionStatus }[];
   next: NextStop | null;
 }
 
@@ -59,8 +61,10 @@ export function chapterProgress(g: Guide, st: StatusMap): ChapterProgress {
   let mastered = 0;
   let shaky = 0;
   let next: NextStop | null = null;
+  const sections: ChapterProgress["sections"] = [];
   g.sections.forEach((s, i) => {
     const status = st.get(`${g.id}#${s.id}`) ?? "unread";
+    sections.push({ id: s.id, heading: s.heading, status });
     if (status === "mastered") mastered++;
     else {
       if (status === "shaky") shaky++;
@@ -68,7 +72,7 @@ export function chapterProgress(g: Guide, st: StatusMap): ChapterProgress {
     }
   });
   const total = g.sections.length;
-  return { guideId: g.id, mastered, shaky, total, pct: pct(mastered, total), done: total > 0 && mastered === total, next };
+  return { guideId: g.id, mastered, shaky, total, pct: pct(mastered, total), done: total > 0 && mastered === total, sections, next };
 }
 
 export function courseProgress(guides: Guide[], rows: SectionRecord[]): CourseProgress {
