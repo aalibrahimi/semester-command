@@ -201,14 +201,14 @@ export const courses: Course[] = [
     ],
     exam: {
       label: "Final exam (no midterm)",
-      date: "2026-12-11",
+      date: "2026-12-10",
       format: "Released on Canvas on exam day; MC + short essay; answer using readings and lab notebooks; email answers.",
       covers: "Everything: acoustics → Fourier → STFT → ASR (Mel, cepstrum, DTW, GMM, HMM, neural nets) → TTS.",
     },
     deadlines: [
       { date: "2026-09-17", label: "Lab #7 due (windowing)", weight: "2.5 pts", kind: "hw" },
       { date: "2026-09-24", label: "Lab #8 (STFT) — expected", kind: "hw" },
-      { date: "2026-12-11", label: "FINAL EXAM", weight: "20 pts", kind: "exam" },
+      { date: "2026-12-10", label: "FINAL EXAM (1:00 to 3:00 PM)", weight: "20 pts", kind: "exam" },
     ],
     alerts: [
       { kind: "warn", text: "Labs 5 and 6 are unsubmitted (~5 of 80 lab points). Email Koo today; Lab 7 is still open." },

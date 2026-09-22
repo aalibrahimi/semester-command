@@ -9,6 +9,11 @@
  * on the right — the user asked for less scrolling, and eight syllabi
  * stacked vertically is the opposite of that.
  *
+ * Key details first: when a course has a digest (lib/syllabusDigest), the
+ * viewer opens on the short version (grade weights, dates, rules that cost
+ * points) and the full extracted text sits behind a toggle. Courses with a
+ * digest show in the rail even before Canvas sync has stored anything.
+ *
  * The policy chips are keyword highlighters, not comprehension: clicking
  * "Late work" marks every occurrence of late/penalty/deduct in the extracted
  * text and jumps to the first. Dumb, transparent, and useful — smart policy
@@ -17,7 +22,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { open as openFileDialog } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { BookOpen, CloudDownload, ExternalLink, FileText, FolderOpen, Search } from "lucide-react";
+import { BookOpen, ChevronDown, CloudDownload, ExternalLink, FileText, FolderOpen, Search } from "lucide-react";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
@@ -35,7 +40,9 @@ import { newCandidates, resetAutoDetect } from "@/lib/classDetect";
 import { countMatches, sanitize } from "@/lib/canvasHtml";
 import { Highlighted } from "@/components/layout/Highlighted";
 import { cn } from "@/lib/utils";
-import { courseFull, courseShort } from "@/lib/courseLabel";
+import { courseFull, courseShort, parseCourseLabel } from "@/lib/courseLabel";
+import { SYLLABUS_DIGESTS, digestFor, type SyllabusDigest } from "@/lib/syllabusDigest";
+import { KeyDetails } from "@/components/syllabi/KeyDetails";
 import type { CourseSyllabus } from "@/types";
 
 /** The policies worth one click. Keywords are matched case-insensitively in
@@ -66,6 +73,23 @@ function offerDetectedClassTimes() {
     .catch(() => {});
 }
 
+const digestOf = (c: CourseSyllabus): SyllabusDigest | null =>
+  digestFor(parseCourseLabel(c.courseCode ?? c.courseName).code);
+
+/** Synced courses, plus a stand-in row for any digest course Canvas hasn't
+ *  stored yet, so the key details are there from the first launch. */
+function withDigests(data: CourseSyllabus[]): CourseSyllabus[] {
+  const have = new Set(data.map((c) => digestOf(c)?.code).filter(Boolean));
+  const extra = SYLLABUS_DIGESTS.filter((d) => !have.has(d.code)).map((d) => ({
+    courseId: `digest:${d.code}`,
+    courseCode: `${d.code} - ${d.title}`,
+    courseName: d.title,
+    syllabusHtml: null,
+    files: [],
+  }));
+  return [...data, ...extra];
+}
+
 export default function Syllabi() {
   const [courses, setCourses] = useState<CourseSyllabus[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -75,17 +99,19 @@ export default function Syllabi() {
 
   const refresh = useCallback(async () => {
     try {
-      const data = await syllabi();
+      const data = withDigests(await syllabi());
       setCourses(data);
       // Default to the first course that actually has material.
       setSelectedId(
         (prev) =>
           prev ??
-          (data.find((c) => c.files.length > 0 || c.syllabusHtml) ?? data[0])?.courseId ??
+          (data.find((c) => digestOf(c)) ?? data.find((c) => c.files.length > 0 || c.syllabusHtml) ?? data[0])?.courseId ??
           null,
       );
     } catch {
-      setCourses([]);
+      const data = withDigests([]);
+      setCourses(data);
+      setSelectedId((prev) => prev ?? data[0]?.courseId ?? null);
     }
   }, []);
 
@@ -104,7 +130,7 @@ export default function Syllabi() {
     <>
       <ScreenHeader
         title="Syllabi"
-        subtitle="Late policies, make-up rules, office hours — searchable in one place."
+        subtitle="Only what matters from each syllabus: when, who, how you are graded, the dates, and the rules that cost points."
       />
 
       {courses === null ? (
@@ -123,7 +149,7 @@ export default function Syllabi() {
           {/* ── Course rail ─────────────────────────────────────────────── */}
           <nav className="flex w-56 shrink-0 flex-col gap-0.5">
             {courses.map((c) => {
-              const has = c.files.length > 0 || c.syllabusHtml !== null;
+              const has = c.files.length > 0 || c.syllabusHtml !== null || digestOf(c) !== null;
               return (
                 <button
                   key={c.courseId}
@@ -162,6 +188,7 @@ export default function Syllabi() {
             <SyllabusViewer
               key={selected.courseId}
               course={selected}
+              digest={digestOf(selected)}
               terms={terms}
               activeChip={activeChip}
               query={query}
@@ -187,6 +214,7 @@ export default function Syllabi() {
 
 function SyllabusViewer({
   course,
+  digest,
   terms,
   activeChip,
   query,
@@ -195,6 +223,7 @@ function SyllabusViewer({
   onChanged,
 }: {
   course: CourseSyllabus;
+  digest: SyllabusDigest | null;
   terms: string[];
   activeChip: string | null;
   query: string;
@@ -203,6 +232,9 @@ function SyllabusViewer({
   onChanged: () => void;
 }) {
   const [fetching, setFetching] = useState(false);
+  // With a digest the full text is reference material: folded until asked for.
+  const [fullOpen, setFullOpen] = useState(digest === null);
+  const synced = !course.courseId.startsWith("digest:");
 
   // Everything searchable for this course, files first (the common case).
   const textBlocks = course.files
@@ -260,12 +292,32 @@ function SyllabusViewer({
   const matches = fullText ? countMatches(fullText, terms) : 0;
 
   return (
-    <div className="min-w-0 flex-1 rounded-2xl border border-border/60 bg-card p-4 shadow-card">
+    <div className="flex min-w-0 max-w-[1280px] flex-1 flex-col gap-3">
+      {digest && (
+        <>
+          <h2 className="font-display text-lg font-semibold">
+            {digest.code} · {digest.title}
+          </h2>
+          <KeyDetails d={digest} />
+          <button
+            type="button"
+            onClick={() => setFullOpen((v) => !v)}
+            className="flex items-center gap-1.5 self-start rounded-lg px-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+          >
+            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-micro", !fullOpen && "-rotate-90")} />
+            {fullOpen ? "Hide the full syllabus text" : "Search the full syllabus text"}
+          </button>
+        </>
+      )}
+      {fullOpen && (
+    <div className="min-w-0 rounded-2xl border border-foreground/15 bg-card p-4 shadow-card">
       {/* Header: actions */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <h2 className="min-w-0 flex-1 truncate font-display text-sm font-semibold">
           {courseFull(course.courseCode ?? course.courseName)}
         </h2>
+        {synced && (
+        <>
         <Button size="sm" variant="outline" onClick={fetchFromCanvas} disabled={fetching}>
           <CloudDownload className="mr-1.5 h-3.5 w-3.5" />
           {fetching ? "Checking…" : "Fetch from Canvas"}
@@ -273,6 +325,8 @@ function SyllabusViewer({
         <Button size="sm" variant="outline" onClick={importFile}>
           <FolderOpen className="mr-1.5 h-3.5 w-3.5" /> Import file
         </Button>
+        </>
+        )}
       </div>
 
       {/* Stored documents */}
@@ -361,12 +415,19 @@ function SyllabusViewer({
             )}
           </div>
         </>
+      ) : !synced ? (
+        <div className="rounded-lg border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
+          This course hasn&apos;t synced from Canvas yet, so there is no stored text to search. The key
+          details above come from the official syllabus; its link is in the card above.
+        </div>
       ) : (
         <div className="rounded-lg border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
           Nothing here yet. <strong>Fetch from Canvas</strong> looks for files named “syllabus”
           in this course; if the professor keeps files hidden, download the syllabus from Canvas
           yourself and <strong>Import file</strong> — the text becomes searchable either way.
         </div>
+      )}
+    </div>
       )}
     </div>
   );
