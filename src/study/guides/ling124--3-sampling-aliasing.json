@@ -444,6 +444,161 @@
       ],
       "why": "This is why every microphone chip has a filter that removes high frequencies BEFORE sampling: once aliasing happens, no software can undo it.",
       "sectionRef": "alias"
+    },
+    {
+      "id": "fill-ts",
+      "title": "Fill in: time between samples",
+      "prompt": "Fₛ = 20,000 Hz. The time between samples Tₛ is ____ seconds.",
+      "hints": [
+        "Tₛ = 1 / Fₛ.",
+        "1 ÷ 20,000.",
+        "0.00005 s (50 microseconds)."
+      ],
+      "solution": [
+        "Tₛ = 1/20,000 = 0.00005 s."
+      ],
+      "why": "Sampling rates are always given in Hz; converting to seconds between samples is the first line of Lab 2.",
+      "accept": [
+        "0.00005",
+        "0.00005 s",
+        "0.00005s",
+        "5e-5",
+        "1/20000",
+        "0.05 ms",
+        "0.05ms",
+        "50 µs",
+        "50µs",
+        "50 us"
+      ],
+      "sectionRef": "sampling"
+    },
+    {
+      "id": "fill-count",
+      "title": "Fill in: how many samples",
+      "prompt": "A 1.5-second recording at Fₛ = 16,000 Hz has ____ samples.",
+      "hints": [
+        "samples = seconds × Fₛ.",
+        "1.5 × 16,000.",
+        "24,000."
+      ],
+      "solution": [
+        "1.5 × 16,000 = 24,000 samples."
+      ],
+      "why": "Array lengths in every lab notebook come from this multiplication.",
+      "accept": [
+        "24000",
+        "24,000"
+      ],
+      "sectionRef": "sampling"
+    },
+    {
+      "id": "fill-levels",
+      "title": "Fill in: bits to levels",
+      "prompt": "An 8-bit recording has ____ possible levels.",
+      "hints": [
+        "levels = 2^bits.",
+        "2⁸.",
+        "256."
+      ],
+      "solution": [
+        "2⁸ = 256 levels."
+      ],
+      "why": "Bit depth is on every recording device and audio export dialog.",
+      "accept": [
+        "256"
+      ],
+      "sectionRef": "quant"
+    },
+    {
+      "id": "fill-nyq",
+      "title": "Fill in: Nyquist",
+      "prompt": "Fₛ = 44,100 Hz. The Nyquist frequency is ____ Hz.",
+      "hints": [
+        "Nyquist = Fₛ / 2.",
+        "44,100 ÷ 2.",
+        "22,050."
+      ],
+      "solution": [
+        "44,100 ÷ 2 = 22,050 Hz."
+      ],
+      "why": "That's why CDs can hold everything up to about 22 kHz, just above human hearing.",
+      "accept": [
+        "22050",
+        "22050 Hz",
+        "22050Hz",
+        "22,050",
+        "22,050 Hz"
+      ],
+      "sectionRef": "alias"
+    },
+    {
+      "id": "mc-alias",
+      "title": "Where does it land?",
+      "prompt": "A 6,000 Hz tone is sampled at Fₛ = 8,000 Hz. What frequency does it show up as?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Nyquist = 4,000 Hz.",
+        "6,000 > 4,000, so it aliases to 8,000 − 6,000 = 2,000 Hz."
+      ],
+      "why": "This is exactly Lab 2 Q13–Q15.",
+      "choices": [
+        {
+          "text": "2,000 Hz",
+          "feedback": "Right: Nyquist is 4,000; 6,000 is above it, so it folds to 8,000 − 6,000 = 2,000."
+        },
+        {
+          "text": "6,000 Hz",
+          "feedback": "6,000 is above Nyquist (4,000), so it can't be stored honestly."
+        },
+        {
+          "text": "4,000 Hz",
+          "feedback": "4,000 is the Nyquist frequency itself, not the alias."
+        },
+        {
+          "text": "14,000 Hz",
+          "feedback": "You added Fₛ; the fold is Fₛ − F."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "alias"
+    },
+    {
+      "id": "mc-better",
+      "title": "Better copy",
+      "prompt": "Which change gives a more accurate copy of the wave? (Lab 2 Q9)",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Higher Fₛ (equivalently, shorter Tₛ) = more points per cycle."
+      ],
+      "why": "The sample-rate menu in every audio app is this choice.",
+      "choices": [
+        {
+          "text": "Raise the sampling rate Fₛ",
+          "feedback": "Right: more samples per second trace the wave more closely."
+        },
+        {
+          "text": "Record for longer",
+          "feedback": "Longer just gives more samples of the same quality."
+        },
+        {
+          "text": "Use a lower sampling rate",
+          "feedback": "Fewer samples per second = worse copy (and more aliasing)."
+        },
+        {
+          "text": "Change the wave's frequency",
+          "feedback": "You're measuring the wave; you don't get to change it."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "sampling"
     }
   ]
 }

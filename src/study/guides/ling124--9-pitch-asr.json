@@ -502,6 +502,132 @@
       ],
       "why": "WER is the one number every ASR paper, product launch and benchmark reports; knowing it divides by the reference and counts insertions keeps you from misreading them.",
       "sectionRef": "wer"
+    },
+    {
+      "id": "fill-f0",
+      "title": "Fill in: F0 from a lag",
+      "prompt": "Fₛ = 16,000 Hz; the first autocorrelation peak is at lag 100. F0 = ____ Hz.",
+      "hints": [
+        "F0 = Fₛ ÷ lag.",
+        "16,000 ÷ 100.",
+        "160."
+      ],
+      "solution": [
+        "16,000 / 100 = 160 Hz."
+      ],
+      "why": "Lab 8's pitch tracker does exactly this for every frame.",
+      "accept": [
+        "160",
+        "160 Hz",
+        "160Hz"
+      ],
+      "sectionRef": "f0"
+    },
+    {
+      "id": "fill-dot",
+      "title": "Fill in: dot product",
+      "prompt": "x = [1, 2, 3], y = [4, 0, −1]. x · y = ____.",
+      "hints": [
+        "Multiply position by position, then add.",
+        "1·4 + 2·0 + 3·(−1).",
+        "4 + 0 − 3 = 1."
+      ],
+      "solution": [
+        "4 + 0 − 3 = 1."
+      ],
+      "why": "Autocorrelation is many dot products in a row.",
+      "accept": [
+        "1"
+      ],
+      "sectionRef": "dot"
+    },
+    {
+      "id": "fill-wer",
+      "title": "Fill in: WER",
+      "prompt": "Reference has 20 words. The system made 2 substitutions, 1 deletion and 1 insertion. WER = ____ %.",
+      "hints": [
+        "WER = (S + D + I) ÷ N.",
+        "(2 + 1 + 1) ÷ 20.",
+        "0.20 = 20%."
+      ],
+      "solution": [
+        "4 / 20 = 20%."
+      ],
+      "why": "Every ASR benchmark reports WER.",
+      "accept": [
+        "20",
+        "20 %",
+        "20%"
+      ],
+      "sectionRef": "wer"
+    },
+    {
+      "id": "mc-lag0",
+      "title": "Which peak?",
+      "prompt": "Autocorrelation values: lag 0: 50, lag 40: 31, lag 80: 22. What is the period?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Skip lag 0; the first peak after it is at lag 40."
+      ],
+      "why": "Picking the wrong peak is the most common pitch-tracking bug.",
+      "choices": [
+        {
+          "text": "40 samples",
+          "feedback": "Right: the first peak AFTER lag 0."
+        },
+        {
+          "text": "0 samples",
+          "feedback": "Lag 0 is always the biggest; it's the signal matched with itself."
+        },
+        {
+          "text": "80 samples",
+          "feedback": "80 is the second repeat (2 × 40)."
+        },
+        {
+          "text": "50 samples",
+          "feedback": "50 is a score, not a lag."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "auto"
+    },
+    {
+      "id": "mc-heur",
+      "title": "Throw it out?",
+      "prompt": "A frame gives F0 = 2,500 Hz. With a 75–600 Hz range, what do you do?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "2,500 Hz is outside 75–600 Hz, so the frame is skipped."
+      ],
+      "why": "Real pitch trackers (Praat included) all use a range like this.",
+      "choices": [
+        {
+          "text": "Reject it: no voice is that high",
+          "feedback": "Right: it's probably a noisy or voiceless frame."
+        },
+        {
+          "text": "Keep it",
+          "feedback": "2,500 Hz is far above any human pitch."
+        },
+        {
+          "text": "Halve it to 1,250 Hz",
+          "feedback": "Halving doesn't fix a frame that has no real period."
+        },
+        {
+          "text": "Use it as the formant",
+          "feedback": "Formants aren't measured this way."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "heur"
     }
   ]
 }

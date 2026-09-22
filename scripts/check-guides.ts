@@ -89,6 +89,8 @@ for (const f of readdirSync(dir)) {
     if (!isArr(e.solution) || !e.solution.every(isStr)) at(`exercise ${String(e.id)}: solution`);
     if (e.sectionRef !== undefined && !sectionIds.has(e.sectionRef as string)) at(`exercise ${String(e.id)}: sectionRef ${String(e.sectionRef)}`);
     if (e.choices !== undefined && (typeof e.answer !== "number" || !isArr(e.choices))) at(`exercise ${String(e.id)}: choices need a numeric answer`);
+    if (e.accept !== undefined && (!isArr(e.accept) || !e.accept.length || !e.accept.every(isStr))) at(`exercise ${String(e.id)}: accept must be a non-empty list of strings`);
+    if (e.accept !== undefined && e.choices !== undefined) at(`exercise ${String(e.id)}: use choices OR accept, not both`);
   }
 }
 

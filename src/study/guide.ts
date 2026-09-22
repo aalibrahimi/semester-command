@@ -182,6 +182,12 @@ export interface GuideExercise {
   code?: string;
   choices?: { text: string; feedback: string }[];
   answer?: number;
+  /**
+   * Fill in the blank: any of these, after normalising (case, spaces,
+   * dashes), counts as right. Numbers are compared within 1%, so "0.5",
+   * ".50" and "1/2" style variants should be listed if they matter.
+   */
+  accept?: string[];
   hints: [string, string, string];
   solution: string[];
   why: string;

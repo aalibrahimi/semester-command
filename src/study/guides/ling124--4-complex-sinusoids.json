@@ -51,11 +51,11 @@
         },
         {
           "type": "figure",
-          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"40\" y1=\"115\" x2=\"400\" y2=\"115\" opacity=\".4\"/><line x1=\"220\" y1=\"20\" x2=\"220\" y2=\"210\" opacity=\".4\"/>\n<text x=\"380\" y=\"130\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">real</text><text x=\"228\" y=\"30\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">imaginary (j)</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"45\" stroke=\"rgb(59 130 246)\" stroke-width=\"2.5\"/><circle cx=\"340\" cy=\"45\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<line x1=\"340\" y1=\"45\" x2=\"340\" y2=\"115\" stroke-dasharray=\"3 3\" opacity=\".5\"/><line x1=\"220\" y1=\"45\" x2=\"340\" y2=\"45\" stroke-dasharray=\"3 3\" opacity=\".5\"/>\n<text x=\"345\" y=\"40\" fill=\"rgb(59 130 246)\" stroke=\"none\">z = x + jy</text>\n<text x=\"336\" y=\"130\" fill=\"currentColor\" stroke=\"none\">x</text><text x=\"205\" y=\"50\" fill=\"currentColor\" stroke=\"none\">y</text>\n<text x=\"265\" y=\"90\" fill=\"currentColor\" stroke=\"none\">r = |z|</text>\n<path d=\"M 250 115 A 30 30 0 0 0 246 100\" fill=\"none\" stroke=\"currentColor\"/><text x=\"254\" y=\"108\" fill=\"currentColor\" stroke=\"none\">θ</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"185\" stroke=\"currentColor\" stroke-width=\"2\" opacity=\".45\"/><circle cx=\"340\" cy=\"185\" r=\"4\" fill=\"currentColor\" opacity=\".45\" stroke=\"none\"/>\n<text x=\"345\" y=\"195\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">z̄ = x − jy  (angle −θ)</text>\n</g>",
+          "svg": "<g stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The complex plane: the horizontal axis holds the real part, the vertical axis the imaginary part. j is just the label for 'up'.</title><line x1='40' y1='115' x2='400' y2='115' opacity='.4'/><line x1='220' y1='20' x2='220' y2='210' opacity='.4'/><text x='380' y='130' fill='currentColor' stroke='none' opacity='.7'>real</text><text x='228' y='30' fill='currentColor' stroke='none' opacity='.7'>imaginary (j)</text></g><g><title>The number z = x + jy, drawn as an arrow from the origin to the point (x, y). One symbol, two coordinates.</title><line x1='220' y1='115' x2='340' y2='45' stroke='rgb(var(--accent-fg))' stroke-width='2.5'/><circle cx='340' cy='45' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><text x='345' y='40' fill='rgb(var(--accent-fg))' stroke='none'>z = x + jy</text></g><g><title>Rectangular form reads the two coordinates: x = Re(z) along the real axis, y = Im(z) up the imaginary axis.</title><line x1='340' y1='45' x2='340' y2='115' stroke-dasharray='3 3' opacity='.5'/><line x1='220' y1='45' x2='340' y2='45' stroke-dasharray='3 3' opacity='.5'/><text x='336' y='130' fill='currentColor' stroke='none'>x</text><text x='205' y='50' fill='currentColor' stroke='none'>y</text></g><g><title>Polar form reads the arrow itself: length r = |z| = √(x² + y²) (Pythagoras) and direction θ = ∠z, measured counterclockwise from the positive real axis.</title><text x='265' y='90' fill='currentColor' stroke='none'>r = |z|</text><path d='M 250 115 A 30 30 0 0 0 246 100' fill='none' stroke='currentColor'/><text x='254' y='108' fill='currentColor' stroke='none'>θ</text></g><g><title>The conjugate z̄ = x − jy: the same arrow mirrored across the real axis. Same length, negated angle: flip the sign of the imaginary part and nothing else changes.</title><line x1='220' y1='115' x2='340' y2='185' stroke='currentColor' stroke-width='2' opacity='.45'/><circle cx='340' cy='185' r='4' fill='currentColor' opacity='.45' stroke='none'/><text x='345' y='195' fill='currentColor' stroke='none' opacity='.7'>z̄ = x − jy  (angle −θ)</text></g></g>",
           "viewBox": "0 0 420 230",
-          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis.",
+          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis. Hover any part.",
           "slide": "The complex plane",
-          "id": "numbers.98c7022f"
+          "id": "numbers.fa96b446"
         },
         {
           "type": "definition",
@@ -428,6 +428,167 @@
       ],
       "why": "This is the reason every FFT output has a mirror image, and why you double |X| to get the real amplitude.",
       "sectionRef": "spinner"
+    },
+    {
+      "id": "fill-mag",
+      "title": "Fill in: magnitude",
+      "prompt": "The magnitude of 5 + 12j is ____.",
+      "hints": [
+        "Pythagoras: √(a² + b²).",
+        "√(25 + 144) = √169.",
+        "13."
+      ],
+      "solution": [
+        "|5 + 12j| = √(25 + 144) = 13."
+      ],
+      "why": "Magnitudes are the heights in every spectrum plot.",
+      "accept": [
+        "13"
+      ],
+      "sectionRef": "numbers"
+    },
+    {
+      "id": "fill-conj",
+      "title": "Fill in: conjugate",
+      "prompt": "The conjugate of 2 − 7j is ____.",
+      "hints": [
+        "Flip the sign of the j part only.",
+        "The real part 2 stays.",
+        "2 + 7j."
+      ],
+      "solution": [
+        "Conjugate: keep 2, flip −7j to +7j → 2 + 7j."
+      ],
+      "why": "Negative-frequency coefficients are always the conjugates of the positive ones.",
+      "accept": [
+        "2 + 7j",
+        "2+7j",
+        "2 + 7i",
+        "2+7i",
+        "2 + j7",
+        "2+j7"
+      ],
+      "sectionRef": "numbers"
+    },
+    {
+      "id": "mc-euler",
+      "title": "Easy point",
+      "prompt": "What is e^{jπ} as a plain number?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "e^{jπ} is the point at angle π (180°) on the unit circle: straight left, which is −1."
+      ],
+      "why": "The four easy points come up in almost every coefficient calculation.",
+      "choices": [
+        {
+          "text": "−1",
+          "feedback": "Right: angle π is half a lap, straight left."
+        },
+        {
+          "text": "1",
+          "feedback": "1 is e^{j0} (angle 0, straight right)."
+        },
+        {
+          "text": "j",
+          "feedback": "j is e^{jπ/2} (straight up)."
+        },
+        {
+          "text": "−j",
+          "feedback": "−j is e^{−jπ/2} (straight down)."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "euler"
+    },
+    {
+      "id": "mc-angle",
+      "title": "Direction",
+      "prompt": "What is the angle of the complex number −4j?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "−4j has no real part and a negative j part: straight down, angle −π/2."
+      ],
+      "why": "Phase spectra are made of exactly these angles.",
+      "choices": [
+        {
+          "text": "−π/2 (straight down)",
+          "feedback": "Right: −4j is 4 steps straight down."
+        },
+        {
+          "text": "π/2 (straight up)",
+          "feedback": "Straight up would be +4j."
+        },
+        {
+          "text": "π (straight left)",
+          "feedback": "Straight left would be −4."
+        },
+        {
+          "text": "0 (straight right)",
+          "feedback": "Straight right would be +4."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "numbers"
+    },
+    {
+      "id": "mc-two-spin",
+      "title": "Two spinners",
+      "prompt": "e^{j2π·10·t} + e^{−j2π·10·t} equals…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "The two dots spin opposite ways at 10 Hz. Up-down: +sin and −sin cancel. Left-right: cos + cos = 2·cos."
+      ],
+      "why": "This is why every real signal's FFT is mirror-symmetric.",
+      "choices": [
+        {
+          "text": "2·cos(2π·10·t)",
+          "feedback": "Right: the up-down parts cancel, the left-right parts double."
+        },
+        {
+          "text": "2·sin(2π·10·t)",
+          "feedback": "The sine parts are the ones that cancel."
+        },
+        {
+          "text": "0",
+          "feedback": "Only the up-down parts cancel; the left-right parts add."
+        },
+        {
+          "text": "e^{j4π·10·t}",
+          "feedback": "Adding doesn't add the exponents; multiplying would."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "spinner"
+    },
+    {
+      "id": "fill-phasor",
+      "title": "Fill in: amplitude from X",
+      "prompt": "A two-sided spectrum shows X = 1.5 at 100 Hz. The cosine's amplitude A is ____.",
+      "hints": [
+        "Two-sided: each side holds half the amplitude.",
+        "A = 2·|X|.",
+        "2 × 1.5 = 3."
+      ],
+      "solution": [
+        "A = 2|X| = 2 × 1.5 = 3."
+      ],
+      "why": "Forgetting this factor of 2 makes every spectrum look half as tall as it should.",
+      "accept": [
+        "3"
+      ],
+      "sectionRef": "def"
     }
   ]
 }

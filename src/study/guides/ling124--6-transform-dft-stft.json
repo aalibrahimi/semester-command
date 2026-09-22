@@ -132,11 +132,11 @@
         },
         {
           "type": "figure",
-          "svg": "<g fill=\"none\" stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"20\" y1=\"120\" x2=\"260\" y2=\"120\" opacity=\".4\"/><path d=\"M40 120 L40 40 L240 40 L240 120\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<path d=\"M40 80 L45 52.58355816303808 L50 45.91533291926317 L55 65.04170419181595 L60 95.48821551531984 L65 114.2135541182784 L70 107.04675706445954 L75 79.41151348304776 L80 52.221624765279635 L85 46.05385662042198 L90 65.57585301653852 L95 96.01375628213626 L100 114.3327680523272 L105 106.66942543716613 L110 78.82319334726022 L115 51.86754507069327 L120 46.20197782077529 L125 66.11407994042858 L130 96.53476952394632 L135 114.44227517785751 L140 106.28455363700867 L145 78.23520592676148 L150 51.52141918725131 L155 46.35965464242592 L160 66.65623279207709 L165 97.05110793611783 L170 114.54204453422273 L175 105.89225047772626 L180 77.64771746160838 L185 51.18334497416714 L190 46.526842505842396 L195 67.20215829010837 L200 97.56262553572009 L205 114.63204791390874 L210 105.49262687410577 L215 77.06089405078886 L220 50.85341801422771 L225 46.70349414246268 L230 67.75170208651683 L235 98.06917770279745 L240 114.71225987050906\" opacity=\".5\"/>\n<text x=\"60\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">rectangular</text>\n<line x1=\"300\" y1=\"120\" x2=\"540\" y2=\"120\" opacity=\".4\"/>\n<path d=\"M320 113.6 L325 113.14693093390107 L330 111.79887979966165 L335 109.58904009013193 L340 106.57182539299806 L345 102.82152954766495 L350 98.43049728436301 L355 93.50685039041532 L360 88.17182539299807 L365 82.5567883134805 L370 76.8 L375 71.0432116865195 L380 65.42817460700194 L385 60.09314960958467 L390 55.169502715636995 L395 50.77847045233506 L400 47.028174607001944 L405 44.01095990986806 L410 41.801120200338346 L415 40.453069066098934 L420 40 L425 40.453069066098934 L430 41.80112020033833 L435 44.01095990986805 L440 47.02817460700193 L445 50.77847045233504 L450 55.16950271563698 L455 60.09314960958467 L460 65.42817460700192 L465 71.0432116865195 L470 76.79999999999998 L475 82.5567883134805 L480 88.17182539299806 L485 93.50685039041531 L490 98.430497284363 L495 102.82152954766494 L500 106.57182539299805 L505 109.58904009013193 L510 111.79887979966165 L515 113.14693093390106 L520 113.6\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<path d=\"M320 80 L325 77.6514153818077 L330 76.50584435352953 L335 78.0533722752631 L340 82.59973077863239 L345 87.34670660612764 L350 87.29231374938793 L355 79.80511423328952 L360 68.94831278413128 L365 64.11184209371898 L370 72.2109606289308 L375 89.79977595510266 L380 103.42002279262378 L385 99.97101599578309 L390 79.04633799369167 L395 55.65785549828302 L400 49.17120783636173 L405 66.81027829881074 L410 96.16250568147734 L415 114.2472160597431 L420 106.28455363700867 L425 78.24520059679422 L430 52.16258602698643 L435 48.04628059971775 L440 67.82851186523295 L445 94.75379714775507 L450 107.9922240546534 L455 99.38903969550384 L460 78.39539560049867 L465 62.365363999971336 L470 61.92449495315489 L475 74.01009629657449 L480 86.98732890135364 L485 91.46890033336862 L490 86.87329105737182 L495 79.36888319118992 L500 75.10768259872191 L505 75.66689265473114 L510 78.74437795702464 L515 81.54786653456107 L520 82.77698078964073\" opacity=\".5\"/>\n<text x=\"360\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">Hamming (tapered)</text>\n</g>",
+          "svg": "<g fill=\"none\" stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\"><g><title>The rectangular window (blue): full volume from the first sample to the last, then a cliff. The frame starts and stops mid-cycle, so the repeated version has a sudden jump at every seam: and sharp jumps smear energy across many frequencies.</title><line x1=\"20\" y1=\"120\" x2=\"260\" y2=\"120\" opacity=\".4\"/><path d=\"M40 120 L40 40 L240 40 L240 120\" stroke=\"rgb(var(--accent-fg))\" stroke-width=\"2\"/></g><g><title>The tone inside the rectangular window: untouched right up to the abrupt edges.</title><path d=\"M40 80 L45 52.58355816303808 L50 45.91533291926317 L55 65.04170419181595 L60 95.48821551531984 L65 114.2135541182784 L70 107.04675706445954 L75 79.41151348304776 L80 52.221624765279635 L85 46.05385662042198 L90 65.57585301653852 L95 96.01375628213626 L100 114.3327680523272 L105 106.66942543716613 L110 78.82319334726022 L115 51.86754507069327 L120 46.20197782077529 L125 66.11407994042858 L130 96.53476952394632 L135 114.44227517785751 L140 106.28455363700867 L145 78.23520592676148 L150 51.52141918725131 L155 46.35965464242592 L160 66.65623279207709 L165 97.05110793611783 L170 114.54204453422273 L175 105.89225047772626 L180 77.64771746160838 L185 51.18334497416714 L190 46.526842505842396 L195 67.20215829010837 L200 97.56262553572009 L205 114.63204791390874 L210 105.49262687410577 L215 77.06089405078886 L220 50.85341801422771 L225 46.70349414246268 L230 67.75170208651683 L235 98.06917770279745 L240 114.71225987050906\" opacity=\".5\"/><text x=\"60\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">rectangular</text></g><g><title>The Hamming window (blue bell): the same frame length, but the gain fades in from near zero and back out. Repeated end-to-end there is no jump: the seams meet at silence.</title><line x1=\"300\" y1=\"120\" x2=\"540\" y2=\"120\" opacity=\".4\"/><path d=\"M320 113.6 L325 113.14693093390107 L330 111.79887979966165 L335 109.58904009013193 L340 106.57182539299806 L345 102.82152954766495 L350 98.43049728436301 L355 93.50685039041532 L360 88.17182539299807 L365 82.5567883134805 L370 76.8 L375 71.0432116865195 L380 65.42817460700194 L385 60.09314960958467 L390 55.169502715636995 L395 50.77847045233506 L400 47.028174607001944 L405 44.01095990986806 L410 41.801120200338346 L415 40.453069066098934 L420 40 L425 40.453069066098934 L430 41.80112020033833 L435 44.01095990986805 L440 47.02817460700193 L445 50.77847045233504 L450 55.16950271563698 L455 60.09314960958467 L460 65.42817460700192 L465 71.0432116865195 L470 76.79999999999998 L475 82.5567883134805 L480 88.17182539299806 L485 93.50685039041531 L490 98.430497284363 L495 102.82152954766494 L500 106.57182539299805 L505 109.58904009013193 L510 111.79887979966165 L515 113.14693093390106 L520 113.6\" stroke=\"rgb(var(--accent-fg))\" stroke-width=\"2\"/></g><g><title>The same tone multiplied by the Hamming window: full-size in the middle, whisper-quiet at both edges. This is what actually enters the DFT: and its spectrum leaks far less, at the price of a slightly wider main peak.</title><path d=\"M320 80 L325 77.6514153818077 L330 76.50584435352953 L335 78.0533722752631 L340 82.59973077863239 L345 87.34670660612764 L350 87.29231374938793 L355 79.80511423328952 L360 68.94831278413128 L365 64.11184209371898 L370 72.2109606289308 L375 89.79977595510266 L380 103.42002279262378 L385 99.97101599578309 L390 79.04633799369167 L395 55.65785549828302 L400 49.17120783636173 L405 66.81027829881074 L410 96.16250568147734 L415 114.2472160597431 L420 106.28455363700867 L425 78.24520059679422 L430 52.16258602698643 L435 48.04628059971775 L440 67.82851186523295 L445 94.75379714775507 L450 107.9922240546534 L455 99.38903969550384 L460 78.39539560049867 L465 62.365363999971336 L470 61.92449495315489 L475 74.01009629657449 L480 86.98732890135364 L485 91.46890033336862 L490 86.87329105737182 L495 79.36888319118992 L500 75.10768259872191 L505 75.66689265473114 L510 78.74437795702464 L515 81.54786653456107 L520 82.77698078964073\" opacity=\".5\"/><text x=\"360\" y=\"140\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">Hamming (tapered)</text></g></g>",
           "viewBox": "0 0 560 150",
-          "caption": "Left: rectangular window: the frame starts and stops abruptly. Right: Hamming window: the same frame faded in and out. The right one leaks far less.",
+          "caption": "Left: rectangular window: the frame starts and stops abruptly, so its repeated copies jump at the seams. Right: Hamming window: the same frame faded in and out, so the seams meet at silence. The right one leaks far less. Hover any part.",
           "slide": "Rectangular vs Hamming",
-          "id": "window.1bd3ba94"
+          "id": "window.5583f3dc"
         },
         {
           "type": "check",
@@ -401,6 +401,148 @@
         "frames = ⌊(32,000 − 400) ÷ 160⌋ + 1 = 197 + 1 = 198."
       ],
       "why": "These are exactly the arguments scipy and librosa ask for in Labs 7 and 8.",
+      "sectionRef": "stft"
+    },
+    {
+      "id": "fill-bin",
+      "title": "Fill in: bin spacing",
+      "prompt": "Fₛ = 8,000 Hz, N = 256. The bin spacing is ____ Hz.",
+      "hints": [
+        "Bin spacing = Fₛ / N.",
+        "8,000 ÷ 256.",
+        "31.25."
+      ],
+      "solution": [
+        "8,000 / 256 = 31.25 Hz."
+      ],
+      "why": "Every spectrum in the labs has this resolution limit.",
+      "accept": [
+        "31.25",
+        "31.25 Hz",
+        "31.25Hz"
+      ],
+      "sectionRef": "dft"
+    },
+    {
+      "id": "fill-which-bin",
+      "title": "Fill in: which bin",
+      "prompt": "Fₛ = 16,000 Hz, N = 1,024 (spacing 15.625 Hz). The 500 Hz component is in bin ____.",
+      "hints": [
+        "bin = frequency ÷ spacing.",
+        "500 ÷ 15.625.",
+        "32."
+      ],
+      "solution": [
+        "500 / 15.625 = 32."
+      ],
+      "why": "Finding bins is how you read numbers off np.fft output.",
+      "accept": [
+        "32"
+      ],
+      "sectionRef": "dft"
+    },
+    {
+      "id": "fill-nperseg",
+      "title": "Fill in: samples per frame",
+      "prompt": "Fₛ = 16,000 Hz and a 20 ms frame. nperseg = ____ samples.",
+      "hints": [
+        "ms → seconds, then × Fₛ.",
+        "0.020 × 16,000.",
+        "320."
+      ],
+      "solution": [
+        "0.020 × 16,000 = 320."
+      ],
+      "why": "Lab 7/8 parameter.",
+      "accept": [
+        "320"
+      ],
+      "sectionRef": "stft"
+    },
+    {
+      "id": "fill-noverlap",
+      "title": "Fill in: overlap",
+      "prompt": "nperseg = 400 and hop = 160. noverlap = ____ samples.",
+      "hints": [
+        "noverlap = nperseg − hop.",
+        "400 − 160.",
+        "240."
+      ],
+      "solution": [
+        "400 − 160 = 240."
+      ],
+      "why": "scipy.signal.stft asks for exactly this number.",
+      "accept": [
+        "240"
+      ],
+      "sectionRef": "stft"
+    },
+    {
+      "id": "mc-leak",
+      "title": "Leak or not?",
+      "prompt": "A 25 ms rectangular window (grid spacing 40 Hz). Which tone does NOT leak?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Only tones that are whole multiples of the 40 Hz grid avoid leakage: 400 = 10 × 40."
+      ],
+      "why": "Lab 6/7's windowing questions.",
+      "choices": [
+        {
+          "text": "400 Hz",
+          "feedback": "Right: 400 ÷ 40 = 10, a whole number, so it sits exactly on a bin."
+        },
+        {
+          "text": "410 Hz",
+          "feedback": "410 ÷ 40 = 10.25: between bins, leaks."
+        },
+        {
+          "text": "430 Hz",
+          "feedback": "430 ÷ 40 = 10.75: leaks."
+        },
+        {
+          "text": "450 Hz",
+          "feedback": "450 ÷ 40 = 11.25: leaks."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "window"
+    },
+    {
+      "id": "mc-band",
+      "title": "Narrow or broad?",
+      "prompt": "You want to see the harmonics as thin horizontal lines. Which window?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Fine frequency resolution needs a long window: narrow-band spectrogram."
+      ],
+      "why": "The one conceptual question Day 8 always asks.",
+      "choices": [
+        {
+          "text": "A long window (narrow-band)",
+          "feedback": "Right: long window = fine frequency detail."
+        },
+        {
+          "text": "A short window (broad-band)",
+          "feedback": "Short windows blur frequency; you'd see vertical stripes instead."
+        },
+        {
+          "text": "No window",
+          "feedback": "You always need some window to make a spectrogram."
+        },
+        {
+          "text": "A window of exactly one sample",
+          "feedback": "One sample has no frequency information at all."
+        }
+      ],
+      "answer": 0,
       "sectionRef": "stft"
     }
   ]

@@ -415,6 +415,167 @@
       ],
       "why": "The same 'multiply and average' trick runs Wi-Fi and 5G: each channel's detector ignores all the others.",
       "sectionRef": "coef"
+    },
+    {
+      "id": "fill-harm",
+      "title": "Fill in: harmonic",
+      "prompt": "F₀ = 110 Hz. The 4th harmonic is at ____ Hz.",
+      "hints": [
+        "The k-th harmonic is at k·F₀.",
+        "4 × 110.",
+        "440."
+      ],
+      "solution": [
+        "4 × 110 = 440 Hz."
+      ],
+      "why": "Musical notes and vowel harmonics both follow this rule.",
+      "accept": [
+        "440",
+        "440 Hz",
+        "440Hz"
+      ],
+      "sectionRef": "spectrum"
+    },
+    {
+      "id": "fill-T0",
+      "title": "Fill in: period from F₀",
+      "prompt": "F₀ = 5 Hz. The period T₀ is ____ seconds.",
+      "hints": [
+        "T₀ = 1/F₀.",
+        "1 ÷ 5.",
+        "0.2 s."
+      ],
+      "solution": [
+        "T₀ = 1/5 = 0.2 s."
+      ],
+      "why": "Lab 4 Q1.",
+      "accept": [
+        "0.2",
+        "0.2 s",
+        "0.2s",
+        "1/5"
+      ],
+      "sectionRef": "spectrum"
+    },
+    {
+      "id": "fill-A-from-ab",
+      "title": "Fill in: amplitude from a and b",
+      "prompt": "A harmonic has aₖ = 6 and bₖ = 8. Its amplitude Aₖ is ____.",
+      "hints": [
+        "Aₖ = √(aₖ² + bₖ²).",
+        "√(36 + 64) = √100.",
+        "10."
+      ],
+      "solution": [
+        "√(36 + 64) = 10."
+      ],
+      "why": "Converting between the forms is a daily task once you use np.fft.",
+      "accept": [
+        "10"
+      ],
+      "sectionRef": "forms"
+    },
+    {
+      "id": "mc-which-harm",
+      "title": "Which harmonic?",
+      "prompt": "F₀ = 50 Hz. A component at 250 Hz is which harmonic?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "k = 250 / 50 = 5."
+      ],
+      "why": "Reading harmonic numbers off a spectrum is how pitch is measured.",
+      "choices": [
+        {
+          "text": "The 5th",
+          "feedback": "Right: 250 ÷ 50 = 5."
+        },
+        {
+          "text": "The 250th",
+          "feedback": "k is frequency ÷ F₀, not the frequency itself."
+        },
+        {
+          "text": "The 4th",
+          "feedback": "4 × 50 = 200, not 250."
+        },
+        {
+          "text": "Not a harmonic",
+          "feedback": "250 is a whole multiple of 50, so it is a harmonic."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "spectrum"
+    },
+    {
+      "id": "mc-detector",
+      "title": "The detector",
+      "prompt": "x(t) = 4·cos(2π·10·t) + 2·cos(2π·30·t), F₀ = 10 Hz. What is X₂ (two-sided)?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Harmonic 2 is at 20 Hz. The wave has parts at 10 and 30 Hz only, so X₂ = 0."
+      ],
+      "why": "Lab 4 Q9 asks exactly this.",
+      "choices": [
+        {
+          "text": "0",
+          "feedback": "Right: nothing in x is at 2 × 10 = 20 Hz, so the detector finds nothing."
+        },
+        {
+          "text": "2",
+          "feedback": "2 would be X₁ (half of 4)."
+        },
+        {
+          "text": "1",
+          "feedback": "1 would be X₃ (half of 2)."
+        },
+        {
+          "text": "4",
+          "feedback": "4 is the full amplitude of the 10 Hz part, not a coefficient at 20 Hz."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "coef"
+    },
+    {
+      "id": "mc-orth",
+      "title": "Averages to zero",
+      "prompt": "Averaged over one repeat, what is cos(2π·F₀·t) × cos(2π·3F₀·t)?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Different harmonics: the product goes above and below zero equally, so the average is 0."
+      ],
+      "why": "This one fact is what makes Fourier analysis (and Wi-Fi) work.",
+      "choices": [
+        {
+          "text": "0",
+          "feedback": "Right: different harmonics cancel out on average (orthogonality)."
+        },
+        {
+          "text": "½",
+          "feedback": "½ is for a harmonic times ITSELF."
+        },
+        {
+          "text": "1",
+          "feedback": "The product of two cosines is never 1 on average."
+        },
+        {
+          "text": "It depends on F₀",
+          "feedback": "It's 0 for any F₀, as long as the harmonics are different."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "coef"
     }
   ]
 }

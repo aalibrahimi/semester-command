@@ -219,11 +219,11 @@
         },
         {
           "type": "figure",
-          "svg": "<g fill=\"none\" stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<circle cx=\"100\" cy=\"100\" r=\"70\" opacity=\".4\"/>\n<line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" opacity=\".3\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" opacity=\".3\"/>\n<line x1=\"100\" y1=\"100\" x2=\"149.5\" y2=\"50.5\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<circle cx=\"149.5\" cy=\"50.5\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<path d=\"M 125 100 A 25 25 0 0 0 117.7 82.3\" stroke=\"rgb(59 130 246)\"/>\n<text x=\"130\" y=\"95\" fill=\"currentColor\" stroke=\"none\">θ</text>\n<line x1=\"149.5\" y1=\"50.5\" x2=\"149.5\" y2=\"100\" stroke=\"currentColor\" stroke-dasharray=\"3 3\" opacity=\".6\"/>\n<text x=\"140\" y=\"118\" fill=\"currentColor\" stroke=\"none\">cos θ</text>\n<line x1=\"230\" y1=\"100\" x2=\"580\" y2=\"100\" opacity=\".3\"/><line x1=\"230\" y1=\"30\" x2=\"230\" y2=\"170\" opacity=\".3\"/>\n<path d=\"M230 30 C 260 30, 280 170, 317 170 S 375 30, 405 30 S 463 170, 492 170 S 550 30, 580 30\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<circle cx=\"257\" cy=\"50\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<text x=\"400\" y=\"190\" fill=\"currentColor\" stroke=\"none\">θ →   (2π = one cycle)</text>\n<text x=\"235\" y=\"25\" fill=\"currentColor\" stroke=\"none\">+1</text><text x=\"235\" y=\"180\" fill=\"currentColor\" stroke=\"none\">−1</text>\n</g>",
+          "svg": "<g fill='none' stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The unit circle: every point on it is (cos θ, sin θ) for some angle θ. Radius 1, centered on the origin.</title><circle cx='100' cy='100' r='70' opacity='.4'/><line x1='20' y1='100' x2='180' y2='100' opacity='.3'/><line x1='100' y1='20' x2='100' y2='180' opacity='.3'/></g><g><title>The rotating point, currently at angle θ measured counterclockwise from the positive x-axis. As time runs, θ just keeps growing.</title><line x1='100' y1='100' x2='149.5' y2='50.5' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='149.5' cy='50.5' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><path d='M 125 100 A 25 25 0 0 0 117.7 82.3' stroke='rgb(var(--accent-fg))'/><text x='130' y='95' fill='currentColor' stroke='none'>θ</text></g><g><title>The point's x-coordinate: its shadow on the horizontal axis. This single number, tracked over time, IS the cosine wave.</title><line x1='149.5' y1='50.5' x2='149.5' y2='100' stroke='currentColor' stroke-dasharray='3 3' opacity='.6'/><text x='140' y='118' fill='currentColor' stroke='none'>cos θ</text></g><g><title>The same x-coordinate plotted as θ grows: a cosine wave, swinging between +1 and −1. One full trip around the circle (2π radians) draws exactly one cycle.</title><line x1='230' y1='100' x2='580' y2='100' opacity='.3'/><line x1='230' y1='30' x2='230' y2='170' opacity='.3'/><path d='M230 30 C 260 30, 280 170, 317 170 S 375 30, 405 30 S 463 170, 492 170 S 550 30, 580 30' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='257' cy='50' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><text x='400' y='190' fill='currentColor' stroke='none'>θ →   (2π = one cycle)</text><text x='235' y='25' fill='currentColor' stroke='none'>+1</text><text x='235' y='180' fill='currentColor' stroke='none'>−1</text></g></g>",
           "viewBox": "0 0 600 200",
-          "caption": "Left: a point at angle θ on the unit circle. Right: its x-coordinate plotted as θ grows: a cosine. One full rotation (2π radians) = one cycle of the wave.",
+          "caption": "Left: a point at angle θ on the unit circle. Right: its x-coordinate plotted as θ grows: a cosine. One full rotation (2π radians) = one cycle of the wave. Hover any part.",
           "slide": "The shadow of a rotating point",
-          "id": "circle.bef10950"
+          "id": "circle.a16a5649"
         },
         {
           "type": "definition",
@@ -544,11 +544,11 @@
         },
         {
           "type": "figure",
-          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"30\" y1=\"140\" x2=\"540\" y2=\"140\" opacity=\".4\"/><line x1=\"30\" y1=\"140\" x2=\"30\" y2=\"20\" opacity=\".4\"/>\n<line x1=\"40\" y1=\"140\" x2=\"40\" y2=\"131.959443528216\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"61\" y1=\"140\" x2=\"61\" y2=\"116.92684257940843\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"82\" y1=\"140\" x2=\"82\" y2=\"90.69928761639173\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"103\" y1=\"140\" x2=\"103\" y2=\"69.67930055535022\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"124\" y1=\"140\" x2=\"124\" y2=\"74.41902074150838\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"145\" y1=\"140\" x2=\"145\" y2=\"99.39075663062334\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"166\" y1=\"140\" x2=\"166\" y2=\"120.51552922217459\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"187\" y1=\"140\" x2=\"187\" y2=\"125.07974822780736\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"208\" y1=\"140\" x2=\"208\" y2=\"115.09307100068116\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"229\" y1=\"140\" x2=\"229\" y2=\"98.01238885296252\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"250\" y1=\"140\" x2=\"250\" y2=\"84.7737475226613\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"271\" y1=\"140\" x2=\"271\" y2=\"85.03800079378722\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"292\" y1=\"140\" x2=\"292\" y2=\"98.32242100534485\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"313\" y1=\"140\" x2=\"313\" y2=\"114.43664599824712\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"334\" y1=\"140\" x2=\"334\" y2=\"123.62717786186053\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"355\" y1=\"140\" x2=\"355\" y2=\"123.11292444290928\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"376\" y1=\"140\" x2=\"376\" y2=\"115.80901582791365\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"397\" y1=\"140\" x2=\"397\" y2=\"107.23022753663251\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"418\" y1=\"140\" x2=\"418\" y2=\"103.02160258509234\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"439\" y1=\"140\" x2=\"439\" y2=\"106.01913981477963\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"460\" y1=\"140\" x2=\"460\" y2=\"114.53870931092905\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"481\" y1=\"140\" x2=\"481\" y2=\"124.19406737413753\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"502\" y1=\"140\" x2=\"502\" y2=\"131.4834304843647\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"523\" y1=\"140\" x2=\"523\" y2=\"135.5327650660145\" stroke=\"currentColor\" opacity=\".6\"/>\n<path d=\"M30 129.14664451285665 L40 125.95944352821603 L50 120.42905511361711 L60 111.94457514196282 L70 100.54664565883152 L80 87.36490741377841 L90 74.6852443266468 L100 65.40311640114872 L110 61.9695803583532 L120 65.33396199638347 L130 74.49213242583917 L140 86.91339319115897 L150 99.57263714083709 L160 109.98259298431924 L170 116.73276889298275 L180 119.44512884062193 L190 118.40631659371246 L200 114.21455753710089 L210 107.62487211547322 L220 99.56781858895225 L230 91.19852415773829 L240 83.83987055372938 L250 78.7737475226613 L260 76.94093498460313 L270 78.67669150964909 L280 83.60479993072713 L290 90.74310469814914 L300 98.77812662718867 L310 106.3975746433796 L320 112.56134337441846 L330 116.63994953029965 L340 118.41932127419982 L350 118.02217728796836 L360 115.80799227497828 L370 112.2915150565263 L380 108.0861623010565 L390 103.85521751060342 L400 100.25071208609651 L410 97.83373343865023 L420 96.98917611646547 L430 97.8605501211664 L440 100.3295683960538 L450 104.05160549046059 L460 108.53870931092905 L470 113.26582729096356 L480 117.770056492251 L490 121.71847928001864 L500 124.93362161789207 L510 127.38021543915839 L520 129.1270250391632 L530 130.30047625401147 L540 131.04366971409883\" fill=\"none\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"95\" y=\"55\" fill=\"rgb(59 130 246)\" stroke=\"none\">F1</text><text x=\"248\" y=\"72\" fill=\"rgb(59 130 246)\" stroke=\"none\">F2</text><text x=\"410\" y=\"92\" fill=\"rgb(59 130 246)\" stroke=\"none\">F3</text>\n<text x=\"420\" y=\"160\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">frequency →</text>\n</g>",
+          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\"><g><title>The axes: frequency runs right, amplitude up. A magnitude spectrum is one instant's recipe: there is no time axis anywhere on it.</title><line x1=\"30\" y1=\"140\" x2=\"540\" y2=\"140\" opacity=\".4\"/><line x1=\"30\" y1=\"140\" x2=\"30\" y2=\"20\" opacity=\".4\"/></g><g><title>The comb of thin vertical lines: the harmonics: the SOURCE's contribution. The vocal folds buzz at F₀ and its whole-number multiples; the comb's spacing is the pitch.</title><line x1=\"40\" y1=\"140\" x2=\"40\" y2=\"131.959443528216\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"61\" y1=\"140\" x2=\"61\" y2=\"116.92684257940843\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"82\" y1=\"140\" x2=\"82\" y2=\"90.69928761639173\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"103\" y1=\"140\" x2=\"103\" y2=\"69.67930055535022\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"124\" y1=\"140\" x2=\"124\" y2=\"74.41902074150838\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"145\" y1=\"140\" x2=\"145\" y2=\"99.39075663062334\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"166\" y1=\"140\" x2=\"166\" y2=\"120.51552922217459\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"187\" y1=\"140\" x2=\"187\" y2=\"125.07974822780736\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"208\" y1=\"140\" x2=\"208\" y2=\"115.09307100068116\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"229\" y1=\"140\" x2=\"229\" y2=\"98.01238885296252\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"250\" y1=\"140\" x2=\"250\" y2=\"84.7737475226613\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"271\" y1=\"140\" x2=\"271\" y2=\"85.03800079378722\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"292\" y1=\"140\" x2=\"292\" y2=\"98.32242100534485\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"313\" y1=\"140\" x2=\"313\" y2=\"114.43664599824712\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"334\" y1=\"140\" x2=\"334\" y2=\"123.62717786186053\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"355\" y1=\"140\" x2=\"355\" y2=\"123.11292444290928\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"376\" y1=\"140\" x2=\"376\" y2=\"115.80901582791365\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"397\" y1=\"140\" x2=\"397\" y2=\"107.23022753663251\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"418\" y1=\"140\" x2=\"418\" y2=\"103.02160258509234\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"439\" y1=\"140\" x2=\"439\" y2=\"106.01913981477963\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"460\" y1=\"140\" x2=\"460\" y2=\"114.53870931092905\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"481\" y1=\"140\" x2=\"481\" y2=\"124.19406737413753\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"502\" y1=\"140\" x2=\"502\" y2=\"131.4834304843647\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"523\" y1=\"140\" x2=\"523\" y2=\"135.5327650660145\" stroke=\"currentColor\" opacity=\".6\"/></g><g><title>The smooth curve: the spectral envelope: the FILTER's contribution. The mouth and throat boost some frequencies and damp others; this outline (not the comb) is what changes when you change vowels.</title><path d=\"M30 129.14664451285665 L40 125.95944352821603 L50 120.42905511361711 L60 111.94457514196282 L70 100.54664565883152 L80 87.36490741377841 L90 74.6852443266468 L100 65.40311640114872 L110 61.9695803583532 L120 65.33396199638347 L130 74.49213242583917 L140 86.91339319115897 L150 99.57263714083709 L160 109.98259298431924 L170 116.73276889298275 L180 119.44512884062193 L190 118.40631659371246 L200 114.21455753710089 L210 107.62487211547322 L220 99.56781858895225 L230 91.19852415773829 L240 83.83987055372938 L250 78.7737475226613 L260 76.94093498460313 L270 78.67669150964909 L280 83.60479993072713 L290 90.74310469814914 L300 98.77812662718867 L310 106.3975746433796 L320 112.56134337441846 L330 116.63994953029965 L340 118.41932127419982 L350 118.02217728796836 L360 115.80799227497828 L370 112.2915150565263 L380 108.0861623010565 L390 103.85521751060342 L400 100.25071208609651 L410 97.83373343865023 L420 96.98917611646547 L430 97.8605501211664 L440 100.3295683960538 L450 104.05160549046059 L460 108.53870931092905 L470 113.26582729096356 L480 117.770056492251 L490 121.71847928001864 L500 124.93362161789207 L510 127.38021543915839 L520 129.1270250391632 L530 130.30047625401147 L540 131.04366971409883\" fill=\"none\" stroke=\"rgb(var(--accent-fg))\" stroke-width=\"2\"/></g><g><title>The envelope's peaks are the formants F1, F2, F3: the filter's resonances, the fingerprint that makes /i/ sound different from /a/. Lab 1 Q6: the filter column is the one with these smooth humps.</title><text x=\"95\" y=\"55\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F1</text><text x=\"248\" y=\"72\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F2</text><text x=\"410\" y=\"92\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F3</text><text x=\"420\" y=\"160\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">frequency →</text></g></g>",
           "viewBox": "0 0 560 170",
-          "caption": "A vowel's magnitude spectrum: the thin lines are harmonics (source detail), the smooth curve is the envelope (filter). The humps in the envelope are formants F1, F2, F3.",
+          "caption": "A vowel's magnitude spectrum: the thin lines are harmonics (source detail), the smooth curve is the envelope (filter). The humps in the envelope are formants F1, F2, F3. Hover any part.",
           "slide": "Envelope over detail",
-          "id": "spectrum.1584821e"
+          "id": "spectrum.b4c8eabf"
         },
         {
           "type": "check",
@@ -645,6 +645,189 @@
       ],
       "why": "Decibels show up on every audio meter and in every spectrum plot's y-axis.",
       "sectionRef": "vocab"
+    },
+    {
+      "id": "fill-period",
+      "title": "Fill in: period from frequency",
+      "prompt": "A wave has F = 50 Hz. Its period T is ____ seconds.",
+      "hints": [
+        "T = 1 / F.",
+        "1 ÷ 50 = ?",
+        "0.02 s, which is 20 ms."
+      ],
+      "solution": [
+        "T = 1/F = 1/50 = 0.02 s (20 ms)."
+      ],
+      "why": "Period and frequency are the first thing every lab asks you to read off a plot.",
+      "accept": [
+        "0.02",
+        "0.02 s",
+        "0.02s",
+        "0.02 sec",
+        "0.02sec",
+        "0.02 seconds",
+        "0.02seconds",
+        "1/50"
+      ],
+      "sectionRef": "vocab"
+    },
+    {
+      "id": "fill-freq",
+      "title": "Fill in: frequency from period",
+      "prompt": "One repeat of a wave takes 0.004 s. Its frequency is ____ Hz.",
+      "hints": [
+        "F = 1 / T.",
+        "1 ÷ 0.004 = ?",
+        "It's 250."
+      ],
+      "solution": [
+        "F = 1/T = 1/0.004 = 250 Hz."
+      ],
+      "why": "You'll convert between these constantly: pitch trackers report Hz, waveforms show you seconds.",
+      "accept": [
+        "250",
+        "250 Hz",
+        "250Hz",
+        "250 hz",
+        "250hz"
+      ],
+      "sectionRef": "vocab"
+    },
+    {
+      "id": "mc-dial-A",
+      "title": "Which dial?",
+      "prompt": "In 3·cos(2π·5·t + π), which number is the amplitude?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Amplitude = the number multiplying the cosine = 3."
+      ],
+      "why": "Reading the three dials correctly is the first step of every Lab 3 question.",
+      "choices": [
+        {
+          "text": "3",
+          "feedback": "Right: the number in front sets how tall the wave is."
+        },
+        {
+          "text": "5",
+          "feedback": "5 is the frequency (repeats per second)."
+        },
+        {
+          "text": "π",
+          "feedback": "π is the starting angle (phase)."
+        },
+        {
+          "text": "2π",
+          "feedback": "2π is just 'one lap'; it's in every sinusoid."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "formula"
+    },
+    {
+      "id": "mc-change-F",
+      "title": "What happens if…",
+      "prompt": "You change 2·cos(2π·100·t) to 2·cos(2π·200·t). What happens to the plot?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Only F changed, from 100 Hz to 200 Hz: twice as many cycles, each half as long."
+      ],
+      "why": "Predicting the plot from the formula is Lab 3 Q2.",
+      "choices": [
+        {
+          "text": "Twice as many repeats per second (squished sideways)",
+          "feedback": "Right: F doubled, so the period halved (10 ms → 5 ms)."
+        },
+        {
+          "text": "Twice as tall",
+          "feedback": "Height is A, which stayed 2."
+        },
+        {
+          "text": "Starts at the bottom",
+          "feedback": "Starting point is ϕ, which stayed 0."
+        },
+        {
+          "text": "Nothing changes",
+          "feedback": "F changed from 100 to 200."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "formula"
+    },
+    {
+      "id": "mc-db",
+      "title": "Decibels",
+      "prompt": "Sound B's amplitude is twice sound A's. How much louder is B?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "20·log₁₀(2) ≈ 20 × 0.301 ≈ 6 dB."
+      ],
+      "why": "Audio meters, spec sheets and spectrum plots are all in dB.",
+      "choices": [
+        {
+          "text": "+6 dB",
+          "feedback": "Right: ×2 amplitude = +6 dB."
+        },
+        {
+          "text": "+2 dB",
+          "feedback": "dB don't add the ratio directly; it's 20·log₁₀(2) ≈ 6."
+        },
+        {
+          "text": "+20 dB",
+          "feedback": "+20 dB is ×10 amplitude."
+        },
+        {
+          "text": "twice as many dB",
+          "feedback": "dB is a log scale; ×2 is always +6 dB, whatever the starting level."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "vocab"
+    },
+    {
+      "id": "mc-plot",
+      "title": "Which plot?",
+      "prompt": "Time goes left to right, frequency bottom to top, darkness shows strength. What is it?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Time on x, frequency on y, darkness = amplitude: a spectrogram."
+      ],
+      "why": "Spectrograms are the main picture in phonetics and in every speech tool.",
+      "choices": [
+        {
+          "text": "A spectrogram",
+          "feedback": "Right: a spectrum for every moment, side by side."
+        },
+        {
+          "text": "A waveform",
+          "feedback": "A waveform has pressure (not frequency) on the vertical axis."
+        },
+        {
+          "text": "A spectrum",
+          "feedback": "A spectrum has frequency on the horizontal axis and no time axis."
+        },
+        {
+          "text": "A phase plot",
+          "feedback": "Phase plots show angle against frequency."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "spectrum"
     }
   ]
 }

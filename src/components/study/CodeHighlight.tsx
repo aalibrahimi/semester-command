@@ -35,7 +35,10 @@ const FN_STYLE = { color: "hsl(172 55% 46%)" }; //    teal — call sites
 
 /** Does this body deserve syntax coloring, or is it worked math / prose? */
 export function looksLikeCode(text: string): boolean {
-  return /[;{}]|\/\/|=>|\bfor\s*\(|\bwhile\s*\(|\breturn\b|\bdef\b|\bpublic\b/.test(text);
+  // Braces, // comments, arrows, or a line that STARTS like a statement.
+  // A semicolon alone is not enough: worked prose uses them too.
+  if (/\{\s*$|^\s*\}|\/\/|=>|;\s*$/m.test(text)) return true;
+  return /^\s*(for\b|if\b|while\b|return\b|def\b|public\b|private\b|int\b|else\b|swap\b|[a-z]\w*\(.*\):\s*$)/m.test(text);
 }
 
 /** The body of a code block, tokenized into colored spans. */

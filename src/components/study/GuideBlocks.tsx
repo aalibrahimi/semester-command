@@ -21,7 +21,7 @@ import { AlertOctagon, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { GuideBlock } from "@/study/guide";
 import { Inline } from "./Blocks";
-import { CodeHighlight } from "./CodeHighlight";
+import { ExampleBody } from "./ExampleBody";
 import { ResourceChips } from "./ResourceChips";
 import { Sim } from "./sims";
 import { Stepper } from "./Stepper";
@@ -116,11 +116,13 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
             <span className="mr-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Example</span>
             <span className="text-sm font-medium">{block.title}</span>
           </figcaption>
-          <pre className="overflow-x-auto whitespace-pre-wrap px-4 py-3.5 font-mono text-[12.5px] leading-relaxed text-foreground/90"><CodeHighlight text={block.body} /></pre>
+          <ExampleBody text={block.body} />
           {block.answer && (
-            <div className="border-t border-border/60 px-4 py-2.5 text-sm">
-              <span className="mr-2 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Answer</span>
-              <span className="font-mono text-xs">{block.answer}</span>
+            <div className="flex items-baseline gap-2 border-t border-on-track/25 bg-on-track/[0.06] px-4 py-2.5 text-sm">
+              <span className="text-2xs font-semibold uppercase tracking-wider text-on-track-fg">Answer</span>
+              <span className="font-medium text-foreground">
+                <Inline text={block.answer} />
+              </span>
             </div>
           )}
         </figure>
