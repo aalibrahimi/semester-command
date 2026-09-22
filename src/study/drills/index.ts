@@ -15,6 +15,7 @@ import { drills as cs146Adts } from "./cs146--2-adts-invariants-insertion";
 import { drills as cs146BigO } from "./cs146--4-big-o-merge-sort";
 import { drills as cs146Recurrences } from "./cs146--6-recurrences";
 import { drills as cs146Heaps } from "./cs146--8-heaps-heapsort-pq";
+import { drills as cs146Quick } from "./cs146--9-quicksort";
 import { drills as cs154Sets } from "./cs154--1-sets-functions";
 import { drills as cs154Strings } from "./cs154--3-strings-languages";
 import { drills as cs154Dfa } from "./cs154--5-dfa";
@@ -42,6 +43,7 @@ const ALL: Drill[][] = [
   cs146BigO,
   cs146Recurrences,
   cs146Heaps,
+  cs146Quick,
   cs154Sets,
   cs154Strings,
   cs154Dfa,

@@ -1,8 +1,8 @@
 /**
- * SortSim — insertion sort, merge sort, buildHeap and heapSort on YOUR
+ * SortSim — insertion sort, merge sort, Lomuto quicksort, buildHeap and heapSort on YOUR
  * array, one step at a time, with the counts Poon asks for.
  *
- * params: { algorithm?: "insertion" | "merge" | "buildheap" | "heapsort",
+ * params: { algorithm?: "insertion" | "merge" | "quick" | "buildheap" | "heapsort",
  * array?: number[] }
  *
  * The array is typed in; every algorithm is recorded as a list of frames
@@ -16,7 +16,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { BTN, BTN_SOLID, CTRL, LABEL, str, type SimProps } from "./index";
 
-type Algo = "insertion" | "merge" | "buildheap" | "heapsort";
+type Algo = "insertion" | "merge" | "quick" | "buildheap" | "heapsort";
 
 interface Frame {
   a: number[];
@@ -93,6 +93,42 @@ function record(algo: Algo, input: number[]): Frame[] {
     };
     sort(0, n - 1);
     push([], `Sorted. ${comps} comparisons, ${moves} element copies. Levels: ${Math.ceil(Math.log2(Math.max(2, n)))}.`, range(0, n - 1));
+    return frames;
+  }
+
+  if (algo === "quick") {
+    // Lomuto, pivot = a[high], exactly Poon's Lecture 9 pseudocode.
+    const settled: number[] = [];
+    const partition = (low: number, high: number): number => {
+      const pivot = a[high];
+      let i = low - 1;
+      push([high], `partition(a, ${low}, ${high}): pivot = a[${high}] = ${pivot}. i = ${i} (the "≤ pivot" zone is empty).`, settled.slice(), [low, high]);
+      for (let j = low; j < high; j++) {
+        comps++;
+        if (a[j] <= pivot) {
+          i++;
+          if (i !== j) {
+            [a[i], a[j]] = [a[j], a[i]];
+            moves++;
+            push([i, j, high], `j = ${j}: ${a[i]} ≤ ${pivot}. i++ → ${i}, swap a[${i}] and a[${j}].`, settled.slice(), [low, high]);
+          } else push([i, high], `j = ${j}: ${a[i]} ≤ ${pivot}. i++ → ${i}; i = j, so the swap changes nothing.`, settled.slice(), [low, high]);
+        } else push([j, high], `j = ${j}: ${a[j]} > ${pivot}. Skip; i stays ${i}.`, settled.slice(), [low, high]);
+      }
+      [a[i + 1], a[high]] = [a[high], a[i + 1]];
+      moves++;
+      settled.push(i + 1);
+      push([i + 1], `Swap pivot into slot ${i + 1}. Return ${i + 1}: ${pivot} is now in its final place.`, settled.slice(), [low, high]);
+      return i + 1;
+    };
+    const qs = (low: number, high: number) => {
+      if (low < high) {
+        const p = partition(low, high);
+        qs(low, p - 1);
+        qs(p + 1, high);
+      } else if (low === high) settled.push(low);
+    };
+    qs(0, n - 1);
+    push([], `Sorted. ${comps} comparisons, ${moves} swaps. Try an already-sorted array to see the worst case.`, range(0, n - 1));
     return frames;
   }
 
@@ -223,9 +259,9 @@ export function SortSim({ params }: SimProps) {
         <div className="flex flex-col gap-1">
           <span className={LABEL}>Algorithm</span>
           <div className="flex flex-wrap gap-1">
-            {(["insertion", "merge", "buildheap", "heapsort"] as Algo[]).map((x) => (
+            {(["insertion", "merge", "quick", "buildheap", "heapsort"] as Algo[]).map((x) => (
               <button key={x} type="button" onClick={() => setAlgo(x)} className={cn("rounded-md border px-2 py-1 text-xs", algo === x ? "border-brand bg-brand/[0.1] text-brand-fg" : "border-border/70 hover:bg-fill-ghost")}>
-                {x === "buildheap" ? "buildHeap" : x === "heapsort" ? "heapSort" : x + " sort"}
+                {x === "buildheap" ? "buildHeap" : x === "heapsort" ? "heapSort" : x === "quick" ? "quicksort" : x + " sort"}
               </button>
             ))}
           </div>
