@@ -256,4 +256,25 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "structure!tf",
+    guideId: G,
+    sectionRef: "structure",
+    title: "True or false (Lesson 5 exercises)",
+    skill: "Tape, control unit, result: the facts Chen tests with true/false.",
+    gen(r) {
+      const qs = [
+        { p: "A DFA must have at least one accepting state.", ok: "False: zero or more; with none it accepts nothing (L = ϕ)", bad: ["True: otherwise it can't halt", "True: q₀ must be accepting"] },
+        { p: "A state named q₀ is the initial state.", ok: "False: the triangle marks the initial state, not the name", bad: ["True: q₀ is reserved for it", "True, if it is also accepting"] },
+        { p: "A timeframe is one second.", ok: "False: the clock speed is irrelevant; a timeframe is one transition", bad: ["True: Chen fixes it at one second", "True for JFLAP only"] },
+        { p: "'a, b' on one edge means a or b.", ok: "True: either symbol takes that arrow", bad: ["False: it means the string ab", "False: it means a then b on separate steps"] },
+        { p: "The read head can move back to re-read a symbol.", ok: "False: it consumes symbols left to right and never moves back", bad: ["True: that is how loops work", "True, once per run"] },
+        { p: "The result of a run is one of Accept, Reject, or Undecided.", ok: "False: Accept or Reject, nothing else", bad: ["True: Undecided when the tape is empty", "True: Undecided if it never halts"] },
+        { p: "The tape is bounded on the left and unbounded on the right.", ok: "True", bad: ["False: bounded on both sides", "False: unbounded on both sides"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: `True or false: **${q.p}**`, answer: choice(r, q.ok, q.bad), steps: [q.ok] };
+    },
+  },
 ];

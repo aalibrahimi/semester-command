@@ -169,4 +169,24 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "circle!identity",
+    guideId: G,
+    sectionRef: "circle",
+    title: "Cosine, sine, and the circle",
+    skill: "cos is even, sin is odd, cos leads sin by a quarter cycle; negating the whole argument leaves a cosine alone.",
+    gen(r) {
+      const qs = [
+        { p: "cos(−θ) equals…", ok: "cos θ (cosine is even: rotating the other way gives the same x-coordinate)", bad: ["−cos θ", "sin θ", "−sin θ"] },
+        { p: "sin(−θ) equals…", ok: "−sin θ (sine is odd)", bad: ["sin θ", "cos θ", "−cos θ"] },
+        { p: "cos θ equals…", ok: "sin(θ + π/2): cosine is sine a quarter cycle earlier", bad: ["sin(θ − π/2)", "sin(θ + π)", "−sin θ"] },
+        { p: "2cos(2π·(−100)·t − π/3) equals…", ok: "2cos(2π·100·t + π/3): negate the whole inside and cosine doesn't care", bad: ["−2cos(2π·100·t + π/3)", "2cos(2π·100·t − π/3)", "2sin(2π·100·t + π/3)"] },
+        { p: "A point going around a circle at F rotations per second, seen from the side, traces…", ok: "A sinusoid with frequency F", bad: ["A square wave", "A straight line", "A spiral"] },
+        { p: "The radius of the circle is the wave's…", ok: "Peak amplitude A", bad: ["Frequency F", "Phase ϕ", "Period T"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: [`Answer: ${q.ok}.`] };
+    },
+  },
 ];

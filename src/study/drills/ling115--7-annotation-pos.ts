@@ -86,4 +86,23 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "process!steps",
+    guideId: G,
+    sectionRef: "process",
+    title: "The data-linguist process",
+    skill: "Question → design decisions → collection and shaping → annotation → analysis, iterate; and why documentation matters.",
+    gen(r) {
+      const qs = [
+        { p: "Where do 'many linguistic decisions happen', per the slides?", ok: "Data design decisions (step 2)", bad: ["Analysis (step 5)", "Downloading the corpus", "Plotting"] },
+        { p: "Tokenization and normalization belong to which step?", ok: "Data collection and shaping (step 3)", bad: ["Annotation", "Analysis and evaluation", "Question design"] },
+        { p: "One reason to document your dataset:", ok: "It gives the data a lineage and known biases, so later results are interpretable and reproducible", bad: ["Canvas requires it", "It makes the corpus larger", "It replaces annotation"] },
+        { p: "Why annotate at all? Pick the reason that is NOT one of hers.", ok: "It makes the corpus smaller", bad: ["Reproducibility", "Automatic examination (search 'all verbs')", "Multi-functionality (one corpus, many questions)"] },
+        { p: "After analysis and evaluation, the process says to…", ok: "Iterate: go back and revise earlier decisions", bad: ["Publish", "Delete the raw data", "Stop"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: [`Answer: ${q.ok}.`] };
+    },
+  },
 ];

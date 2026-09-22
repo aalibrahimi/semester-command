@@ -125,4 +125,27 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "coef!orthogonality",
+    guideId: G,
+    sectionRef: "coef",
+    title: "Orthogonality: what the integral gives",
+    skill: "Over one period, sines and cosines at harmonic frequencies integrate to 0 unless they match (then T₀/2; T₀ for the complex pair). Lab 4 Q6.",
+    gen(r) {
+      const T = r.pick(["T₀", "T₀", "0.2 s", "0.01 s"]);
+      const qs = [
+        { p: `∫ over one period of sin(2πF₀·3t)·cos(2πF₀·3t) dt`, ok: "0 (sine × cosine is always 0)", bad: [`${T}/2`, T, "1"] },
+        { p: `∫ over one period of cos(2πF₀·2t)·cos(2πF₀·2t) dt`, ok: `${T}/2 (same frequency)`, bad: ["0", T, "2"] },
+        { p: `∫ over one period of cos(2πF₀·2t)·cos(2πF₀·5t) dt`, ok: "0 (different harmonics)", bad: [`${T}/2`, T, "1/2"] },
+        { p: `∫ over one period of e^{j2πF₀·4t}·e^{−j2πF₀·4t} dt`, ok: `${T} (the complex pair, same k: no factor of ½)`, bad: [`${T}/2`, "0", "1"] },
+        { p: `∫ over one period of cos(2πF₀·k·t) dt for k ≠ 0`, ok: "0 (whole cycles cancel; Lab 4 Q6: sine too)", bad: [`${T}/2`, T, "depends on k"] },
+        { p: `a₀ is computed with which factor in front of the integral?`, ok: "1/T₀ (it is the average)", bad: ["2/T₀", "T₀", "1/2"] },
+        { p: `a_k and b_k (k ≥ 1) use which factor?`, ok: "2/T₀", bad: ["1/T₀", "T₀/2", "1"] },
+        { p: `X_k (exponential form) is found by multiplying x(t) by…`, ok: "e^{−j2πF₀kt}: the spinner with the OPPOSITE frequency", bad: ["e^{+j2πF₀kt}", "cos(2πF₀kt) only", "k"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: ["Orthogonality: only a matching frequency survives the integral, which is why multiplying by one harmonic isolates its coefficient.", `Here: ${q.ok}.`] };
+    },
+  },
 ];

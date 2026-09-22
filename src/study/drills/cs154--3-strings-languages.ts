@@ -181,4 +181,37 @@ export const drills: Drill[] = [
       return { prompt: q.p, answer: choice(r, q.ok, q.bad, { correct: q.why }), steps: [q.why] };
     },
   },
+
+  {
+    id: "patterns!english",
+    guideId: G,
+    sectionRef: "patterns",
+    title: "English ↔ set-builder",
+    skill: "The patterns Chen expects, both directions, with the complement by asking 'how can a string fail?'.",
+    gen(r) {
+      const rows = [
+        { en: "at least one a", sb: "{ bⁿaw | n ≥ 0, w ∈ Σ∗ }", comp: "{ bⁿ | n ≥ 0 } (no a at all)" },
+        { en: "exactly one a", sb: "{ bⁿabᵐ | n, m ≥ 0 }", comp: "{ bⁿ | n ≥ 0 } ∪ { strings with ≥ 2 a's }" },
+        { en: "starts with a", sb: "{ aw | w ∈ Σ∗ }", comp: "{λ} ∪ { bw | w ∈ Σ∗ }" },
+        { en: "has prefix ab", sb: "{ abw | w ∈ Σ∗ }", comp: "{λ, a} ∪ { aaw | w ∈ Σ∗ } ∪ { bw | w ∈ Σ∗ }" },
+        { en: "only a's (λ allowed)", sb: "{ aⁿ | n ≥ 0 }", comp: "strings containing at least one b" },
+        { en: "more than one a", sb: "{ bⁿabᵐaw | n, m ≥ 0, w ∈ Σ∗ }", comp: "{ bⁿ | n ≥ 0 } ∪ { bⁿabᵐ | n, m ≥ 0 } (zero or one a)" },
+      ];
+      const it = r.pick(rows);
+      const mode = r.pick(["sb", "comp"] as const);
+      const others = rows.filter((x) => x !== it);
+      if (mode === "sb")
+        return {
+          prompt: `Over Σ = {a, b}: **${it.en}** in set-builder?`,
+          answer: choice(r, it.sb, r.sample(others.map((x) => x.sb), 3)),
+          steps: ["Name where the a's are forced and let b's (bⁿ) and anything (w ∈ Σ∗) fill the gaps.", `${it.en}: ${it.sb}.`],
+        };
+      return {
+        prompt: `Over Σ = {a, b}, L = **${it.en}**. What is L̄ (the complement)?`,
+        answer: choice(r, it.comp, r.sample(others.map((x) => x.comp), 3), { correct: "Ask: in how many ways can a string fail to be in L? Each way is a piece of the complement." }),
+        steps: ["Complement = every string over Σ that fails the description.", `${it.en} fails as: ${it.comp}.`],
+        hint: "List the ways to fail. Don't forget λ.",
+      };
+    },
+  },
 ];

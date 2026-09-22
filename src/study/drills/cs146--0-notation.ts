@@ -130,4 +130,98 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "exponents!pieces",
+    guideId: G,
+    sectionRef: "exponents",
+    title: "Doubling and halving",
+    skill: "k rounds of splitting in two → 2ᵏ pieces; n pieces → log₂ n rounds.",
+    gen(r) {
+      const k = r.int(3, 12);
+      if (r.next() < 0.5)
+        return {
+          prompt: `After **${k} rounds** of splitting every piece in two, how many pieces are there?`,
+          answer: { kind: "number", value: 2 ** k },
+          steps: [`Each round doubles the count: 1 → 2 → 4 → …`, `After ${k} rounds: 2^${k} = ${fmt(2 ** k)}.`],
+          diagnose(input) {
+            const v = Number(input.replace(/[^0-9]/g, ""));
+            if (v === 2 * k) return "You doubled the round count. Doubling happens every round, so it is 2 multiplied by itself k times.";
+            return undefined;
+          },
+        };
+      return {
+        prompt: `You have **${fmt(2 ** k)} pieces**. Write that as a power of 2: what is the exponent?`,
+        answer: { kind: "number", value: k },
+        steps: [`${fmt(2 ** k)} = 2^${k}.`, `This is a log question in disguise: log₂ ${fmt(2 ** k)} = ${k}.`],
+      };
+    },
+  },
+  {
+    id: "nlog!decode",
+    guideId: G,
+    sectionRef: "nlog",
+    title: "Decode n^(log_b a)",
+    skill: "Ask 'b to what power is a?' and the scary expression becomes a plain power of n.",
+    gen(r) {
+      const rows = [
+        [2, 2, "n"],
+        [4, 2, "n²"],
+        [8, 2, "n³"],
+        [1, 2, "1"],
+        [27, 3, "n³"],
+        [9, 3, "n²"],
+        [3, 3, "n"],
+        [16, 4, "n²"],
+      ] as const;
+      const [a, b, ans] = r.pick(rows);
+      return {
+        prompt: `T(n) = ${a}T(n/${b}) + n. What is **n^(log_${b} ${a})** as a plain power of n?`,
+        answer: choice(r, ans, ["n", "n²", "n³", "1", "n log n"].filter((x) => x !== ans).slice(0, 3)),
+        steps: [`log_${b} ${a}: ${b} to what power is ${a}? ${ans === "1" ? `${b}⁰ = 1, so the exponent is 0` : `the exponent is ${ans === "n" ? 1 : ans === "n²" ? 2 : 3}`}.`, `So n^(log_${b} ${a}) = ${ans}.`],
+        hint: "Count how many times b multiplies into a.",
+      };
+    },
+  },
+  {
+    id: "T!read",
+    guideId: G,
+    sectionRef: "T",
+    title: "Read a recurrence in words",
+    skill: "T(n) = aT(n/b) + f(n): 'a times the steps for n/b, plus f(n) more'.",
+    gen(r) {
+      const items = [
+        { words: "twice the steps to handle half as many, plus k·n more steps", ok: "T(n) = 2T(n/2) + kn" },
+        { words: "the steps to handle half as many, plus one more step", ok: "T(n) = T(n/2) + 1" },
+        { words: "the steps to handle one fewer, plus n more steps", ok: "T(n) = T(n − 1) + n" },
+        { words: "three times the steps to handle a third as many, plus n more", ok: "T(n) = 3T(n/3) + n" },
+        { words: "four times the steps to handle half as many, plus n² more", ok: "T(n) = 4T(n/2) + n²" },
+      ];
+      const it = r.pick(items);
+      const all = items.map((x) => x.ok).filter((x) => x !== it.ok);
+      return {
+        prompt: `Which recurrence says: "${it.words}"?`,
+        answer: choice(r, it.ok, r.sample(all, 3)),
+        steps: ["The coefficient is how many recursive calls; the argument is each call's size; the tail is the extra work.", `So: ${it.ok}.`],
+      };
+    },
+  },
+  {
+    id: "induction!parts",
+    guideId: G,
+    sectionRef: "induction",
+    title: "The parts of an induction proof",
+    skill: "Base case, inductive hypothesis, inductive step: what each one does (and Poon's loop-invariant names for them).",
+    gen(r) {
+      const qs = [
+        { p: "Which part shows the claim for the first value (n = 1)?", ok: "The base case (Initialization, in loop-invariant terms)", bad: ["The inductive step", "The inductive hypothesis", "Termination"] },
+        { p: "Which part assumes the claim holds for some k?", ok: "The inductive hypothesis", bad: ["The base case", "The conclusion", "Termination"] },
+        { p: "Which part uses the assumption for k to prove the claim for k + 1?", ok: "The inductive step (Maintenance, in loop-invariant terms)", bad: ["The base case", "The inductive hypothesis alone", "Initialization"] },
+        { p: "Proving 1 + 2 + … + n = n(n+1)/2: what does the inductive step add to both sides?", ok: "k + 1, then shows k(k+1)/2 + (k+1) = (k+1)(k+2)/2", bad: ["k, then shows k(k+1)/2 + k = (k+1)(k+2)/2", "n, then divides by 2", "Nothing: the base case is enough"] },
+        { p: "Which two ideas from this course are induction in disguise?", ok: "Loop invariants and the substitution method", bad: ["Big-O and Big-Omega", "Merge and heapify", "Stacks and queues"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: ["Base case: P(1). Inductive step: P(k) ⇒ P(k+1). Together they cover every n.", `Answer: ${q.ok}.`] };
+    },
+  },
 ];

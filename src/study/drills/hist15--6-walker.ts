@@ -117,4 +117,42 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "who!facts",
+    guideId: G,
+    sectionRef: "who",
+    title: "Who Walker was",
+    skill: "The facts a Q1 opening sentence needs: free-born, Boston, 1829, four Articles, the double audience.",
+    gen(r) {
+      const qs = [
+        { p: "David Walker was…", ok: "Born free in Wilmington, North Carolina (his mother was free), settled in Boston in the 1820s", bad: ["Born enslaved in Virginia and escaped north", "A white abolitionist from Massachusetts", "A Charleston minister"] },
+        { p: "The Appeal was published in…", ok: "September 1829, Boston; a 76-page pamphlet in four 'Articles', revised twice by 1830", bad: ["1831 in The Liberator", "1776 in Philadelphia", "1852 in Rochester"] },
+        { p: "How did the Appeal reach the South?", ok: "Sewn into the linings of coats he sold to Black sailors", bad: ["Mailed to Southern newspapers", "Read aloud in Congress", "Carried by the Colonization Society"] },
+        { p: "Walker wrote for which paper?", ok: "Freedom's Journal, the first Black-owned newspaper (1827)", bad: ["The Liberator", "The North Star", "The Boston Globe"] },
+        { p: "'To the Coloured Citizens of the World' means his first audience is…", ok: "Black people, enslaved and free, with white America overhearing", bad: ["White reformers", "Congress", "The British public"] },
+        { p: "Why did Georgia and Louisiana pass laws against the pamphlet?", ok: "Because it reached enslaved readers; the distribution, not just the words, was the threat", bad: ["Because it praised colonization", "Because it was printed in the South", "Because Walker was a Georgian"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: [`Answer: ${q.ok}.`] };
+    },
+  },
+  {
+    id: "how!mechanics",
+    guideId: G,
+    sectionRef: "how",
+    title: "The exercise mechanics",
+    skill: "Two questions, 40 minutes, Q1 locks when you advance: write both first, then paste.",
+    gen(r) {
+      const qs = [
+        { p: "When you advance from Q1 to Q2 in the Canvas quiz…", ok: "Q1 locks; you cannot go back", bad: ["Both stay editable until submit", "The timer resets", "Q2 is graded first"] },
+        { p: "The safest way to take it:", ok: "Write both answers in a text file first, then open the quiz, paste Q1, advance, paste Q2, submit", bad: ["Open the quiz and think it through with the timer running", "Answer Q2 first", "Paste the model answers from the chapter"] },
+        { p: "Q1 asks for…", ok: "Walker's argument plus the words or phrases that show it, 4 to 5 sentences (10 pts)", bad: ["A biography of Walker", "The 1830s context, 2 to 3 sentences", "A summary of the Liberator"] },
+        { p: "Q2 asks for…", ok: "The 1830s context shaping Walker and why context deepens the reading, 2 to 3 sentences (10 pts)", bad: ["Three quoted phrases", "A comparison to Douglass", "The argument in 4 to 5 sentences"] },
+        { p: "Her rubric rewards above all…", ok: "Quote, then explain: three quoted phrases each followed by a sentence is a 10/10", bad: ["Length", "Big vocabulary", "Naming the anthology editor"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: [`Answer: ${q.ok}.`] };
+    },
+  },
 ];

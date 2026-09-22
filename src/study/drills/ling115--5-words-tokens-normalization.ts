@@ -109,4 +109,26 @@ export const drills: Drill[] = [
       return { prompt: q.p, answer: choice(r, q.ok, q.bad, { correct: q.why }), steps: [q.why] };
     },
   },
+
+  {
+    id: "normalization!loses",
+    guideId: G,
+    sectionRef: "normalization",
+    title: "What does this choice erase?",
+    skill: "Every normalization step is a linguistic decision; name what it loses and whether to preserve it.",
+    gen(r) {
+      const qs = [
+        { p: "Lowercasing everything.", ok: "Erases proper-noun and category signals: Apple vs apple; German Essen (noun) vs essen (verb)", bad: ["Loses nothing: case is noise", "Erases sentence boundaries only", "Erases dialect"] },
+        { p: "Removing emojis.", ok: "Erases pragmatic cues: 'Excellent, another meeting 🙄' flips from sarcastic to sincere", bad: ["Loses nothing: emojis are not language", "Erases proper nouns", "Only affects token counts"] },
+        { p: "Spell-correcting 'yall be trippin lol' to 'you all are tripping'.", ok: "Erases identity, dialect, register and play: everything the writer chose", bad: ["Improves the data with no loss", "Only removes typos", "Erases punctuation"] },
+        { p: "Stemming running, runner, runs → run.", ok: "Lossy: it cannot be reversed, and a dialect study needs the surface forms", bad: ["Lossless: the stems can be re-expanded", "Only affects nouns", "Preserves dialect"] },
+        { p: "Which type of variation should be PRESERVED for most linguistic questions?", ok: "Sociolinguistic / register (lol, u vs you) and dialect (y'all, sittin)", bad: ["Typos and HTML tags", "Formatting like <body>", "Noise"] },
+        { p: "Expanding numbers ('1915 J St') is…", ok: "Ambiguous: nineteen fifteen, or one-nine-one-five", bad: ["Always lossless", "Required by NLTK", "Only a problem for dates"] },
+        { p: "Preprocessing vs annotation:", ok: "Preprocessing is technical access (strip HTML, tokenize); annotation is linguistic interpretation (POS, parses)", bad: ["They are the same step", "Annotation comes first", "Preprocessing adds POS tags"] },
+        { p: "Best practice for the raw text:", ok: "Keep it, and derive normalized views; lossy steps are one-way", bad: ["Overwrite it with the cleaned version", "Lowercase it once and store that", "Delete it after tokenizing"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: ["Her theme: name what a choice loses. That sentence is the answer she wants.", `Here: ${q.ok}.`] };
+    },
+  },
 ];

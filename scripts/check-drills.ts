@@ -54,7 +54,7 @@ for (const d of allDrills()) {
   const key = `${d.guideId}/${d.id}`;
   if (ids.has(key)) at("duplicate id");
   ids.add(key);
-  if (!/^[a-z0-9-]+![a-z0-9-]+$/.test(d.id)) at(`id should be section!slug, got ${d.id}`);
+  if (!/^[A-Za-z0-9-]+![a-z0-9-]+$/.test(d.id)) at(`id should be section!slug, got ${d.id}`);
   const secs = sections.get(d.guideId);
   if (!secs) at("guideId names no guide");
   else if (!secs.has(d.sectionRef)) at(`sectionRef ${d.sectionRef} is not a section of the guide`);

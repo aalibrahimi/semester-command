@@ -147,4 +147,23 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "transform!formula",
+    guideId: G,
+    sectionRef: "transform",
+    title: "Series → transform",
+    skill: "Let T₀ → ∞: Σ over k becomes ∫ dF, X_k becomes X_F, and the exponent signs stay opposite.",
+    gen(r) {
+      const qs = [
+        { p: "The Fourier transform X_F = ∫ x(t)·e^{−j2πFt} dt answers…", ok: "'How much of frequency F is in x?'", bad: ["'What is x at time t?'", "'What is the period of x?'", "'How many samples are there?'"] },
+        { p: "The inverse transform x(t) = ∫ X_F·e^{+j2πFt} dF…", ok: "Rebuilds x from all its frequencies; note the opposite sign in the exponent", bad: ["Computes the spectrum", "Has the same sign as the forward transform", "Only works for periodic x"] },
+        { p: "Going from series to transform, what happens to the period T₀?", ok: "It goes to infinity, so the harmonic spacing F₀ = 1/T₀ goes to 0 and the sum becomes an integral", bad: ["It goes to 0", "It stays fixed", "It becomes the sampling rate"] },
+        { p: "In the series, coefficients X_k sit at kF₀. In the transform they become…", ok: "X_F, a function of continuous F", bad: ["X_k at the same points", "A single number", "Samples x[n]"] },
+        { p: "Under Koo's convention, the normalizing factor in front of the transform integral is…", ok: "None (1/T₀ disappears with the period)", bad: ["1/T₀", "2/T₀", "1/N"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: [`Answer: ${q.ok}.`] };
+    },
+  },
 ];

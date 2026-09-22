@@ -243,4 +243,46 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "linked!cost",
+    guideId: G,
+    sectionRef: "linked",
+    title: "What does it cost on a linked list?",
+    skill: "Follow the arrows: anything that needs node k walks k hops; anything next to a node you hold is two writes.",
+    gen(r) {
+      const qs = [
+        { p: "get(k) on a singly linked list", ok: "O(n): you must walk k hops from head", bad: ["O(1): compute the address like an array", "O(log n): binary search the nodes", "O(k²)"] },
+        { p: "get(k) on an array", ok: "O(1): the address is start + k × size", bad: ["O(n): walk from the first element", "O(log n)", "O(k)"] },
+        { p: "Insert a node AFTER node B, holding a reference to B", ok: "O(1): the two-write splice", bad: ["O(n): every later node shifts", "O(n): you must find B's predecessor", "O(log n)"] },
+        { p: "Insert a node BEFORE node B in a SINGLY linked list, holding only B", ok: "O(n): you must walk from head to find the node whose next points at B", bad: ["O(1): write B.prev", "O(1): swap the data", "O(log n)"] },
+        { p: "Insert in the middle of an array", ok: "O(n): everything after the slot shifts right", bad: ["O(1): write the slot", "O(log n)", "O(n log n)"] },
+        { p: "Lose the `head` reference. What happens to the list?", ok: "The whole list is unreachable: nothing else points at the first node", bad: ["Only the first node is lost", "Nothing: the nodes know each other", "The list becomes an array"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: `${q.p}. Cost?`, answer: choice(r, q.ok, q.bad), steps: ["Array = numbered lockers (jump anywhere, shift to insert). Linked list = boxes with forwarding addresses (walk to find, rewrite two addresses to insert).", `So: ${q.ok}.`] };
+    },
+  },
+  {
+    id: "linked!splice",
+    guideId: G,
+    sectionRef: "linked",
+    title: "The splice, in the right order",
+    skill: "Insert X after B: X.next = B.next FIRST, then B.next = X. Reverse it and the tail is gone.",
+    gen(r) {
+      const b = r.pick(["B", "cur", "p", "node"]);
+      const x = r.pick(["X", "n", "fresh"]);
+      const right = `${x}.next = ${b}.next; then ${b}.next = ${x};`;
+      const wrong = `${b}.next = ${x}; then ${x}.next = ${b}.next;`;
+      return {
+        prompt: `You hold node **${b}** and a new node **${x}**. Which order of the two writes inserts ${x} after ${b} without losing the rest of the list?`,
+        answer: choice(r, right, [wrong, `${x}.next = ${b}; then ${b}.next = ${x};`, `${b}.next = ${x}.next; then ${x}.next = ${b};`], {
+          correct: `${x} takes over ${b}'s forwarding address first, so nothing is lost when ${b} is repointed.`,
+          wrong: [`Writing ${b}.next first destroys the old address; the second line then reads ${b}.next, which is now ${x} itself: a loop, and the tail is unreachable.`, `That makes ${x} point back at ${b}: a cycle, not an insertion.`, "That rewires the wrong node."],
+        }),
+        steps: [`1. ${x}.next = ${b}.next   (${x} remembers where the list continues)`, `2. ${b}.next = ${x}   (now ${b} leads to ${x}, and ${x} leads on)`],
+        hint: "Whichever address you overwrite must already be saved somewhere.",
+      };
+    },
+  },
 ];

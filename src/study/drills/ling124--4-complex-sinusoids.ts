@@ -110,4 +110,38 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "def!phasor",
+    guideId: G,
+    sectionRef: "def",
+    title: "From X to amplitude and phase",
+    skill: "A spectrum line X at +F: the real cosine has amplitude 2|X| and phase ∠X.",
+    gen(r) {
+      const [x, y, m] = r.pick(TRIPLES.filter((t) => t[0] && t[1]));
+      const s = r.pick([0.1, 0.5, 1]);
+      const X = `${+(x * s).toFixed(2)} ${r.next() < 0.5 ? "−" : "+"} ${+(y * s).toFixed(2)}j`;
+      const neg = X.includes("−");
+      const amp = 2 * m * s;
+      if (r.next() < 0.6)
+        return {
+          prompt: `A two-sided spectrum shows **X = ${X}** at +F. What is the amplitude A of the real cosine at F?`,
+          answer: { kind: "number", value: amp, tolerance: 0.02 },
+          steps: [`|X| = √(${+(x * s).toFixed(2)}² + ${+(y * s).toFixed(2)}²) = ${+(m * s).toFixed(2)}.`, `A real cosine splits into two spinners of half amplitude, so A = 2|X| = ${+amp.toFixed(2)}.`],
+          hint: "Half the amplitude sits at +F and half at −F.",
+          diagnose(input) {
+            const v = Number(input.replace(/[^0-9.e-]/g, ""));
+            if (Math.abs(v - m * s) < 0.02) return "That is |X|. The cosine's amplitude is twice that: the other half is at −F.";
+            return undefined;
+          },
+        };
+      return {
+        prompt: `**X = ${X}** at +F. In which quadrant is the phase ∠X, and what is its sign?`,
+        answer: choice(r, neg ? "Fourth quadrant: negative phase (real part positive, imaginary negative)" : "First quadrant: positive phase (both parts positive)", [neg ? "First quadrant: positive phase" : "Fourth quadrant: negative phase", "Second quadrant: between π/2 and π", "Third quadrant: between −π and −π/2"], {
+          correct: "∠X = atan2(Im, Re): the sign of the imaginary part is the sign of the phase when the real part is positive.",
+        }),
+        steps: [`Re = ${+(x * s).toFixed(2)} > 0, Im = ${neg ? "−" : "+"}${+(y * s).toFixed(2)}.`, `atan2(Im, Re) is ${neg ? "negative, fourth quadrant" : "positive, first quadrant"}.`],
+      };
+    },
+  },
 ];

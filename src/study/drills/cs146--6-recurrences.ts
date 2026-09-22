@@ -151,4 +151,54 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "unroll!value",
+    guideId: G,
+    sectionRef: "unroll",
+    title: "Solve it by hand",
+    skill: "T(n) = 2T(n/2) + n with T(1) = 1 gives n log₂ n + n; compute it for a real n.",
+    gen(r) {
+      const n = r.pick([2, 4, 8, 16, 32]);
+      const k = Math.log2(n);
+      const val = n * k + n;
+      return {
+        prompt: `T(n) = 2T(n/2) + n, T(1) = 1. Compute **T(${n})** exactly.`,
+        answer: { kind: "number", value: val },
+        steps: [
+          "Work up from the base case: T(1) = 1.",
+          ...Array.from({ length: k }, (_, i) => {
+            const m = 2 ** (i + 1);
+            const prev = (m / 2) * Math.log2(m / 2) + m / 2;
+            return `T(${m}) = 2·T(${m / 2}) + ${m} = 2·${prev} + ${m} = ${m * Math.log2(m) + m}.`;
+          }),
+          `Pattern: T(n) = n·log₂ n + n. Here ${n}·${k} + ${n} = ${val}. The n log n is the levels × work per level; the extra n is the leaves.`,
+        ],
+        hint: "Start at T(1) = 1 and double up: T(2), T(4), …",
+        diagnose(input) {
+          const v = Number(input.replace(/[^0-9]/g, ""));
+          if (v === n * k) return `${n * k} is n log₂ n, the merging work. The leaves (T(1) = 1 each, ${n} of them) add another ${n}.`;
+          return undefined;
+        },
+      };
+    },
+  },
+  {
+    id: "substitution!step",
+    guideId: G,
+    sectionRef: "substitution",
+    title: "Substitution: the moves",
+    skill: "Guess, assume for the smaller input, substitute, and show it is ≤ c·(guess) for some c.",
+    gen(r) {
+      const qs = [
+        { p: "Substitution for T(n) = 2T(n/2) + kn, guessing O(n log n). What do you assume?", ok: "T(n/2) ≤ c·(n/2)·log(n/2)", bad: ["T(n) ≤ c·n log n (the thing to prove)", "T(n/2) = n/2", "T(1) = c"] },
+        { p: "After substituting: T(n) ≤ c·n·log(n/2) + kn. What is log(n/2)?", ok: "log n − 1", bad: ["(log n)/2", "log n − 2", "log n"] },
+        { p: "You reach T(n) ≤ c·n log n − c·n + kn. What must hold for the guess to be confirmed?", ok: "−c·n + kn ≤ 0, i.e. c ≥ k", bad: ["c = k exactly", "c ≤ k", "k = 0"] },
+        { p: "Binary search: T(n) = T(n/2) + 1, guess T(n) ≤ c·log n. After substitution you get T(n) ≤ c·log n − c + 1. Condition on c?", ok: "c ≥ 1", bad: ["c ≤ 1", "c = 0", "Any c works"] },
+        { p: "What is the substitution method, at bottom?", ok: "Induction: the assumption for n/2 is the inductive hypothesis", bad: ["A tree drawing", "Trial and error with numbers", "The master theorem in disguise"] },
+      ];
+      const q = r.pick(qs);
+      return { prompt: q.p, answer: choice(r, q.ok, q.bad), steps: ["Guess → assume for the smaller input → substitute → show ≤ c·guess for some c.", `Answer: ${q.ok}.`] };
+    },
+  },
 ];

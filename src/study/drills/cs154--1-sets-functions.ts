@@ -154,4 +154,79 @@ export const drills: Drill[] = [
       };
     },
   },
+
+  {
+    id: "reading!roster",
+    guideId: G,
+    sectionRef: "reading",
+    title: "Read set-builder as a roster",
+    skill: "{ pattern | condition }: run every allowed value through the pattern and list what comes out.",
+    gen(r) {
+      const a = r.pick([1, 2, 3, 5]);
+      const b = r.pick([0, 1, 2]);
+      const lo = r.int(0, 2);
+      const hi = lo + r.int(2, 4);
+      const items: string[] = [];
+      for (let n = lo; n <= hi; n++) items.push(String(a * n + b));
+      const pat = `${a === 1 ? "" : a}n${b ? " + " + b : ""}`;
+      return {
+        prompt: `List the elements of **{ ${pat} | ${lo} ≤ n ≤ ${hi} }** (comma-separated).`,
+        answer: { kind: "set", items },
+        steps: [`n runs ${lo}, ${lo + 1}, …, ${hi}: ${hi - lo + 1} values.`, `Pattern ${pat} at each: ${items.join(", ")}.`, `Finite, because the condition bounds n on both sides.`],
+        hint: "Plug in each n from the low bound to the high bound, inclusive.",
+        diagnose(input) {
+          const got = input.split(/[,;\s]+/).filter(Boolean);
+          if (got.length === items.length - 1) return `One short: the bounds ${lo} and ${hi} are both included (≤, not <).`;
+          if (got.length === items.length + 1) return "One too many: check the bounds. n stops at the upper limit, inclusive.";
+          return undefined;
+        },
+      };
+    },
+  },
+  {
+    id: "reading!builder",
+    guideId: G,
+    sectionRef: "reading",
+    title: "Write the set-builder",
+    skill: "Find the pattern, then the range of n; finite sets bound n on both sides.",
+    gen(r) {
+      const items = [
+        { roster: "{1, 4, 9, 16, …}", ok: "{ n² | n ≥ 1 }", bad: ["{ 2n | n ≥ 1 }", "{ n² | 1 ≤ n ≤ 4 }", "{ n | n is square, n ≤ 16 }"] },
+        { roster: "{0, 3, 6, 9, 12, 15, 18}", ok: "{ 3n | 0 ≤ n ≤ 6 }", bad: ["{ 3n | n ≥ 0 }", "{ 3n | 0 ≤ n ≤ 18 }", "{ n + 3 | 0 ≤ n ≤ 18 }"] },
+        { roster: "{0, 3, 6, 9, …}", ok: "{ 3n | n ≥ 0 }", bad: ["{ 3n | n ≥ 1 }", "{ 3n | 0 ≤ n ≤ 9 }", "{ n | n ≥ 0 }"] },
+        { roster: "{1, 3, 5, 7}", ok: "{ 2n + 1 | 0 ≤ n ≤ 3 }", bad: ["{ 2n + 1 | n ≥ 0 }", "{ 2n − 1 | 0 ≤ n ≤ 3 }", "{ n | n odd }"] },
+        { roster: "{2, 4, 8, 16, …}", ok: "{ 2ⁿ | n ≥ 1 }", bad: ["{ 2n | n ≥ 1 }", "{ 2ⁿ | n ≥ 0 }", "{ n² | n ≥ 1 }"] },
+      ];
+      const it = r.pick(items);
+      return {
+        prompt: `Write **${it.roster}** in set-builder form.`,
+        answer: choice(r, it.ok, it.bad, { correct: "Pattern first, then the exact range of n. An ellipsis means n is unbounded above." }),
+        steps: ["Step 1: what pattern makes each element? Step 2: which n values, and is the list finite (…) or not?", `Here: ${it.ok}.`],
+      };
+    },
+  },
+  {
+    id: "graphs!walk",
+    guideId: G,
+    sectionRef: "graphs",
+    title: "Walk length",
+    skill: "The length of a walk is its number of edges, repeats included; write it as a straight line to count.",
+    gen(r) {
+      const vs = ["v₁", "v₂", "v₃", "v₄"];
+      const len = r.int(3, 7);
+      const walk: string[] = [r.pick(vs)];
+      for (let i = 0; i < len; i++) walk.push(r.pick(vs.filter((v) => v !== walk[walk.length - 1])));
+      return {
+        prompt: `What is the length of the walk **${walk.join(" → ")}**?`,
+        answer: { kind: "number", value: len },
+        steps: [`Length counts edges (arrows), not vertices: ${walk.length} vertices are joined by ${len} arrows.`, "Revisits count every time; the one-dimensional projection makes that visible."],
+        diagnose(input) {
+          const v = Number(input.replace(/[^0-9]/g, ""));
+          if (v === len + 1) return "You counted the vertices. Length is the number of edges, one fewer.";
+          if (v === new Set(walk).size) return "You counted distinct vertices. A walk can revisit; every step counts.";
+          return undefined;
+        },
+      };
+    },
+  },
 ];
