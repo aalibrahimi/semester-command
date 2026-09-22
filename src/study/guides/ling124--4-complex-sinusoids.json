@@ -2,265 +2,394 @@
   "id": "ling124/4-complex-sinusoids",
   "course": "ling124",
   "lessons": "Day 4",
-  "title": "Complex numbers and complex sinusoids",
-  "summary": "Read a complex number in rectangular, polar and exponential form; find its magnitude, angle and conjugate; see a complex sinusoid as a rotating point; and explain why a real cosine is half a positive-frequency spinner plus half a negative-frequency one.",
-  "estimatedMinutes": 60,
-  "sourceNote": "complex_sinusoids.pdf (Koo's note), the Day 4 slides, Lab 3 Q5–Q20.",
+  "title": "Complex numbers and spinning dots",
+  "summary": "Read a complex number as a point on a map; find its magnitude, angle and conjugate; translate r·e^{jθ} at the easy angles; explain why a cosine is two opposite spinners; read amplitude and phase off one complex number X.",
+  "estimatedMinutes": 45,
+  "sourceNote": "complex_sinusoids.pdf (Koo's note), the Day 4 slides, Lab 3 Q5–Q20. Rewritten in plain steps: one idea per card.",
   "requires": [
     "ling124/0-reading-a-wave"
   ],
   "sections": [
     {
       "id": "why",
-      "heading": "Why this course needs a made-up number",
+      "heading": "Why we need complex numbers at all",
       "blocks": [
         {
           "type": "prose",
+          "md": "**You are on step 3 of the map:** splitting sounds into simple waves. To do that math cleanly, we need a way to write the spinning dot from Chapter 0 as **one** number.",
           "label": "why",
-          "md": "**Why complex numbers** Chapter 0 said a sinusoid is a rotating point seen from the side. The cosine is its x-coordinate; the sine is its y-coordinate. Tracking a point on a plane means tracking two numbers at once. ==Complex numbers pack those two numbers into one symbol== so you can write the *whole rotating point* as a single object — and then the formulas for Fourier analysis become one line instead of two. Koo's note: 'a single complex sinusoid captures both the cosine and sine waves at the same time.' That's the entire reason j exists in this course.",
-          "slide": "The circle picture, upgraded",
-          "id": "why.76a68b14"
+          "id": "why.4e965922"
         },
         {
           "type": "prose",
-          "md": "So don't think of j as 'the square root of −1' (true, but unhelpful). Think of it as **the label for the vertical axis**. A complex number x + jy is the point (x, y). That's it.",
-          "id": "why.51147c85"
+          "md": "The dot on the circle has two positions at once: how far **right** (that's cos) and how far **up** (that's sin). Normally that's two numbers. A **complex number** is just a way to pack two numbers into one, like writing a map location as one thing instead of 'x = 3, y = 4'.",
+          "slide": "Two numbers packed as one",
+          "id": "why.04cd1812"
+        },
+        {
+          "type": "prose",
+          "md": "That's the only reason complex numbers are in this course. Don't worry about 'the square root of −1'. For us, **j just means 'up'**.",
+          "id": "why.47f09014"
         }
       ]
     },
     {
       "id": "numbers",
-      "heading": "Complex numbers: three ways to write one point",
+      "heading": "A complex number is a point on a map",
       "blocks": [
         {
-          "type": "example",
-          "title": "Same point, three notations. Rectangular says where; polar/exponential say how far and which direction. Koo uses j (engineers) where mathematicians use i.",
-          "body": "rectangular:   z = x + jy                    x = Re(z),  y = Im(z)\npolar (trig):  z = r (cos θ + j sin θ)        r = |z| = √(x² + y²),   θ = ∠z = atan2(y, x)\nexponential:   z = r · e^{jθ}                 Euler:  e^{jθ} = cos θ + j sin θ",
-          "slide": "The three forms",
-          "id": "numbers.a19ae589"
+          "type": "definition",
+          "term": "Complex number",
+          "body": "Written **a + j·b**. Go **a** to the right and **b** up. Example: 3 + 4j is the point 3 right, 4 up.",
+          "id": "numbers.d466c485"
+        },
+        {
+          "type": "definition",
+          "term": "Real part and imaginary part",
+          "body": "The **real part** is the number without j (right/left). The **imaginary part** is the number with j (up/down). In 3 + 4j: real part 3, imaginary part 4. 'Imaginary' is just an old name; nothing is imaginary about it.",
+          "id": "numbers.7fa4bb32"
         },
         {
           "type": "figure",
-          "svg": "<g stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The complex plane: the horizontal axis holds the real part, the vertical axis the imaginary part. j is just the label for 'up'.</title><line x1='40' y1='115' x2='400' y2='115' opacity='.4'/><line x1='220' y1='20' x2='220' y2='210' opacity='.4'/><text x='380' y='130' fill='currentColor' stroke='none' opacity='.7'>real</text><text x='228' y='30' fill='currentColor' stroke='none' opacity='.7'>imaginary (j)</text></g><g><title>The number z = x + jy, drawn as an arrow from the origin to the point (x, y). One symbol, two coordinates.</title><line x1='220' y1='115' x2='340' y2='45' stroke='rgb(var(--accent-fg))' stroke-width='2.5'/><circle cx='340' cy='45' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><text x='345' y='40' fill='rgb(var(--accent-fg))' stroke='none'>z = x + jy</text></g><g><title>Rectangular form reads the two coordinates: x = Re(z) along the real axis, y = Im(z) up the imaginary axis.</title><line x1='340' y1='45' x2='340' y2='115' stroke-dasharray='3 3' opacity='.5'/><line x1='220' y1='45' x2='340' y2='45' stroke-dasharray='3 3' opacity='.5'/><text x='336' y='130' fill='currentColor' stroke='none'>x</text><text x='205' y='50' fill='currentColor' stroke='none'>y</text></g><g><title>Polar form reads the arrow itself: length r = |z| = √(x² + y²) (Pythagoras) and direction θ = ∠z, measured counterclockwise from the positive real axis.</title><text x='265' y='90' fill='currentColor' stroke='none'>r = |z|</text><path d='M 250 115 A 30 30 0 0 0 246 100' fill='none' stroke='currentColor'/><text x='254' y='108' fill='currentColor' stroke='none'>θ</text></g><g><title>The conjugate z̄ = x − jy: the same arrow mirrored across the real axis. Same length, negated angle — flip the sign of the imaginary part and nothing else changes.</title><line x1='220' y1='115' x2='340' y2='185' stroke='currentColor' stroke-width='2' opacity='.45'/><circle cx='340' cy='185' r='4' fill='currentColor' opacity='.45' stroke='none'/><text x='345' y='195' fill='currentColor' stroke='none' opacity='.7'>z̄ = x − jy  (angle −θ)</text></g></g>",
+          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"40\" y1=\"115\" x2=\"400\" y2=\"115\" opacity=\".4\"/><line x1=\"220\" y1=\"20\" x2=\"220\" y2=\"210\" opacity=\".4\"/>\n<text x=\"380\" y=\"130\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">real</text><text x=\"228\" y=\"30\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">imaginary (j)</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"45\" stroke=\"rgb(59 130 246)\" stroke-width=\"2.5\"/><circle cx=\"340\" cy=\"45\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<line x1=\"340\" y1=\"45\" x2=\"340\" y2=\"115\" stroke-dasharray=\"3 3\" opacity=\".5\"/><line x1=\"220\" y1=\"45\" x2=\"340\" y2=\"45\" stroke-dasharray=\"3 3\" opacity=\".5\"/>\n<text x=\"345\" y=\"40\" fill=\"rgb(59 130 246)\" stroke=\"none\">z = x + jy</text>\n<text x=\"336\" y=\"130\" fill=\"currentColor\" stroke=\"none\">x</text><text x=\"205\" y=\"50\" fill=\"currentColor\" stroke=\"none\">y</text>\n<text x=\"265\" y=\"90\" fill=\"currentColor\" stroke=\"none\">r = |z|</text>\n<path d=\"M 250 115 A 30 30 0 0 0 246 100\" fill=\"none\" stroke=\"currentColor\"/><text x=\"254\" y=\"108\" fill=\"currentColor\" stroke=\"none\">θ</text>\n<line x1=\"220\" y1=\"115\" x2=\"340\" y2=\"185\" stroke=\"currentColor\" stroke-width=\"2\" opacity=\".45\"/><circle cx=\"340\" cy=\"185\" r=\"4\" fill=\"currentColor\" opacity=\".45\" stroke=\"none\"/>\n<text x=\"345\" y=\"195\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">z̄ = x − jy  (angle −θ)</text>\n</g>",
           "viewBox": "0 0 420 230",
-          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis. Hover any part.",
+          "caption": "z = x + jy is an arrow from the origin. Its length is |z| = r, its angle is ∠z = θ. The conjugate z̄ is the mirror image below the real axis.",
           "slide": "The complex plane",
-          "id": "numbers.f5d409a9"
+          "id": "numbers.98c7022f"
+        },
+        {
+          "type": "definition",
+          "term": "Magnitude |z|",
+          "body": "How far the point is from the center. Use Pythagoras: **|a + jb| = √(a² + b²)**. It's like the 'amplitude' of the point.",
+          "id": "numbers.78e70b4c"
+        },
+        {
+          "type": "example",
+          "title": "Magnitude examples",
+          "body": "|3 + 4j| = √(9 + 16) = √25 = 5\n|1 + 1j| = √(1 + 1) = √2 ≈ 1.41\n|0 + 2j| = 2\n|−5| = 5",
+          "slide": "Distance from the center",
+          "id": "numbers.6d5a8fc0"
+        },
+        {
+          "type": "definition",
+          "term": "Angle ∠z",
+          "body": "Which direction the point is in, measured counterclockwise from 'straight right'. Easy ones: straight right = 0, straight up = π/2 (90°), straight left = π (180°), straight down = −π/2 (−90°).",
+          "id": "numbers.3fe99143"
+        },
+        {
+          "type": "definition",
+          "term": "Conjugate z̄",
+          "body": "Flip the sign of the j part: the conjugate of 3 + 4j is 3 − 4j. It's the mirror image below the horizontal line: same distance, opposite angle.",
+          "id": "numbers.e944bd48"
         },
         {
           "type": "stepper",
-          "title": "Taking apart z = 1/2 + j√3/2 (Lab 3 Q5–Q8)",
+          "title": "Taking apart one number (Lab 3 Q5–Q8)",
           "frames": [
             {
               "kind": "lines",
               "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
+                "z = 1/2 + j·√3/2"
               ],
               "active": 0,
-              "caption": "Lab 3 Q5–Q8. One complex number, taken apart. A complex number is a point (or an arrow from the origin) on a plane."
+              "caption": "Lab 3 Q5–Q8. One complex number. Read it as directions on a map."
             },
             {
               "kind": "lines",
               "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
+                "z = 1/2 + j·√3/2",
+                "go right 1/2   (real part)",
+                "go up √3/2 ≈ 0.87   (imaginary part)"
               ],
               "active": 1,
-              "caption": "The number without j is the real part. Plot it on the horizontal axis."
+              "caption": "The number without j says how far right. The number with j says how far up. So z is the point (0.5, 0.87)."
             },
             {
               "kind": "lines",
               "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
+                "distance from center = √(0.5² + 0.87²)",
+                "= √(0.25 + 0.75) = √1 = 1"
               ],
-              "active": 2,
-              "caption": "The number multiplying j is the imaginary part. Plot it on the vertical axis. So z is the point (1/2, √3/2)."
+              "active": 1,
+              "caption": "Magnitude = distance from the center, by Pythagoras. It's exactly 1, so this point sits on the circle of radius 1."
             },
             {
               "kind": "lines",
               "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
+                "direction: (0.5, 0.87) = (cos 60°, sin 60°)",
+                "angle = 60° = π/3"
               ],
-              "active": 3,
-              "caption": "Magnitude = length of the arrow from the origin = Pythagoras. Here it's exactly 1 — the point sits on the unit circle. (Lab 3 Q7: red = 1, blue = 1.)"
+              "active": 1,
+              "caption": "Angle = which direction the point is, measured counterclockwise from 'straight right'. (Q7: magnitude 1. Q8: angle 60°.)"
             },
             {
               "kind": "lines",
               "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
+                "conjugate: z̄ = 1/2 − j·√3/2",
+                "same distance 1, angle −60°"
               ],
-              "active": 4,
-              "caption": "Angle = the direction of the arrow, counterclockwise from the positive real axis. The point (1/2, √3/2) is (cos 60°, sin 60°), so the angle is 60° = π/3. (Q8.)"
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
-              ],
-              "active": 5,
-              "caption": "The conjugate keeps the real part and flips the sign of the imaginary part. Geometrically: mirror the arrow across the horizontal axis."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "z = 1/2 + j·(√3/2)",
-                "real part  Re(z) = 1/2        →  x-coordinate",
-                "imag part  Im(z) = √3/2       →  y-coordinate",
-                "magnitude  |z| = √(x² + y²) = √(1/4 + 3/4) = 1",
-                "angle      ∠z = atan2(y, x) = 60° = π/3",
-                "conjugate  z̄ = 1/2 − j·(√3/2)   (flip the sign of y)",
-                "|z̄| = 1,  ∠z̄ = −π/3"
-              ],
-              "active": 6,
-              "caption": "Mirroring doesn't change length, and it negates the angle. |z̄| = 1, ∠z̄ = −60°. (Q8: red = 60°, blue = −60°.)"
+              "active": 1,
+              "caption": "The conjugate flips the up/down part. It's the mirror image below the horizontal line: same distance, opposite angle."
             }
           ],
           "slide": true,
-          "id": "numbers.11399498"
-        },
-        {
-          "type": "prose",
-          "md": "e^{jθ} = cos θ + j sin θ. Where this comes from is a calculus fact you don't need for this course; what you must be able to do is translate it: ==e^{jθ} is the point on the unit circle at angle θ==. Reading the symbols: the j in the exponent is what makes the exponential rotate instead of grow, θ is the angle in radians, and the result's real and imaginary parts are exactly the point's (cos θ, sin θ) coordinates. The exponential form r·e^{jθ} is then 'a point at distance r, direction θ' — polar form written compactly. Why bother with an exponential? Because exponentials multiply by adding exponents (e^a·e^b = e^{a+b}), which is about to let us pull frequency and phase apart cleanly.",
-          "slide": "Euler's formula, in the circle picture",
-          "id": "numbers.46b7a057"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Run `np.fft.fft()` on any recording and the array that comes back is complex numbers — `np.abs()` of it is the magnitude spectrum, `np.angle()` the phase spectrum, exactly |z| and ∠z from this section. Radio is even more literal: ##Wi-Fi, 5G, and GPS receivers sample two voltages, I and Q, which are nothing but Re(z) and Im(z) of the incoming wave## — 'IQ data' is complex numbers coming off an antenna. And every plugin that edits audio by frequency (EQ, pitch correction, denoisers) is doing arithmetic on these z's under the hood.",
-          "id": "numbers.8d3f5a27"
+          "id": "numbers.6304276e"
         },
         {
           "type": "check",
-          "prompt": "Convert 3·e^{jπ/2} to rectangular form, and write −2 in exponential form.",
-          "answer": "3(cos π/2 + j sin π/2) = 3(0 + j·1) = 3j. −2 has length 2 and points along the negative real axis (angle π): 2·e^{jπ}.",
+          "prompt": "What are the magnitude and conjugate of 6 − 8j?",
+          "answer": "|6 − 8j| = √(36 + 64) = 10. Conjugate: 6 + 8j.",
           "sectionRef": "numbers",
-          "id": "numbers.fad34aa9"
+          "id": "numbers.3c9a4d01"
         },
         {
           "type": "check",
-          "prompt": "What is the magnitude of 3 + 4j, and its conjugate?",
-          "answer": "|3 + 4j| = √(9 + 16) = 5. Conjugate: 3 − 4j (same magnitude 5, angle negated).",
+          "prompt": "What angle does the number 2j have?",
+          "answer": "π/2 (90°): it's straight up.",
           "sectionRef": "numbers",
-          "id": "numbers.e0c6e587"
+          "id": "numbers.0e6d13bc"
+        },
+        {
+          "type": "prose",
+          "md": "**A shortcut worth knowing:** z times its conjugate is the magnitude squared. (3 + 4j)(3 − 4j) = 9 + 16 = 25 = 5².",
+          "id": "numbers.2a3de1f1"
+        }
+      ]
+    },
+    {
+      "id": "euler",
+      "heading": "The e^{jθ} notation: 'the point at angle θ'",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "e^{jθ}",
+          "body": "A short way to write **the point on the circle of radius 1 at angle θ**. That's all it means in this course. (The official name is Euler's formula: e^{jθ} = cos θ + j·sin θ, meaning 'right by cos θ, up by sin θ'.)",
+          "id": "euler.66261ff5"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Write",
+            "Angle",
+            "Where the point is",
+            "As a + jb"
+          ],
+          "rows": [
+            [
+              "e^{j0}",
+              "0",
+              "straight right",
+              "1"
+            ],
+            [
+              "e^{jπ/2}",
+              "90°",
+              "straight up",
+              "j"
+            ],
+            [
+              "e^{jπ}",
+              "180°",
+              "straight left",
+              "−1"
+            ],
+            [
+              "e^{−jπ/2}",
+              "−90°",
+              "straight down",
+              "−j"
+            ]
+          ],
+          "title": "The four easy points",
+          "slide": "e^{jθ} at the easy angles",
+          "id": "euler.763a9cd3"
+        },
+        {
+          "type": "definition",
+          "term": "r · e^{jθ}",
+          "body": "The point at distance **r** from the center, in direction **θ**. Example: 3·e^{jπ/2} = 3 steps straight up = 3j.",
+          "id": "euler.234d5e94"
+        },
+        {
+          "type": "example",
+          "title": "Converting both ways",
+          "body": "3·e^{jπ/2}  →  3 up  →  3j\n2·e^{jπ}    →  2 left →  −2\n\n−2   →  distance 2, pointing left (angle π)  →  2·e^{jπ}\n5j   →  distance 5, pointing up (angle π/2)  →  5·e^{jπ/2}",
+          "slide": "Converting",
+          "id": "euler.575c3f29"
+        },
+        {
+          "type": "check",
+          "prompt": "Write 4·e^{jπ} as a plain number.",
+          "answer": "−4. Distance 4, pointing straight left.",
+          "sectionRef": "euler",
+          "id": "euler.e0691108"
         }
       ]
     },
     {
       "id": "spinner",
-      "heading": "Complex sinusoids: the rotating point itself",
+      "heading": "Spinning dots, and why a cosine is two of them",
       "blocks": [
         {
-          "type": "prose",
-          "md": "Take z = r·e^{jθ} and let θ increase. The point goes around a circle of radius r, counterclockwise. That moving point is a **complex sinusoid**: z(θ) = r·e^{jθ} = r(cos θ + j sin θ). Its real part traces a cosine, its imaginary part traces a sine — ==one object, carrying both waves at once==. (Lab 3 Q9–Q10: plotted against θ it's a helix; θ from 0 to 8π = four full circles.)",
-          "slide": "Let the angle grow",
-          "id": "spinner.57520639"
+          "type": "definition",
+          "term": "Complex sinusoid",
+          "body": "The dot from Chapter 0, written as one complex number that moves: **e^{j·2π·F·t}** is a dot going around the circle F times per second.",
+          "id": "spinner.65aa88c6"
         },
         {
-          "type": "prose",
-          "md": "- z̄(θ) = r·e^{−jθ} = r(cos θ − j sin θ) = r(cos(−θ) + j sin(−θ)) — same circle, **clockwise** (Q11: 'spirals clockwise').\n- Add them: z + z̄ = 2r·cos θ. The imaginary parts cancel; you're left with a real cosine along the real axis (Q12, Q16).\n- Subtract them: z − z̄ = 2jr·sin θ — a sine along the imaginary axis (Q13).\n- So **r·cos θ = (r·e^{jθ} + r·e^{−jθ}) / 2**. ##A real cosine is the average of a counterclockwise spinner and a clockwise one## — that one sentence explains every symmetric spectrum you will ever plot.",
-          "slide": "Its conjugate spins the other way",
-          "id": "spinner.d7e86244"
+          "type": "stepper",
+          "title": "From one spinning dot to a cosine",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "e^{jθ}: the dot at angle θ"
+              ],
+              "active": 0,
+              "caption": "Put the dot on the unit circle at angle θ."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "e^{j·2π·F·t}",
+                "the dot goes around F times per second, counterclockwise"
+              ],
+              "active": 1,
+              "caption": "Let the angle grow with time (exactly like Chapter 0). Now it's a spinning dot: a complex sinusoid."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "e^{−j·2π·F·t}",
+                "same speed, clockwise"
+              ],
+              "active": 1,
+              "caption": "Put a minus sign in front: it spins the other way. People call that a 'negative frequency'. It just means clockwise."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "counterclockwise dot + clockwise dot",
+                "up parts: +sin and −sin → cancel",
+                "right parts: cos + cos = 2·cos"
+              ],
+              "active": 2,
+              "caption": "Add the two dots together. Their up-down parts are always opposite, so they cancel. Their left-right parts are always equal, so they double."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "e^{j2πFt} + e^{−j2πFt} = 2·cos(2πFt)",
+                "so  cos(2πFt) = ( e^{j2πFt} + e^{−j2πFt} ) / 2"
+              ],
+              "active": 1,
+              "caption": "Divide by 2: a normal cosine wave is the average of two dots spinning opposite ways. That's why a spectrum shows a cosine as TWO lines, at +F and −F, each half as tall."
+            }
+          ],
+          "slide": true,
+          "id": "spinner.dc0cd75e"
         },
         {
-          "type": "figure",
-          "viewBox": "0 0 560 300",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='cs4b' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='cs4m' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--at-risk))'/></marker><marker id='cs4g' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><g><title>The complex plane with the unit circle. Both spinners ride this circle forever; only their directions differ.</title><line x1='140' y1='150' x2='470' y2='150' opacity='.3'/><line x1='280' y1='30' x2='280' y2='270' opacity='.3'/><circle cx='280' cy='150' r='100' opacity='.35'/><text x='448' y='167' font-size='11' fill='currentColor' stroke='none' opacity='.7'>real</text><text x='288' y='42' font-size='11' fill='currentColor' stroke='none' opacity='.7'>imaginary</text></g><g><title>z = e^{jθ}: the counterclockwise spinner — the positive-frequency component. With θ = 2πFt + ϕ it makes F laps per second.</title><line x1='280' y1='150' x2='344.3' y2='73.4' stroke='rgb(var(--accent-fg))' stroke-width='2.2' marker-end='url(#cs4b)'/><path d='M270.2 38.4 A112 112 0 0 0 224 53' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#cs4b)'/><text x='352' y='64' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>z = e^jθ  (+F)</text></g><g><title>z̄ = e^{−jθ}: the mirror twin, running clockwise — the negative-frequency component. At every instant its imaginary part is the exact opposite of z's.</title><line x1='280' y1='150' x2='344.3' y2='226.6' stroke='rgb(var(--at-risk))' stroke-width='2.2' marker-end='url(#cs4m)'/><path d='M270.2 261.6 A112 112 0 0 1 224 247' stroke='rgb(var(--at-risk))' stroke-width='1.6' marker-end='url(#cs4m)'/><text x='352' y='248' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))' stroke='none'>z̄ = e^−jθ  (−F)</text></g><g><title>Vector addition: slide one arrow to the tip of the other. The vertical (imaginary) parts cancel; the horizontal (real) parts add.</title><line x1='344.3' y1='73.4' x2='408.6' y2='150' stroke='currentColor' stroke-dasharray='4 4' opacity='.5'/><line x1='344.3' y1='226.6' x2='408.6' y2='150' stroke='currentColor' stroke-dasharray='4 4' opacity='.5'/></g><g><title>The sum z + z̄ = 2cos θ lands ON the real axis — for every θ, at every instant. That is why adding the two spinners produces a purely real cosine.</title><line x1='280' y1='150' x2='408.6' y2='150' stroke='rgb(var(--on-track))' stroke-width='2.6' marker-end='url(#cs4g)'/><text x='414' y='140' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>z + z̄ = 2cos θ</text></g><g><title>The angles: θ above the axis for z, −θ below for z̄. As time runs, both grow in size but in opposite directions — the two arrows stay mirror images forever.</title><path d='M310 150 A30 30 0 0 0 299.3 127' stroke='currentColor' opacity='.6'/><text x='316' y='130' font-size='11' fill='currentColor' stroke='none'>θ</text><path d='M310 150 A30 30 0 0 1 299.3 173' stroke='currentColor' opacity='.6'/><text x='314' y='188' font-size='11' fill='currentColor' stroke='none'>−θ</text></g></g>",
-          "caption": "Euler's two spinners, frozen mid-rotation. z (blue) turns counterclockwise at +F; its conjugate z̄ (amber) turns clockwise at −F. Their imaginary parts are equal and opposite at every instant, so the sum (green) never leaves the real axis: z + z̄ = 2cos θ. Halve it and you have a real cosine — which is why a real wave always shows up at BOTH +F and −F in a two-sided spectrum, half the amplitude at each. Hover any part.",
-          "slide": "Two spinners make a cosine",
-          "id": "spinner.3c7e91d5"
+          "type": "check",
+          "prompt": "What do you get if you add e^{j2π·5·t} and e^{−j2π·5·t}?",
+          "answer": "2·cos(2π·5·t): a real cosine at 5 Hz with amplitude 2. The up-down parts cancel.",
+          "sectionRef": "spinner",
+          "id": "spinner.6700053a"
         },
         {
-          "type": "example",
-          "title": "Substitute θ = 2πFt + ϕ, exactly as in Chapter 0. Then split the exponent with the product rule of exponents.",
-          "body": "z(t) = r · e^{j(2πFt + ϕ)}\n     = r · e^{jϕ} · e^{j2πFt}         (e^{a+b} = e^a · e^b)\n     = X · e^{j2πFt}                  where  X = r·e^{jϕ}\nX is the COMPLEX AMPLITUDE (a \"phasor\"):  |X| = r = amplitude,  ∠X = ϕ = phase\nThe frequency lives in e^{j2πFt}; the amplitude AND phase live together in one complex number X.\nconjugate:  z̄(t) = X̄ · e^{−j2πFt}      (negative frequency, conjugate amplitude)",
-          "slide": "As a function of time",
-          "id": "spinner.f43a9119"
-        },
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**Why this matters for every later lab** In Fourier analysis, each frequency gets ONE complex number X. Its magnitude is 'how much of this frequency' and its angle is 'what phase'. That's why Lab 4 asked for X₁ and got 'j' as an answer, and why a magnitude spectrum plots |X| and a phase spectrum plots ∠X. ==If you can read |X| and ∠X off a complex number, you can read a spectrum== — that's the whole payoff of this chapter.",
-          "id": "spinner.411cb4c6"
-        },
-        {
-          "type": "example",
-          "title": "A real cosine as two spinners",
-          "body": "Show A·cos(2πFt + ϕ) = X_F·e^{j2πFt} + X̄_F·e^{−j2πFt}, and say what X_F is.\n\n1. Start from r·cos(θ) = (z + z̄)/2 with θ = 2πFt + ϕ and r = A.\n2. Write z(t) = X·e^{j2πFt} and z̄(t) = X̄·e^{−j2πFt}, where X = A·e^{jϕ}.\n3. So A·cos(2πFt + ϕ) = (X·e^{j2πFt} + X̄·e^{−j2πFt}) / 2.\n4. Define X_F = X/2. Halving a complex number halves its length and leaves its angle alone.\n5. Therefore **|X_F| = A/2** and **∠X_F = ϕ**. A real cosine of amplitude A shows up in a two-sided spectrum as two lines, at +F and −F, each of height A/2, with phases ϕ and −ϕ.",
-          "answer": "|X_F| = A/2, ∠X_F = ϕ",
-          "slide": "The formula from the top of Koo's note",
-          "id": "spinner.eda4b0b7"
-        },
-        {
-          "type": "example",
-          "title": "Dials on a complex sinusoid",
-          "body": "x(t) = A·e^{j(2πFt + ϕ)}, plotted as a spiral in 3D (time, real, imaginary).\n\n1. Q14: double the frequency of e^{j2π·20·t} → e^{j2π·40·t}. Same spiral, twice as many turns per second.\n2. Q16: e^{j2πFt} + e^{−j2πFt} = 2cos(2πFt). Two opposite spinners sum to a real cosine.\n3. Q17: A = 10 instead of 1 → the spiral traces a circle of radius 10. Amplitude is the radius.\n4. Q18: ϕ = π instead of 0 → the point starts on the opposite side of the circle: a half-cycle head start.\n5. Q19: A is the **magnitude** of the vector, ϕ is its **angle**.\n6. Q20: given X = A·e^{jϕ} numerically (e.g. 4·e^{jπ/2}), read A = 4 from the coefficient and ϕ = π/2 from the exponent.",
-          "slide": "Lab 3 Q14–Q20, answered",
-          "id": "spinner.223327fb"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Negative frequencies stop being philosophical the first time you plot a raw FFT: the mirror half of every real signal's spectrum is the clockwise spinners, which is why numpy offers `rfft` to hand you just the positive side. The complex amplitude X = A·e^{jϕ} is what a spectrogram cell actually stores before being squared into a picture — ==magnitude and phase per frequency is precisely what Whisper's front end and every vocoder consume==. And phase vocoders — the tool that slows audio without chipmunking it, in every DJ deck and transcription app — work by carefully rotating exactly these X's from frame to frame.",
-          "id": "spinner.b91e4c38"
+          "type": "trap",
+          "body": "Thinking a 'negative frequency' is something weird. It only means the dot spins clockwise. Every real sound shows up at both +F and −F in a two-sided spectrum.",
+          "source": "Lab 3 Q11–Q16",
+          "points": null,
+          "id": "spinner.e1e76b0b"
         }
       ]
     },
     {
       "id": "def",
-      "heading": "Compressed form",
+      "heading": "One number that holds amplitude AND phase",
       "blocks": [
         {
-          "type": "definition",
-          "term": "Complex number",
-          "body": "z = x + jy is the point (x, y). |z| = √(x² + y²) is its length; ∠z = atan2(y, x) is its angle; z̄ = x − jy is its mirror across the real axis. Euler: e^{jθ} = cos θ + j sin θ, so z = |z|·e^{j∠z}.",
-          "id": "def.523f4a45"
+          "type": "prose",
+          "md": "Remember the three dials from Chapter 0: A (how tall), F (how fast), ϕ (where it starts). Here's the neat trick: **A and ϕ can be packed into one complex number**.",
+          "slide": "Packing A and ϕ together",
+          "id": "def.f9e169d6"
         },
         {
           "type": "definition",
-          "term": "Complex sinusoid and complex amplitude",
-          "body": "z(t) = X·e^{j2πFt} is a point circling at F rotations per second; X = A·e^{jϕ} carries amplitude (|X|) and phase (∠X). A real cosine is (z + z̄)/2, so it appears at both +F and −F with half the amplitude at each.",
-          "id": "def.01948c2e"
+          "term": "Complex amplitude X (a 'phasor')",
+          "body": "**X = A · e^{jϕ}**: the point at distance A in direction ϕ. Its **magnitude** is the amplitude. Its **angle** is the phase. So one complex number tells you both how tall a wave is and where it starts.",
+          "id": "def.75c4bae0"
+        },
+        {
+          "type": "example",
+          "title": "Reading A and ϕ out of X",
+          "body": "X = 4·e^{jπ/2}      →  A = 4,   ϕ = π/2\nX = 2j              →  distance 2, pointing up  →  A = 2, ϕ = π/2\nX = 0.354 − 0.354j  →  |X| = √(0.125 + 0.125) = 0.5\n                        angle: right and down equally → −π/4",
+          "slide": "A = |X|, ϕ = angle of X",
+          "id": "def.f3c26483"
+        },
+        {
+          "type": "prose",
+          "md": "**Why this matters for every later lab:** a spectrum gives you one complex number X for each frequency. **|X| = how much of that frequency** (that's the magnitude spectrum). **The angle of X = its phase** (the phase spectrum).",
+          "id": "def.24404650"
+        },
+        {
+          "type": "trap",
+          "body": "In a two-sided spectrum a cosine of amplitude A appears as two lines of height **A/2** (at +F and −F). To get the real amplitude back, double it: A = 2·|X|.",
+          "source": "Lab 4 Q7, Q12",
+          "points": null,
+          "id": "def.d9d1b222"
         },
         {
           "type": "check",
-          "prompt": "A spectrum shows X = 0.354 − 0.354j at 2 Hz. What's the amplitude and phase of the cosine at 2 Hz?",
-          "answer": "|X| = √(0.354² + 0.354²) = 0.5, so the cosine's amplitude is 2·0.5 = 1. ∠X = atan2(−0.354, 0.354) = −π/4, so the phase is −π/4. (This is the k = −2 line of the Day 5 slides' example.)",
+          "prompt": "A spectrum says X = 3j at some frequency (two-sided). What are the cosine's amplitude and phase?",
+          "answer": "|X| = 3, so A = 2 × 3 = 6. The angle of 3j is π/2, so ϕ = π/2.",
           "sectionRef": "def",
-          "id": "def.7977ea02"
+          "id": "def.ce6b0ae7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "complex number a + jb",
+              "a point: a right, b up"
+            ],
+            [
+              "j",
+              "means 'up' (the vertical direction)"
+            ],
+            [
+              "magnitude |z|",
+              "distance from the center: √(a² + b²)"
+            ],
+            [
+              "angle ∠z",
+              "direction, counterclockwise from right"
+            ],
+            [
+              "conjugate z̄",
+              "mirror image: flip the sign of the j part"
+            ],
+            [
+              "e^{jθ}",
+              "the point at angle θ on the circle of radius 1"
+            ],
+            [
+              "complex sinusoid",
+              "a dot spinning around the circle"
+            ],
+            [
+              "phasor X = A·e^{jϕ}",
+              "one number holding amplitude and phase"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "def.3b60221c"
         }
       ]
     }
@@ -268,37 +397,37 @@
   "exercises": [
     {
       "id": "three-forms",
-      "title": "One point, three spellings",
-      "prompt": "z = −3 + 3j. Write |z|, the angle θ (radians, exact), the polar form, the exponential form, and the conjugate z∗. Then: what is z · z∗?",
+      "title": "One point, three ways",
+      "prompt": "z = −3 + 3j. Find |z|, its angle, write it as r·e^{jθ}, and write its conjugate.",
       "hints": [
-        "Plot it: real part −3 (left), imaginary part 3 (up). Magnitude is the distance from the origin — Pythagoras. Angle is measured counterclockwise from the positive real axis.",
-        "The classic error is θ = arctan(3/−3) = −π/4. That's the angle for +3 − 3j (fourth quadrant). Your point is in the *second* quadrant; add π: θ = 3π/4.",
-        "Conjugate flips the sign of the imaginary part. z·z∗ always equals |z|² — check your magnitude with it."
+        "Plot it: 3 left, 3 up.",
+        "Distance: √(9 + 9). Direction: halfway between straight up (π/2) and straight left (π).",
+        "Conjugate: flip the sign of the j part."
       ],
       "solution": [
-        "|z| = √(9 + 9) = √18 = 3√2 ≈ 4.24.",
-        "θ = 3π/4 (135°): second quadrant, 45° above the negative real axis.",
-        "Polar: 3√2·(cos 3π/4 + j sin 3π/4). Exponential: 3√2·e^(j3π/4).",
-        "z∗ = −3 − 3j. z·z∗ = (−3)² + 3² = 18 = |z|². ✓"
+        "|z| = √18 = 3√2 ≈ 4.24.",
+        "Angle = 3π/4 (135°).",
+        "z = 3√2 · e^{j3π/4}.",
+        "z̄ = −3 − 3j."
       ],
-      "why": "Every value in a spectrum is a complex number, and 'magnitude and angle' is how you read it: magnitude is how loud that frequency is, angle is its phase. Get the quadrant wrong and your phase is off by 180° — which is the difference between a sound and its exact cancellation."
+      "why": "Every coefficient numpy gives you in a Fourier lab is a complex number like this; reading it is half the lab.",
+      "sectionRef": "numbers"
     },
     {
       "id": "spinner",
       "title": "Why a cosine is two spinners",
-      "prompt": "Starting from Euler's formula e^(jθ) = cos θ + j sin θ, show in three lines that cos θ = (e^(jθ) + e^(−jθ))/2. Then say what this means for the spectrum of a real cosine at 100 Hz.",
+      "prompt": "Explain in two sentences why e^{j2πFt} + e^{−j2πFt} is a real cosine, then say what that means for the spectrum of a 100 Hz cosine.",
       "hints": [
-        "Write Euler's formula twice: once for θ, once for −θ. Remember cos(−θ) = cos θ and sin(−θ) = −sin θ.",
-        "The mistake is trying to solve for cos by dividing. Instead, *add* the two equations — the j sin terms cancel.",
-        "e^(jθ) with θ = 2π·100·t is a point spinning counterclockwise at 100 Hz. e^(−jθ) spins clockwise — that's a *negative* frequency, −100 Hz. Half of each."
+        "One dot spins counterclockwise, the other clockwise, at the same speed.",
+        "What happens to their up-down positions? Their left-right positions?",
+        "So how many lines does the spectrum show, and where?"
       ],
       "solution": [
-        "e^(jθ) = cos θ + j sin θ and e^(−jθ) = cos θ − j sin θ.",
-        "Add them: e^(jθ) + e^(−jθ) = 2 cos θ.",
-        "Divide by 2: cos θ = (e^(jθ) + e^(−jθ))/2.",
-        "So a real 100 Hz cosine is half a spinner at +100 Hz plus half a spinner at −100 Hz. Its spectrum has two lines, at +100 and −100 Hz, each of height A/2. That's why Fourier spectra are symmetric for real signals."
+        "The up-down parts are always opposite and cancel; the left-right parts are always equal and add up to 2·cos(2πFt).",
+        "So a 100 Hz cosine shows up in a two-sided spectrum as two lines, at +100 Hz and −100 Hz, each half the cosine's amplitude."
       ],
-      "why": "This one identity is why every FFT plot of a real signal has a mirror image, why 'negative frequency' is a real thing engineers say, and why the DFT of an N-point real signal only has N/2 useful bins. Once you see the two spinners, the rest of the course stops being mysterious."
+      "why": "This is the reason every FFT output has a mirror image, and why you double |X| to get the real amplitude.",
+      "sectionRef": "spinner"
     }
   ]
 }

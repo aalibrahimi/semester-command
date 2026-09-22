@@ -2,385 +2,612 @@
   "id": "ling124/0-reading-a-wave",
   "course": "ling124",
   "lessons": "Chapter 0 · Days 2–3",
-  "title": "Reading a wave formula, and the acoustics vocabulary",
-  "summary": "Look at A·cos(2πFt + ϕ) and say what each symbol does; picture it as a point going around a circle; use frequency/period/amplitude/dB/spectrum correctly; predict how a plot changes when one dial changes.",
-  "estimatedMinutes": 55,
-  "sourceNote": "basic_acoustics.pdf (Day 2), sinusoids_review.pdf and basic_sinusoids.pdf (Day 3), Lab 1, Lab 3 Q1–Q4.",
+  "title": "What a sound wave is, and how to read its formula",
+  "summary": "Say what a waveform shows; find period, frequency and amplitude on a plot; read A, F and ϕ off A·cos(2πFt + ϕ); change one number and predict the new plot; know what a spectrum is.",
+  "estimatedMinutes": 45,
+  "sourceNote": "basic_acoustics.pdf (Day 2), sinusoids_review.pdf and basic_sinusoids.pdf (Day 3), Lab 1, Lab 3 Q1–Q4. Rewritten in plain steps: one idea per card.",
   "requires": [],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why the whole course is one formula",
+      "id": "map",
+      "heading": "The whole course on one page",
       "blocks": [
         {
           "type": "prose",
+          "md": "**Read this first.** LING 124 is about one question: *how does a computer turn a recording of speech into text?* Every day of the course is one step of that trip. If you know which step you're on, the math has a reason.",
           "label": "why",
-          "md": "**Where this is going** Speech is a pressure wave. Koo's course says: ==any wave, no matter how messy, can be written as a sum of simple waves called sinusoids== (that's Fourier analysis, Days 5–7). So if you can read one sinusoid — A·cos(2πFt + ϕ) — you can read the building block of everything after. Every lab so far has been a question about one of the four letters in that formula. This chapter makes them yours.",
-          "slide": "The plan of the course",
-          "id": "why.be612bfa"
+          "slide": "The one question",
+          "id": "map.21a2dfee"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "What happens",
+            "Chapter"
+          ],
+          "rows": [
+            [
+              "1",
+              "Sound is air pressure going up and down. We draw it as a wave.",
+              "this one (0)"
+            ],
+            [
+              "2",
+              "The computer measures that wave thousands of times a second and stores the numbers.",
+              "3: Sampling"
+            ],
+            [
+              "3",
+              "Any sound can be split into simple waves added together.",
+              "4 and 5: Complex numbers, Fourier series"
+            ],
+            [
+              "4",
+              "We cut the recording into tiny slices and find the simple waves in each slice.",
+              "6: DFT and STFT"
+            ],
+            [
+              "5",
+              "From each slice we measure pitch and a short list of numbers that describe the sound.",
+              "9 and 11: Pitch, Features"
+            ],
+            [
+              "6",
+              "A model reads those numbers and guesses the words.",
+              "9: ASR overview"
+            ]
+          ],
+          "title": "Speech to text, in six steps",
+          "slide": "Six steps from sound to text",
+          "id": "map.a0965e99"
         },
         {
           "type": "prose",
-          "md": "You told me you know the unit circle and radians. Good — that's the only prerequisite. The formula is the unit circle with a clock attached.",
-          "id": "why.a374510e"
+          "md": "You don't need to understand all six now. Just come back to this table whenever you feel lost and find the row you're on.",
+          "id": "map.fbfba3df"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "heading": "What a sound is",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Sound wave",
+          "body": "Air pressure going up and down, very fast. When you talk, your vocal folds push air in little puffs; the pressure rises and falls, and that ripple travels to someone's ear.",
+          "id": "why.28f28bac"
+        },
+        {
+          "type": "prose",
+          "md": "**Picture it.** Drop a stone in a pond: the water goes up and down, and the ripple moves outward. Sound is the same thing, but in air, and far too fast to see.",
+          "slide": "Like ripples in a pond",
+          "id": "why.1ec9f473"
+        },
+        {
+          "type": "definition",
+          "term": "Waveform",
+          "body": "A graph of that pressure over time. Left to right is **time**. Up and down is **pressure** (how much the air is squeezed or stretched). Every recording you open in Audacity or Praat is a waveform.",
+          "id": "why.6aaeaa4b"
+        },
+        {
+          "type": "check",
+          "prompt": "On a waveform, what does the horizontal axis show, and what does the vertical axis show?",
+          "answer": "Horizontal: time. Vertical: pressure (amplitude).",
+          "sectionRef": "why",
+          "id": "why.05a1a2b6"
         }
       ]
     },
     {
       "id": "vocab",
-      "heading": "Waves: the vocabulary from Day 2",
+      "heading": "Three numbers that describe a wave",
       "blocks": [
         {
-          "type": "definition",
-          "term": "Sound wave · waveform",
-          "body": "A **sound wave** is a pattern of pressure fluctuation caused by the movement of a source (vocal folds) and propagated through a medium (air). A **waveform** is a graph of that pressure over time: x-axis time, y-axis pressure.",
-          "id": "vocab.515392ec"
-        },
-        {
-          "type": "definition",
-          "term": "Period T",
-          "body": "how long one cycle takes, in seconds. **Frequency F**: how many cycles per second, in **Hertz (Hz)**. They're reciprocals: **F = 1/T**, **T = 1/F**. A 10 Hz wave has period 0.1 s = 100 ms. (You got this one right: T = 0.01 s → F = 100 Hz.)",
-          "id": "vocab.9e6d97e5"
-        },
-        {
-          "type": "definition",
-          "term": "Amplitude",
-          "body": "how far the wave deviates from rest. **Peak amplitude** is the maximum; **RMS amplitude** (root mean square) is the square root of the average squared value — for a sinusoid with peak 1, RMS = 0.707. RMS is what 'how loud on average' means.",
-          "id": "vocab.5392047d"
-        },
-        {
-          "type": "definition",
-          "term": "Periodic",
-          "body": "= repeats at regular intervals (a vowel, a tuning fork). **Aperiodic** = no repetition (noise, 's', 'sh').",
-          "id": "vocab.981e39c1"
-        },
-        {
           "type": "prose",
-          "md": "Loudness doesn't track pressure linearly — doubling the pressure doesn't sound twice as loud — so we compare sounds on a log scale. Here is where the formula comes from: a **bel** is log₁₀ of the ratio of two *intensities*, and intensity goes with amplitude *squared*, so with amplitudes x and r: bels = log₁₀(x²/r²) = 2·log₁₀(x/r). A bel turns out to be too big a unit to be handy, so we report tenths of one: **dB = 10·log₁₀(x²/r²) = 20·log₁₀(x/r)**. Reading the symbols: x is the amplitude you're measuring, r is the reference you're comparing it against, and the log turns ratios into sums — every ×10 in amplitude is +20 dB, stackable. !!Using 10·log₁₀ on amplitudes is the classic slip!! — the 20 is 10 (deci) × 2 (the square), and the bare 10·log₁₀ belongs to intensity/power only.",
-          "slide": "Decibels: why the formula has a 20 in it",
-          "id": "vocab.17f462a9"
+          "md": "A simple wave repeats the same shape over and over. You only need three numbers to describe it. Learn them one at a time.",
+          "slide": "Three numbers",
+          "id": "vocab.13fb05d6"
+        },
+        {
+          "type": "definition",
+          "term": "Period (T)",
+          "body": "How long **one** repeat takes, in seconds. If the wave repeats every 0.01 seconds, T = 0.01 s (that's 10 milliseconds).",
+          "id": "vocab.cd2a9892"
+        },
+        {
+          "type": "definition",
+          "term": "Frequency (F)",
+          "body": "How many repeats happen **in one second**. Measured in **Hertz (Hz)**. 100 Hz = 100 repeats per second.",
+          "id": "vocab.a36a39bb"
         },
         {
           "type": "example",
-          "title": "Code",
-          "body": "amplitude ratio x/r     dB = 20·log10(x/r)\n   1 (same)                 0 dB\n   2                       +6 dB     ← double the amplitude\n  10                      +20 dB\n 100                      +40 dB\n   0.5                     −6 dB\nreference r:  dB SPL → r = 20 μPa (quietest audible 1 kHz tone)\n              dB SL  → r = the hearing threshold at THAT frequency",
-          "slide": "dB in numbers",
-          "id": "vocab.5da18a27"
-        },
-        {
-          "type": "prose",
-          "md": "The **equal-loudness curve** slide says: at 50 Hz you need about 40 dB SPL to *just hear* a tone — 100 times the pressure you'd need at 1000 Hz. ##Ears are most sensitive around 1–4 kHz, exactly where speech lives##.",
-          "id": "vocab.b6d5a7ad"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** dB is the unit on every fader, microphone spec, and volume slider you'll ever touch — '6 dB = double the amplitude' is arithmetic audio engineers do without a calculator. The equal-loudness curve is quietly one of the most profitable graphs ever drawn: ==MP3 and AAC compress audio by throwing away the frequency components the curve says you can't hear== — quiet sounds masked by loud neighbors, and anything where the ear is insensitive. And streaming services normalize every track to a target loudness (LUFS, an RMS-style measure) so playlists don't lurch between whisper and blast; that's RMS amplitude doing real work.",
-          "id": "vocab.6e2a91f4"
+          "title": "Period and frequency are flips of each other",
+          "body": "If one repeat takes 0.01 s, how many fit in 1 second?\n  1 ÷ 0.01 = 100 repeats → F = 100 Hz\n\nSo:  F = 1 / T   and   T = 1 / F\n\n  T = 0.5 s   →  F = 2 Hz\n  T = 0.002 s →  F = 500 Hz\n  F = 200 Hz  →  T = 1/200 = 0.005 s = 5 ms",
+          "slide": "F = 1/T",
+          "id": "vocab.53887f4d"
         },
         {
           "type": "check",
-          "prompt": "Lab-style: two vowels, (a) has peak 0.3 and (b) has peak 0.6. Which is louder, and by how many dB?",
-          "answer": "(b), by 20·log₁₀(0.6/0.3) = 20·log₁₀(2) ≈ 6 dB.",
+          "prompt": "A wave has F = 250 Hz. What is its period in milliseconds?",
+          "answer": "T = 1/250 = 0.004 s = 4 ms.",
           "sectionRef": "vocab",
-          "id": "vocab.7edefefb"
+          "id": "vocab.0eb16616"
+        },
+        {
+          "type": "definition",
+          "term": "Amplitude (A)",
+          "body": "How far the wave goes up from the middle line. A bigger amplitude means more pressure change, which sounds louder. If the wave goes up to 3 and down to −3, the amplitude is 3.",
+          "id": "vocab.438b2647"
+        },
+        {
+          "type": "definition",
+          "term": "Periodic vs aperiodic",
+          "body": "**Periodic** = repeats the same shape (vowels like *aa*, a tuning fork, a hum). **Aperiodic** = no repeating shape (*s*, *sh*, static).",
+          "id": "vocab.96fdfa5a"
+        },
+        {
+          "type": "check",
+          "prompt": "Is the sound 'sss' periodic or aperiodic?",
+          "answer": "Aperiodic: it's a hiss with no repeating shape.",
+          "sectionRef": "vocab",
+          "id": "vocab.1f001d87"
+        },
+        {
+          "type": "prose",
+          "md": "**Loudness in decibels (dB).** Our ears don't hear loudness in a straight line: doubling the pressure does not sound twice as loud. So we use a scale that counts **how many times bigger**, called decibels. You only need two facts:",
+          "slide": "Decibels: the two facts",
+          "id": "vocab.ad07ffa7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Amplitude becomes…",
+            "Change in dB"
+          ],
+          "rows": [
+            [
+              "the same",
+              "0 dB"
+            ],
+            [
+              "2 times bigger",
+              "+6 dB"
+            ],
+            [
+              "10 times bigger",
+              "+20 dB"
+            ],
+            [
+              "100 times bigger",
+              "+40 dB"
+            ],
+            [
+              "half as big",
+              "−6 dB"
+            ]
+          ],
+          "title": "Amplitude ratio → dB",
+          "id": "vocab.732f24d3"
+        },
+        {
+          "type": "example",
+          "title": "The formula (only if you need it)",
+          "body": "dB = 20 · log₁₀(new amplitude ÷ old amplitude)\n\nExample: amplitude goes from 0.3 to 0.6.\n  ratio = 0.6 ÷ 0.3 = 2\n  20 · log₁₀(2) = 20 · 0.301 ≈ 6 dB louder",
+          "id": "vocab.2276bb88"
+        },
+        {
+          "type": "check",
+          "prompt": "Sound B's amplitude is 10 times sound A's. How many dB louder is B?",
+          "answer": "+20 dB (20 · log₁₀(10) = 20 · 1 = 20).",
+          "sectionRef": "vocab",
+          "id": "vocab.dad3856f"
         }
       ]
     },
     {
       "id": "circle",
-      "heading": "A sinusoid is a point going around a circle",
+      "heading": "Where the wave shape comes from: a dot going around a circle",
       "blocks": [
         {
           "type": "prose",
-          "md": "Draw a circle of radius 1. Put a point on it at angle θ from the positive x-axis. Its coordinates are (cos θ, sin θ). Now let the point *rotate* counterclockwise: θ grows, and if you plot the x-coordinate against θ you get a **cosine wave**; plot the y-coordinate and you get a **sine wave**. ==A sinusoid is the shadow of a rotating point== — that's the whole object. Everything else in the formula is dials.",
-          "slide": "The rotating-circle picture (Koo's note, §2)",
-          "id": "circle.8a51345f"
+          "md": "**Picture it.** Imagine a dot going around a circle, like the tip of a clock hand going the wrong way. Now watch only its **left-right position**. It slides right, back to the middle, left, back to the middle, right again… Plot that position over time and you get the wave shape. That shape is called a **cosine**.",
+          "slide": "A dot on a circle",
+          "id": "circle.74423f62"
         },
         {
           "type": "figure",
-          "svg": "<g fill='none' stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The unit circle: every point on it is (cos θ, sin θ) for some angle θ. Radius 1, centered on the origin.</title><circle cx='100' cy='100' r='70' opacity='.4'/><line x1='20' y1='100' x2='180' y2='100' opacity='.3'/><line x1='100' y1='20' x2='100' y2='180' opacity='.3'/></g><g><title>The rotating point, currently at angle θ measured counterclockwise from the positive x-axis. As time runs, θ just keeps growing.</title><line x1='100' y1='100' x2='149.5' y2='50.5' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='149.5' cy='50.5' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><path d='M 125 100 A 25 25 0 0 0 117.7 82.3' stroke='rgb(var(--accent-fg))'/><text x='130' y='95' fill='currentColor' stroke='none'>θ</text></g><g><title>The point's x-coordinate — its shadow on the horizontal axis. This single number, tracked over time, IS the cosine wave.</title><line x1='149.5' y1='50.5' x2='149.5' y2='100' stroke='currentColor' stroke-dasharray='3 3' opacity='.6'/><text x='140' y='118' fill='currentColor' stroke='none'>cos θ</text></g><g><title>The same x-coordinate plotted as θ grows: a cosine wave, swinging between +1 and −1. One full trip around the circle (2π radians) draws exactly one cycle.</title><line x1='230' y1='100' x2='580' y2='100' opacity='.3'/><line x1='230' y1='30' x2='230' y2='170' opacity='.3'/><path d='M230 30 C 260 30, 280 170, 317 170 S 375 30, 405 30 S 463 170, 492 170 S 550 30, 580 30' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='257' cy='50' r='4' fill='rgb(var(--accent-fg))' stroke='none'/><text x='400' y='190' fill='currentColor' stroke='none'>θ →   (2π = one cycle)</text><text x='235' y='25' fill='currentColor' stroke='none'>+1</text><text x='235' y='180' fill='currentColor' stroke='none'>−1</text></g></g>",
+          "svg": "<g fill=\"none\" stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<circle cx=\"100\" cy=\"100\" r=\"70\" opacity=\".4\"/>\n<line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" opacity=\".3\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" opacity=\".3\"/>\n<line x1=\"100\" y1=\"100\" x2=\"149.5\" y2=\"50.5\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<circle cx=\"149.5\" cy=\"50.5\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<path d=\"M 125 100 A 25 25 0 0 0 117.7 82.3\" stroke=\"rgb(59 130 246)\"/>\n<text x=\"130\" y=\"95\" fill=\"currentColor\" stroke=\"none\">θ</text>\n<line x1=\"149.5\" y1=\"50.5\" x2=\"149.5\" y2=\"100\" stroke=\"currentColor\" stroke-dasharray=\"3 3\" opacity=\".6\"/>\n<text x=\"140\" y=\"118\" fill=\"currentColor\" stroke=\"none\">cos θ</text>\n<line x1=\"230\" y1=\"100\" x2=\"580\" y2=\"100\" opacity=\".3\"/><line x1=\"230\" y1=\"30\" x2=\"230\" y2=\"170\" opacity=\".3\"/>\n<path d=\"M230 30 C 260 30, 280 170, 317 170 S 375 30, 405 30 S 463 170, 492 170 S 550 30, 580 30\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<circle cx=\"257\" cy=\"50\" r=\"4\" fill=\"rgb(59 130 246)\" stroke=\"none\"/>\n<text x=\"400\" y=\"190\" fill=\"currentColor\" stroke=\"none\">θ →   (2π = one cycle)</text>\n<text x=\"235\" y=\"25\" fill=\"currentColor\" stroke=\"none\">+1</text><text x=\"235\" y=\"180\" fill=\"currentColor\" stroke=\"none\">−1</text>\n</g>",
           "viewBox": "0 0 600 200",
-          "caption": "Left: a point at angle θ on the unit circle. Right: its x-coordinate plotted as θ grows — a cosine. One full rotation (2π radians) = one cycle of the wave. Hover any part.",
+          "caption": "Left: a point at angle θ on the unit circle. Right: its x-coordinate plotted as θ grows: a cosine. One full rotation (2π radians) = one cycle of the wave.",
           "slide": "The shadow of a rotating point",
-          "id": "circle.ef727240"
+          "id": "circle.bef10950"
         },
         {
           "type": "definition",
-          "term": "cos θ = sin(θ + π/2)",
-          "body": "cosine is sine shifted a quarter cycle earlier. Same shape, different starting point. Koo uses cosine as the standard.",
-          "id": "circle.e19d65a9"
+          "term": "cos (cosine)",
+          "body": "The dot's **left-right** position. It starts at 1 (far right), goes to 0, −1, 0, and back to 1 after one full lap.",
+          "id": "circle.52e474fb"
         },
         {
           "type": "definition",
-          "term": "cos is even",
-          "body": "cos(−θ) = cos θ. Rotating clockwise gives the same x-coordinate. **sin is odd**: sin(−θ) = −sin θ. (You said you know these — they're the reason 2cos(2π·(−100)·t − π/3) equals 2cos(2π·100·t + π/3): negate the whole inside and cosine doesn't care.)",
-          "id": "circle.dcb54387"
+          "term": "sin (sine)",
+          "body": "The dot's **up-down** position. Same shape as cosine, just a quarter lap later.",
+          "id": "circle.8707f532"
+        },
+        {
+          "type": "definition",
+          "term": "Radians",
+          "body": "A way to measure angles. One full lap is **2π radians** (about 6.28). Half a lap is π. A quarter lap is π/2.",
+          "id": "circle.65306d3e"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Degrees",
+            "Radians",
+            "Where the dot is",
+            "cos"
+          ],
+          "rows": [
+            [
+              "0°",
+              "0",
+              "far right",
+              "1"
+            ],
+            [
+              "90°",
+              "π/2",
+              "top",
+              "0"
+            ],
+            [
+              "180°",
+              "π",
+              "far left",
+              "−1"
+            ],
+            [
+              "270°",
+              "3π/2",
+              "bottom",
+              "0"
+            ],
+            [
+              "360°",
+              "2π",
+              "far right again",
+              "1"
+            ]
+          ],
+          "title": "One lap in radians",
+          "slide": "One lap = 2π",
+          "id": "circle.53734908"
         },
         {
           "type": "prose",
-          "md": "- Both repeat every **2π radians** (360°): cos(θ + 2πk) = cos θ for any integer k. So adding or subtracting 2π inside the parentheses changes nothing — that's Lab 3 Q3.\n- Radians: θ = arc length / radius. Full circle = 2π. 90° = π/2, 60° = π/3, 45° = π/4, 30° = π/6.",
-          "slide": "Facts about sin and cos you'll use in every lab",
-          "id": "circle.29e6739f"
+          "md": "**Why this matters:** after a full lap (2π), the dot is back where it started. So adding 2π to the angle changes nothing. That fact answers a lot of lab questions (Lab 3 Q3).",
+          "id": "circle.dba4488e"
+        },
+        {
+          "type": "check",
+          "prompt": "What is cos(π)? Picture the dot.",
+          "answer": "−1. At π (half a lap) the dot is on the far left.",
+          "sectionRef": "circle",
+          "id": "circle.5f4bf260"
         }
       ]
     },
     {
       "id": "formula",
-      "heading": "The formula: A·cos(2πFt + ϕ)",
+      "heading": "The wave formula, one piece at a time",
       "blocks": [
         {
           "type": "prose",
-          "md": "The circle picture uses an angle θ; sound happens in time. So let the point rotate at a steady speed: **F rotations per second**. Each rotation is 2π radians, so after t seconds the angle is θ = 2πF·t — ==that substitution is the entire derivation==. Replace θ and cos θ becomes **cos(2πFt)**: a wave that completes F cycles every second, i.e. frequency F Hz. Reading the symbols: t is the clock in seconds, F converts seconds to cycles, and 2π converts cycles to radians — the unit the cosine actually eats. (2πF together is called the angular frequency ω, in radians per second; you'll see ω in readings, F in Koo's notebooks.)",
-          "slide": "From angle to time",
-          "id": "formula.2091355e"
+          "md": "Every simple wave in this course is written like this: **A · cos(2π · F · t + ϕ)**. It looks scary, but it is just the dot on the circle with three dials. Let's build it one piece at a time.",
+          "slide": "Building the formula",
+          "id": "formula.7ac598c3"
         },
         {
           "type": "stepper",
-          "title": "Reading Lab 3's formula symbol by symbol",
+          "title": "Building A·cos(2πFt + ϕ) from nothing",
           "frames": [
             {
               "kind": "lines",
               "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
+                "cos(θ)"
               ],
               "active": 0,
-              "caption": "Lab 3 Q1's formula. We'll read it one symbol at a time. There are exactly four things in it that mean something; everything else is plumbing."
+              "caption": "Start with the plain wave shape. θ (the Greek letter theta) is just an angle: how far the dot has gone around the circle. cos(θ) goes 1, 0, −1, 0, 1 as θ goes once around."
             },
             {
               "kind": "lines",
               "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
+                "cos(θ)",
+                "cos(2π · F · t)"
               ],
               "active": 1,
-              "caption": "The number out front multiplies the whole cosine. cos swings between −1 and +1, so 2·cos swings between −2 and +2. That's the peak amplitude A. Lab 3 Q1 answer: amplitude = 2."
+              "caption": "Make it move in time. F is how many laps the dot makes per second, and one lap is 2π. So after t seconds the angle is 2π·F·t. Example: F = 2 laps per second, after t = 1 second the dot has gone 2 laps = 4π."
             },
             {
               "kind": "lines",
               "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
+                "cos(2π · F · t)",
+                "A · cos(2π · F · t)"
               ],
-              "active": 2,
-              "caption": "The number multiplying t (after the 2π) is the frequency F in Hz. 100 Hz means 100 cycles per second. NOT 2π·100 — the 2π is not part of the frequency (that was the wrong answer in Lab 3 Q1)."
+              "active": 1,
+              "caption": "Make it taller or shorter. cos only goes from −1 to 1. Multiply by A and it goes from −A to A. A is the amplitude."
             },
             {
               "kind": "lines",
               "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
+                "A · cos(2π · F · t)",
+                "A · cos(2π · F · t + ϕ)"
               ],
-              "active": 3,
-              "caption": "The constant added inside the parentheses is the initial phase ϕ, in radians. At t = 0 the argument is just ϕ, so the wave starts at cos(π/3) = 0.5 instead of at its peak."
+              "active": 1,
+              "caption": "Give it a head start. ϕ (the Greek letter phi, say 'fye') is the angle the dot starts at when t = 0. ϕ = 0 means it starts at the top of the wave."
             },
             {
               "kind": "lines",
               "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
+                "A · cos(2π · F · t + ϕ)",
+                "A = how tall   F = how fast   ϕ = where it starts   t = the clock"
               ],
-              "active": 4,
-              "caption": "t is the input. Everything else is a fixed dial. The formula is a function: give it a time, it gives you the pressure."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2 cos(2π · 100 · t + π/3)",
-                "A = 2          peak amplitude: the wave swings between −2 and +2",
-                "F = 100        frequency in Hz: 100 full cycles every second",
-                "ϕ = π/3        initial phase: where in its cycle the wave is at t = 0",
-                "t              time in seconds — the only thing that varies",
-                "2π             the conversion: one cycle = 2π radians"
-              ],
-              "active": 5,
-              "caption": "Why 2π? A cosine repeats every 2π radians. F cycles per second × 2π radians per cycle = 2πF radians per second. The 2π is the unit conversion that lets you write F in Hz instead of radians per second."
+              "active": 1,
+              "caption": "That's the whole formula. Three dials (A, F, ϕ) and a clock (t). Every sinusoid in this course is this formula with different numbers."
             }
           ],
           "slide": true,
-          "id": "formula.7efb306e"
+          "id": "formula.a07fddb9"
         },
         {
           "type": "table",
           "columns": [
             "Symbol",
             "Name",
-            "In the circle picture",
-            "In the waveform"
+            "Changes"
           ],
           "rows": [
             [
               "A",
-              "peak amplitude",
-              "the radius of the circle",
-              "how tall the wave is: swings between −A and +A"
+              "amplitude",
+              "how tall the wave is"
             ],
             [
               "F",
               "frequency (Hz)",
-              "rotations per second",
-              "how many cycles per second; period T = 1/F"
+              "how many repeats per second"
             ],
             [
-              "ϕ",
-              "initial phase (radians)",
-              "the angle where the point starts at t = 0",
-              "where the wave is in its cycle at time zero — a head start"
+              "ϕ (phi)",
+              "starting angle (phase)",
+              "where in its cycle the wave starts"
+            ],
+            [
+              "t",
+              "time (seconds)",
+              "the clock; not a dial"
             ]
           ],
-          "slide": "The three dials, in the circle picture",
-          "id": "formula.b7b7dca3"
+          "title": "The three dials",
+          "slide": "A, F, ϕ",
+          "id": "formula.a5e682df"
         },
         {
-          "type": "figure",
-          "viewBox": "0 0 640 270",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='dialsA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The rest position (zero pressure) and the time axis. Amplitude is measured from this line, and t = 0 is where the clock starts.</title><line x1='40' y1='125' x2='610' y2='125' opacity='.3'/><text x='592' y='142' font-size='11' fill='currentColor' stroke='none' opacity='.7'>t →</text><text x='48' y='142' font-size='11' fill='currentColor' stroke='none' opacity='.7'>t = 0</text></g><g><title>The reference wave A·cos(2πFt) with ϕ = 0: at t = 0 the argument is 0 and cos(0) = 1, so it starts at its peak.</title><path d='M60 60 C107.3 60,142.7 190,190 190 C237.3 190,272.7 60,320 60 C367.3 60,402.7 190,450 190 C497.3 190,532.7 60,580 60' stroke='currentColor' opacity='.35' stroke-width='1.6' stroke-dasharray='6 5'/><text x='66' y='52' font-size='10' fill='currentColor' stroke='none' opacity='.55'>ϕ = 0: starts at the peak</text></g><g><title>The same A and F with initial phase ϕ = π: at t = 0 the argument is ϕ, so it starts at cos(π) = −1, the trough. Phase is a head start around the circle — it slides the wave sideways without touching height or speed.</title><path d='M60 190 C107.3 190,142.7 60,190 60 C237.3 60,272.7 190,320 190 C367.3 190,402.7 60,450 60 C497.3 60,532.7 190,580 190' stroke='rgb(var(--on-track))' stroke-width='2.2'/><circle cx='60' cy='190' r='4' fill='rgb(var(--at-risk))' stroke='none'/><text x='47' y='215' font-size='11' fill='rgb(var(--at-risk))' stroke='none'>ϕ = π: starts at the trough</text></g><g><title>A, the peak amplitude: how far the wave swings from rest. The whole wave lives between −A and +A.</title><line x1='190' y1='125' x2='190' y2='63' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#dialsA)'/><text x='198' y='96' font-size='11' fill='rgb(var(--accent-fg))' stroke='none'>A</text></g><g><title>T, the period: the time one full cycle takes, measured peak to peak. F = 1/T is how many of these fit in one second.</title><line x1='190' y1='40' x2='450' y2='40' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><line x1='190' y1='34' x2='190' y2='46' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><line x1='450' y1='34' x2='450' y2='46' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='320' y='30' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' stroke='none'>T = 1/F (one full cycle)</text></g><text x='320' y='252' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>same A, same F — only ϕ differs between the two curves</text></g>",
-          "caption": "One sinusoid, three dials, all on one plot. A sets how tall (rest to peak); F sets how fast (T = 1/F between peaks); ϕ sets where in its cycle the wave is when the clock starts. The dashed wave has ϕ = 0 (starts at the peak); the green one has ϕ = π (starts at the trough) — the same wave slid by half a cycle, which is exactly the trough-start check below. Hover any part.",
-          "slide": "The three dials on one plot",
-          "id": "formula.a2c94e17"
+          "type": "stepper",
+          "title": "Reading a real formula (Lab 3 Q1)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "x(t) = 2 · cos(2π · 100 · t + π/3)"
+              ],
+              "active": 0,
+              "caption": "Lab 3's formula. Find the three dials."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "x(t) = 2 · cos(2π · 100 · t + π/3)",
+                "A = 2"
+              ],
+              "active": 1,
+              "caption": "The number in front: amplitude 2. The wave swings between −2 and +2."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "x(t) = 2 · cos(2π · 100 · t + π/3)",
+                "F = 100 Hz"
+              ],
+              "active": 1,
+              "caption": "The number right before t (after the 2π): 100 laps per second, so 100 Hz. The 2π is NOT part of the frequency."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "x(t) = 2 · cos(2π · 100 · t + π/3)",
+                "ϕ = π/3"
+              ],
+              "active": 1,
+              "caption": "The number added at the end: the starting angle, π/3 (that's 60°)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "A = 2,  F = 100 Hz,  ϕ = π/3",
+                "period T = 1/100 = 0.01 s = 10 ms"
+              ],
+              "active": 1,
+              "caption": "Bonus: once you have F you have the period, T = 1/F."
+            }
+          ],
+          "slide": true,
+          "id": "formula.a3ba920c"
+        },
+        {
+          "type": "trap",
+          "body": "Saying the frequency is 2π·100 = 628. The 2π is just there because one lap is 2π. The frequency is the number right before t: **100 Hz**.",
+          "source": "Lab 3 Q1",
+          "points": null,
+          "id": "formula.8edfc206"
         },
         {
           "type": "example",
-          "title": "Changing the dials",
-          "body": "Start from x(t) = 2cos(2π·100·t + π/3).\n\n1. Q2: peak amplitude 3× and frequency 2× → change A to 6 and F to 200, leave ϕ: **6cos(2π·200·t + π/3)**. The phase is a starting angle; scaling amplitude or speed doesn't move the start.\n2. Q3: which formulas are the *same* wave? Any that differ only by ±2π inside (2cos(… − 5π/3) since π/3 − 2π = −5π/3; 2cos(… + 13π/3) since π/3 + 4π = 13π/3), by negating the whole inside (cos is even: 2cos(2π·(−100)·t − π/3)), or by switching to sine with +π/2 (2sin(2π·100·t + π/3 + π/2) = 2sin(… + 5π/6); and since sin is odd, −2sin(2π·(−100)·t − 5π/6) is the same; and 2sin(… − 7π/6) since 5π/6 − 2π = −7π/6). All six listed options were equivalent — the trick was that none was a distractor.\n3. Q4: sampling at Fₛ, taking sample n at time t = n/Fₛ → replace t: **x[n] = 2cos(2π·100·n/Fₛ + π/3)**. Only t changes; A, F, ϕ stay.",
-          "slide": "Lab 3 Q2–Q4, worked",
-          "id": "formula.d880a5f5"
+          "title": "Turn one dial at a time",
+          "body": "Start:  3·cos(2π·5·t)\n\nChange A: 10·cos(2π·5·t)       → same wave, taller (±10 instead of ±3)\nChange F: 3·cos(2π·10·t)       → twice as many repeats, squished sideways\nAdd ϕ = π: 3·cos(2π·5·t + π)   → flipped: starts at the bottom instead of the top",
+          "slide": "One dial at a time",
+          "id": "formula.d2d0adff"
+        },
+        {
+          "type": "check",
+          "prompt": "Write a wave with amplitude 0.5 and frequency 440 Hz that starts at the top.",
+          "answer": "0.5 · cos(2π · 440 · t). Starting at the top means ϕ = 0.",
+          "sectionRef": "formula",
+          "id": "formula.fe37c12e"
+        },
+        {
+          "type": "check",
+          "prompt": "Write the same wave but starting at the bottom.",
+          "answer": "0.5 · cos(2π · 440 · t + π). Half a lap (π) head start puts the dot on the far left, so the wave starts at its lowest point.",
+          "sectionRef": "formula",
+          "id": "formula.89afaf0c"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** A·cos(2πFt + ϕ) is the signal generator inside every synthesizer oscillator, hearing-test tone, and Web Audio `OscillatorNode` — when a tuner app says A = 440 Hz, that's the F dial by name. Every DAW and every Zoom call is shipping sums of these around at some sample rate. ##Phase, the dial everyone forgets, pays rent too##: noise-cancelling headphones emit the same wave with ϕ shifted by π so the pressures cancel, and two microphones mixed with mismatched phase hollow a recording out. When Days 5–7 take speech apart into sinusoids, 'amplitude, frequency, phase — per component' is the complete answer format, and it's these three dials.",
-          "id": "formula.5b8e13d9"
-        },
-        {
-          "type": "check",
-          "prompt": "Write a 440 Hz wave with amplitude 0.5 that starts at its trough.",
-          "answer": "Trough means cos(ϕ) = −1, so ϕ = π: x(t) = 0.5·cos(2π·440·t + π). (Equivalently −0.5·cos(2π·440·t).)",
-          "sectionRef": "formula",
-          "id": "formula.d6a85150"
-        },
-        {
-          "type": "check",
-          "prompt": "How does the plot of 3cos(2π·5·t) change if you (a) change 3 to 10, (b) change 5 to 10, (c) add + π inside?",
-          "answer": "(a) Same shape, taller: swings ±10 instead of ±3. (b) Twice as many cycles per second — the wave is squeezed horizontally, period drops from 0.2 s to 0.1 s. (c) Flipped: it starts at its trough instead of its peak (cos(θ + π) = −cos θ).",
-          "sectionRef": "formula",
-          "id": "formula.c5502c4d"
-        },
-        {
-          "type": "definition",
-          "term": "Sinusoid",
-          "body": "x(t) = A·cos(2πFt + ϕ): a point of radius A rotating F times per second starting at angle ϕ, seen from the side. A = peak amplitude, F = frequency in Hz, ϕ = initial phase in radians.",
-          "id": "formula.af345902"
+          "md": "**Lab 3 Q3 tip:** two formulas are the same wave if their starting angles differ by a whole number of laps (±2π, ±4π…). Example: ϕ = π/3 and ϕ = π/3 − 2π = −5π/3 are the same starting point.",
+          "id": "formula.627bfbcd"
         }
       ]
     },
     {
       "id": "spectrum",
-      "heading": "Spectra: taking a wave apart",
+      "heading": "A spectrum: the recipe of a sound",
       "blocks": [
         {
           "type": "prose",
-          "label": "why",
-          "md": "**Why we need spectra** A single sinusoid is a **simple** periodic wave. A vowel is a **complex** periodic wave — it repeats, but the shape inside each cycle is jagged. Day 2's key claim: ==a complex wave is a sum of simple waves== (sinusoids) at different frequencies, amplitudes and phases. A **spectrum** is the recipe: which sinusoids, how much of each.",
-          "slide": "Simple vs complex periodic waves",
-          "id": "spectrum.68981d93"
+          "md": "**The big idea.** Real sounds (like a vowel) are not one simple wave. They are **many simple waves added together**. A **spectrum** is the recipe: which simple waves are in the sound, and how much of each.",
+          "slide": "A sound is a recipe",
+          "id": "spectrum.ad3062b2"
+        },
+        {
+          "type": "prose",
+          "md": "**Picture it.** A smoothie tastes like one thing, but it's made of ingredients: some banana, a lot of strawberry, a little milk. A spectrum is the ingredient list for a sound.",
+          "id": "spectrum.fa259cb5"
         },
         {
           "type": "table",
           "columns": [
             "Plot",
-            "x-axis",
-            "y-axis",
-            "Shows"
+            "Left to right",
+            "Up and down",
+            "What it tells you"
           ],
           "rows": [
             [
               "Waveform",
               "time",
-              "pressure (amplitude)",
-              "the signal itself"
+              "pressure",
+              "the sound itself, over time"
             ],
             [
-              "Magnitude spectrum",
+              "Spectrum",
               "frequency",
               "amplitude",
-              "how much of each frequency is present — a snapshot"
-            ],
-            [
-              "Phase spectrum",
-              "frequency",
-              "phase",
-              "the starting angle of each component"
+              "which frequencies are in it, and how strong (one moment)"
             ],
             [
               "Spectrogram",
               "time",
-              "frequency",
-              "darkness/color = amplitude: how the spectrum changes over time"
+              "frequency (darkness = strength)",
+              "how the spectrum changes over time"
             ]
           ],
-          "slide": "Three plots you must be able to tell apart",
-          "id": "spectrum.13eaab8e"
+          "title": "Three plots you'll see all semester",
+          "slide": "Waveform, spectrum, spectrogram",
+          "id": "spectrum.3a47c684"
+        },
+        {
+          "type": "definition",
+          "term": "Harmonics",
+          "body": "The simple waves that make up a vowel sit at evenly spaced frequencies: F₀, 2·F₀, 3·F₀… F₀ (say 'F-zero') is the lowest one, and it's the **pitch** of the voice.",
+          "id": "spectrum.ab943364"
+        },
+        {
+          "type": "definition",
+          "term": "Formants",
+          "body": "The big bumps in a vowel's spectrum. They come from the shape of your mouth, and they're what make *ee* sound different from *aa*.",
+          "id": "spectrum.9a202804"
         },
         {
           "type": "figure",
-          "viewBox": "0 0 640 230",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='tf0a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>Time domain: the waveform of 0.5·cos(2π·200t). You read A off the height of the swings and F by counting cycles per second.</title><line x1='30' y1='110' x2='310' y2='110' opacity='.3'/><path d='M40 55 C51.8 55,60.7 165,72.5 165 C84.3 165,93.2 55,105 55 C116.8 55,125.7 165,137.5 165 C149.3 165,158.2 55,170 55 C181.8 55,190.7 165,202.5 165 C214.3 165,223.2 55,235 55 C246.8 55,255.7 165,267.5 165 C279.3 165,288.2 55,300 55' stroke='rgb(var(--on-track))' stroke-width='2'/><text x='170' y='200' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>time →</text></g><g><title>The period bracket: at 200 Hz one cycle takes T = 1/200 s = 5 ms. Tighter wiggles would mean a higher frequency.</title><line x1='40' y1='38' x2='105' y2='38' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><line x1='40' y1='32' x2='40' y2='44' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><line x1='105' y1='32' x2='105' y2='44' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='72' y='26' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>T = 5 ms</text></g><g><title>Fourier analysis carries you from the time picture to the frequency picture; synthesis carries you back. Same signal, two displays.</title><line x1='316' y1='98' x2='352' y2='98' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#tf0a)'/><text x='334' y='88' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))' stroke='none'>analysis</text><line x1='352' y1='124' x2='316' y2='124' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#tf0a)'/><text x='334' y='142' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))' stroke='none'>synthesis</text></g><g><title>Frequency domain: the magnitude spectrum of the same signal. ALL of its energy sits at one frequency, so the entire wave collapses to a single stem at 200 Hz whose height is the amplitude, 0.5.</title><line x1='360' y1='165' x2='620' y2='165' opacity='.4'/><line x1='380' y1='50' x2='380' y2='165' opacity='.4'/><line x1='470' y1='165' x2='470' y2='75' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='470' cy='75' r='4' fill='rgb(var(--on-track))' stroke='none'/><text x='462' y='70' text-anchor='end' font-size='10' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>0.5</text><line x1='425' y1='162' x2='425' y2='168' opacity='.5'/><line x1='515' y1='162' x2='515' y2='168' opacity='.5'/><line x1='560' y1='162' x2='560' y2='168' opacity='.5'/><text x='425' y='183' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.6'>100</text><text x='470' y='183' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none'>200</text><text x='515' y='183' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.6'>300</text><text x='560' y='183' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.6'>400</text><text x='500' y='205' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>frequency (Hz) →</text></g></g>",
-          "caption": "The same sinusoid in both domains. Left: 0.5·cos(2π·200t) as a waveform — height gives A, cycle count gives F. Right: its magnitude spectrum — one stem at 200 Hz, height 0.5, and silence everywhere else. A sinusoid is a single point in the frequency domain; a vowel will be a comb of stems like this, one per harmonic. Hover any part.",
-          "slide": "One wave, two pictures",
-          "id": "spectrum.9c4b72e8"
-        },
-        {
-          "type": "prose",
-          "md": "Speech has two parts. The **source** (vocal-fold vibration) produces a buzz with a fundamental frequency F₀ and harmonics at 2F₀, 3F₀, … — these are the **spectral details**, the fine comb of lines in a spectrum. The **filter** (the shape of the mouth and throat) boosts some frequencies and damps others — that's the **spectral envelope**, the smooth outline over the comb; its peaks are the **formants** that make /i/ sound different from /a/. Lab 1 Q6 asked which column of plots showed the filter: the smooth envelopes, not the jagged combs.",
-          "slide": "Source and filter",
-          "id": "spectrum.e3a76d00"
-        },
-        {
-          "type": "figure",
-          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\"><g><title>The axes: frequency runs right, amplitude up. A magnitude spectrum is one instant's recipe — there is no time axis anywhere on it.</title><line x1=\"30\" y1=\"140\" x2=\"540\" y2=\"140\" opacity=\".4\"/><line x1=\"30\" y1=\"140\" x2=\"30\" y2=\"20\" opacity=\".4\"/></g><g><title>The comb of thin vertical lines: the harmonics — the SOURCE's contribution. The vocal folds buzz at F₀ and its whole-number multiples; the comb's spacing is the pitch.</title><line x1=\"40\" y1=\"140\" x2=\"40\" y2=\"131.959443528216\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"61\" y1=\"140\" x2=\"61\" y2=\"116.92684257940843\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"82\" y1=\"140\" x2=\"82\" y2=\"90.69928761639173\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"103\" y1=\"140\" x2=\"103\" y2=\"69.67930055535022\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"124\" y1=\"140\" x2=\"124\" y2=\"74.41902074150838\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"145\" y1=\"140\" x2=\"145\" y2=\"99.39075663062334\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"166\" y1=\"140\" x2=\"166\" y2=\"120.51552922217459\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"187\" y1=\"140\" x2=\"187\" y2=\"125.07974822780736\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"208\" y1=\"140\" x2=\"208\" y2=\"115.09307100068116\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"229\" y1=\"140\" x2=\"229\" y2=\"98.01238885296252\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"250\" y1=\"140\" x2=\"250\" y2=\"84.7737475226613\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"271\" y1=\"140\" x2=\"271\" y2=\"85.03800079378722\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"292\" y1=\"140\" x2=\"292\" y2=\"98.32242100534485\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"313\" y1=\"140\" x2=\"313\" y2=\"114.43664599824712\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"334\" y1=\"140\" x2=\"334\" y2=\"123.62717786186053\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"355\" y1=\"140\" x2=\"355\" y2=\"123.11292444290928\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"376\" y1=\"140\" x2=\"376\" y2=\"115.80901582791365\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"397\" y1=\"140\" x2=\"397\" y2=\"107.23022753663251\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"418\" y1=\"140\" x2=\"418\" y2=\"103.02160258509234\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"439\" y1=\"140\" x2=\"439\" y2=\"106.01913981477963\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"460\" y1=\"140\" x2=\"460\" y2=\"114.53870931092905\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"481\" y1=\"140\" x2=\"481\" y2=\"124.19406737413753\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"502\" y1=\"140\" x2=\"502\" y2=\"131.4834304843647\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"523\" y1=\"140\" x2=\"523\" y2=\"135.5327650660145\" stroke=\"currentColor\" opacity=\".6\"/></g><g><title>The smooth curve: the spectral envelope — the FILTER's contribution. The mouth and throat boost some frequencies and damp others; this outline (not the comb) is what changes when you change vowels.</title><path d=\"M30 129.14664451285665 L40 125.95944352821603 L50 120.42905511361711 L60 111.94457514196282 L70 100.54664565883152 L80 87.36490741377841 L90 74.6852443266468 L100 65.40311640114872 L110 61.9695803583532 L120 65.33396199638347 L130 74.49213242583917 L140 86.91339319115897 L150 99.57263714083709 L160 109.98259298431924 L170 116.73276889298275 L180 119.44512884062193 L190 118.40631659371246 L200 114.21455753710089 L210 107.62487211547322 L220 99.56781858895225 L230 91.19852415773829 L240 83.83987055372938 L250 78.7737475226613 L260 76.94093498460313 L270 78.67669150964909 L280 83.60479993072713 L290 90.74310469814914 L300 98.77812662718867 L310 106.3975746433796 L320 112.56134337441846 L330 116.63994953029965 L340 118.41932127419982 L350 118.02217728796836 L360 115.80799227497828 L370 112.2915150565263 L380 108.0861623010565 L390 103.85521751060342 L400 100.25071208609651 L410 97.83373343865023 L420 96.98917611646547 L430 97.8605501211664 L440 100.3295683960538 L450 104.05160549046059 L460 108.53870931092905 L470 113.26582729096356 L480 117.770056492251 L490 121.71847928001864 L500 124.93362161789207 L510 127.38021543915839 L520 129.1270250391632 L530 130.30047625401147 L540 131.04366971409883\" fill=\"none\" stroke=\"rgb(var(--accent-fg))\" stroke-width=\"2\"/></g><g><title>The envelope's peaks are the formants F1, F2, F3 — the filter's resonances, the fingerprint that makes /i/ sound different from /a/. Lab 1 Q6: the filter column is the one with these smooth humps.</title><text x=\"95\" y=\"55\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F1</text><text x=\"248\" y=\"72\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F2</text><text x=\"410\" y=\"92\" fill=\"rgb(var(--accent-fg))\" stroke=\"none\">F3</text><text x=\"420\" y=\"160\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">frequency →</text></g></g>",
+          "svg": "<g stroke=\"currentColor\" font-family=\"ui-monospace, monospace\" font-size=\"11\">\n<line x1=\"30\" y1=\"140\" x2=\"540\" y2=\"140\" opacity=\".4\"/><line x1=\"30\" y1=\"140\" x2=\"30\" y2=\"20\" opacity=\".4\"/>\n<line x1=\"40\" y1=\"140\" x2=\"40\" y2=\"131.959443528216\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"61\" y1=\"140\" x2=\"61\" y2=\"116.92684257940843\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"82\" y1=\"140\" x2=\"82\" y2=\"90.69928761639173\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"103\" y1=\"140\" x2=\"103\" y2=\"69.67930055535022\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"124\" y1=\"140\" x2=\"124\" y2=\"74.41902074150838\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"145\" y1=\"140\" x2=\"145\" y2=\"99.39075663062334\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"166\" y1=\"140\" x2=\"166\" y2=\"120.51552922217459\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"187\" y1=\"140\" x2=\"187\" y2=\"125.07974822780736\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"208\" y1=\"140\" x2=\"208\" y2=\"115.09307100068116\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"229\" y1=\"140\" x2=\"229\" y2=\"98.01238885296252\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"250\" y1=\"140\" x2=\"250\" y2=\"84.7737475226613\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"271\" y1=\"140\" x2=\"271\" y2=\"85.03800079378722\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"292\" y1=\"140\" x2=\"292\" y2=\"98.32242100534485\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"313\" y1=\"140\" x2=\"313\" y2=\"114.43664599824712\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"334\" y1=\"140\" x2=\"334\" y2=\"123.62717786186053\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"355\" y1=\"140\" x2=\"355\" y2=\"123.11292444290928\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"376\" y1=\"140\" x2=\"376\" y2=\"115.80901582791365\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"397\" y1=\"140\" x2=\"397\" y2=\"107.23022753663251\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"418\" y1=\"140\" x2=\"418\" y2=\"103.02160258509234\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"439\" y1=\"140\" x2=\"439\" y2=\"106.01913981477963\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"460\" y1=\"140\" x2=\"460\" y2=\"114.53870931092905\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"481\" y1=\"140\" x2=\"481\" y2=\"124.19406737413753\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"502\" y1=\"140\" x2=\"502\" y2=\"131.4834304843647\" stroke=\"currentColor\" opacity=\".6\"/><line x1=\"523\" y1=\"140\" x2=\"523\" y2=\"135.5327650660145\" stroke=\"currentColor\" opacity=\".6\"/>\n<path d=\"M30 129.14664451285665 L40 125.95944352821603 L50 120.42905511361711 L60 111.94457514196282 L70 100.54664565883152 L80 87.36490741377841 L90 74.6852443266468 L100 65.40311640114872 L110 61.9695803583532 L120 65.33396199638347 L130 74.49213242583917 L140 86.91339319115897 L150 99.57263714083709 L160 109.98259298431924 L170 116.73276889298275 L180 119.44512884062193 L190 118.40631659371246 L200 114.21455753710089 L210 107.62487211547322 L220 99.56781858895225 L230 91.19852415773829 L240 83.83987055372938 L250 78.7737475226613 L260 76.94093498460313 L270 78.67669150964909 L280 83.60479993072713 L290 90.74310469814914 L300 98.77812662718867 L310 106.3975746433796 L320 112.56134337441846 L330 116.63994953029965 L340 118.41932127419982 L350 118.02217728796836 L360 115.80799227497828 L370 112.2915150565263 L380 108.0861623010565 L390 103.85521751060342 L400 100.25071208609651 L410 97.83373343865023 L420 96.98917611646547 L430 97.8605501211664 L440 100.3295683960538 L450 104.05160549046059 L460 108.53870931092905 L470 113.26582729096356 L480 117.770056492251 L490 121.71847928001864 L500 124.93362161789207 L510 127.38021543915839 L520 129.1270250391632 L530 130.30047625401147 L540 131.04366971409883\" fill=\"none\" stroke=\"rgb(59 130 246)\" stroke-width=\"2\"/>\n<text x=\"95\" y=\"55\" fill=\"rgb(59 130 246)\" stroke=\"none\">F1</text><text x=\"248\" y=\"72\" fill=\"rgb(59 130 246)\" stroke=\"none\">F2</text><text x=\"410\" y=\"92\" fill=\"rgb(59 130 246)\" stroke=\"none\">F3</text>\n<text x=\"420\" y=\"160\" fill=\"currentColor\" stroke=\"none\" opacity=\".7\">frequency →</text>\n</g>",
           "viewBox": "0 0 560 170",
-          "caption": "A vowel's magnitude spectrum: the thin lines are harmonics (source detail), the smooth curve is the envelope (filter). The humps in the envelope are formants F1, F2, F3. Hover any part.",
+          "caption": "A vowel's magnitude spectrum: the thin lines are harmonics (source detail), the smooth curve is the envelope (filter). The humps in the envelope are formants F1, F2, F3.",
           "slide": "Envelope over detail",
-          "id": "spectrum.af5da914"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Spectrograms are the working currency of applied speech: phoneticians read them in Praat, forensic analysts compare voices on them for court, and ==nearly every modern recognizer — Whisper included — 'sees' audio as a spectrogram==, not as a waveform. The source/filter split is a technology blueprint too: autotune moves the source (F₀) while leaving the filter (formants) alone, which is why a corrected voice stays recognizably the singer's; voice changers do the reverse. And telephone audio chops the spectrum off at about 4 kHz (the sampling chapter explains the exact number), which is why 'f' and 's' are so hard to tell apart on a call.",
-          "id": "spectrum.4f8d02b3"
+          "id": "spectrum.1584821e"
         },
         {
           "type": "check",
-          "prompt": "Lab 1 Q5: on average, which vowel has the higher frequency — (a) or (b)? How do you read that off a waveform?",
-          "answer": "Count cycles in the same span of time: the waveform with more (tighter) wiggles per second has the higher fundamental frequency. Amplitude (Q4) is the height of the swings. Read the plot, don't guess from the vowel.",
+          "prompt": "You see a plot with time left to right, frequency bottom to top, and dark bands. What is it?",
+          "answer": "A spectrogram. The dark bands are formants.",
           "sectionRef": "spectrum",
-          "id": "spectrum.c0857333"
+          "id": "spectrum.831d6474"
         },
         {
-          "type": "check",
-          "prompt": "You see a plot with time on x, frequency on y, and dark bands. What is it, and what are the bands?",
-          "answer": "A spectrogram. Dark horizontal bands are formants (the filter's resonances) tracking over time; fine horizontal lines, if visible, are harmonics of the source.",
-          "sectionRef": "spectrum",
-          "id": "spectrum.ab0423aa"
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "waveform",
+              "graph of pressure over time"
+            ],
+            [
+              "period T",
+              "time for one repeat (seconds)"
+            ],
+            [
+              "frequency F",
+              "repeats per second (Hz); F = 1/T"
+            ],
+            [
+              "amplitude A",
+              "how tall the wave is"
+            ],
+            [
+              "phase ϕ",
+              "where the wave starts in its cycle"
+            ],
+            [
+              "radian",
+              "angle unit; one lap = 2π"
+            ],
+            [
+              "dB",
+              "loudness scale; ×2 amplitude = +6 dB"
+            ],
+            [
+              "spectrum",
+              "recipe: which frequencies, how strong"
+            ],
+            [
+              "harmonics",
+              "the evenly spaced waves in a vowel; the lowest is F₀ (pitch)"
+            ],
+            [
+              "formants",
+              "the bumps from the mouth shape; tell vowels apart"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "spectrum.3b60221c"
         }
       ]
     }
@@ -389,36 +616,34 @@
     {
       "id": "read-formula",
       "title": "Read the formula out loud",
-      "prompt": "x(t) = 0.5·cos(400πt − π/2). Give the amplitude, the frequency in Hz, the period in ms, and the phase. Then say in one sentence what the plot looks like compared with cos(400πt).",
+      "prompt": "x(t) = 0.5 · cos(2π · 200 · t − π/2). What are A, F (in Hz), the period in ms, and ϕ?",
       "hints": [
-        "Match it to the template A·cos(2πFt + ϕ) piece by piece. The number in front is A. The thing multiplying t must be written as 2π·F — rewrite 400π that way.",
-        "The usual slip is reading 400 as the frequency. 400π = 2π·200, so F = 200 Hz, not 400. And the phase is −π/2, sign included.",
-        "Period is 1/F. Phase −π/2 means the cosine is shifted a quarter turn *later* — which is exactly a sine."
+        "The number in front is A.",
+        "The number right before t is F. Then T = 1/F.",
+        "The number added at the end is ϕ."
       ],
       "solution": [
         "A = 0.5.",
-        "400π = 2π·200 → F = 200 Hz. T = 1/200 s = 5 ms.",
-        "ϕ = −π/2 radians (a quarter cycle).",
-        "Compared with cos(400πt): half the height, same speed, shifted right by a quarter period (1.25 ms). cos(θ − π/2) = sin(θ), so it's 0.5·sin(400πt)."
+        "F = 200 Hz, so T = 1/200 = 0.005 s = 5 ms.",
+        "ϕ = −π/2 (a quarter lap back)."
       ],
-      "why": "Every audio, radio, and vibration signal you'll ever meet is described with this one formula, and 'what does this plot look like' from the numbers — without running the code — is the skill Koo's labs test and the skill that lets you sanity-check a spectrogram at a glance.",
-      "sectionRef": "vocab"
+      "why": "Every lab question about a wave starts with reading these three numbers correctly.",
+      "sectionRef": "formula"
     },
     {
       "id": "db",
       "title": "Decibels without a calculator",
-      "prompt": "Sound A has amplitude 10 times sound B. Sound C has amplitude 1000 times B. How many dB is A above B, and C above B? Then: if a signal is +6 dB relative to another, roughly what is the amplitude ratio?",
+      "prompt": "Sound A has amplitude 10 times sound B. Sound C has amplitude 100 times B. How many dB is A above B? C above B?",
       "hints": [
-        "dB = 20·log₁₀(x/r). For A/B the ratio is 10; what's log₁₀ of 10? Multiply by 20.",
-        "The common error is using 10·log instead of 20·log. Koo's convention for amplitude is 20·log₁₀. (10·log is for power.)",
-        "For +6 dB, solve 20·log₁₀(ratio) = 6 → log₁₀(ratio) = 0.3 → ratio = 10^0.3. You know 10^0.3 ≈ 2 because 2³ = 8 ≈ 10 → log₁₀ 2 ≈ 0.3."
+        "×10 in amplitude is one of the two facts to memorize.",
+        "×100 = ×10 then ×10 again. Each ×10 adds 20 dB.",
+        "So add 20 twice."
       ],
       "solution": [
-        "A over B: 20·log₁₀(10) = 20·1 = 20 dB.",
-        "C over B: 20·log₁₀(1000) = 20·3 = 60 dB.",
-        "+6 dB ↔ amplitude ratio 10^0.3 ≈ 2. (So 'twice as loud in amplitude' is +6 dB; ten times is +20 dB.)"
+        "A is +20 dB above B.",
+        "C is +40 dB above B."
       ],
-      "why": "dB is how every mixing board, microphone spec, and hearing-loss chart is labelled. '6 dB = double' and '20 dB = ten times' are the two numbers audio engineers carry in their heads.",
+      "why": "Decibels show up on every audio meter and in every spectrum plot's y-axis.",
       "sectionRef": "vocab"
     }
   ]

@@ -17,6 +17,12 @@
       "blocks": [
         {
           "type": "prose",
+          "md": "**You are on step 5 of the map:** turn each slice into a short list of numbers a recognizer can use.",
+          "label": "why",
+          "id": "why.bc0f5151"
+        },
+        {
+          "type": "prose",
           "md": "**The problem** An ASR model (Day 10) needs one vector of numbers per frame. The raw magnitude spectrum of a 25 ms frame has hundreds of values, most of them describing things that don't change *which sound* you said: your pitch, the exact harmonics, loudness. We want a short vector that captures **what the mouth is doing** and ignores the rest.",
           "label": "why",
           "slide": "Too many numbers, most of them noise",
@@ -232,9 +238,14 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Look at a vowel's log spectrum: a **fast ripple** (the harmonics, every F0 Hz: that's the source) riding on a **slow wave** (the formant peaks: the filter). To separate them, treat the spectrum itself as a signal and ask which patterns in it are fast and which are slow. That is a Fourier-style analysis **of the spectrum**.",
+          "md": "**Picture it.** Look at a vowel's spectrum as if it were just a wiggly line. It has two kinds of wiggle on top of each other: **small fast ripples** (the harmonics, spaced F0 apart: that's the pitch) riding on a **big slow wave** (the formant bumps: that's the vowel). We want to pull those two apart.",
           "slide": "Fast ripples, slow wave",
-          "id": "cep.b4055741"
+          "id": "cep.7b91a56e"
+        },
+        {
+          "type": "prose",
+          "md": "**The trick.** Chapter 5 sorted a *sound* into slow and fast waves. Do the same thing to the *spectrum line*: sort its wiggles by how fast they go. Slow wiggles = the vowel shape. Fast wiggles = the pitch. That sorted result is the **cepstrum**.",
+          "id": "cep.4391683f"
         },
         {
           "type": "definition",
@@ -256,7 +267,7 @@
         {
           "type": "definition",
           "term": "Quefrency",
-          "body": "The cepstrum's axis. **Fast** patterns in the spectrum sit **far** from the origin; **slow** patterns sit **close** to it. So the filter shape (slow) lives in the first few coefficients and the harmonics (fast) show up as a peak further out.",
+          "body": "The cepstrum's x-axis: how fast a wiggle goes along the spectrum. (The funny name is 'frequency' with letters swapped, like 'cepstrum' is 'spectrum' swapped.) **Fast** patterns in the spectrum sit **far** from the origin; **slow** patterns sit **close** to it. So the filter shape (slow) lives in the first few coefficients and the harmonics (fast) show up as a peak further out.",
           "id": "cep.071c5fa2"
         },
         {
@@ -382,6 +393,58 @@
           "answer": "All 0: the feature isn't changing, so its slope is zero everywhere.",
           "sectionRef": "delta",
           "id": "delta.2c70f482"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "feature vector",
+              "a short list of numbers describing one slice"
+            ],
+            [
+              "source / filter",
+              "vocal folds (pitch) / mouth shape (vowel)"
+            ],
+            [
+              "pre-emphasis",
+              "boost high frequencies: y[n] = x[n] − α·x[n−1]"
+            ],
+            [
+              "energy",
+              "loudness of a slice: sum of squared samples"
+            ],
+            [
+              "mel scale",
+              "frequency scale matched to hearing"
+            ],
+            [
+              "filterbank",
+              "a set of bands; one energy number per band"
+            ],
+            [
+              "cepstrum",
+              "the spectrum's wiggles sorted by speed"
+            ],
+            [
+              "quefrency",
+              "the cepstrum's axis; frequency = Fₛ ÷ quefrency"
+            ],
+            [
+              "MFCCs",
+              "the first 13 cepstrum numbers on the mel scale"
+            ],
+            [
+              "delta / delta-delta",
+              "how fast a feature is changing / how fast that change is changing"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "delta.3b60221c"
         }
       ]
     }

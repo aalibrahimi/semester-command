@@ -3,74 +3,88 @@
   "course": "ling124",
   "lessons": "Day 3",
   "title": "Sampling, quantization, and aliasing",
-  "summary": "Turn a continuous wave into samples and back on paper; say what quantization bits mean; explain why sampling creates aliases, list the aliases of any frequency, and derive the Nyquist limit Fₛ/2.",
-  "estimatedMinutes": 45,
-  "sourceNote": "sampling_quantization.pdf, aliasing.pdf, Rosen & Howell (1991) ch. 14, Lab 2.",
+  "summary": "Explain sampling and quantization in plain words; turn a sampling rate into the time between samples and a sample count; count levels from bits; find the Nyquist frequency and the fake (alias) frequency a too-high tone turns into.",
+  "estimatedMinutes": 40,
+  "sourceNote": "sampling_quantization.pdf, aliasing.pdf, Rosen & Howell (1991) ch. 14, Lab 2. Rewritten in plain steps: one idea per card.",
   "requires": [
     "ling124/0-reading-a-wave"
   ],
   "sections": [
     {
       "id": "why",
-      "heading": "Why computers can't hold a wave",
+      "heading": "Why a computer can't just store a wave",
       "blocks": [
         {
           "type": "prose",
+          "md": "**You are on step 2 of the map:** the computer has to measure the sound and store it as numbers.",
           "label": "why",
-          "md": "**The problem** A real sound wave is **continuous in time** (it has a value at every instant — infinitely many of them) and **continuous in amplitude** (any pressure, to infinite precision). A computer stores a finite list of finite-precision numbers. So two things have to be made discrete: *when* we look (sampling) and *how precisely* we record what we see (quantization). ==Everything in this chapter is the consequence of those two compromises== — including aliasing, the one that produces wrong answers silently.",
-          "slide": "Analog vs digital",
-          "id": "why.5c837ae4"
+          "id": "why.f7661326"
+        },
+        {
+          "type": "prose",
+          "md": "A real sound wave is smooth: it has a value at **every** instant, and each value can be any number. A computer can only store a **list** of numbers, each with limited precision. So we make two compromises:",
+          "slide": "Two compromises",
+          "id": "why.247a26e5"
         },
         {
           "type": "definition",
-          "term": "Sampling · quantization",
-          "body": "**Sampling**: continuous time → a discrete sequence of time points, taken at regular intervals. **Quantization**: continuous amplitude → a discrete set of allowed amplitude levels.",
-          "id": "why.a980a911"
+          "term": "Sampling",
+          "body": "Measuring the wave at regular moments in time, instead of at every instant. Like a movie: 24 still photos per second instead of continuous motion.",
+          "id": "why.9ca22485"
+        },
+        {
+          "type": "definition",
+          "term": "Quantization",
+          "body": "Rounding each measurement to one of a fixed set of allowed values. Like a ruler that only has marks every millimeter.",
+          "id": "why.088b7e49"
+        },
+        {
+          "type": "check",
+          "prompt": "Which compromise is about WHEN we measure, and which is about HOW PRECISELY?",
+          "answer": "Sampling is when (moments in time). Quantization is how precisely (allowed values).",
+          "sectionRef": "why",
+          "id": "why.ab9ddf17"
         }
       ]
     },
     {
       "id": "sampling",
-      "heading": "Sampling",
+      "heading": "Sampling: measuring many times a second",
       "blocks": [
         {
           "type": "definition",
-          "term": "Sampling interval Tₛ",
-          "body": "the time between samples, in seconds.",
-          "id": "sampling.5adc0ca3",
-          "related": [
-            "Sampling frequency (rate) Fₛ"
-          ]
+          "term": "Sampling rate (Fₛ)",
+          "body": "How many measurements per second, in Hz. Fₛ = 16,000 Hz means 16,000 numbers stored for every second of sound. (The little s stands for 'sampling'.)",
+          "id": "sampling.2880bf2d"
         },
         {
           "type": "definition",
-          "term": "Sampling frequency (rate) Fₛ",
-          "body": "samples per second, in Hz. **Fₛ = 1/Tₛ**.",
-          "id": "sampling.f66a5f97",
-          "related": [
-            "Sampling interval Tₛ"
-          ]
+          "term": "Sampling interval (Tₛ)",
+          "body": "The time between two measurements. It's the flip of the rate: **Tₛ = 1 / Fₛ**.",
+          "id": "sampling.30949b2a"
         },
         {
-          "type": "prose",
-          "md": "- CD audio: Fₛ = 44,100 Hz. Speech corpora: often 16,000 Hz or 8,000 Hz (telephone).",
-          "slide": "Two numbers, reciprocals",
-          "id": "sampling.93f582ea"
+          "type": "example",
+          "title": "Rate ↔ interval, and counting samples",
+          "body": "Fₛ = 100 Hz  →  Tₛ = 1/100 = 0.01 s between samples\nFₛ = 16,000 Hz  →  Tₛ = 1/16,000 = 0.0000625 s\n\nHow many samples in a recording?\n  samples = seconds × Fₛ\n  4 s at 100 Hz  →  4 × 100 = 400 samples\n  2.5 s at 16,000 Hz  →  40,000 samples",
+          "slide": "Tₛ = 1/Fₛ, samples = seconds × Fₛ",
+          "id": "sampling.6136479d"
         },
         {
           "type": "stepper",
-          "title": "Sampling cos(10πt) at two rates (the slides' example)",
+          "title": "Sampling the same wave slowly and quickly",
           "frames": [
             {
               "kind": "array",
               "cells": [
-                "x(t) = cos(10πt)"
+                "?",
+                "?",
+                "?",
+                "?",
+                "?"
               ],
-              "hl": [
-                0
-              ],
-              "note": "= cos(2π·5·t): a 5 Hz cosine",
-              "caption": "The signal. First rewrite 10π as 2π·5 so you can read the frequency: F = 5 Hz, period T = 0.2 s."
+              "caption": "A real sound has a value at EVERY instant. A computer can't store infinitely many numbers, so it takes a measurement every so often.",
+              "note": "the wave, before sampling"
             },
             {
               "kind": "array",
@@ -79,140 +93,229 @@
                 -1,
                 1,
                 -1,
-                1,
-                -1
-              ],
-              "hl": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5
-              ],
-              "note": "Fₛ = 10 Hz, Tₛ = 0.1 s → t = 0, 0.1, 0.2, …",
-              "caption": "Sample at Fₛ = 10 Hz: a sample every 0.1 s. x[n] = cos(2π·5·n/10) = cos(πn) = 1, −1, 1, −1… Two samples per cycle. You can barely tell it's a cosine — it looks like a square wave."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                1,
-                0.809,
-                0.309,
-                -0.309,
-                -0.809,
-                -1,
-                -0.809,
-                -0.309,
-                0.309,
-                0.809,
                 1
               ],
-              "hl": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10
-              ],
-              "note": "Fₛ = 50 Hz, Tₛ = 0.02 s",
-              "caption": "Sample at Fₛ = 50 Hz: a sample every 0.02 s. x[n] = cos(2π·5·n/50) = cos(πn/5). Ten samples per cycle. Now it clearly traces the cosine. More samples per second = better approximation. (Lab 2 Q9.)"
+              "caption": "Measure a 5 Hz wave 10 times per second (Fₛ = 10 Hz): only 2 measurements per repeat. The numbers jump 1, −1, 1, −1. You can barely tell it was a smooth wave.",
+              "note": "Fₛ = 10 Hz: 2 samples per repeat"
             },
             {
               "kind": "array",
               "cells": [
-                "x[n] = x(n·Tₛ) = x(n/Fₛ)"
+                1,
+                0.81,
+                0.31,
+                -0.31,
+                -0.81,
+                -1,
+                -0.81,
+                -0.31,
+                0.31,
+                0.81
               ],
-              "done": [
-                0
+              "caption": "Measure the same wave 50 times per second (Fₛ = 50 Hz): 10 measurements per repeat. Now the numbers clearly trace the smooth shape.",
+              "note": "Fₛ = 50 Hz: 10 samples per repeat"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                "x[0]",
+                "x[1]",
+                "x[2]",
+                "x[3]",
+                "…"
               ],
-              "note": "samples in T seconds = T · Fₛ",
-              "caption": "The general formula. Sample n is taken at time n·Tₛ. Over T seconds you get T·Fₛ samples. Fₛ = 1/Tₛ."
+              "caption": "Each stored number is called a sample. x[0] is the first, x[1] the second, and so on. x[n] means 'sample number n'.",
+              "note": "x[n] = sample number n"
             }
           ],
           "slide": true,
-          "id": "sampling.d9938e02"
+          "id": "sampling.03f7248e"
         },
         {
           "type": "example",
-          "title": "Replace t with n/Fₛ. Everything else in the wave formula stays put.",
-          "body": "x[n] = x(n · Tₛ) = x(n / Fₛ)             n = 0, 1, 2, …\nso for x(t) = A·cos(2πFt + ϕ):\nx[n] = A·cos(2πF·n/Fₛ + ϕ)\nnumber of samples in T seconds = T · Fₛ    (4 s at 100 Hz → 400 samples)\nLab 2: x[3] is taken at t = 3·Tₛ; with Tₛ = 0.005 s that's t = 0.015 s",
-          "slide": "The sample formula (Lab 2 Q1–Q8)",
-          "id": "sampling.9bebadb5"
+          "title": "The formula for a sampled wave",
+          "body": "Sample number n is taken at time t = n / Fₛ.\nSo just replace t with n/Fₛ:\n\n  x(t)  = A · cos(2π · F · t + ϕ)\n  x[n]  = A · cos(2π · F · n/Fₛ + ϕ)\n\nNothing else changes. (Lab 3 Q4)",
+          "id": "sampling.2c624cb9"
         },
         {
           "type": "trap",
-          "body": "**Lab 2 Q9 — the one that was marked wrong** 'How do we approximate x(t) better?' Only two things help: a **higher Fₛ** or, equivalently, a **shorter Tₛ** (same thing said twice). Changing the total duration T does nothing for the approximation — it just gives you more or fewer samples of the same quality. The four correct boxes were: higher Fₛ, shorter Tₛ; the T options were distractors.",
+          "body": "Lab 2 Q9: to get a better copy of the wave you need a **higher Fₛ** (same thing as a **shorter Tₛ**). Recording for longer does NOT make each part more accurate; it just gives you more of the same quality.",
           "source": "Lab 2 Q9",
           "points": null,
-          "id": "sampling.e4426b94"
+          "id": "sampling.cedff428"
+        },
+        {
+          "type": "check",
+          "prompt": "A recording at Fₛ = 8,000 Hz lasts 3 seconds. How many samples?",
+          "answer": "3 × 8,000 = 24,000 samples.",
+          "sectionRef": "sampling",
+          "id": "sampling.5224222a"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The sample-rate menu in every DAW — Audacity, Logic, Pro Tools — is exactly Fₛ, and the choices are this section's numbers: 44,100 Hz (CD), 48,000 Hz (video), 16,000 Hz (speech tech), 8,000 Hz (telephone). Zoom and phone calls sound 'thin' because they ship audio at the low rates: an 8 kHz stream simply has no room for anything above 4 kHz (the aliasing section explains why exactly half). And Whisper, like nearly every modern speech recognizer, resamples whatever you give it to 16 kHz before doing anything else — ==x[n] = x(n/Fₛ) is the first line of every speech pipeline==.",
-          "id": "sampling.7b3c9f2a"
+          "md": "**Real numbers you'll see:** 44,100 Hz (music CDs), 48,000 Hz (video), 16,000 Hz (speech technology, including most speech recognizers), 8,000 Hz (phone calls).",
+          "id": "sampling.9de8d8a9"
         }
       ]
     },
     {
       "id": "quant",
-      "heading": "Quantization",
+      "heading": "Quantization: rounding to allowed levels",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Bits and levels",
+          "body": "Each sample is stored with a fixed number of **bits**. With b bits you get **2ᵇ allowed levels**. 3 bits → 2³ = 8 levels. 16 bits → 65,536 levels (CD quality).",
+          "id": "quant.1afe9c40"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Bits",
+            "Levels (2ᵇ)"
+          ],
+          "rows": [
+            [
+              "1",
+              "2"
+            ],
+            [
+              "2",
+              "4"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "5",
+              "32"
+            ],
+            [
+              "8",
+              "256"
+            ],
+            [
+              "16",
+              "65,536"
+            ]
+          ],
+          "title": "Bits → levels",
+          "slide": "2 to the power of bits",
+          "id": "quant.0390f824"
+        },
+        {
           "type": "prose",
-          "md": "Choose a set of allowed amplitude levels and snap every sample to one of them — in Koo's convention, snap *down*: ==take the highest level that doesn't exceed the value==. The number of levels is the **resolution**. Levels are indexed by integers and stored in bits, so the count is a power of 2: **3 bits → 2³ = 8 levels (0–7); 5 bits → 32; 8 bits → 256; 16 bits → 65,536** (CD quality). More bits = finer steps = less rounding error (**quantization noise**).",
-          "slide": "Levels and bits",
-          "id": "quant.2f493a22"
+          "md": "Each measurement gets **snapped to a level**. In Koo's convention it snaps **down**: take the highest level that is not above the value. The small difference between the real value and the stored one is called **quantization error** (it sounds like faint noise). More bits = smaller steps = less error.",
+          "id": "quant.7d22f18d"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 250",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><g><title>The 8 allowed levels of a 3-bit quantizer. Every stored sample must land on one of these lines, numbered 0–7 — nothing in between can be written down.</title><line x1='50' y1='200' x2='556' y2='200' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='177.1' x2='556' y2='177.1' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='154.3' x2='556' y2='154.3' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='131.4' x2='556' y2='131.4' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='108.6' x2='556' y2='108.6' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='85.7' x2='556' y2='85.7' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='62.9' x2='556' y2='62.9' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='40' x2='556' y2='40' stroke-dasharray='3 4' opacity='.25'/><text x='566' y='204' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>0</text><text x='566' y='181' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>1</text><text x='566' y='158' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>2</text><text x='566' y='135' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>3</text><text x='566' y='112' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>4</text><text x='566' y='89' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>5</text><text x='566' y='66' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>6</text><text x='566' y='44' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>7</text></g><g><title>The real, continuous wave: between any two levels it can take any value at all.</title><path d='M60 120 C100 78.1,140 40,180 40 C267.4 40,332.6 200,420 200 C460 200,500 161.9,540 120' stroke='rgb(var(--on-track))' stroke-width='2'/></g><g><title>What the computer stores: at each sampling instant the wave's value, snapped DOWN to the highest level not exceeding it (Koo's convention). The staircase IS the digital signal.</title><path d='M60 131.4 H120 V85.7 H180 V40 H240 V85.7 H300 V131.4 H360 V177.1 H420 V200 H480 V177.1 H540' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='60' cy='131.4' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='120' cy='85.7' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='180' cy='40' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='240' cy='85.7' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='300' cy='131.4' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='360' cy='177.1' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='420' cy='200' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='480' cy='177.1' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/></g><g><title>Quantization error: the gap between the true wave and what got stored. More bits → more levels → smaller gaps → less quantization noise. Each extra bit halves the step size.</title><line x1='90' y1='89.4' x2='90' y2='131.4' stroke='rgb(var(--critical))' stroke-width='2'/><text x='98' y='108' font-size='10' fill='rgb(var(--critical))' stroke='none'>error</text></g><text x='300' y='238' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>3 bits → 2³ = 8 levels · time runs left to right</text></g>",
-          "caption": "A 3-bit quantizer at work. The smooth wave (green) can take any value; the stored signal (blue staircase) must sit on one of 2³ = 8 levels, snapping down to the highest level that doesn't exceed each sample. The red gap is quantization error — the noise that more bits shrink. At CD quality (16 bits) there are 65,536 levels, so the staircase hugs the wave far too closely to hear. Hover any part.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><g><title>The 8 allowed levels of a 3-bit quantizer. Every stored sample must land on one of these lines, numbered 0–7: nothing in between can be written down.</title><line x1='50' y1='200' x2='556' y2='200' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='177.1' x2='556' y2='177.1' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='154.3' x2='556' y2='154.3' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='131.4' x2='556' y2='131.4' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='108.6' x2='556' y2='108.6' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='85.7' x2='556' y2='85.7' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='62.9' x2='556' y2='62.9' stroke-dasharray='3 4' opacity='.25'/><line x1='50' y1='40' x2='556' y2='40' stroke-dasharray='3 4' opacity='.25'/><text x='566' y='204' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>0</text><text x='566' y='181' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>1</text><text x='566' y='158' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>2</text><text x='566' y='135' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>3</text><text x='566' y='112' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>4</text><text x='566' y='89' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>5</text><text x='566' y='66' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>6</text><text x='566' y='44' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.55'>7</text></g><g><title>The real, continuous wave: between any two levels it can take any value at all.</title><path d='M60 120 C100 78.1,140 40,180 40 C267.4 40,332.6 200,420 200 C460 200,500 161.9,540 120' stroke='rgb(var(--on-track))' stroke-width='2'/></g><g><title>What the computer stores: at each sampling instant the wave's value, snapped DOWN to the highest level not exceeding it (Koo's convention). The staircase IS the digital signal.</title><path d='M60 131.4 H120 V85.7 H180 V40 H240 V85.7 H300 V131.4 H360 V177.1 H420 V200 H480 V177.1 H540' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='60' cy='131.4' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='120' cy='85.7' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='180' cy='40' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='240' cy='85.7' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='300' cy='131.4' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='360' cy='177.1' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='420' cy='200' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='480' cy='177.1' r='3.5' fill='rgb(var(--accent-fg))' stroke='none'/></g><g><title>Quantization error: the gap between the true wave and what got stored. More bits → more levels → smaller gaps → less quantization noise. Each extra bit halves the step size.</title><line x1='90' y1='89.4' x2='90' y2='131.4' stroke='rgb(var(--critical))' stroke-width='2'/><text x='98' y='108' font-size='10' fill='rgb(var(--critical))' stroke='none'>error</text></g><text x='300' y='238' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>3 bits → 2³ = 8 levels · time runs left to right</text></g>",
+          "caption": "A 3-bit quantizer at work. The smooth wave (green) can take any value; the stored signal (blue staircase) must sit on one of 2³ = 8 levels, snapping down to the highest level that doesn't exceed each sample. The red gap is quantization error: the noise that more bits shrink. At CD quality (16 bits) there are 65,536 levels, so the staircase hugs the wave far too closely to hear. Hover any part.",
           "slide": "Quantization: snapping to levels",
-          "id": "quant.f3a81c62"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Bit depth is the other number on every recording device: CDs are 16-bit, studio interfaces record at 24-bit, and old game consoles were 8-bit — the crunchy sound of a 'bit-crusher' plugin is literally this staircase made coarse on purpose. Each extra bit halves the step size, which works out to ##about 6 dB less quantization noise per bit## — that's why spec sheets say '16-bit ≈ 96 dB dynamic range', and it's the same 20·log₁₀(2) ≈ 6 dB you computed in Chapter 0.",
-          "id": "quant.9d5e21b7"
+          "id": "quant.b97520d0"
         },
         {
           "type": "check",
-          "prompt": "A recording is 12-bit at 16 kHz. How many amplitude levels, and how many samples in 2.5 seconds?",
-          "answer": "2¹² = 4,096 levels. 2.5 × 16,000 = 40,000 samples.",
+          "prompt": "How many levels does a 4-bit recording have?",
+          "answer": "2⁴ = 16 levels.",
           "sectionRef": "quant",
-          "id": "quant.761b41a5"
+          "id": "quant.438dde1b"
         }
       ]
     },
     {
       "id": "alias",
-      "heading": "Aliasing: two waves that look the same after sampling",
+      "heading": "Aliasing: when a high sound pretends to be a low one",
       "blocks": [
         {
           "type": "prose",
-          "label": "why",
-          "md": "**Why it exists** In old westerns, wagon wheels seem to spin backward. The camera takes 24 pictures a second; if a spoke rotates *almost* a full turn between frames, the eye reads it as barely moving backward. Sampling a sound does the same thing: a high frequency, sampled too slowly, produces exactly the same list of numbers as some lower frequency. Those two frequencies are **aliases** of each other, and !!once you've sampled, no algorithm can ever tell them apart!! — the information is gone, not hidden.",
-          "slide": "The wagon-wheel problem",
-          "id": "alias.db99a3a5"
+          "md": "**Picture it.** In old movies, car wheels sometimes look like they spin backward. The camera only takes 24 pictures a second. If a spoke moves almost a full turn between pictures, it *looks* like it moved a little backward. Sampling sound too slowly does the same thing: a high frequency comes out looking like a lower one.",
+          "slide": "The backward-spinning wheel",
+          "id": "alias.7e9c2c3b"
+        },
+        {
+          "type": "definition",
+          "term": "Alias",
+          "body": "A fake frequency. After sampling, a too-high tone gives **exactly the same list of numbers** as some lower tone, so the computer can't tell them apart. The lower one is its alias.",
+          "id": "alias.f821c9cc"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 245",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><line x1='30' y1='110' x2='610' y2='110' opacity='.3'/><g><title>The true signal: a 7 Hz cosine over one second. Between one sample and the next it completes almost a whole cycle — that near-miss is exactly the wagon-wheel setup.</title><path d='M40 50 C54.6 50,65.4 170,80 170 C94.6 170,105.4 50,120 50 C134.6 50,145.4 170,160 170 C174.6 170,185.4 50,200 50 C214.6 50,225.4 170,240 170 C254.6 170,265.4 50,280 50 C294.6 50,305.4 170,320 170 C334.6 170,345.4 50,360 50 C374.6 50,385.4 170,400 170 C414.6 170,425.4 50,440 50 C454.6 50,465.4 170,480 170 C494.6 170,505.4 50,520 50 C534.6 50,545.4 170,560 170 C574.6 170,585.4 50,600 50' stroke='rgb(var(--on-track))' stroke-width='2'/><text x='44' y='36' font-size='11' fill='rgb(var(--on-track))' stroke='none'>in: the real 7 Hz signal</text></g><g><title>The alias: a 1 Hz cosine. Check the algebra — cos(2π·7·n/8) = cos(2π·1·n/8) for every integer n, because 7/8 and 1/8 differ by a whole turn per sample (with cosine's evenness folding the sign).</title><path d='M40 50 C141.9 50,218.1 170,320 170 C421.9 170,498.1 50,600 50' stroke='rgb(var(--critical))' stroke-width='2' stroke-dasharray='7 5'/></g><g><title>The samples, taken at Fₛ = 8 Hz. Both curves pass through every single dot — and the dots are all the computer keeps, so it has no way to know which curve produced them.</title><circle cx='40' cy='50' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='110' cy='67.6' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='180' cy='110' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='250' cy='152.4' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='320' cy='170' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='390' cy='152.4' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='460' cy='110' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='530' cy='67.6' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='600' cy='50' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/></g><g><title>What each color means. Green: the wave that entered the microphone. Blue: the only thing that got stored. Red: the wave the computer will reconstruct.</title><text x='320' y='210' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' stroke='none'>dots: the 9 samples at Fₛ = 8 Hz — the only thing the computer keeps</text><text x='320' y='230' text-anchor='middle' font-size='11' fill='rgb(var(--critical))' stroke='none'>dashed: the 1 Hz alias (−7 + 8 = 1) — it threads the same dots exactly</text></g></g>",
-          "caption": "Aliasing caught in the act. A 7 Hz cosine (green) is sampled 8 times per second (blue dots). The samples land exactly where a slow 1 Hz cosine (red, dashed) would put them: cos(2π·7·n/8) = cos(2π·1·n/8) for every n. The computer keeps only the dots, so it reconstructs the red wave, not the green one — the wagon wheel spinning backward, in audio. Hover any part.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><line x1='30' y1='110' x2='610' y2='110' opacity='.3'/><g><title>The true signal: a 7 Hz cosine over one second. Between one sample and the next it completes almost a whole cycle: that near-miss is exactly the wagon-wheel setup.</title><path d='M40 50 C54.6 50,65.4 170,80 170 C94.6 170,105.4 50,120 50 C134.6 50,145.4 170,160 170 C174.6 170,185.4 50,200 50 C214.6 50,225.4 170,240 170 C254.6 170,265.4 50,280 50 C294.6 50,305.4 170,320 170 C334.6 170,345.4 50,360 50 C374.6 50,385.4 170,400 170 C414.6 170,425.4 50,440 50 C454.6 50,465.4 170,480 170 C494.6 170,505.4 50,520 50 C534.6 50,545.4 170,560 170 C574.6 170,585.4 50,600 50' stroke='rgb(var(--on-track))' stroke-width='2'/><text x='44' y='36' font-size='11' fill='rgb(var(--on-track))' stroke='none'>in: the real 7 Hz signal</text></g><g><title>The alias: a 1 Hz cosine. Check the algebra: cos(2π·7·n/8) = cos(2π·1·n/8) for every integer n, because 7/8 and 1/8 differ by a whole turn per sample (with cosine's evenness folding the sign).</title><path d='M40 50 C141.9 50,218.1 170,320 170 C421.9 170,498.1 50,600 50' stroke='rgb(var(--critical))' stroke-width='2' stroke-dasharray='7 5'/></g><g><title>The samples, taken at Fₛ = 8 Hz. Both curves pass through every single dot: and the dots are all the computer keeps, so it has no way to know which curve produced them.</title><circle cx='40' cy='50' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='110' cy='67.6' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='180' cy='110' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='250' cy='152.4' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='320' cy='170' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='390' cy='152.4' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='460' cy='110' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='530' cy='67.6' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/><circle cx='600' cy='50' r='4.5' fill='rgb(var(--accent-fg))' stroke='none'/></g><g><title>What each color means. Green: the wave that entered the microphone. Blue: the only thing that got stored. Red: the wave the computer will reconstruct.</title><text x='320' y='210' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' stroke='none'>dots: the 9 samples at Fₛ = 8 Hz: the only thing the computer keeps</text><text x='320' y='230' text-anchor='middle' font-size='11' fill='rgb(var(--critical))' stroke='none'>dashed: the 1 Hz alias (−7 + 8 = 1): it threads the same dots exactly</text></g></g>",
+          "caption": "Aliasing caught in the act. A 7 Hz cosine (green) is sampled 8 times per second (blue dots). The samples land exactly where a slow 1 Hz cosine (red, dashed) would put them: cos(2π·7·n/8) = cos(2π·1·n/8) for every n. The computer keeps only the dots, so it reconstructs the red wave, not the green one: the wagon wheel spinning backward, in audio. Hover any part.",
           "slide": "Two waves, one set of samples",
-          "id": "alias.4e9a71c3"
+          "id": "alias.2d64b03e"
         },
         {
-          "id": "alias.9ec32c57",
+          "type": "definition",
+          "term": "Nyquist frequency",
+          "body": "Half the sampling rate: **Fₛ / 2**. It's the highest frequency you can store honestly. Anything above it turns into an alias.",
+          "id": "alias.6e7e665f"
+        },
+        {
+          "type": "example",
+          "title": "Nyquist in three examples",
+          "body": "Fₛ = 16,000 Hz  →  Nyquist = 8,000 Hz\nFₛ = 8,000 Hz (phone)  →  Nyquist = 4,000 Hz\nFₛ = 44,100 Hz (CD)  →  Nyquist = 22,050 Hz\n\nFlip it: to record up to F Hz, you need Fₛ of at least 2 × F.",
+          "slide": "Nyquist = Fₛ/2",
+          "id": "alias.83aa9970"
+        },
+        {
+          "type": "stepper",
+          "title": "Finding the fake frequency (the folding rule)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Fₛ = 10,000 Hz   →   Nyquist = Fₛ/2 = 5,000 Hz",
+                "tone = 7,000 Hz"
+              ],
+              "active": 0,
+              "caption": "Step 1: find the Nyquist frequency, half the sampling rate. Anything above it will fake being something lower."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "7,000 > 5,000  →  it will alias"
+              ],
+              "active": 0,
+              "caption": "Step 2: is the tone above Nyquist? Yes, so it can't be stored honestly."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "fake frequency = Fₛ − tone",
+                "= 10,000 − 7,000 = 3,000 Hz"
+              ],
+              "active": 1,
+              "caption": "Step 3: when the tone is between Nyquist and Fₛ, the fake frequency is Fₛ minus the tone. It 'folds back' like a mirror around 5,000."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "7,000 is 2,000 above 5,000",
+                "3,000 is 2,000 below 5,000"
+              ],
+              "active": 1,
+              "caption": "Check it as a mirror: the fake is as far below Nyquist as the real tone was above it."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "tone above Fₛ? subtract Fₛ first",
+                "e.g. 12,000 Hz at Fₛ = 10,000 → 12,000 − 10,000 = 2,000 Hz"
+              ],
+              "active": 1,
+              "caption": "Step 0 if the tone is even higher than Fₛ: subtract Fₛ until you're below Fₛ, then do the mirror step if it's still above Nyquist."
+            }
+          ],
+          "slide": true,
+          "id": "alias.36197d22"
+        },
+        {
           "type": "sim",
           "sim": "sampling",
           "params": {
@@ -221,94 +324,87 @@
             "bits": 3
           },
           "caption": "Drag F past Fₛ/2 and watch the dashed alias appear through the same dots; the buttons play the true tone and the tone the computer keeps. Turn on quantization and drop to 2 bits to hear the staircase.",
-          "slide": "Try it"
-        },
-        {
-          "type": "example",
-          "title": "The proof, one line at a time",
-          "body": "Show that cos(2πFt) and cos(2π(F + Fₛ)t) give identical samples at rate Fₛ.\n\n1. Samples are taken at t = n/Fₛ. So the samples of the second wave are cos(2π(F + Fₛ)·n/Fₛ).\n2. Distribute: cos(2πF·n/Fₛ + 2πFₛ·n/Fₛ) = cos(2πF·n/Fₛ + 2πn).\n3. 2πn is a whole number of full turns. Cosine is 2π-periodic, so cos(x + 2πn) = cos(x).\n4. Therefore = cos(2πF·n/Fₛ) — exactly the samples of the first wave. Adding Fₛ to the frequency changes nothing after sampling.",
-          "slide": "Why F and F + Fₛ are aliases (the slides' algebra)",
-          "id": "alias.bb57a437"
-        },
-        {
-          "type": "definition",
-          "term": "−F",
-          "body": "because cosine is even, cos(2π·F·t) = cos(2π·(−F)·t). A negative frequency is just the point going around the circle the other way; its shadow is identical.",
-          "id": "alias.96ff7e10",
-          "related": [
-            "Sampling frequency (rate) Fₛ"
-          ]
-        },
-        {
-          "type": "definition",
-          "term": "F ± k·Fₛ",
-          "body": "for any integer k: adding or subtracting whole multiples of the sampling rate (the proof above).",
-          "id": "alias.3dfe5d2a"
-        },
-        {
-          "type": "definition",
-          "term": "−F ± k·Fₛ",
-          "body": "combine the two.",
-          "id": "alias.af1817cc"
-        },
-        {
-          "type": "prose",
-          "md": "- So the aliases of F sampled at Fₛ are: …, −F − Fₛ, −F, −F + Fₛ, F, F + Fₛ, F + 2Fₛ, … and −F + 2Fₛ, etc.",
-          "slide": "All the aliases of F (aliasing.pdf slide 5)",
-          "id": "alias.985d7d45"
-        },
-        {
-          "type": "example",
-          "title": "Fₛ = 1000 Hz, frequencies 0 to 1000",
-          "body": "Find the alias pairs and the pattern.\n\n1. Aliases of F include −F + Fₛ = 1000 − F. So 100 Hz pairs with 900, 200 with 800, 300 with 700, 400 with 600, and 0 with 1000.\n2. Pattern (Q13, Q15): **F₂ = Fₛ − F₁**. The pairs are mirror images around Fₛ/2 = 500 Hz.\n3. 500 Hz pairs with itself. That's the edge — the Nyquist frequency (Q11, Q14).",
-          "answer": "F₂ = Fₛ − F₁; Nyquist = Fₛ/2 = 500 Hz",
-          "slide": "Lab 2 Q12–Q15: the pairs",
-          "id": "alias.18b97226"
-        },
-        {
-          "type": "example",
-          "title": "Why Fₛ/2 is the limit",
-          "body": "We want a range 0 to F_max with no aliases inside it. How high can F_max be?\n\n1. F must be below Fₛ, because 0 and Fₛ are aliases — if the range reached Fₛ, the very first alias would be inside it.\n2. Among the aliases of a frequency F, the one that could fall below Fₛ is −F + Fₛ. It must not land inside the range, i.e. it must not be below F.\n3. Require −F + Fₛ ≥ F. Rearrange: Fₛ ≥ 2F, so **F ≤ Fₛ/2**.\n4. So the alias-free range is 0 to Fₛ/2. That upper limit is the **Nyquist frequency**. To represent frequencies up to F, sample at least at 2F.",
-          "answer": "Nyquist = Fₛ/2",
-          "slide": "Deriving the Nyquist frequency (aliasing.pdf slide 9)",
-          "id": "alias.736d8955"
+          "slide": "Try it",
+          "id": "alias.9ec32c57"
         },
         {
           "type": "figure",
-          "svg": "<g stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The frequency axis, 0 to 1000 Hz — the full range up to the sampling rate Fₛ.</title><line x1='30' y1='70' x2='530' y2='70' opacity='.5'/><line x1='30' y1='65' x2='30' y2='75' opacity='.6'/><text x='22' y='92' fill='currentColor' stroke='none' opacity='.7'>0</text><line x1='80' y1='65' x2='80' y2='75' opacity='.6'/><text x='72' y='92' fill='currentColor' stroke='none' opacity='.7'>100</text><line x1='130' y1='65' x2='130' y2='75' opacity='.6'/><text x='122' y='92' fill='currentColor' stroke='none' opacity='.7'>200</text><line x1='180' y1='65' x2='180' y2='75' opacity='.6'/><text x='172' y='92' fill='currentColor' stroke='none' opacity='.7'>300</text><line x1='230' y1='65' x2='230' y2='75' opacity='.6'/><text x='222' y='92' fill='currentColor' stroke='none' opacity='.7'>400</text><line x1='280' y1='65' x2='280' y2='75' opacity='.6'/><text x='272' y='92' fill='currentColor' stroke='none' opacity='.7'>500</text><line x1='330' y1='65' x2='330' y2='75' opacity='.6'/><text x='322' y='92' fill='currentColor' stroke='none' opacity='.7'>600</text><line x1='380' y1='65' x2='380' y2='75' opacity='.6'/><text x='372' y='92' fill='currentColor' stroke='none' opacity='.7'>700</text><line x1='430' y1='65' x2='430' y2='75' opacity='.6'/><text x='422' y='92' fill='currentColor' stroke='none' opacity='.7'>800</text><line x1='480' y1='65' x2='480' y2='75' opacity='.6'/><text x='472' y='92' fill='currentColor' stroke='none' opacity='.7'>900</text><line x1='530' y1='65' x2='530' y2='75' opacity='.6'/><text x='522' y='92' fill='currentColor' stroke='none' opacity='.7'>1000</text></g><g><title>The Nyquist frequency, Fₛ/2 = 500 Hz: the fold line. It is its own mirror image — 500 pairs with itself — and it is the highest frequency the samples can represent honestly.</title><line x1='280' y1='20' x2='280' y2='100' stroke='rgb(var(--accent-fg))' stroke-dasharray='4 3'/><text x='240' y='15' fill='rgb(var(--accent-fg))' stroke='none'>Nyquist Fₛ/2</text></g><g><title>Each arc joins two frequencies that produce identical samples: F pairs with Fₛ − F. 900 folds onto 100, 800 onto 200, 700 onto 300, 600 onto 400 — always mirror images around 500.</title><path d='M80 62 Q 280 25 480 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M130 62 Q 280 25 430 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M180 62 Q 280 25 380 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M230 62 Q 280 25 330 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/></g></g>",
+          "svg": "<g stroke='currentColor' font-family='ui-monospace, monospace' font-size='11'><g><title>The frequency axis, 0 to 1000 Hz: the full range up to the sampling rate Fₛ.</title><line x1='30' y1='70' x2='530' y2='70' opacity='.5'/><line x1='30' y1='65' x2='30' y2='75' opacity='.6'/><text x='22' y='92' fill='currentColor' stroke='none' opacity='.7'>0</text><line x1='80' y1='65' x2='80' y2='75' opacity='.6'/><text x='72' y='92' fill='currentColor' stroke='none' opacity='.7'>100</text><line x1='130' y1='65' x2='130' y2='75' opacity='.6'/><text x='122' y='92' fill='currentColor' stroke='none' opacity='.7'>200</text><line x1='180' y1='65' x2='180' y2='75' opacity='.6'/><text x='172' y='92' fill='currentColor' stroke='none' opacity='.7'>300</text><line x1='230' y1='65' x2='230' y2='75' opacity='.6'/><text x='222' y='92' fill='currentColor' stroke='none' opacity='.7'>400</text><line x1='280' y1='65' x2='280' y2='75' opacity='.6'/><text x='272' y='92' fill='currentColor' stroke='none' opacity='.7'>500</text><line x1='330' y1='65' x2='330' y2='75' opacity='.6'/><text x='322' y='92' fill='currentColor' stroke='none' opacity='.7'>600</text><line x1='380' y1='65' x2='380' y2='75' opacity='.6'/><text x='372' y='92' fill='currentColor' stroke='none' opacity='.7'>700</text><line x1='430' y1='65' x2='430' y2='75' opacity='.6'/><text x='422' y='92' fill='currentColor' stroke='none' opacity='.7'>800</text><line x1='480' y1='65' x2='480' y2='75' opacity='.6'/><text x='472' y='92' fill='currentColor' stroke='none' opacity='.7'>900</text><line x1='530' y1='65' x2='530' y2='75' opacity='.6'/><text x='522' y='92' fill='currentColor' stroke='none' opacity='.7'>1000</text></g><g><title>The Nyquist frequency, Fₛ/2 = 500 Hz: the fold line. It is its own mirror image: 500 pairs with itself: and it is the highest frequency the samples can represent honestly.</title><line x1='280' y1='20' x2='280' y2='100' stroke='rgb(var(--accent-fg))' stroke-dasharray='4 3'/><text x='240' y='15' fill='rgb(var(--accent-fg))' stroke='none'>Nyquist Fₛ/2</text></g><g><title>Each arc joins two frequencies that produce identical samples: F pairs with Fₛ − F. 900 folds onto 100, 800 onto 200, 700 onto 300, 600 onto 400: always mirror images around 500.</title><path d='M80 62 Q 280 25 480 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M130 62 Q 280 25 430 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M180 62 Q 280 25 380 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/><path d='M230 62 Q 280 25 330 62' fill='none' stroke='rgb(var(--accent-fg))' opacity='.7'/></g></g>",
           "viewBox": "0 0 560 120",
           "caption": "With Fₛ = 1000 Hz: every frequency above 500 folds back onto its mirror image below 500 (F₂ = Fₛ − F₁, the Lab 2 Q15 pattern). 900 Hz is indistinguishable from 100 Hz after sampling. Hover any part.",
           "slide": "Mirror around Nyquist",
-          "id": "alias.7e7ed04d"
+          "id": "alias.0c7bb4c5"
         },
         {
-          "type": "definition",
-          "term": "Aliasing · Nyquist frequency",
-          "body": "Sampling at Fₛ makes F indistinguishable from −F and from F ± kFₛ (and −F ± kFₛ). The alias-free band is 0 to **Fₛ/2**, the Nyquist frequency. To capture frequencies up to F, sample at Fₛ ≥ 2F. (Speech at 16 kHz captures up to 8 kHz; telephone 8 kHz captures up to 4 kHz — which is why phones sound dull.)",
-          "id": "alias.fea99706",
-          "related": [
-            "Sampling frequency (rate) Fₛ",
-            "−F"
-          ]
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Aliasing lives everywhere a camera or an ADC does: the wagon-wheel effect in film, helicopter rotors that hang frozen on video, and the moiré ripples when someone wears a striped shirt on camera — the stripes beat against the sensor's pixel grid, which is spatial aliasing. It's why every microphone chip puts an **anti-aliasing filter** in front of the sampler to physically remove everything above Fₛ/2 — !!aliasing cannot be undone in software afterward!!, so it must be prevented in hardware before. And it's why CDs run at 44.1 kHz: hearing tops out near 20 kHz, Nyquist demands at least 40 kHz, and the extra 4.1 kHz gives the filter room to roll off.",
-          "id": "alias.8c2f5d19"
+          "type": "trap",
+          "body": "Lab 2 Q14 vs Q15: the **Nyquist frequency** is Fₛ/2. **Fₛ − F** is the *alias* of F (that's Q15). Q14 puts Fₛ − F in the choices to catch you.",
+          "source": "Lab 2 Q14",
+          "points": null,
+          "id": "alias.721f992b"
         },
         {
           "type": "check",
-          "prompt": "A 7 kHz tone is sampled at 10 kHz. What frequency will it appear to be?",
-          "answer": "Its alias −7 + 10 = 3 kHz. It folds back to 3 kHz (mirror of 7 around Nyquist = 5).",
+          "prompt": "A 7 kHz tone is sampled at 10 kHz. What frequency does it show up as?",
+          "answer": "Nyquist is 5 kHz, 7 is above it, so it folds: 10 − 7 = 3 kHz.",
           "sectionRef": "alias",
-          "id": "alias.c8300872"
+          "id": "alias.2e4853f8"
         },
         {
           "type": "check",
-          "prompt": "Lab 2 Q14: what's the Nyquist frequency in terms of Fₛ, and why does the answer 'Fₛ − F' appear as a choice?",
-          "answer": "Nyquist = Fₛ/2. 'Fₛ − F' is the *alias* of F, not the Nyquist frequency — it's the Q15 answer (F₂ = Fₛ − F₁), planted as a distractor in Q14.",
+          "prompt": "Why do phone calls sound dull?",
+          "answer": "Phones sample at 8,000 Hz, so Nyquist is 4,000 Hz. Everything above 4 kHz (the crisp s and f sounds) is filtered out before sampling.",
           "sectionRef": "alias",
-          "id": "alias.980ff6d0"
+          "id": "alias.f8c60ab6"
+        },
+        {
+          "type": "example",
+          "title": "Why the rule works (optional, for the curious)",
+          "body": "Samples are taken at t = n/Fₛ. Compare cos(2π·F·t) and cos(2π·(F + Fₛ)·t) at those moments:\n\n  cos(2π·(F + Fₛ)·n/Fₛ) = cos(2π·F·n/Fₛ + 2π·n)\n\n2π·n is n whole laps of the circle, which changes nothing.\nSo both waves give identical samples. The same trick with cos(−θ) = cos(θ) gives the mirror Fₛ − F.",
+          "id": "alias.c6d8daa7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "sampling",
+              "measuring at regular moments"
+            ],
+            [
+              "Fₛ",
+              "sampling rate: samples per second"
+            ],
+            [
+              "Tₛ",
+              "time between samples = 1/Fₛ"
+            ],
+            [
+              "x[n]",
+              "sample number n"
+            ],
+            [
+              "quantization",
+              "rounding each sample to an allowed level"
+            ],
+            [
+              "bits → levels",
+              "b bits gives 2ᵇ levels"
+            ],
+            [
+              "alias",
+              "fake lower frequency a too-high tone turns into"
+            ],
+            [
+              "Nyquist",
+              "Fₛ/2, the highest frequency you can store"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "alias.3b60221c"
         }
       ]
     }
@@ -316,54 +412,38 @@
   "exercises": [
     {
       "id": "sample-count",
-      "title": "Samples, intervals, and what x[n] is",
-      "prompt": "x(t) = cos(2π·50·t), sampled at Fₛ = 400 Hz for 0.1 s. (a) Tₛ? (b) how many samples? (c) write x[n] as a formula in n; (d) what is x[4]? (e) how many samples per cycle of the cosine?",
+      "title": "Samples, spacing, and x[n]",
+      "prompt": "x(t) = cos(2π·50·t) is sampled at Fₛ = 400 Hz for 0.1 s. (a) What is Tₛ? (b) How many samples? (c) Write x[n]. (d) How many samples per repeat of the wave?",
       "hints": [
-        "Tₛ = 1/Fₛ. Number of samples = duration × Fₛ. Substitute t = n/Fₛ into x(t) for the formula.",
-        "People compute x[4] at t = 4 seconds. Sample 4 is at t = 4·Tₛ = 4/400 = 0.01 s.",
-        "Samples per cycle = Fₛ / F. If that number is small (near 2) the samples barely trace the wave — Lab 2 Q9."
+        "Tₛ = 1/Fₛ.",
+        "samples = seconds × Fₛ. For x[n], replace t with n/Fₛ.",
+        "One repeat lasts 1/50 s. How many samples fit in that?"
       ],
       "solution": [
-        "(a) Tₛ = 1/400 = 0.0025 s = 2.5 ms.",
+        "(a) Tₛ = 1/400 = 0.0025 s.",
         "(b) 0.1 × 400 = 40 samples.",
-        "(c) x[n] = cos(2π·50·n/400) = cos(πn/4).",
-        "(d) x[4] = cos(π) = −1 — that's t = 0.01 s, half a period of the 50 Hz wave. ✓",
-        "(e) 400/50 = 8 samples per cycle."
+        "(c) x[n] = cos(2π·50·n/400) = cos(π·n/4).",
+        "(d) 400 / 50 = 8 samples per repeat."
       ],
-      "why": "Every recording you ever process is x[n], not x(t). Knowing which second a sample index corresponds to — and how many samples one cycle of a pitch takes — is the arithmetic behind pitch trackers, speech recognizers, and every 'why does my plot look wrong' moment in Colab."
+      "why": "Every speech tool you'll use (Praat, librosa, Whisper) starts by doing exactly this.",
+      "sectionRef": "sampling"
     },
     {
       "id": "alias-find",
       "title": "Find the alias",
-      "prompt": "A microphone samples at Fₛ = 8000 Hz (telephone quality). (a) What's the Nyquist frequency? (b) A 5000 Hz whistle gets in. What frequency will it appear as after sampling? (c) A 9000 Hz tone? (d) Explain in one sentence why phone calls sound dull.",
-      "choices": [
-        {
-          "text": "(b) It appears as 5000 Hz — sampling doesn't change frequency",
-          "feedback": "It does when F is above Fₛ/2. 5000 is above 4000, so it folds. Compute Fₛ − F."
-        },
-        {
-          "text": "(b) It appears as 3000 Hz",
-          "feedback": "Right. −5000 + 8000 = 3000 Hz — the mirror image of 5000 around Nyquist (4000)."
-        },
-        {
-          "text": "(b) It appears as 1000 Hz",
-          "feedback": "That's 5000 − 4000, the distance *above* Nyquist, not the folded frequency. Fold it: Fₛ − F = 3000."
-        }
-      ],
-      "answer": 1,
+      "prompt": "A phone line samples at Fₛ = 8,000 Hz. (a) Nyquist? (b) A 5,000 Hz whistle gets in. What does it show up as? (c) A 9,000 Hz tone?",
       "hints": [
-        "Nyquist = Fₛ/2. Anything above it folds back. The aliases of F are ±F ± k·Fₛ; find the one that lands in 0..Fₛ/2.",
-        "The usual mistake is subtracting from Nyquist instead of from Fₛ. Mirror around Nyquist means F₂ = Fₛ − F₁ (Lab 2 Q15), which is the same as −F + Fₛ.",
-        "For 9000 Hz, subtract a whole Fₛ first: 9000 − 8000 = 1000. That's already below Nyquist."
+        "Nyquist = Fₛ/2.",
+        "5,000 is between Nyquist and Fₛ: mirror it, Fₛ − F.",
+        "9,000 is above Fₛ: subtract Fₛ first."
       ],
       "solution": [
-        "(a) Nyquist = 8000/2 = 4000 Hz.",
-        "(b) 5000 > 4000, so it folds: −5000 + 8000 = 3000 Hz.",
-        "(c) 9000 − 8000 = 1000 Hz (an alias of 9000 in the base band).",
-        "(d) Sampling at 8 kHz can only represent frequencies up to 4 kHz, and consonants like /s/ live above that — so the phone throws them away (and must filter them out first, or they'd alias into the speech band as garbage)."
+        "(a) 4,000 Hz.",
+        "(b) 8,000 − 5,000 = 3,000 Hz.",
+        "(c) 9,000 − 8,000 = 1,000 Hz (below Nyquist, so that's it)."
       ],
-      "why": "Anti-aliasing filters exist in every ADC because of this arithmetic. If you ever record data — audio, sensor readings, video frames of a spinning wheel — 'is my sample rate at least twice the highest frequency present?' is the first question, and getting it wrong produces errors that look like real signal.",
-      "sectionRef": "sampling"
+      "why": "This is why every microphone chip has a filter that removes high frequencies BEFORE sampling: once aliasing happens, no software can undo it.",
+      "sectionRef": "alias"
     }
   ]
 }

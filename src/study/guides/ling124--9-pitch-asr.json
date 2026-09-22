@@ -2,7 +2,7 @@
   "id": "ling124/9-pitch-asr",
   "course": "ling124",
   "lessons": "Days 9–10",
-  "title": "Estimating pitch with autocorrelation, and what ASR is",
+  "title": "Measuring pitch, and what speech recognition is",
   "summary": "Explain why pitch is not 1 / frame length; compute a dot product and an autocorrelation by hand and read the period off the first peak; turn a lag in samples into F0 = Fₛ / lag; say which heuristics (pitch range, silence, voicing) throw out bad frames; lay out the ASR pipeline and compute word error rate.",
   "estimatedMinutes": 50,
   "sourceNote": "Dr. Koo's Day 9 slides 'Pitch estimation' and Day 10 slides 'Overview of ASR' (pulled from Canvas); Bäckström et al. 2022 §3.7 and ch. 8.3; J&M ch. 16.1 and 16.5. Labs 8 and 9.",
@@ -14,6 +14,12 @@
       "id": "why",
       "heading": "Why measure pitch",
       "blocks": [
+        {
+          "type": "prose",
+          "md": "**You are on step 5 of the map:** measure things from each slice. First thing to measure: pitch.",
+          "label": "why",
+          "id": "why.82d30856"
+        },
         {
           "type": "prose",
           "md": "**The problem** Your voice has a pitch: how high or low it sounds. That pitch comes from how fast your vocal folds vibrate, the **fundamental frequency F0**. We want a number for it, frame by frame, across a recording. Intonation (questions going up), tone in Mandarin or Yoruba, stress, emotion and speaker identity all live in the F0 track.",
@@ -30,13 +36,19 @@
     },
     {
       "id": "trap",
-      "heading": "Pitch is not 1 / frame length",
+      "heading": "Pitch, and a number that is NOT pitch",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Pitch (F0)",
+          "body": "How many times per second the voice's wave repeats. A typical man is around 100 Hz, a typical woman around 200 Hz.",
+          "id": "trap.306d88b3"
+        },
+        {
           "type": "prose",
-          "md": "Koo opens with a trick question. Isn't pitch just F0? **Yes**: pitch tracks the F0 of the source (the vocal folds). But **not** the F0 you get from the DFT's point of view. When the STFT treats a frame as one period of a repeating signal, the 'fundamental' of the DFT grid is 1 / frame length: a 0.05 s frame gives 1 / 0.05 = **20 Hz**. That number describes the frame, not the voice.",
+          "md": "Koo's trick question: in Chapter 6 the DFT treated each slice as if it repeated, which gives a number 1 ÷ slice length (a 0.05 s slice gives 20 Hz). **That number is about the slice, not the voice.** Pitch has to be measured from the wave itself. This chapter shows how.",
           "slide": "Two different 'F0's",
-          "id": "trap.605ffc4f"
+          "id": "trap.629761a8"
         },
         {
           "type": "table",
@@ -113,15 +125,21 @@
       "blocks": [
         {
           "type": "definition",
+          "term": "Lag",
+          "body": "How far (in samples) you slid the copy. Lag 0 = not slid at all.",
+          "id": "auto.92e7fcc8"
+        },
+        {
+          "type": "definition",
           "term": "Autocorrelation",
-          "body": "The dot product of a signal with a **delayed copy of itself**, computed for many delays (lags) k: `r[k] = Σ x[n] · x[n − k]`. The delayed copy is **padded with zeros** so both lists stay the same length.",
+          "body": "The match score at each lag: the dot product of the signal with a **delayed copy of itself**, computed for many delays (lags) k: `r[k] = Σ x[n] · x[n − k]`. The delayed copy is **padded with zeros** so both lists stay the same length.",
           "id": "auto.7d39e0b5"
         },
         {
           "type": "prose",
-          "md": "Why this finds the period: if a signal repeats every T₀ samples, then shifting it by exactly T₀ lines every peak up with the next peak. The dot product jumps. Shifting by half a period lines peaks up with troughs and the dot product goes negative. So **the first peak after lag 0 is the period**.",
-          "slide": "Why shifting finds the period",
-          "id": "auto.a256da87"
+          "md": "**Picture it.** Print the wave on a clear plastic sheet and lay it over the original. Slide the copy to the right a little at a time. Most of the time the bumps don't line up. But when you've slid it by exactly **one repeat**, every bump lands on a bump again: a perfect match. The autocorrelation score is just 'how well do they match at this slide amount'. **The first big match after zero slide is the period.**",
+          "slide": "Slide a copy over itself",
+          "id": "auto.bc38295c"
         },
         {
           "type": "stepper",
@@ -399,6 +417,46 @@
           "title": "What makes ASR hard",
           "slide": "Four dimensions of difficulty",
           "id": "wer.54561866"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "pitch / F0",
+              "how often the voice's wave repeats per second"
+            ],
+            [
+              "dot product",
+              "multiply two lists position by position, then add: a similarity score"
+            ],
+            [
+              "lag",
+              "how far the copy is slid, in samples"
+            ],
+            [
+              "autocorrelation",
+              "match score of a signal with its slid copy, at each lag"
+            ],
+            [
+              "F0 = Fₛ / lag",
+              "turn the best lag into Hz"
+            ],
+            [
+              "ASR",
+              "automatic speech recognition: speech in, text out"
+            ],
+            [
+              "WER",
+              "word error rate = (substitutions + deletions + insertions) ÷ reference words"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "wer.3b60221c"
         },
         {
           "type": "check",

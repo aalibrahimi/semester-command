@@ -2,301 +2,39 @@
   "id": "ling124/5-fourier-series",
   "course": "ling124",
   "lessons": "Day 5",
-  "title": "Fourier series",
-  "summary": "Say what a Fourier series is and why it exists; write its three forms and convert between them; compute coefficients for a sum of cosines without calculus by using orthogonality; draw the magnitude spectrum.",
-  "estimatedMinutes": 70,
-  "sourceNote": "fourier_series.pdf (note + slides), Ladefoged (1996) ch. 10, Lab 4.",
+  "title": "Fourier series: building a repeating sound from simple waves",
+  "summary": "Say what harmonics are and list them from F₀; explain why any repeating wave is a sum of harmonics; read a series in cosine form, cos+sin form and complex form and convert between them; find coefficients by eye using the 'detector' idea; draw the magnitude spectrum.",
+  "estimatedMinutes": 50,
+  "sourceNote": "fourier_series.pdf (note + slides), Ladefoged (1996) ch. 10, Lab 4. Rewritten in plain steps: one idea per card.",
   "requires": [
     "ling124/4-complex-sinusoids"
   ],
   "sections": [
     {
       "id": "why",
-      "heading": "The idea",
+      "heading": "The big idea: any repeating sound is simple waves added up",
       "blocks": [
         {
           "type": "prose",
+          "md": "**You are on step 3 of the map.** Chapter 0 said a vowel is a recipe of simple waves. This chapter says exactly **which** simple waves, and how to find how much of each.",
           "label": "why",
-          "md": "**The claim** Take any periodic wave — a vowel, a square wave, a triangle wave — with fundamental frequency F₀ (period T₀ = 1/F₀). Fourier's theorem: ==you can build it exactly by adding sinusoids at whole-number multiples of F₀==: F₀, 2F₀, 3F₀, … (the **harmonics**), each with its own amplitude and phase. Going from the wave to the list of amplitudes and phases is **Fourier analysis**; going back is **Fourier synthesis**. The list *is* the spectrum from Chapter 0.",
-          "slide": "Any periodic wave is a sum of sinusoids",
-          "id": "why.13cf5e9e"
+          "id": "why.5a81d7fd"
         },
         {
           "type": "prose",
-          "md": "Why would that be true? Intuition: a periodic wave repeats every T₀. Any sinusoid at kF₀ also repeats every T₀ (it completes exactly k whole cycles inside it). So ==the harmonics are exactly the set of ingredients that share the wave's period==; Fourier showed they're enough. Lab 4 Q5 is this in action — add more harmonics of a triangle wave and the sum gets closer and closer.",
-          "id": "why.3fb8b53c"
+          "md": "**The claim (Fourier's idea).** Take any wave that repeats, like a vowel. You can build it **exactly** by adding simple cosine waves, as long as you use the right ones in the right amounts.",
+          "slide": "Fourier's idea",
+          "id": "why.d579429b"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 290",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><g><title>Harmonic 1: the fundamental, sin(2πF₀t), amplitude 1. It sets the period — everything below repeats at this rate.</title><line x1='70' y1='48' x2='590' y2='48' opacity='.15'/><path d='M70 48 C91.7 34.4,113.3 22,135 22 C182.3 22,217.7 74,265 74 C312.3 74,347.7 22,395 22 C442.3 22,477.7 74,525 74 C546.7 74,568.3 61.6,590 48' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='62' y='52' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>A₁=1</text></g><g><title>Harmonic 3: three times the frequency, one third the amplitude. A square wave's recipe uses odd harmonics only.</title><line x1='70' y1='112' x2='590' y2='112' opacity='.15'/><path d='M70 112 C77.2 107.5,84.5 103.3,91.7 103.3 C107.5 103.3,119.4 120.7,135 120.7 C150.8 120.7,162.6 103.3,178.3 103.3 C194.1 103.3,206 120.7,221.7 120.7 C237.5 120.7,249.3 103.3,265 103.3 C280.8 103.3,292.6 120.7,308.3 120.7 C324.1 120.7,336 103.3,351.7 103.3 C367.5 103.3,379.3 120.7,395 120.7 C410.8 120.7,422.6 103.3,438.3 103.3 C454.1 103.3,466 120.7,481.7 120.7 C497.5 120.7,509.3 103.3,525 103.3 C540.8 103.3,552.6 120.7,568.3 120.7 C575.5 120.7,582.8 116.5,590 112' stroke='rgb(var(--at-risk))' stroke-width='2'/><text x='62' y='116' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))' stroke='none'>A₃=1/3</text></g><g><title>Harmonic 5: five times the frequency, one fifth the amplitude. Higher harmonics are quieter — but they carry the sharp corners.</title><line x1='70' y1='162' x2='590' y2='162' opacity='.15'/><path d='M70 162 C74.7 159,78.3 156.8,83 156.8 C92.5 156.8,99.5 167.2,109 167.2 C118.5 167.2,125.5 156.8,135 156.8 C144.5 156.8,151.5 167.2,161 167.2 C170.5 167.2,177.5 156.8,187 156.8 C196.5 156.8,203.5 167.2,213 167.2 C222.5 167.2,229.5 156.8,239 156.8 C248.5 156.8,255.5 167.2,265 167.2 C274.5 167.2,281.5 156.8,291 156.8 C300.5 156.8,307.5 167.2,317 167.2 C326.5 167.2,333.5 156.8,343 156.8 C352.5 156.8,359.5 167.2,369 167.2 C378.5 167.2,385.5 156.8,395 156.8 C404.5 156.8,411.5 167.2,421 167.2 C430.5 167.2,437.5 156.8,447 156.8 C456.5 156.8,463.5 167.2,473 167.2 C482.5 167.2,489.5 156.8,499 156.8 C508.5 156.8,515.5 167.2,525 167.2 C534.5 167.2,541.5 156.8,551 156.8 C560.5 156.8,567.5 167.2,577 167.2 C581.7 167.2,585.3 165,590 162' stroke='currentColor' opacity='.8' stroke-width='2'/><text x='62' y='166' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='currentColor' opacity='.7' stroke='none'>A₅=1/5</text></g><g><title>The sum of just those three sines: already recognizably a square wave. Adding harmonics 7, 9, 11… straightens the flats and sharpens the edges further — Lab 4 Q5's answer in one picture.</title><line x1='70' y1='240' x2='590' y2='240' opacity='.15'/><path d='M70 240 C77.2 226.4,84.5 215.7,91.7 215.7 C99.6 215.7,105.4 222,113.3 222 C121.2 222,127.1 217.5,135 217.5 C142.9 217.5,148.8 222,156.7 222 C164.6 222,170.4 215.7,178.3 215.7 C185.5 215.7,192.8 226.4,200 240 C207.2 253.6,214.5 264.3,221.7 264.3 C229.6 264.3,235.4 258,243.3 258 C251.2 258,257.1 262.5,265 262.5 C272.9 262.5,278.8 258,286.7 258 C294.6 258,300.4 264.3,308.3 264.3 C315.5 264.3,322.8 253.6,330 240 C337.2 226.4,344.5 215.7,351.7 215.7 C359.6 215.7,365.4 222,373.3 222 C381.2 222,387.1 217.5,395 217.5 C402.9 217.5,408.8 222,416.7 222 C424.6 222,430.4 215.7,438.3 215.7 C445.5 215.7,452.8 226.4,460 240 C467.2 253.6,474.5 264.3,481.7 264.3 C489.6 264.3,495.4 258,503.3 258 C511.2 258,517.1 262.5,525 262.5 C532.9 262.5,538.8 258,546.7 258 C554.6 258,560.4 264.3,568.3 264.3 C575.5 264.3,582.8 253.6,590 240' stroke='rgb(var(--on-track))' stroke-width='2.4'/><text x='62' y='244' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>sum</text></g><g><title>Stack them: at every instant t, the sum's value is simply the three values above it added together. Fourier synthesis is nothing more than this addition.</title><text x='34' y='92' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='142' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='206' font-size='14' fill='currentColor' stroke='none' opacity='.6'>=</text></g></g>",
-          "caption": "Fourier synthesis, one harmonic at a time: sines at F₀ (amplitude 1), 3F₀ (1/3), and 5F₀ (1/5), and their sum — already close to a square wave after three terms. Each extra odd harmonic straightens the flats and sharpens the corners; the sharpness lives entirely in the high harmonics, which is why cutting the highs (a phone line, a heavy low-pass) rounds sounds off. Hover any row.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><g><title>Harmonic 1: the fundamental, sin(2πF₀t), amplitude 1. It sets the period: everything below repeats at this rate.</title><line x1='70' y1='48' x2='590' y2='48' opacity='.15'/><path d='M70 48 C91.7 34.4,113.3 22,135 22 C182.3 22,217.7 74,265 74 C312.3 74,347.7 22,395 22 C442.3 22,477.7 74,525 74 C546.7 74,568.3 61.6,590 48' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='62' y='52' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))' stroke='none'>A₁=1</text></g><g><title>Harmonic 3: three times the frequency, one third the amplitude. A square wave's recipe uses odd harmonics only.</title><line x1='70' y1='112' x2='590' y2='112' opacity='.15'/><path d='M70 112 C77.2 107.5,84.5 103.3,91.7 103.3 C107.5 103.3,119.4 120.7,135 120.7 C150.8 120.7,162.6 103.3,178.3 103.3 C194.1 103.3,206 120.7,221.7 120.7 C237.5 120.7,249.3 103.3,265 103.3 C280.8 103.3,292.6 120.7,308.3 120.7 C324.1 120.7,336 103.3,351.7 103.3 C367.5 103.3,379.3 120.7,395 120.7 C410.8 120.7,422.6 103.3,438.3 103.3 C454.1 103.3,466 120.7,481.7 120.7 C497.5 120.7,509.3 103.3,525 103.3 C540.8 103.3,552.6 120.7,568.3 120.7 C575.5 120.7,582.8 116.5,590 112' stroke='rgb(var(--at-risk))' stroke-width='2'/><text x='62' y='116' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))' stroke='none'>A₃=1/3</text></g><g><title>Harmonic 5: five times the frequency, one fifth the amplitude. Higher harmonics are quieter: but they carry the sharp corners.</title><line x1='70' y1='162' x2='590' y2='162' opacity='.15'/><path d='M70 162 C74.7 159,78.3 156.8,83 156.8 C92.5 156.8,99.5 167.2,109 167.2 C118.5 167.2,125.5 156.8,135 156.8 C144.5 156.8,151.5 167.2,161 167.2 C170.5 167.2,177.5 156.8,187 156.8 C196.5 156.8,203.5 167.2,213 167.2 C222.5 167.2,229.5 156.8,239 156.8 C248.5 156.8,255.5 167.2,265 167.2 C274.5 167.2,281.5 156.8,291 156.8 C300.5 156.8,307.5 167.2,317 167.2 C326.5 167.2,333.5 156.8,343 156.8 C352.5 156.8,359.5 167.2,369 167.2 C378.5 167.2,385.5 156.8,395 156.8 C404.5 156.8,411.5 167.2,421 167.2 C430.5 167.2,437.5 156.8,447 156.8 C456.5 156.8,463.5 167.2,473 167.2 C482.5 167.2,489.5 156.8,499 156.8 C508.5 156.8,515.5 167.2,525 167.2 C534.5 167.2,541.5 156.8,551 156.8 C560.5 156.8,567.5 167.2,577 167.2 C581.7 167.2,585.3 165,590 162' stroke='currentColor' opacity='.8' stroke-width='2'/><text x='62' y='166' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='currentColor' opacity='.7' stroke='none'>A₅=1/5</text></g><g><title>The sum of just those three sines: already recognizably a square wave. Adding harmonics 7, 9, 11… straightens the flats and sharpens the edges further: Lab 4 Q5's answer in one picture.</title><line x1='70' y1='240' x2='590' y2='240' opacity='.15'/><path d='M70 240 C77.2 226.4,84.5 215.7,91.7 215.7 C99.6 215.7,105.4 222,113.3 222 C121.2 222,127.1 217.5,135 217.5 C142.9 217.5,148.8 222,156.7 222 C164.6 222,170.4 215.7,178.3 215.7 C185.5 215.7,192.8 226.4,200 240 C207.2 253.6,214.5 264.3,221.7 264.3 C229.6 264.3,235.4 258,243.3 258 C251.2 258,257.1 262.5,265 262.5 C272.9 262.5,278.8 258,286.7 258 C294.6 258,300.4 264.3,308.3 264.3 C315.5 264.3,322.8 253.6,330 240 C337.2 226.4,344.5 215.7,351.7 215.7 C359.6 215.7,365.4 222,373.3 222 C381.2 222,387.1 217.5,395 217.5 C402.9 217.5,408.8 222,416.7 222 C424.6 222,430.4 215.7,438.3 215.7 C445.5 215.7,452.8 226.4,460 240 C467.2 253.6,474.5 264.3,481.7 264.3 C489.6 264.3,495.4 258,503.3 258 C511.2 258,517.1 262.5,525 262.5 C532.9 262.5,538.8 258,546.7 258 C554.6 258,560.4 264.3,568.3 264.3 C575.5 264.3,582.8 253.6,590 240' stroke='rgb(var(--on-track))' stroke-width='2.4'/><text x='62' y='244' text-anchor='end' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>sum</text></g><g><title>Stack them: at every instant t, the sum's value is simply the three values above it added together. Fourier synthesis is nothing more than this addition.</title><text x='34' y='92' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='142' font-size='14' fill='currentColor' stroke='none' opacity='.6'>+</text><text x='34' y='206' font-size='14' fill='currentColor' stroke='none' opacity='.6'>=</text></g></g>",
+          "caption": "Fourier synthesis, one harmonic at a time: sines at F₀ (amplitude 1), 3F₀ (1/3), and 5F₀ (1/5), and their sum: already close to a square wave after three terms. Each extra odd harmonic straightens the flats and sharpens the corners; the sharpness lives entirely in the high harmonics, which is why cutting the highs (a phone line, a heavy low-pass) rounds sounds off. Hover any row.",
           "slide": "Three harmonics building a square wave",
-          "id": "why.e7a3c1f5"
+          "id": "why.b19ad724"
         },
         {
-          "type": "prose",
-          "md": "- x(t) is real-valued (pressure is real).\n- It's periodic with fundamental period T₀ and fundamental frequency F₀ = 1/T₀.\n- It's piecewise smooth. At a jump (a square wave's edge) the series converges to the midpoint of the two sides.",
-          "slide": "Assumptions (note §2)",
-          "id": "why.61cfe5e9"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Additive synthesis — the sound of classic organs and half the pads in your DAW — is Fourier synthesis performed live: one oscillator per harmonic, a volume slider per amplitude. Guitar 'distortion' is new harmonics being created on top of a clean wave, which is why it sounds richer, not just louder. And the reason MP3 and AAC can throw away ~90% of a file is that they do Fourier analysis first: once music is a list of component amplitudes, ==the encoder simply deletes the components your ear won't miss== (Chapter 0's equal-loudness curve decides which). Your ear agrees with the math — the cochlea is physically a bank of frequency detectors doing a running analysis of everything you hear.",
-          "id": "why.2d9b64c8"
-        }
-      ]
-    },
-    {
-      "id": "forms",
-      "heading": "Three ways to write the same series",
-      "blocks": [
-        {
-          "type": "example",
-          "title": "(1) is the intuitive one: a sum of cosines with amplitudes and phases. (2) splits each cosine into a cosine and a sine with no phase. (3) uses complex spinners at positive AND negative frequencies.",
-          "body": "(1) amplitude-phase:   x(t) = A₀ + Σ_{k=1}^{∞} A_k cos(2πF₀kt + ϕ_k)\n\n(2) sine-cosine:       x(t) = a₀ + Σ_{k=1}^{∞} [ a_k cos(2πF₀kt) + b_k sin(2πF₀kt) ]\n\n(3) exponential:       x(t) = Σ_{k=−∞}^{∞} X_k e^{j2πF₀kt}        X_k complex,  X_{−k} = X̄_k",
-          "slide": "The three forms (slide 3)",
-          "id": "forms.2e96c5c5"
-        },
-        {
-          "type": "prose",
-          "md": "Reading form (1) symbol by symbol: k is the harmonic number, so the k-th term is a cosine at frequency k·F₀ with amplitude A_k and phase ϕ_k — exactly Chapter 0's formula, once per harmonic. A₀ is the constant offset (the average level of the wave); the note shows it's the k = 0 term with ϕ₀ = 0, since cos(0) = 1. ==The list (A₀, A₁, ϕ₁, A₂, ϕ₂, …) IS the wave== — knowing the list and knowing x(t) are the same knowledge, written in different domains.",
-          "slide": "Reading (1)",
-          "id": "forms.b2629394"
-        },
-        {
-          "type": "example",
-          "title": "Converting amplitude-phase ↔ sine-cosine",
-          "body": "Show A_k cos(2πF₀kt + ϕ_k) = a_k cos(2πF₀kt) + b_k sin(2πF₀kt).\n\n1. The sum formula: cos(α + β) = cos α cos β − sin α sin β. Let α = 2πF₀kt, β = ϕ_k.\n2. A_k cos(α + ϕ_k) = A_k cos ϕ_k · cos α − A_k sin ϕ_k · sin α.\n3. Match with a_k cos α + b_k sin α: **a_k = A_k cos ϕ_k**, **b_k = −A_k sin ϕ_k**.\n4. Going back: a_k² + b_k² = A_k²(cos² + sin²) = A_k², so **A_k = √(a_k² + b_k²)**. And −b_k/a_k = tan ϕ_k, so **ϕ_k = atan2(−b_k, a_k)** (atan2 picks the right quadrant).\n5. Lab 4 Q4-style check: for a wave with only cosine terms (b_k = 0), ϕ_k = 0 and A_k = a_k.",
-          "slide": "Why (1) and (2) are the same: the cosine sum formula",
-          "id": "forms.0ccb21ed"
-        },
-        {
-          "type": "example",
-          "title": "Converting to the exponential form",
-          "body": "Show each cosine becomes a pair of complex spinners.\n\n1. Chapter 4: cos θ = (e^{jθ} + e^{−jθ})/2 and sin θ = (e^{jθ} − e^{−jθ})/(2j).\n2. So a_k cos(2πF₀kt) + b_k sin(2πF₀kt) = [(a_k − jb_k)/2]·e^{j2πF₀kt} + [(a_k + jb_k)/2]·e^{−j2πF₀kt}.\n3. Read off: **X_k = (a_k − jb_k)/2** for k > 0, **X_{−k} = (a_k + jb_k)/2** — conjugates, as promised. X₀ = a₀ = A₀.\n4. From form (1) directly: **X_k = (A_k/2)·e^{jϕ_k}**, so **A_k = 2|X_k|** and **ϕ_k = ∠X_k**. Half the amplitude at +kF₀, half at −kF₀ — Chapter 4's result, one harmonic at a time.",
-          "slide": "Why (2)/(1) and (3) are the same: Euler",
-          "id": "forms.e658d4f2"
-        },
-        {
-          "type": "table",
-          "columns": [
-            "Given",
-            "You get"
-          ],
-          "rows": [
-            [
-              "a_k, b_k",
-              "A_k = √(a_k² + b_k²);  ϕ_k = atan2(−b_k, a_k)"
-            ],
-            [
-              "A_k, ϕ_k",
-              "a_k = A_k cos ϕ_k;  b_k = −A_k sin ϕ_k"
-            ],
-            [
-              "a_k, b_k",
-              "X_k = (a_k − jb_k)/2;  X_{−k} = (a_k + jb_k)/2;  X₀ = a₀"
-            ],
-            [
-              "A_k, ϕ_k",
-              "X_k = A_k e^{jϕ_k}/2;  X_{−k} = A_k e^{−jϕ_k}/2;  X₀ = A₀"
-            ],
-            [
-              "X_k (k > 0)",
-              "A_k = 2|X_k|;  ϕ_k = ∠X_k"
-            ]
-          ],
-          "slide": "The conversion table (slides 5, 7, 8, 19, 20)",
-          "id": "forms.94aacdba"
-        },
-        {
-          "type": "check",
-          "prompt": "Lab 4 Q7: for 2cos(2πF₀t + π/2), find X₁ and X₋₁.",
-          "answer": "X₁ = (A/2)e^{jϕ} = 1·e^{jπ/2} = j (since e^{jπ/2} = cos π/2 + j sin π/2 = j). X₋₁ = conjugate = −j. Check with the a,b route: a₁ = 2cos(π/2) = 0, b₁ = −2sin(π/2) = −2 → X₁ = (0 − j(−2))/2 = j. ✓",
-          "sectionRef": "forms",
-          "id": "forms.62cdad0e"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** All three forms are alive in working code, and converting between them is a daily chore: `np.fft.fft` hands you form (3) — complex X_k, negative frequencies included — while every plot you show a human is form (1), so ##A_k = 2|X_k| and ϕ_k = ∠X_k is the conversion you will type for the rest of your career##. Form (2) is what filter textbooks and DSP libraries mean by 'in-phase and quadrature components'. When a spectrum looks mysteriously half as tall as expected, someone forgot the factor of 2 in this table.",
-          "id": "forms.9a1c47e6"
-        }
-      ]
-    },
-    {
-      "id": "coef",
-      "heading": "Finding the coefficients: multiply, integrate, normalize",
-      "blocks": [
-        {
-          "type": "prose",
-          "md": "Given a wave, how do you find how much of harmonic k it contains? The recipe comes first, so you can see where the formulas below come from: **multiply x(t) by the harmonic you're testing for, integrate over one period, and divide by the period.** The result is nonzero only if x(t) actually contains that harmonic. ==Each coefficient formula is a detector tuned to exactly one frequency==.",
-          "slide": "The recipe (slide 11)",
-          "id": "coef.5ec06407"
-        },
-        {
-          "type": "example",
-          "title": "For (2): note the 2/T₀ on a_k and b_k but 1/T₀ on a₀. For (3): multiply by the spinner with the OPPOSITE frequency (−k).",
-          "body": "a₀ = (1/T₀) ∫₀^{T₀} x(t) dt                        (the average)\na_k = (2/T₀) ∫₀^{T₀} x(t) cos(2πF₀kt) dt\nb_k = (2/T₀) ∫₀^{T₀} x(t) sin(2πF₀kt) dt\n\nX_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-          "slide": "The formulas",
-          "id": "coef.f11cf061"
-        },
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**The one fact that makes Fourier analysis possible** A sinusoid with no offset, integrated over a whole number of its own cycles, gives **zero** — every positive hump cancels a negative hump. So when you multiply x(t) (a sum of harmonics) by cos(2πF₀kt) and integrate, every product of two *different* harmonics is itself a sum of sinusoids at nonzero frequencies and integrates to zero. Only the product of harmonic k with itself survives — cos² has a positive average of ½, giving T₀/2 (hence the 2/T₀ in front). The harmonics are **orthogonal**: ==the test for k ignores everything that isn't k==.",
-          "slide": "Why it works: orthogonality",
-          "id": "coef.2a33eca3"
-        },
-        {
-          "type": "table",
-          "columns": [
-            "Integral over one period T₀",
-            "Result"
-          ],
-          "rows": [
-            [
-              "∫ sin(2πF₀mt) cos(2πF₀nt) dt",
-              "0 always"
-            ],
-            [
-              "∫ cos(2πF₀mt) cos(2πF₀nt) dt",
-              "T₀/2 if m = n, else 0"
-            ],
-            [
-              "∫ sin(2πF₀mt) sin(2πF₀nt) dt",
-              "T₀/2 if m = n, else 0"
-            ],
-            [
-              "∫ e^{j2πF₀mt} e^{−j2πF₀nt} dt",
-              "T₀ if m = n, else 0"
-            ],
-            [
-              "∫ cos(2πF₀kt) dt or ∫ sin(2πF₀kt) dt, k ≠ 0",
-              "0 (whole cycles cancel) — Lab 4 Q6: BOTH are zero"
-            ]
-          ],
-          "slide": "The orthogonality facts (slides 15–16) — Lab 4 Q6 and Q8",
-          "id": "coef.4bafb5bc"
-        },
-        {
-          "type": "stepper",
-          "title": "Lab 4 Q9–Q11: coefficients without calculus",
-          "frames": [
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 0,
-              "caption": "Lab 4 Q9. A signal made of two cosines. We want its Fourier coefficients X₁, X₂, X₃ without doing any calculus — by understanding what the integral does."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 1,
-              "caption": "The recipe: multiply x(t) by a complex sinusoid at frequency −kF₀, integrate over one period, divide by the period. Orthogonality makes every term whose frequency isn't kF₀ integrate to zero."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 2,
-              "caption": "For k = 1, the 3F₀ cosine is 'a different frequency' and integrates away. The F₀ cosine has amplitude 2 and phase 0, so X₁ = (A/2)·e^{j0} = 1. (Chapter 4: a real cosine's coefficient is half its amplitude.)"
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 3,
-              "caption": "For k = 2, neither term matches 2F₀. Both integrate to zero. X₂ = 0."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 4,
-              "caption": "For k = 3, only the 3F₀ cosine matches. Amplitude 3, phase 0 → X₃ = 1.5."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "x(t) = 2cos(2πF₀t) + 3cos(2π·3F₀t)",
-                "X_k = (1/T₀) ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt",
-                "k = 1:  only the 2cos(2πF₀t) term survives → X₁ = 2/2 = 1",
-                "k = 2:  no 2F₀ component in x(t) → X₂ = 0",
-                "k = 3:  only the 3cos(2π·3F₀t) term survives → X₃ = 3/2 = 1.5",
-                "Lab 4 Q9 answer: 1, 0, 1.5"
-              ],
-              "active": 5,
-              "caption": "And Q10: change the third harmonic's amplitude from 3 to 6 — X₁ stays 1, because the k = 1 test ignores the 3F₀ term entirely. Q11: give the third harmonic a phase π/2 — X₃ becomes 1.5·e^{jπ/2} = 1.5j. Amplitude → magnitude, phase → angle."
-            }
-          ],
-          "slide": true,
-          "id": "coef.b333bc9f"
-        },
-        {
-          "type": "example",
-          "title": "Why X_k = (1/T₀)∫ x(t) e^{−j2πF₀kt} dt",
-          "body": "Substitute the series for x(t) and watch everything but one term vanish.\n\n1. ∫₀^{T₀} x(t) e^{−j2πF₀kt} dt = ∫ Σ_n X_n e^{j2πF₀nt} e^{−j2πF₀kt} dt.\n2. Swap sum and integral: Σ_n X_n ∫ e^{j2πF₀(n−k)t} dt.\n3. If n ≠ k, the integrand is a complex sinusoid at a nonzero frequency over T₀/|n−k| — whole cycles — so it integrates to 0.\n4. If n = k, the exponent is 0, the integrand is the constant X_k, and the integral is X_k·T₀.\n5. So the whole thing equals X_k·T₀. Divide by T₀: X_k = (1/T₀)∫ x(t) e^{−j2πF₀kt} dt.",
-          "slide": "The derivation in Koo's note, §4.1 (for the exam's 'why')",
-          "id": "coef.4d9bbcde"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** 'Multiply by a template and average' is one of the most reused moves in all of engineering. Pitch trackers and Shazam-style fingerprinting correlate audio against reference frequencies exactly this way. Wi-Fi and 4G/5G are OFDM: your data rides on hundreds of harmonically spaced carriers at once, and the receiver can separate them because ##orthogonality guarantees each carrier's detector ignores all the others## — the same integral table you just learned, running in your phone billions of times a second. And the DFT in the next chapter is this identical recipe with the integral swapped for a sum.",
-          "id": "coef.6b8e04d1"
-        }
-      ]
-    },
-    {
-      "id": "spectrum",
-      "heading": "From coefficients to the spectrum",
-      "blocks": [
-        {
-          "type": "prose",
-          "md": "**Magnitude spectrum**: plot A_k (or 2|X_k|) at each frequency k·F₀ — stems at F₀, 2F₀, 3F₀… **Phase spectrum**: ϕ_k = ∠X_k at each k·F₀. In the two-sided (exponential) picture, the stems are |X_k| at both +kF₀ and −kF₀, each half as tall — so to quote a real amplitude you must ==put the two halves back together: A_k = 2|X_k|==.",
-          "slide": "Two plots",
-          "id": "spectrum.c782b2ec"
-        },
-        {
-          "type": "example",
-          "title": "x(t) = 0.4 + cos(2π·2t + π/4) + 0.6cos(2π·5t − π/2)",
-          "body": "Write the two-sided coefficients.\n\n1. F₀ = 1 Hz (harmonics at 2 and 5 are both multiples of 1). Three components: k = 0, 2, 5.\n2. X₀ = A₀ = 0.4.\n3. k = 2: A = 1, ϕ = π/4 → X₂ = 0.5·e^{jπ/4} = 0.354 + 0.354j; X₋₂ = 0.354 − 0.354j. |X| = 0.5, ∠ = ±π/4.\n4. k = 5: A = 0.6, ϕ = −π/2 → X₅ = 0.3·e^{−jπ/2} = −0.3j; X₋₅ = +0.3j. |X| = 0.3, ∠ = ∓π/2.\n5. Magnitude spectrum (one-sided): 0.4 at 0 Hz, 1 at 2 Hz, 0.6 at 5 Hz. Phase spectrum: 0, π/4, −π/2.",
-          "slide": "The slides' example (slides 21–22)",
-          "id": "spectrum.f42f5899"
-        },
-        {
-          "id": "spectrum.5240f4b2",
           "type": "sim",
           "sim": "fourier",
           "params": {
@@ -306,40 +44,341 @@
             "audioF0": 110
           },
           "caption": "Add harmonics one at a time and watch the square wave form; the stems below are the one-sided magnitude spectrum, each labelled with A_k. Switch to triangle to see why 1/k² amplitudes converge so fast, and play each.",
-          "slide": "Try it"
+          "slide": "Try it",
+          "id": "why.5240f4b2"
+        },
+        {
+          "type": "prose",
+          "md": "Try it in the sim: with 1 wave you get a plain cosine. Add the 3rd and 5th and it starts to look square. The more you add, the closer it gets. Sharp corners need the highest ones.",
+          "id": "why.fd49117a"
+        },
+        {
+          "type": "check",
+          "prompt": "True or false: to build a square wave you need infinitely many simple waves, but a few already get close.",
+          "answer": "True. Each extra one sharpens the corners a little more.",
+          "sectionRef": "why",
+          "id": "why.1dcc8d56"
+        }
+      ]
+    },
+    {
+      "id": "spectrum",
+      "heading": "Harmonics: which simple waves are allowed",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Fundamental frequency F₀",
+          "body": "How many times per second the whole wave repeats. For a voice, that's the pitch. Its period is **T₀ = 1 / F₀**.",
+          "id": "spectrum.1df7160d"
+        },
+        {
+          "type": "definition",
+          "term": "Harmonics",
+          "body": "The simple waves you're allowed to use: whole-number multiples of F₀. **1·F₀, 2·F₀, 3·F₀, …** The k-th harmonic is at **k·F₀**.",
+          "id": "spectrum.ab943364"
         },
         {
           "type": "example",
-          "title": "F₀ = 5 Hz triangle wave with cosine amplitudes 8/(π²k²) for odd k",
-          "body": "The lab's first block of questions.\n\n1. Q1: F₀ = 5 Hz → T₀ = 1/5 = 0.2 s.\n2. Q2: 5th harmonic is at 5·F₀ = 25 Hz.\n3. Q3: its amplitude is 8/(π²·25) = 8/(25π²). Even harmonics are 0 (a triangle wave is symmetric in a way that kills them).\n4. Q4 (the sketch): stems at 5, 15, 25, 35, 45 Hz with heights 8/π², 8/(9π²), 8/(25π²), 8/(49π²), 8/(81π²) — falling fast — and nothing at 10, 20, 30, 40 Hz.\n5. Q5 (essay): as you add terms, the straight sides get straighter and the rounded peaks get sharper; the remaining error is largest at the peaks and troughs, because sharp corners need the highest harmonics.\n6. Q12: two-sided coefficients X_k = A_k/2 = 4/(π²k²) for odd k > 0, zero for even k.\n7. Q13: rebuilding from X_k should **match** the cosine reconstruction, since each ±k pair of complex terms adds up to exactly the k-th cosine.",
-          "slide": "Lab 4 Q1–Q5, Q12–Q13: the triangle wave",
-          "id": "spectrum.e7b9b2d0"
+          "title": "Listing harmonics",
+          "body": "F₀ = 100 Hz  →  harmonics at 100, 200, 300, 400, 500 Hz, …\nF₀ = 5 Hz    →  5, 10, 15, 20, 25 Hz, …\n\nThe 5th harmonic of 5 Hz is at 5 × 5 = 25 Hz.\nThe period of a 5 Hz wave is 1/5 = 0.2 s.",
+          "slide": "k · F₀",
+          "id": "spectrum.3c5534d3"
+        },
+        {
+          "type": "prose",
+          "md": "**Why only multiples?** A wave at 3·F₀ does exactly 3 full repeats in the time the whole sound does 1. So it 'fits' the repeating pattern perfectly. A wave at 2.5·F₀ wouldn't line up at the end of each repeat, so it can't be part of a sound that repeats every T₀.",
+          "id": "spectrum.644511e0"
+        },
+        {
+          "type": "check",
+          "prompt": "A vowel has F₀ = 120 Hz. Where are its first four harmonics?",
+          "answer": "120, 240, 360, 480 Hz.",
+          "sectionRef": "spectrum",
+          "id": "spectrum.00d0005d"
+        }
+      ]
+    },
+    {
+      "id": "forms",
+      "heading": "Three ways to write the same recipe",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "You'll see the Fourier series written three ways. They say the **same thing**; they just package the numbers differently. Learn form 1 first. Forms 2 and 3 are for the math and the code.",
+          "slide": "Same recipe, three packages",
+          "id": "forms.4b279b03"
+        },
+        {
+          "type": "example",
+          "title": "Form 1: a list of cosines (the friendly one)",
+          "body": "x(t) = A₀ + A₁·cos(2π·1F₀·t + ϕ₁) + A₂·cos(2π·2F₀·t + ϕ₂) + …\n\nEach harmonic k gets its own amplitude Aₖ and starting angle ϕₖ.\nA₀ is a constant: the average level of the wave.\n\nExample: x(t) = 0.4 + 1·cos(2π·2·t + π/4) + 0.6·cos(2π·5·t − π/2)\n  A₀ = 0.4;  harmonic at 2 Hz: A = 1, ϕ = π/4;  at 5 Hz: A = 0.6, ϕ = −π/2",
+          "slide": "Form 1: cosines with A and ϕ",
+          "id": "forms.a8f5972d"
+        },
+        {
+          "type": "example",
+          "title": "Form 2: a cosine part and a sine part (no ϕ)",
+          "body": "Aₖ·cos(… + ϕₖ)  =  aₖ·cos(…) + bₖ·sin(…)\n\n  aₖ = Aₖ · cos ϕₖ\n  bₖ = −Aₖ · sin ϕₖ      (watch the minus)\n\nBack again:  Aₖ = √(aₖ² + bₖ²)\n\nExample: aₖ = 3, bₖ = 4  →  Aₖ = √(9 + 16) = 5",
+          "slide": "Form 2: a and b",
+          "id": "forms.7d9e1259"
+        },
+        {
+          "type": "example",
+          "title": "Form 3: complex spinners (what numpy gives you)",
+          "body": "Each cosine = two spinners (Chapter 4), at +k and −k:\n\n  Xₖ = (Aₖ / 2) · e^{jϕₖ}      X₋ₖ = the conjugate of Xₖ\n\nBack again:  Aₖ = 2 · |Xₖ|,   ϕₖ = angle of Xₖ\n\nExample (Lab 4 Q7): 2·cos(2πF₀t + π/2)\n  X₁ = (2/2)·e^{jπ/2} = 1·j = j,   X₋₁ = −j",
+          "slide": "Form 3: Xₖ",
+          "id": "forms.0fc3e839"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "You have",
+            "You want",
+            "Do this"
+          ],
+          "rows": [
+            [
+              "Aₖ, ϕₖ",
+              "aₖ, bₖ",
+              "aₖ = Aₖ cos ϕₖ,  bₖ = −Aₖ sin ϕₖ"
+            ],
+            [
+              "aₖ, bₖ",
+              "Aₖ",
+              "Aₖ = √(aₖ² + bₖ²)"
+            ],
+            [
+              "Aₖ, ϕₖ",
+              "Xₖ",
+              "Xₖ = (Aₖ/2)·e^{jϕₖ}"
+            ],
+            [
+              "Xₖ",
+              "Aₖ, ϕₖ",
+              "Aₖ = 2|Xₖ|,  ϕₖ = angle of Xₖ"
+            ]
+          ],
+          "title": "Conversions cheat sheet",
+          "slide": "Conversions",
+          "id": "forms.05ee7e30"
+        },
+        {
+          "type": "trap",
+          "body": "Forgetting the factor of 2 between Xₖ and Aₖ. A cosine of amplitude 4 has |Xₖ| = 2. If a spectrum looks half as tall as expected, this is why.",
+          "source": "Lab 4 Q7, Q12",
+          "points": null,
+          "id": "forms.1b375606"
+        },
+        {
+          "type": "check",
+          "prompt": "A harmonic has A = 6 and ϕ = 0. What are a, b and Xₖ?",
+          "answer": "a = 6·cos 0 = 6, b = −6·sin 0 = 0, Xₖ = (6/2)·e^{j0} = 3.",
+          "sectionRef": "forms",
+          "id": "forms.fa0dbb8d"
+        }
+      ]
+    },
+    {
+      "id": "coef",
+      "heading": "How to find how much of each harmonic: the detector",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Given a wave, how do you find its recipe? The idea is like a **radio tuner**: tune to one station and you hear only that station, even though all stations are in the air at once.",
+          "slide": "A tuner for one harmonic",
+          "id": "coef.692334cd"
+        },
+        {
+          "type": "definition",
+          "term": "The detector recipe",
+          "body": "To measure harmonic k: **multiply** the wave by a test wave at frequency k·F₀, then **average** the result over one repeat. You get a big number if the wave contains that harmonic, and **zero** if it doesn't.",
+          "id": "coef.06566a3b"
+        },
+        {
+          "type": "prose",
+          "md": "**Why unmatched harmonics give zero:** a wave times a different harmonic goes up and down evenly, so its average over one repeat is 0 (every hump above the line is canceled by a hump below). Only a harmonic times itself stays mostly positive and survives. The official word for this is **orthogonal**: different harmonics don't interfere with each other's measurement.",
+          "id": "coef.0c89cafc"
+        },
+        {
+          "type": "stepper",
+          "title": "Finding coefficients by eye (Lab 4 Q9–Q11)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "x(t) = 2·cos(2π·F₀·t) + 3·cos(2π·3F₀·t)"
+              ],
+              "active": 0,
+              "caption": "Lab 4 Q9. A wave made of two cosines: one at F₀ (amplitude 2) and one at 3F₀ (amplitude 3). Question: how much of each harmonic is in it?"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "test for harmonic 1:",
+                "the F₀ part matches → keep it",
+                "the 3F₀ part doesn't match → averages to 0"
+              ],
+              "active": 1,
+              "caption": "The 'detector' for harmonic 1 only responds to the F₀ part. Everything else cancels out."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "X₁ = (amplitude ÷ 2) at angle ϕ",
+                "= 2 ÷ 2 = 1"
+              ],
+              "active": 1,
+              "caption": "The two-sided coefficient is half the amplitude (Chapter 4: a cosine is two half-size spinners). Phase is 0, so X₁ = 1."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "test for harmonic 2: nothing at 2F₀",
+                "X₂ = 0"
+              ],
+              "active": 1,
+              "caption": "Neither part is at 2F₀, so the detector finds nothing."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "test for harmonic 3: the 3F₀ part matches",
+                "X₃ = 3 ÷ 2 = 1.5"
+              ],
+              "active": 1,
+              "caption": "Only the second cosine responds. Half its amplitude: 1.5."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "change the 3F₀ amplitude to 6 → X₁ is still 1",
+                "give the 3F₀ part phase π/2 → X₃ = 1.5·e^{jπ/2} = 1.5j"
+              ],
+              "active": 0,
+              "caption": "Q10 and Q11: changing one harmonic never affects the others' coefficients. Amplitude goes into the size of X, phase into its angle."
+            }
+          ],
+          "slide": true,
+          "id": "coef.96fb6ac3"
+        },
+        {
+          "type": "example",
+          "title": "The formulas (for reference)",
+          "body": "a₀ = (1/T₀) ∫ x(t) dt                        the average\naₖ = (2/T₀) ∫ x(t) · cos(2π·k·F₀·t) dt\nbₖ = (2/T₀) ∫ x(t) · sin(2π·k·F₀·t) dt\nXₖ = (1/T₀) ∫ x(t) · e^{−j2π·k·F₀·t} dt\n\nAll integrals over one period (0 to T₀). '∫ … dt' ÷ T₀ just means 'average over one repeat'.",
+          "id": "coef.1ec44612"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Average over one repeat of…",
+            "Result"
+          ],
+          "rows": [
+            [
+              "sin × cos (any harmonics)",
+              "0"
+            ],
+            [
+              "cos(m) × cos(n), m ≠ n",
+              "0"
+            ],
+            [
+              "cos(k) × cos(k), same harmonic",
+              "½ (so the integral is T₀/2)"
+            ],
+            [
+              "cos or sin alone (k ≠ 0)",
+              "0 (Lab 4 Q6: both are zero)"
+            ]
+          ],
+          "title": "The detector rules",
+          "id": "coef.52eea42b"
+        },
+        {
+          "type": "check",
+          "prompt": "x(t) = 5·cos(2π·10·t) + 2·cos(2π·20·t) with F₀ = 10 Hz. What is X₂ (two-sided)?",
+          "answer": "Only the 20 Hz part matches harmonic 2. Amplitude 2, phase 0 → X₂ = 2/2 = 1.",
+          "sectionRef": "coef",
+          "id": "coef.2a1acf90"
+        }
+      ]
+    },
+    {
+      "id": "plot",
+      "heading": "Drawing the spectrum",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Magnitude spectrum",
+          "body": "A plot with a vertical line (a 'stem') at each harmonic frequency, as tall as that harmonic's amplitude Aₖ.",
+          "id": "plot.9a552605"
+        },
+        {
+          "type": "example",
+          "title": "Lab 4's triangle wave, F₀ = 5 Hz",
+          "body": "Amplitudes: Aₖ = 8/(π²k²) for odd k, and 0 for even k.\n\n  k = 1 at  5 Hz: 8/π²      ≈ 0.81\n  k = 2 at 10 Hz: 0\n  k = 3 at 15 Hz: 8/(9π²)   ≈ 0.09\n  k = 5 at 25 Hz: 8/(25π²)  ≈ 0.03\n\nStems at 5, 15, 25, 35, 45 Hz, shrinking fast. Nothing at 10, 20, 30, 40.",
+          "slide": "The triangle wave's spectrum",
+          "id": "plot.b058d1a5"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 235",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='fs5a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>Time domain: the triangle wave at F₀ = 5 Hz, so T₀ = 0.2 s per period. Straight sides, sharp corners, repeating five times a second.</title><line x1='30' y1='110' x2='312' y2='110' opacity='.3'/><path d='M40 40 L105 180 L170 40 L235 180 L300 40' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='170' y='205' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>time → (0.4 s shown)</text></g><g><title>Fourier analysis carries the wave to its recipe; synthesis (Lab 4 Q13's rebuild) carries the recipe back to the wave.</title><line x1='318' y1='100' x2='350' y2='100' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#fs5a)'/><text x='334' y='90' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))' stroke='none'>analysis</text></g><g><title>Frequency domain: stems only at the ODD harmonics — 5, 15, 25, 35, 45 Hz — with amplitudes 8/(π²k²), falling off as 1/k². This is exactly the sketch Lab 4 Q4 asks for.</title><line x1='355' y1='180' x2='620' y2='180' opacity='.4'/><line x1='368' y1='45' x2='368' y2='180' opacity='.4'/><line x1='390' y1='180' x2='390' y2='50' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='390' cy='50' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='435' y1='180' x2='435' y2='165.6' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='435' cy='165.6' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='480' y1='180' x2='480' y2='174.8' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='480' cy='174.8' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='525' y1='180' x2='525' y2='177.3' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='525' cy='177.3' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='570' y1='180' x2='570' y2='178.4' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='570' cy='178.4' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><text x='390' y='42' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>8/π²</text><text x='390' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>5</text><text x='435' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>15</text><text x='480' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>25</text><text x='525' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>35</text><text x='570' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>45</text><text x='490' y='218' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>frequency (Hz) →</text></g><g><title>The even harmonics — 10, 20, 30, 40 Hz — are exactly zero: the triangle wave's symmetry cancels them. Nothing is hiding there; those slots are truly empty.</title><text x='412.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='457.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='502.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='547.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text></g></g>",
-          "caption": "Lab 4's triangle wave in both domains. Left: the waveform — straight sides, sharp corners, period 0.2 s. Right: its magnitude spectrum — stems at the odd harmonics of 5 Hz with amplitudes 8/(π²k²), and exact zeros (red) at the even ones. The first stem towers over the rest because of the 1/k² decay, yet without the tiny high stems the corners would round off. Hover any part.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='none' stroke='currentColor'><defs><marker id='fs5a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>Time domain: the triangle wave at F₀ = 5 Hz, so T₀ = 0.2 s per period. Straight sides, sharp corners, repeating five times a second.</title><line x1='30' y1='110' x2='312' y2='110' opacity='.3'/><path d='M40 40 L105 180 L170 40 L235 180 L300 40' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='170' y='205' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>time → (0.4 s shown)</text></g><g><title>Fourier analysis carries the wave to its recipe; synthesis (Lab 4 Q13's rebuild) carries the recipe back to the wave.</title><line x1='318' y1='100' x2='350' y2='100' stroke='rgb(var(--accent-fg))' stroke-width='1.6' marker-end='url(#fs5a)'/><text x='334' y='90' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))' stroke='none'>analysis</text></g><g><title>Frequency domain: stems only at the ODD harmonics: 5, 15, 25, 35, 45 Hz: with amplitudes 8/(π²k²), falling off as 1/k². This is exactly the sketch Lab 4 Q4 asks for.</title><line x1='355' y1='180' x2='620' y2='180' opacity='.4'/><line x1='368' y1='45' x2='368' y2='180' opacity='.4'/><line x1='390' y1='180' x2='390' y2='50' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='390' cy='50' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='435' y1='180' x2='435' y2='165.6' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='435' cy='165.6' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='480' y1='180' x2='480' y2='174.8' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='480' cy='174.8' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='525' y1='180' x2='525' y2='177.3' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='525' cy='177.3' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><line x1='570' y1='180' x2='570' y2='178.4' stroke='rgb(var(--on-track))' stroke-width='2.5'/><circle cx='570' cy='178.4' r='3.5' fill='rgb(var(--on-track))' stroke='none'/><text x='390' y='42' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))' stroke='none'>8/π²</text><text x='390' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>5</text><text x='435' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>15</text><text x='480' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>25</text><text x='525' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>35</text><text x='570' y='197' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' fill='currentColor' stroke='none' opacity='.7'>45</text><text x='490' y='218' text-anchor='middle' font-size='11' fill='currentColor' stroke='none' opacity='.7'>frequency (Hz) →</text></g><g><title>The even harmonics: 10, 20, 30, 40 Hz: are exactly zero: the triangle wave's symmetry cancels them. Nothing is hiding there; those slots are truly empty.</title><text x='412.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='457.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='502.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text><text x='547.5' y='176' text-anchor='middle' font-size='9' fill='rgb(var(--critical))' stroke='none'>0</text></g></g>",
+          "caption": "Lab 4's triangle wave in both domains. Left: the waveform: straight sides, sharp corners, period 0.2 s. Right: its magnitude spectrum: stems at the odd harmonics of 5 Hz with amplitudes 8/(π²k²), and exact zeros (red) at the even ones. The first stem towers over the rest because of the 1/k² decay, yet without the tiny high stems the corners would round off. Hover any part.",
           "slide": "The triangle wave and its spectrum",
-          "id": "spectrum.a4c8e2f7"
-        },
-        {
-          "type": "check",
-          "prompt": "x(t) = 4cos(2π·10t − π/3). Give X₁ and X₋₁ (F₀ = 10 Hz) and the one-sided magnitude spectrum.",
-          "answer": "X₁ = 2e^{−jπ/3} = 1 − j√3; X₋₁ = 2e^{jπ/3} = 1 + j√3. Magnitude spectrum: one stem of height 4 at 10 Hz (or two stems of height 2 at ±10 Hz two-sided). Phase −π/3 at 10 Hz.",
-          "sectionRef": "spectrum",
-          "id": "spectrum.2bac6084"
-        },
-        {
-          "type": "definition",
-          "term": "Fourier series",
-          "body": "A periodic signal written as a sum of harmonically related sinusoids (frequencies kF₀). Coefficients come from multiplying by the harmonic, integrating over one period, and normalizing; orthogonality makes each test isolate one harmonic. Two-sided coefficient X_k has |X_k| = A_k/2 and ∠X_k = ϕ_k.",
-          "id": "spectrum.6638de49"
+          "id": "plot.9e222497"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** A harmonic comb is what the fine horizontal lines in any narrow-band spectrogram are: their spacing IS F₀, which is how pitch trackers (and Praat's pitch contour) measure intonation. Timbre is the pattern of stem heights — a violin and a flute playing the same 440 Hz note have stems in the same places with different heights, and so do two people saying the same vowel. ==Change the stem heights and you change the vowel or instrument; change the spacing and you change the pitch== — that one sentence is a surprising fraction of speech acoustics.",
-          "id": "spectrum.5e1d93ab"
+          "md": "**What the spectrum tells you about a voice:** the **spacing** of the stems is F₀ (the pitch). The **pattern of heights** is the timbre, which for speech means the vowel. Change the spacing and you change the pitch; change the heights and you change the vowel.",
+          "id": "plot.ee591b7e"
+        },
+        {
+          "type": "check",
+          "prompt": "x(t) = 4·cos(2π·10·t − π/3). Draw the one-sided magnitude spectrum.",
+          "answer": "One stem at 10 Hz, height 4. (Two-sided: stems at ±10 Hz, height 2 each.)",
+          "sectionRef": "plot",
+          "id": "plot.9a6c1e37"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "F₀",
+              "how often the whole wave repeats (the pitch)"
+            ],
+            [
+              "harmonic k",
+              "the simple wave at k·F₀"
+            ],
+            [
+              "Aₖ, ϕₖ",
+              "amplitude and starting angle of harmonic k"
+            ],
+            [
+              "aₖ, bₖ",
+              "the cosine and sine parts of harmonic k"
+            ],
+            [
+              "Xₖ",
+              "complex coefficient; |Xₖ| = Aₖ/2"
+            ],
+            [
+              "orthogonal",
+              "different harmonics don't affect each other's measurement"
+            ],
+            [
+              "magnitude spectrum",
+              "stems at each harmonic, as tall as its amplitude"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "plot.3b60221c"
         }
       ]
     }
@@ -347,37 +386,35 @@
   "exercises": [
     {
       "id": "coefs-by-eye",
-      "title": "Coefficients without calculus",
-      "prompt": "x(t) = 3 + 4·cos(2π·10·t) + 2·cos(2π·30·t + π/2). Period? Fundamental frequency? Write the trigonometric-form coefficients (a₀, aₖ, bₖ) for all k, and the complex coefficients Xₖ for k = 0, ±1, ±3. Then sketch the magnitude spectrum.",
+      "title": "Coefficients by eye",
+      "prompt": "x(t) = 3 + 4·cos(2π·10·t) + 2·cos(2π·30·t + π/2). What is F₀? Give A₀, and the amplitude and phase of each harmonic. Then give X₁ and X₃.",
       "hints": [
-        "The fundamental is the largest F that divides all the frequencies present: 10 and 30 → 10 Hz. Period = 1/10 s. The 30 Hz term is harmonic k = 3.",
-        "Two traps: forgetting that the constant 3 is the k = 0 term, and mishandling the +π/2 phase — cos(θ + π/2) = −sin θ, so that term is a *sine*, which lands in bₖ, with a sign.",
-        "Complex form: a cosine of amplitude A at harmonic k splits into Xₖ = X₋ₖ = A/2 (the two spinners). With a phase ϕ: Xₖ = (A/2)e^(jϕ), X₋ₖ = (A/2)e^(−jϕ)."
+        "F₀ is the biggest frequency that both 10 and 30 are whole multiples of.",
+        "Read A and ϕ straight off each cosine; the constant is A₀.",
+        "Xₖ = (Aₖ/2)·e^{jϕₖ}."
       ],
       "solution": [
-        "F₀ = 10 Hz, T = 0.1 s. Harmonics present: k = 0, 1, 3.",
-        "a₀ = 3 (the DC term). a₁ = 4, b₁ = 0. 2cos(2π·30t + π/2) = −2 sin(2π·30t), so a₃ = 0, b₃ = −2. All other aₖ, bₖ = 0.",
-        "Complex: X₀ = 3. X₁ = X₋₁ = 2. X₃ = (2/2)e^(jπ/2) = j, X₋₃ = e^(−jπ/2) = −j. |X₃| = |X₋₃| = 1.",
-        "Magnitude spectrum: lines at 0 Hz (3), ±10 Hz (2 each), ±30 Hz (1 each). Nothing else."
+        "F₀ = 10 Hz (30 is the 3rd harmonic).",
+        "A₀ = 3. Harmonic 1: A = 4, ϕ = 0. Harmonic 3: A = 2, ϕ = π/2. Harmonic 2: 0.",
+        "X₁ = 2. X₃ = 1·e^{jπ/2} = j."
       ],
-      "why": "Reading a signal's ingredients off its formula — and predicting the spectrum before you plot it — is the check that catches bugs in every lab notebook. And 'this term is really a sine' is the kind of detail that decides whether a phase spectrum makes sense."
+      "why": "This is Lab 4's block of questions, done without any calculus.",
+      "sectionRef": "coef"
     },
     {
-      "id": "orthogonality",
-      "title": "Why multiply-and-integrate finds a coefficient",
-      "prompt": "Explain, in your own words and one short calculation, why integrating x(t)·cos(2π·k·F₀·t) over one period picks out only the k-th cosine's amplitude and zeroes out everything else. Use x(t) = a₁cos(2πF₀t) + a₂cos(2π·2F₀t).",
+      "id": "why-zero",
+      "title": "Why the detector ignores other harmonics",
+      "prompt": "In one or two sentences: why does multiplying by cos(2π·F₀·t) and averaging ignore a cos(2π·2F₀·t) part of the wave?",
       "hints": [
-        "Multiply x(t) by cos(2π·2F₀t) and integrate over one period. You get two integrals: a₁∫cos(2πF₀t)cos(2π2F₀t) and a₂∫cos²(2π2F₀t). Think about each separately.",
-        "The mistake is trying to compute the integrals from scratch. Use the two facts from the chapter: the integral of a product of *different* harmonics over a period is 0, and the integral of cos² over a period is T/2.",
-        "So the a₁ term vanishes (different harmonics) and the a₂ term gives a₂·T/2. Divide by T/2 and you have a₂. That's the recipe: multiply, integrate, normalize."
+        "What does cos(F₀) × cos(2F₀) look like over one repeat?",
+        "Is it more above the line or below?",
+        "What's the average of something that's equally above and below?"
       ],
       "solution": [
-        "∫₀ᵀ x(t)cos(2π2F₀t)dt = a₁∫cos(2πF₀t)cos(2π2F₀t)dt + a₂∫cos²(2π2F₀t)dt.",
-        "First integral: different harmonics are orthogonal — it's 0. Second: cos² over a period integrates to T/2.",
-        "Result: a₂·T/2. So a₂ = (2/T)∫x(t)cos(2π2F₀t)dt.",
-        "Intuition: multiplying by the k-th cosine and averaging asks 'how much of x moves in step with this cosine?' Every other harmonic spends as much time in step as out of step, so it averages to zero."
+        "The product of two different harmonics goes up and down evenly over one repeat, so its average is zero. Only the matching harmonic (cos × cos of the same frequency) stays positive on average."
       ],
-      "why": "This 'correlate with a template and average' move is the DFT, the matched filter in radar, the way a phone finds a Wi-Fi carrier, and — in LING 124 — how a spectrogram is computed. One idea, everywhere."
+      "why": "The same 'multiply and average' trick runs Wi-Fi and 5G: each channel's detector ignores all the others.",
+      "sectionRef": "coef"
     }
   ]
 }
