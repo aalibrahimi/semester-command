@@ -32,6 +32,7 @@ import { drills as ling115Corpus } from "./ling115--1-what-is-a-corpus";
 import { drills as ling115Regex } from "./ling115--4-regex";
 import { drills as ling115Tokens } from "./ling115--5-words-tokens-normalization";
 import { drills as ling115Pos } from "./ling115--7-annotation-pos";
+import { drills as ling115Freq } from "./ling115--9-frequency-keyness";
 import { drills as ling124Wave } from "./ling124--0-reading-a-wave";
 import { drills as ling124Sampling } from "./ling124--3-sampling-aliasing";
 import { drills as ling124Complex } from "./ling124--4-complex-sinusoids";
@@ -61,6 +62,7 @@ const ALL: Drill[][] = [
   ling115Regex,
   ling115Tokens,
   ling115Pos,
+  ling115Freq,
   ling124Wave,
   ling124Sampling,
   ling124Complex,

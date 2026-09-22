@@ -259,9 +259,8 @@ export const courses: Course[] = [
       "Six annotation levels; datasheets; the data-linguist process.",
       "Parsing vs tagging; three ambiguity types; Brown vs PTB.",
     ],
-    guides: ["1-what-is-a-corpus", "4-regex", "5-words-tokens-normalization", "7-annotation-pos"],
+    guides: ["1-what-is-a-corpus", "4-regex", "5-words-tokens-normalization", "7-annotation-pos", "9-frequency-keyness"],
     planned: [
-      { label: "Week 6", title: "Frequencies: raw vs relative, Zipf's law, keyness (Sep 22–24)" },
       { label: "Week 7", title: "Building an annotated dataset; annotation guidelines (Oct 1)" },
       { label: "Week 8", title: "Collocations and concordances: KWIC, MI, t-score (Oct 6–8)" },
     ],
