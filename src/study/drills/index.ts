@@ -38,6 +38,8 @@ import { drills as ling124Sampling } from "./ling124--3-sampling-aliasing";
 import { drills as ling124Complex } from "./ling124--4-complex-sinusoids";
 import { drills as ling124Fourier } from "./ling124--5-fourier-series";
 import { drills as ling124Dft } from "./ling124--6-transform-dft-stft";
+import { drills as ling124Pitch } from "./ling124--9-pitch-asr";
+import { drills as ling124Features } from "./ling124--11-feature-extraction";
 
 const ALL: Drill[][] = [
   cs146Notation,
@@ -68,6 +70,8 @@ const ALL: Drill[][] = [
   ling124Complex,
   ling124Fourier,
   ling124Dft,
+  ling124Pitch,
+  ling124Features,
 ];
 
 const byGuide = new Map<string, Drill[]>();

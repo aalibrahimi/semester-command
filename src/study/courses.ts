@@ -218,9 +218,8 @@ export const courses: Course[] = [
       "Fourier series: three forms, conversions, compute X_k for a sum of cosines, orthogonality.",
       "DFT/IDFT, bin spacing Fs/N, leakage, STFT parameters, narrow vs broad band.",
     ],
-    guides: ["0-reading-a-wave", "3-sampling-aliasing", "4-complex-sinusoids", "5-fourier-series", "6-transform-dft-stft"],
+    guides: ["0-reading-a-wave", "3-sampling-aliasing", "4-complex-sinusoids", "5-fourier-series", "6-transform-dft-stft", "9-pitch-asr", "11-feature-extraction"],
     planned: [
-      { label: "Days 10–11", title: "Mel filterbank, cepstrum, MFCC features" },
       { label: "Days 12–13", title: "Dynamic time warping, GMMs, HMMs" },
       { label: "Days 14+", title: "Neural ASR and TTS" },
     ],

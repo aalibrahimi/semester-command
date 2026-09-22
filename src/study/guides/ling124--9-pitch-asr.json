@@ -1,0 +1,449 @@
+{
+  "id": "ling124/9-pitch-asr",
+  "course": "ling124",
+  "lessons": "Days 9–10",
+  "title": "Estimating pitch with autocorrelation, and what ASR is",
+  "summary": "Explain why pitch is not 1 / frame length; compute a dot product and an autocorrelation by hand and read the period off the first peak; turn a lag in samples into F0 = Fₛ / lag; say which heuristics (pitch range, silence, voicing) throw out bad frames; lay out the ASR pipeline and compute word error rate.",
+  "estimatedMinutes": 50,
+  "sourceNote": "Dr. Koo's Day 9 slides 'Pitch estimation' and Day 10 slides 'Overview of ASR' (pulled from Canvas); Bäckström et al. 2022 §3.7 and ch. 8.3; J&M ch. 16.1 and 16.5. Labs 8 and 9.",
+  "requires": [
+    "ling124/6-transform-dft-stft"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why measure pitch",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem** Your voice has a pitch: how high or low it sounds. That pitch comes from how fast your vocal folds vibrate, the **fundamental frequency F0**. We want a number for it, frame by frame, across a recording. Intonation (questions going up), tone in Mandarin or Yoruba, stress, emotion and speaker identity all live in the F0 track.",
+          "label": "why",
+          "slide": "A number for 'how high'",
+          "id": "why.b6377d4a"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this** Auto-Tune and every pitch-correction app, the pitch track in Praat, voice assistants deciding whether you asked a question, Mandarin speech recognizers telling *mā* from *mà*, and forensic speaker comparison. All of them start with exactly the method in this chapter or its cepstral cousin (Days 11–12).",
+          "id": "why.063e6817"
+        }
+      ]
+    },
+    {
+      "id": "trap",
+      "heading": "Pitch is not 1 / frame length",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Koo opens with a trick question. Isn't pitch just F0? **Yes**: pitch tracks the F0 of the source (the vocal folds). But **not** the F0 you get from the DFT's point of view. When the STFT treats a frame as one period of a repeating signal, the 'fundamental' of the DFT grid is 1 / frame length: a 0.05 s frame gives 1 / 0.05 = **20 Hz**. That number describes the frame, not the voice.",
+          "slide": "Two different 'F0's",
+          "id": "trap.605ffc4f"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "The DFT's F0",
+            "The voice's F0 (pitch)"
+          ],
+          "rows": [
+            [
+              "what it is",
+              "1 ÷ frame length",
+              "how often the waveform actually repeats"
+            ],
+            [
+              "depends on",
+              "your analysis settings",
+              "the speaker's vocal folds"
+            ],
+            [
+              "example",
+              "25 ms frame → 40 Hz",
+              "a man ~ 100 Hz, a woman ~ 200 Hz"
+            ]
+          ],
+          "title": "Don't mix these up",
+          "slide": true,
+          "id": "trap.f0a074e4"
+        },
+        {
+          "type": "trap",
+          "body": "Answering 'F0 = 1 / frame size' when asked for the pitch of a frame. That's the DFT bin spacing (Day 7). Pitch has to be measured from the signal: autocorrelation or cepstrum.",
+          "source": "Day 9 slides",
+          "points": null,
+          "id": "trap.7343fc9c"
+        }
+      ]
+    },
+    {
+      "id": "dot",
+      "heading": "Dot product: a number for 'same trend'",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Correlation",
+          "body": "A number for how similar the **trend** of two equally long lists of values is: do they go up and down together?",
+          "id": "dot.d66a9df4"
+        },
+        {
+          "type": "definition",
+          "term": "Dot product",
+          "body": "Multiply the two lists position by position and add: `x · y = Σ xᵢ yᵢ`. Large and positive when they move together, near zero when unrelated, negative when one goes up as the other goes down.",
+          "id": "dot.f18247fc"
+        },
+        {
+          "type": "example",
+          "title": "Three tiny dot products",
+          "body": "x = [1, 2, −1]\n\ny = [1, 2, −1]   x·y = 1 + 4 + 1   =  6   same trend\ny = [2, 1,  0]   x·y = 2 + 2 + 0   =  4   partly\ny = [−1, −2, 1]  x·y = −1 − 4 − 1  = −6   opposite trend",
+          "slide": "Positive × positive adds up",
+          "id": "dot.0bd1e9e0"
+        },
+        {
+          "type": "check",
+          "prompt": "x = [3, 0, −3], y = [1, 0, −1]. What is x · y, and what does its sign say?",
+          "answer": "3·1 + 0·0 + (−3)(−1) = 6. Positive: the two go up and down together.",
+          "sectionRef": "dot",
+          "id": "dot.76182143"
+        }
+      ]
+    },
+    {
+      "id": "auto",
+      "heading": "Autocorrelation: compare the signal with itself, shifted",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Autocorrelation",
+          "body": "The dot product of a signal with a **delayed copy of itself**, computed for many delays (lags) k: `r[k] = Σ x[n] · x[n − k]`. The delayed copy is **padded with zeros** so both lists stay the same length.",
+          "id": "auto.7d39e0b5"
+        },
+        {
+          "type": "prose",
+          "md": "Why this finds the period: if a signal repeats every T₀ samples, then shifting it by exactly T₀ lines every peak up with the next peak. The dot product jumps. Shifting by half a period lines peaks up with troughs and the dot product goes negative. So **the first peak after lag 0 is the period**.",
+          "slide": "Why shifting finds the period",
+          "id": "auto.a256da87"
+        },
+        {
+          "type": "stepper",
+          "title": "Autocorrelation of a signal with period 8",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "x      = [1, 2, 1, 0, −1, −2, −1, 0, 1, 2, 1, 0]",
+                "lag 0: x·x = 1+4+1+0+1+4+1+0+1+4+1+0 = 18"
+              ],
+              "active": 1,
+              "caption": "Lag 0: the signal against itself, unshifted. Every product is a square, so this is the biggest the dot product can ever be."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "lag 2: x[n]·x[n−2], padded with 0s at the front",
+                "r[2] = 1"
+              ],
+              "active": 1,
+              "caption": "Shift by 2 samples: now peaks line up with zero-crossings. Products cancel out, the sum is small: 1."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "lag 4: shifted by half a cycle",
+                "r[4] = −12"
+              ],
+              "active": 1,
+              "caption": "Half a cycle: every peak now sits on a trough. Positive × negative everywhere: strongly negative."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "lag 8: shifted by one full cycle",
+                "r[8] = 6"
+              ],
+              "active": 1,
+              "caption": "One full cycle (8 samples): peaks line up with peaks again, so the dot product is large and positive again. That lag is the period."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "r[k] for k = 0..9:",
+                "18, 12, 1, −8, −12, −8, −1, 4, 6, 4",
+                "first peak after 0 is at k = 8 → period = 8 samples"
+              ],
+              "active": 2,
+              "caption": "Read the peak, not the whole list: the first peak after lag 0 is the fundamental period T₀ in samples. It's smaller than 18 only because the shifted copy was padded with zeros (fewer products to add up)."
+            }
+          ],
+          "slide": true,
+          "id": "auto.d9bebeb0"
+        },
+        {
+          "type": "prose",
+          "md": "Two things on Koo's plot: peaks **recur** at every multiple of the period (8, 16, 24…), and they **shrink** as the lag grows, because more of the shifted copy is zero padding. Always take the first peak after 0.",
+          "id": "auto.e49f3a05"
+        },
+        {
+          "type": "trap",
+          "body": "Taking the lag-0 value as the peak. r[0] is always the largest (the signal matched with itself); it tells you nothing about pitch. Skip it and look for the next peak.",
+          "source": "Day 9, Lab 8",
+          "points": null,
+          "id": "auto.465c91e5"
+        }
+      ]
+    },
+    {
+      "id": "f0",
+      "heading": "From a lag in samples to F0 in Hz",
+      "blocks": [
+        {
+          "type": "example",
+          "title": "The conversion",
+          "body": "F0 = sampling rate ÷ period in samples\n\nKoo's first example: one cycle every 99 samples at 10,000 Hz\n  F0 = 10,000 ÷ 99 ≈ 101 Hz\n\n'The emperor had a mean temper' at 16,000 Hz, a periodic frame:\n  first peak at lag 69 → F0 = 16,000 ÷ 69 ≈ 232 Hz (the slide rounds to 231)",
+          "answer": "F0 = Fₛ / lag",
+          "slide": "F0 = Fₛ ÷ lag",
+          "id": "f0.fd9eccf8"
+        },
+        {
+          "type": "prose",
+          "md": "Read the units out loud and it can't go wrong: *(1 cycle / 99 samples) × (10,000 samples / 1 second) = 10,000 / 99 cycles per second*.",
+          "id": "f0.7d89a155"
+        },
+        {
+          "type": "check",
+          "prompt": "At Fₛ = 16,000 Hz the first autocorrelation peak is at lag 80. What is F0?",
+          "answer": "16,000 ÷ 80 = 200 Hz.",
+          "sectionRef": "f0",
+          "id": "f0.20650fa2"
+        }
+      ]
+    },
+    {
+      "id": "heur",
+      "heading": "When autocorrelation lies: three heuristics",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "On an **aperiodic** frame (a hiss like *s*, or silence) there is no real period, but autocorrelation still has a 'first peak'. Koo's example lands at lag 6: 16,000 ÷ 6 ≈ **2,667 Hz**, which no human voice produces. So real pitch trackers throw frames out.",
+          "slide": "2667 Hz?!",
+          "id": "heur.8ffb3fc0"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Heuristic",
+            "Rule (Koo's example numbers)",
+            "Catches"
+          ],
+          "rows": [
+            [
+              "Plausible range",
+              "only accept 75–600 Hz",
+              "the 2,667 Hz nonsense; at 16 kHz that means lags 27 to 213"
+            ],
+            [
+              "Silence detection",
+              "skip the frame if no amplitude is above 3% of the recording's maximum",
+              "pauses and breaths"
+            ],
+            [
+              "Voice activity detection",
+              "skip if the spectrum is too flat (spectral flatness above a threshold)",
+              "noise and voiceless sounds: speech spectra have energy peaks, noise doesn't"
+            ]
+          ],
+          "title": "Throwing out bad frames",
+          "slide": "Three filters",
+          "id": "heur.289d53c6"
+        },
+        {
+          "type": "check",
+          "prompt": "With a 75–600 Hz pitch range at Fₛ = 16,000 Hz, which lags are you allowed to pick?",
+          "answer": "From 16,000 ÷ 600 ≈ 27 samples up to 16,000 ÷ 75 ≈ 213 samples. (High pitch = short lag.)",
+          "sectionRef": "heur",
+          "id": "heur.8a7966f4"
+        }
+      ]
+    },
+    {
+      "id": "asr",
+      "heading": "ASR: speech in, text out",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Automatic speech recognition (ASR)",
+          "body": "Getting a computer to take dictation: a recording goes in, a sequence of words (or phonemes) comes out.",
+          "id": "asr.b7ef23dd"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "In general",
+            "For ASR"
+          ],
+          "rows": [
+            [
+              "1. Data",
+              "gather examples",
+              "many pairs of recordings + transcripts"
+            ],
+            [
+              "2. Split",
+              "train / validation / test sets",
+              "same"
+            ],
+            [
+              "3. Model",
+              "input → output",
+              "input: one spectrum vector per short frame; output: a sequence of phonemes or words; the link: HMMs or neural networks"
+            ],
+            [
+              "4. Configure",
+              "set hyperparameters, fit on training, check on validation, repeat",
+              "same"
+            ],
+            [
+              "5. Evaluate",
+              "once, on the test set",
+              "error rate (WER)"
+            ]
+          ],
+          "title": "The machine learning recipe (Day 10)",
+          "slide": "How an ASR system is built",
+          "id": "asr.ec3679e9"
+        },
+        {
+          "type": "prose",
+          "md": "That 'one vector per frame' input is where this course has been heading: the STFT gives you a spectrum per frame (Day 8), and Days 11–12 turn each spectrum into the compact 39-number vector that classic ASR systems actually use.",
+          "id": "asr.2101ac27"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Corpus",
+            "What's in it"
+          ],
+          "rows": [
+            [
+              "TIMIT",
+              "read speech, hand-labelled down to phoneme and word boundaries"
+            ],
+            [
+              "LibriSpeech",
+              "1,000 hours of read audiobooks, transcribed by sentence"
+            ],
+            [
+              "Switchboard",
+              "260 hours of phone calls between strangers (conversational)"
+            ]
+          ],
+          "title": "Standard corpora",
+          "id": "asr.86c6b55d"
+        }
+      ]
+    },
+    {
+      "id": "wer",
+      "heading": "Word error rate",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Word error rate (WER)",
+          "body": "Errors in the computer's output (the **hypothesis**) divided by the number of words in the true transcript (the **reference**). Errors are **substitutions** (wrong word), **deletions** (missed word) and **insertions** (extra word): `WER = (S + D + I) ÷ N`.",
+          "id": "wer.114510d5"
+        },
+        {
+          "type": "example",
+          "title": "Counting WER",
+          "body": "reference:  the cat sat on the mat        (N = 6)\nhypothesis: the cat sat in a the mat\n\n'on' → 'in'   substitution  S = 1\n'a'           inserted      I = 1\nnothing missed               D = 0\n\nWER = (1 + 0 + 1) ÷ 6 = 2/6 ≈ 33%",
+          "answer": "≈ 33%",
+          "slide": "Counting WER",
+          "id": "wer.440a6c96"
+        },
+        {
+          "type": "prose",
+          "md": "With several recordings, add up all the errors and all the reference words first, then divide once (Koo's slide). Don't average the per-recording percentages.",
+          "id": "wer.9927d410"
+        },
+        {
+          "type": "trap",
+          "body": "Dividing by the length of the hypothesis. WER always divides by the **reference** length. Because insertions count, WER can go above 100%.",
+          "source": "Day 10 slides, J&M 16.5",
+          "points": null,
+          "id": "wer.345b744c"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Harder",
+            "Easier"
+          ],
+          "rows": [
+            [
+              "large vocabulary",
+              "digits only"
+            ],
+            [
+              "conversational (Switchboard)",
+              "read speech (LibriSpeech)"
+            ],
+            [
+              "noisy street",
+              "quiet room"
+            ],
+            [
+              "accents the training data lacks",
+              "accents it has plenty of"
+            ]
+          ],
+          "title": "What makes ASR hard",
+          "slide": "Four dimensions of difficulty",
+          "id": "wer.54561866"
+        },
+        {
+          "type": "check",
+          "prompt": "Two recordings: 3 errors in a 10-word reference, 1 error in a 30-word reference. What is the overall WER?",
+          "answer": "(3 + 1) ÷ (10 + 30) = 4 ÷ 40 = 10%. (Averaging 30% and 3.3% would wrongly give 16.7%.)",
+          "sectionRef": "wer",
+          "id": "wer.947a4051"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lag-to-f0",
+      "title": "Read a pitch off an autocorrelation",
+      "prompt": "A frame sampled at 22,050 Hz has autocorrelation peaks at lags 0, 147, 294 and 441 (and smaller values in between). What is F0? Is it plausible for a human voice?",
+      "hints": [
+        "Ignore lag 0.",
+        "The first peak after 0 is the period in samples.",
+        "F0 = Fₛ ÷ that lag. Then check 75–600 Hz."
+      ],
+      "solution": [
+        "First peak after 0: lag 147.",
+        "F0 = 22,050 ÷ 147 = 150 Hz.",
+        "Inside 75–600 Hz: plausible (a lower voice). 294 and 441 are just multiples of the period."
+      ],
+      "why": "This is the whole of Lab 8's pitch tracker, done by hand for one frame.",
+      "sectionRef": "f0"
+    },
+    {
+      "id": "wer-count",
+      "title": "Count the errors",
+      "prompt": "Reference: 'please call stella ask her to bring these things'. Hypothesis: 'please call stellar ask to bring these thing with'. What is the WER?",
+      "hints": [
+        "Line the two up word by word. N is the reference length: count it.",
+        "'stella' → 'stellar' and 'things' → 'thing' are substitutions. Which reference word is missing?",
+        "'with' at the end is extra: an insertion."
+      ],
+      "solution": [
+        "N = 9.",
+        "S = 2 (stella→stellar, things→thing), D = 1 (her), I = 1 (with).",
+        "WER = (2 + 1 + 1) ÷ 9 = 4/9 ≈ 44%."
+      ],
+      "why": "WER is the one number every ASR paper, product launch and benchmark reports; knowing it divides by the reference and counts insertions keeps you from misreading them.",
+      "sectionRef": "wer"
+    }
+  ]
+}

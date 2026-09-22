@@ -1,0 +1,434 @@
+{
+  "id": "ling124/11-feature-extraction",
+  "course": "ling124",
+  "lessons": "Days 11–12",
+  "title": "Feature extraction: pre-emphasis, Mel filterbank, cepstrum, MFCCs",
+  "summary": "Explain what a feature vector is for and why it should capture the filter, not the source; apply pre-emphasis and compute frame energy; convert Hz to mel and say why filterbanks use it; describe the cepstrum (log, then DCT), quefrency and liftering, and convert quefrency to frequency; compute deltas and list the 39 classic MFCC features.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Dr. Koo's Days 11–12 slides 'Feature Extraction' (pulled from Canvas); J&M (2008) §9.3 and J&M (2023) §16.2. Labs 10 and 11.",
+  "requires": [
+    "ling124/6-transform-dft-stft",
+    "ling124/9-pitch-asr"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why not just feed the spectrum to the recognizer?",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem** An ASR model (Day 10) needs one vector of numbers per frame. The raw magnitude spectrum of a 25 ms frame has hundreds of values, most of them describing things that don't change *which sound* you said: your pitch, the exact harmonics, loudness. We want a short vector that captures **what the mouth is doing** and ignores the rest.",
+          "label": "why",
+          "slide": "Too many numbers, most of them noise",
+          "id": "why.f1b461af"
+        },
+        {
+          "type": "definition",
+          "term": "Source-filter theory (recap)",
+          "body": "Speech = a **source** (vocal folds buzzing: harmonics at F0, 2F0, 3F0…) shaped by a **filter** (the vocal tract: throat, tongue, lips), which creates the broad peaks we call **formants**. The source carries pitch; the filter carries **which vowel or consonant** it is.",
+          "id": "why.3a70a12d"
+        },
+        {
+          "type": "prose",
+          "md": "So the goal of feature extraction: for each frame, a compact description of the **filter**. Two speakers saying *ee* at different pitches should get similar features. That is what **MFCCs** (Mel-frequency cepstral coefficients) do, and for decades a 39-number MFCC vector per frame was the standard input to speech recognizers. It still is for many small on-device systems, and MFCC-like features are used in speaker ID, music genre tagging and bird-song classification.",
+          "slide": "Keep the filter, drop the source",
+          "id": "why.d18eedc0"
+        },
+        {
+          "type": "stepper",
+          "title": "The whole pipeline, one frame at a time",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "recording",
+                "→ frames (25 ms, shifted 10 ms)"
+              ],
+              "active": 1,
+              "caption": "Step 0: chop the signal into short overlapping frames, exactly like the STFT (Day 8)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "frame",
+                "→ pre-emphasis: y[n] = x[n] − α·x[n−1]"
+              ],
+              "active": 1,
+              "caption": "Boost the high frequencies, which the voice source naturally weakens."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "→ window + DFT → magnitude spectrum",
+                "→ energy: Σ x[n]²"
+              ],
+              "active": 0,
+              "caption": "Spectrum of the frame, and one number for how loud it is."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "→ Mel filterbank: ~26 triangular bands",
+                "→ energy in each band"
+              ],
+              "active": 0,
+              "caption": "Squash hundreds of frequency bins into a few dozen bands, spaced the way human hearing is."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "→ log",
+                "→ DCT (the 'spectrum of the spectrum')",
+                "→ keep the first 13 coefficients = MFCCs"
+              ],
+              "active": 2,
+              "caption": "The cepstrum step: separates the slow filter shape (keep) from the fast source ripples (drop)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "→ + 13 deltas (velocity)",
+                "→ + 13 delta-deltas (acceleration)",
+                "= 39 numbers per frame"
+              ],
+              "active": 2,
+              "caption": "Add how each coefficient is changing. 39 numbers per 10 ms is what classic ASR systems (Day 10) take as input."
+            }
+          ],
+          "slide": true,
+          "id": "why.78b1e66e"
+        }
+      ]
+    },
+    {
+      "id": "pre",
+      "heading": "Pre-emphasis: undo the source's tilt",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "The source's spectrum **slopes downward**: each harmonic is weaker than the one below it. The filter's output inherits that slope, so high frequencies come out faint. Two sounds that differ mainly up high (like *s* vs *sh*) could look almost the same.",
+          "id": "pre.fcc9a9a0"
+        },
+        {
+          "type": "definition",
+          "term": "Pre-emphasis",
+          "body": "A filter that boosts high frequencies before anything else: `y[n] = x[n] − α · x[n − 1]`, with **0.9 ≤ α < 1** (0.97 or 0.98 is typical). A bigger α boosts the highs more drastically.",
+          "id": "pre.feffcafa"
+        },
+        {
+          "type": "example",
+          "title": "Pre-emphasis by hand (α = 0.97)",
+          "body": "x = [2, 3, 5, 4]      (x[−1] = 0)\n\ny[0] = 2 − 0.97·0 = 2.00\ny[1] = 3 − 0.97·2 = 1.06\ny[2] = 5 − 0.97·3 = 2.09\ny[3] = 4 − 0.97·5 = −0.85\n\nSlow changes (neighbours alike) nearly cancel → lows shrink.\nFast changes survive → highs are relatively boosted.",
+          "answer": "[2.00, 1.06, 2.09, −0.85]",
+          "slide": "y[n] = x[n] − αx[n−1]",
+          "id": "pre.4a98ca3a"
+        },
+        {
+          "type": "check",
+          "prompt": "Why does subtracting the previous sample boost high frequencies?",
+          "answer": "A low-frequency signal changes slowly, so x[n] ≈ x[n−1] and the difference is small. A high-frequency signal changes a lot between samples, so the difference stays large.",
+          "sectionRef": "pre",
+          "id": "pre.8edcbfae"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "heading": "Energy: one number for loudness",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Energy",
+          "body": "Proportional to amplitude squared. The usual measure for a frame: `E = Σ x[n]²`, the sum of squared amplitudes.",
+          "id": "energy.e7a97b34"
+        },
+        {
+          "type": "example",
+          "title": "Energy of a frame",
+          "body": "x = [0.5, −1, 2, −0.5]\nE = 0.25 + 1 + 4 + 0.25 = 5.5",
+          "answer": "5.5",
+          "id": "energy.7badb520"
+        },
+        {
+          "type": "prose",
+          "md": "Energy is often the 13th feature: 12 MFCCs + energy. It helps tell speech from silence and loud vowels from quiet consonants.",
+          "id": "energy.ea96085f"
+        },
+        {
+          "type": "check",
+          "prompt": "Why square the amplitudes instead of just adding them?",
+          "answer": "Samples go positive and negative; adding them would cancel out to about zero. Squaring makes every sample count positively, and energy is proportional to amplitude squared anyway.",
+          "sectionRef": "energy",
+          "id": "energy.ae91f400"
+        }
+      ]
+    },
+    {
+      "id": "mel",
+      "heading": "The Mel filterbank: hear like a human",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Filterbank analysis",
+          "body": "Split the frequency range into **bands**. For each band, take a weighted sum of the magnitudes inside it (weights shaped like a triangle, overlapping with the neighbours). Each band ignores everything outside its range, so it acts as a **filter**. Output: one energy number per band.",
+          "id": "mel.731fd9fe"
+        },
+        {
+          "type": "definition",
+          "term": "Mel scale",
+          "body": "A pitch scale matched to human hearing: equal steps in mel **sound** equally far apart. `mel = 1125 · ln(1 + f / 700)`. Roughly linear below 1,000 Hz, logarithmic above.",
+          "id": "mel.a8d5d700"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "f (Hz)",
+            "mel"
+          ],
+          "rows": [
+            [
+              "300",
+              "401"
+            ],
+            [
+              "1,000",
+              "998"
+            ],
+            [
+              "2,000",
+              "1,519"
+            ],
+            [
+              "4,000",
+              "2,142"
+            ],
+            [
+              "8,000",
+              "2,835"
+            ]
+          ],
+          "title": "Hz vs mel",
+          "slide": "Doubling Hz is not doubling mel",
+          "id": "mel.899ad712"
+        },
+        {
+          "type": "prose",
+          "md": "Why mel spacing: we hear the difference between 300 and 400 Hz easily, but 7,000 vs 7,100 Hz barely at all. So a **Mel filterbank** places its triangles **narrow and dense at low frequencies** and **wide and sparse at high ones**: resolution where hearing (and formants) need it, not where they don't.",
+          "slide": "Narrow bands low, wide bands high",
+          "id": "mel.d2f94d3d"
+        },
+        {
+          "type": "check",
+          "prompt": "Convert 1,500 Hz to mel.",
+          "answer": "1125 · ln(1 + 1500/700) = 1125 · ln(3.143) ≈ 1125 · 1.145 ≈ 1,288 mel.",
+          "sectionRef": "mel",
+          "id": "mel.f01ae617"
+        }
+      ]
+    },
+    {
+      "id": "cep",
+      "heading": "The cepstrum: separating source from filter",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Look at a vowel's log spectrum: a **fast ripple** (the harmonics, every F0 Hz: that's the source) riding on a **slow wave** (the formant peaks: the filter). To separate them, treat the spectrum itself as a signal and ask which patterns in it are fast and which are slow. That is a Fourier-style analysis **of the spectrum**.",
+          "slide": "Fast ripples, slow wave",
+          "id": "cep.b4055741"
+        },
+        {
+          "type": "definition",
+          "term": "Cepstral analysis",
+          "body": "(1) Take the **log** magnitude spectrum. (2) Find the 'spectrum' of that log spectrum, using the **DCT**. The result is the **cepstrum** ('spec' reversed). Its x-axis is called **quefrency**.",
+          "id": "cep.c63d1a80"
+        },
+        {
+          "type": "prose",
+          "md": "**Why the log first** Taking the log makes tall and short peaks roughly the same height, so the recurring harmonic peaks look like an even, regular ripple, which is easy to detect.",
+          "id": "cep.77cb4112"
+        },
+        {
+          "type": "definition",
+          "term": "DCT (discrete cosine transform)",
+          "body": "Like the DFT, but it builds the signal out of **cosines only** (no sines): `Xₖ = 2 Σₙ x[n] cos(πk(2n + 1) / 2N)`. It gives real numbers, which is all we need here.",
+          "id": "cep.cbf81702"
+        },
+        {
+          "type": "definition",
+          "term": "Quefrency",
+          "body": "The cepstrum's axis. **Fast** patterns in the spectrum sit **far** from the origin; **slow** patterns sit **close** to it. So the filter shape (slow) lives in the first few coefficients and the harmonics (fast) show up as a peak further out.",
+          "id": "cep.071c5fa2"
+        },
+        {
+          "type": "example",
+          "title": "Quefrency → frequency",
+          "body": "frequency = sampling rate ÷ quefrency\n\nKoo's example: a cepstral peak at quefrency 120, Fₛ = 48,000 Hz\n  48,000 ÷ 120 = 400 Hz\n\nThat peak is the harmonic ripple, so 400 Hz is F0.\n(This is the 'cepstral' pitch method promised on Day 9.)",
+          "answer": "400 Hz",
+          "slide": "Peak at quefrency 120",
+          "id": "cep.e8662c9d"
+        },
+        {
+          "type": "prose",
+          "md": "It feels backwards: a **higher** voice gives a peak at a **lower** quefrency. Higher F0 means harmonics spaced **further apart** in the spectrum, so the ripple repeats **more slowly** across the frequency axis, so it sits closer to the origin.",
+          "id": "cep.0f75b612"
+        },
+        {
+          "type": "definition",
+          "term": "Liftering",
+          "body": "'Filtering' in the cepstrum: keep the coefficients you want (say the first 13), set the rest to zero, and run the inverse DCT to redraw the spectrum. Keeping only low quefrencies gives a smooth curve through the formants: the filter, with the source removed.",
+          "id": "cep.b8fe3a6a"
+        },
+        {
+          "type": "check",
+          "prompt": "A cepstral peak at quefrency 80 in audio sampled at 16,000 Hz. What F0 does it suggest?",
+          "answer": "16,000 ÷ 80 = 200 Hz.",
+          "sectionRef": "cep",
+          "id": "cep.e034bede"
+        },
+        {
+          "type": "trap",
+          "body": "Reading quefrency like frequency. A peak further right means a FASTER ripple in the spectrum, which means a LOWER F0 (harmonics closer together). Convert with Fₛ ÷ quefrency; don't eyeball it.",
+          "source": "Days 11–12 slides",
+          "points": null,
+          "slide": "Quefrency runs backwards",
+          "id": "cep.8deccae9"
+        }
+      ]
+    },
+    {
+      "id": "mfcc",
+      "heading": "MFCCs: the 39 numbers",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "MFCCs (Mel-frequency cepstral coefficients)",
+          "body": "The cepstrum computed on the **Mel filterbank** energies: filterbank → log → DCT → keep the first **13** coefficients. They describe the filter's shape on a hearing-matched scale in 13 numbers.",
+          "id": "mfcc.28bcc602"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Part",
+            "How many",
+            "What it captures"
+          ],
+          "rows": [
+            [
+              "MFCCs (or 12 MFCCs + energy)",
+              "13",
+              "the spectral shape of this frame"
+            ],
+            [
+              "deltas",
+              "13",
+              "how each one is changing (velocity)"
+            ],
+            [
+              "delta-deltas",
+              "13",
+              "how the change is changing (acceleration)"
+            ],
+            [
+              "total",
+              "39",
+              "one feature vector per frame"
+            ]
+          ],
+          "title": "The classic 39-dimensional feature vector",
+          "slide": "13 + 13 + 13",
+          "id": "mfcc.ba3cb0c3"
+        }
+      ]
+    },
+    {
+      "id": "delta",
+      "heading": "Deltas: features that move",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "A single frame is a snapshot. But consonants are recognized by **movement**: the formants glide differently into the next vowel after *b* than after *d* (formant transitions), and the glide depends on which vowel follows. So we add features for how the spectrum is changing frame to frame.",
+          "id": "delta.dbf87afc"
+        },
+        {
+          "type": "definition",
+          "term": "Delta",
+          "body": "The slope through neighbouring values: `Δ[n] = (x[n + 1] − x[n − 1]) / 2`, where x is one feature measured at successive frames.",
+          "id": "delta.38efd6e6"
+        },
+        {
+          "type": "definition",
+          "term": "Delta-delta",
+          "body": "The delta of the deltas: `Δ²[n] = (Δ[n + 1] − Δ[n − 1]) / 2`. Delta is velocity; delta-delta is acceleration.",
+          "id": "delta.1c1b8f25"
+        },
+        {
+          "type": "example",
+          "title": "Deltas by hand",
+          "body": "MFCC #2 over five frames: x = [4, 6, 9, 10, 10]\n\nΔ[1] = (9 − 4) / 2  = 2.5\nΔ[2] = (10 − 6) / 2 = 2.0\nΔ[3] = (10 − 9) / 2 = 0.5\n\nΔ²[2] = (Δ[3] − Δ[1]) / 2 = (0.5 − 2.5) / 2 = −1.0\n(rising, but slowing down)",
+          "answer": "Δ = 2.5, 2.0, 0.5; Δ²[2] = −1.0",
+          "slide": "Velocity and acceleration",
+          "id": "delta.69551368"
+        },
+        {
+          "type": "trap",
+          "body": "Using the frame itself in the delta: Δ[n] skips x[n] and uses the neighbours on either side, divided by 2 (they're two frames apart).",
+          "source": "Days 11–12 slides",
+          "points": null,
+          "id": "delta.c413686d"
+        },
+        {
+          "type": "check",
+          "prompt": "x = [2, 2, 2, 2]. What are the deltas, and why?",
+          "answer": "All 0: the feature isn't changing, so its slope is zero everywhere.",
+          "sectionRef": "delta",
+          "id": "delta.2c70f482"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pipeline-order",
+      "title": "Put the pipeline in order",
+      "prompt": "Order these MFCC steps: DCT; Mel filterbank; log; pre-emphasis; framing; keep the first 13 coefficients; DFT magnitude.",
+      "hints": [
+        "Everything happens per frame, so framing comes first.",
+        "You need a spectrum before you can filter it into bands.",
+        "Cepstrum = log first, then the DCT."
+      ],
+      "solution": [
+        "framing → pre-emphasis → DFT magnitude → Mel filterbank → log → DCT → keep the first 13."
+      ],
+      "why": "Lab 10 and 11 walk through exactly these calls in librosa; knowing the order is how you read and debug that code.",
+      "sectionRef": "mfcc"
+    },
+    {
+      "id": "quefrency",
+      "title": "Which voice is higher?",
+      "prompt": "Two recordings at 16,000 Hz. Speaker A's cepstral peak is at quefrency 64; speaker B's at quefrency 128. Which speaker has the higher pitch, and what are the two F0s?",
+      "hints": [
+        "frequency = Fₛ ÷ quefrency.",
+        "Divide 16,000 by each.",
+        "Smaller quefrency → bigger F0."
+      ],
+      "solution": [
+        "A: 16,000 ÷ 64 = 250 Hz.",
+        "B: 16,000 ÷ 128 = 125 Hz.",
+        "A is higher: its peak is at the LOWER quefrency."
+      ],
+      "why": "Cepstral pitch tracking is the backup method real trackers use when autocorrelation struggles, and the 'backwards' axis is Koo's favourite trick question.",
+      "choices": [
+        {
+          "text": "A: 250 Hz vs 125 Hz",
+          "feedback": "Right: lower quefrency, higher pitch."
+        },
+        {
+          "text": "B: 250 Hz vs 125 Hz",
+          "feedback": "Quefrency runs backwards: B's peak further out means its harmonics are closer together, so a lower F0."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "cep"
+    }
+  ]
+}
