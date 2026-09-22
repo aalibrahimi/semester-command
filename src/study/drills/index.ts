@@ -25,6 +25,7 @@ import { drills as ling112Syntax } from "./ling112--0-what-syntax-is";
 import { drills as ling112Categories } from "./ling112--2-categories";
 import { drills as ling112Heads } from "./ling112--4-heads-dependents";
 import { drills as ling112Constituency } from "./ling112--5-constituency-tests";
+import { drills as ling112Phrase } from "./ling112--6-phrase-structure";
 import { drills as ling115Corpus } from "./ling115--1-what-is-a-corpus";
 import { drills as ling115Regex } from "./ling115--4-regex";
 import { drills as ling115Tokens } from "./ling115--5-words-tokens-normalization";
@@ -51,6 +52,7 @@ const ALL: Drill[][] = [
   ling112Categories,
   ling112Heads,
   ling112Constituency,
+  ling112Phrase,
   ling115Corpus,
   ling115Regex,
   ling115Tokens,

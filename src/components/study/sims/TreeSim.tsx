@@ -91,14 +91,17 @@ function layout(root: Node): { nodes: Node[]; width: number; depth: number } {
 
 const PROFORM: Record<string, string> = {
   NP: "a pronoun: it / they / she / him",
+  DP: "a pronoun: it / they / she / him (pronouns replace the whole DP, determiner included)",
+  TP: "a clause: 'so' after think ('I think so'), or check it as the complement of 'that'",
   "N'": "one / ones",
   Nbar: "one / ones",
   VP: "do so (too)",
   PP: "there (place) / then (time)",
+  AdvP: "so / thus ('very carefully' → 'so')",
   AdjP: "so ('very tall' → 'so')",
   AP: "so",
   S: "a clause: 'so' after think, or it-clefting on its parts",
-  CP: "'so' or 'that' after think",
+  CP: "'it' or 'so': 'Henry said it / Henry said so'",
 };
 
 export function TreeSim({ params }: SimProps) {

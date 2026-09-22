@@ -1,0 +1,637 @@
+{
+  "id": "ling112/6-phrase-structure",
+  "course": "ling112",
+  "lessons": "Week 6",
+  "title": "Phrase structure rules and drawing trees",
+  "summary": "Read a phrase structure rule out loud; use Dr. Nie's eight English rules to bracket and draw a tree for any sentence, with a null D for bare nouns and a T (a modal, or PAST/PRES) in every sentence; draw both trees for an ambiguous sentence.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Week 6 handout 'Phrase structure' (Dr. Nie, sentences (1) to (11)); Carnie, Syntax: A Generative Introduction ch. 3; builds on the Week 5 constituency tests. Quiz 3 territory.",
+  "requires": [
+    "ling112/4-heads-dependents",
+    "ling112/5-constituency-tests"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why we need rules at all",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem** Last week the constituency tests told you which chunks of *one* sentence are units. But you can say millions of sentences you have never heard before, and you know right away which ones are English. *The thief tripped the man* is fine. *Tripped man the thief the* is not. Something in your head is doing that check. A **phrase structure rule** is our attempt to write that something down.",
+          "label": "why",
+          "slide": "Why rules",
+          "id": "why.3cb763a4"
+        },
+        {
+          "type": "definition",
+          "term": "Phrase structure rule",
+          "body": "A rule that says **what a phrase is made of, and in what order**. It is written as a phrase label, an arrow, and the pieces: `PP → P DP` means *a prepositional phrase is made of a preposition followed by a determiner phrase* (**in** + **the garden**).",
+          "id": "why.013ae15a"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters outside this class** A short list of rules can build an endless number of sentences, because a rule can reuse itself: a DP can contain a PP, which contains another DP, which can contain another PP (*the key to the door of the house on the hill*). This is the same idea as a **context-free grammar** in CS 154, and it is how grammar checkers, voice assistants and programming-language compilers read input: they check it against rules like these and build a tree.",
+          "slide": "Same idea as CS 154 grammars",
+          "id": "why.18d1fe06"
+        }
+      ]
+    },
+    {
+      "id": "read",
+      "heading": "How to read a rule",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every rule has the same shape: `XP → YP X ZP`. Read the arrow as **\"is made of\"**. The phrase on the left is named after its **head**, the one word it cannot do without (you met heads in Week 4). **X** is that head. **YP** and **ZP** are the *dependents*, the phrases that hang off the head.",
+          "slide": "The shape of every rule",
+          "id": "read.9fb544d6"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Mark",
+            "Means",
+            "Example rule",
+            "What it allows"
+          ],
+          "rows": [
+            [
+              "no mark: ZP",
+              "required",
+              "PP → P DP",
+              "*in the garden*, but not just *in*"
+            ],
+            [
+              "(ZP)",
+              "optional, at most one",
+              "DP → (DP) D NP",
+              "*the cat* or *Sarah's cat*"
+            ],
+            [
+              "(ZP+)",
+              "optional, and can repeat (adjuncts)",
+              "AdjP → (AdvP+) Adj",
+              "*tall*, *very tall*, *very very tall*"
+            ],
+            [
+              "(A / B)",
+              "one or the other, not both",
+              "VP → … (DP / PP) …",
+              "*give him a book* or *give a book to him*"
+            ]
+          ],
+          "title": "The four marks",
+          "slide": "Parentheses, plus, slash",
+          "id": "read.76b5c3d7"
+        },
+        {
+          "type": "example",
+          "title": "Reading one rule out loud",
+          "body": "AdjP → (AdvP+) Adj\n\n\"An adjective phrase is made of an adjective, and before it you may put any number of adverb phrases.\"\n\n  tall            = Adj\n  very tall       = AdvP + Adj\n  really very tall = AdvP + AdvP + Adj",
+          "slide": true,
+          "id": "read.45c6f271"
+        },
+        {
+          "type": "prose",
+          "md": "The `+` is Dr. Nie's mark for **adjuncts**: optional add-ons you can stack (Week 4). Arguments, the dependents the head needs or selects, have no `+`. So the notation itself tells you which dependents are adjuncts.",
+          "id": "read.88d72f89"
+        },
+        {
+          "type": "check",
+          "prompt": "Read `PP → P DP` out loud, and say which piece is the head.",
+          "answer": "\"A prepositional phrase is made of a preposition followed by a determiner phrase.\" P is the head (it names the phrase: P → PP). Example: *to the buyer*.",
+          "sectionRef": "read",
+          "id": "read.5b999d1b"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "heading": "The eight English rules",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "These are the rules from the handout, (1). You will use exactly these on the quiz, so learn to read each one and give an example. Go one row at a time.",
+          "slide": "Handout (1)",
+          "id": "rules.f5148449"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Rule",
+            "In words",
+            "Example"
+          ],
+          "rows": [
+            [
+              "AdvP → (AdvP+) Adv",
+              "an adverb, maybe with adverbs before it",
+              "*very* **quickly**"
+            ],
+            [
+              "AdjP → (AdvP+) Adj",
+              "an adjective, maybe with adverbs before it",
+              "*brand* **new**"
+            ],
+            [
+              "NP → (AdjP+) N (PP) (PP+) (CP)",
+              "a noun, maybe adjectives before; after it maybe a PP argument, PP adjuncts, a clause",
+              "*tall* **spies** *in the garden*"
+            ],
+            [
+              "DP → (DP) D NP",
+              "a determiner plus an NP, maybe a possessor DP first",
+              "**the** *spies*"
+            ],
+            [
+              "PP → P DP",
+              "a preposition plus a DP",
+              "**in** *the garden*"
+            ],
+            [
+              "VP → (AdvP+) V (DP) (DP / PP) (CP) (AdvP+ / PP+) (AdvP+ / PP+)",
+              "a verb; adverbs before; then up to two objects, a clause, and adverb or PP adjuncts after",
+              "*carefully* **hand** *a vase to the buyer in the morning*"
+            ],
+            [
+              "TP → DP T VP",
+              "a sentence is a subject DP, then T, then a VP",
+              "*Sarah* **will** *run the race*"
+            ],
+            [
+              "CP → C TP",
+              "a complementizer plus a sentence",
+              "**that** *she had left*"
+            ]
+          ],
+          "title": "English phrase structure rules (handout (1))",
+          "slide": "All eight rules",
+          "id": "rules.93789b43"
+        },
+        {
+          "type": "prose",
+          "md": "Notice two things. First, **NP and DP are different**: the NP is the noun and its describers (*tall spies in the garden*), and the DP wraps a determiner around it (*those* + *tall spies in the garden*). Second, **a sentence is a TP**, not an S. The next two sections explain why.",
+          "id": "rules.ffc86a3c"
+        },
+        {
+          "type": "trap",
+          "body": "The VP rule is long, so people drop pieces. Before you draw, list what comes after the verb: objects (DP), a second object or a to-phrase (DP / PP), a clause (CP), then adjuncts (AdvP / PP). Adjuncts always come last.",
+          "source": "Week 6 handout",
+          "points": null,
+          "id": "rules.91bb5aae"
+        }
+      ]
+    },
+    {
+      "id": "dp",
+      "heading": "Every noun phrase is a DP, even without a determiner",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "DP (determiner phrase)",
+          "body": "A noun phrase wrapped in a **determiner**: *the, a, that, each, those*. Rule: `DP → (DP) D NP`. In this class **every** nominal is a DP, even when you cannot hear a determiner.",
+          "id": "dp.a06af2c5"
+        },
+        {
+          "type": "definition",
+          "term": "Null determiner (∅)",
+          "body": "A D slot that is there in the structure but silent. Names and bare plurals get one: *Sarah* = [DP [D ∅] [NP Sarah]], *berries* = [DP [D ∅] [NP berries]].",
+          "id": "dp.c340e0f4"
+        },
+        {
+          "type": "example",
+          "title": "Why a silent D? The 'one' test",
+          "body": "those tall spies in the garden\n→ those [ones]\n\n'ones' replaces tall spies in the garden but NOT 'those'.\nSo 'tall spies in the garden' is a unit (the NP) and 'those' sits outside it (in D).\nEvery nominal has that same two-layer shape, so a name gets the D layer too, just empty.",
+          "slide": "The 'one' test shows the NP inside the DP",
+          "id": "dp.3ccaeb79"
+        },
+        {
+          "type": "prose",
+          "md": "**Why bother with an empty slot** Keeping every nominal the same shape means one rule (`DP → (DP) D NP`) covers *the cat*, *Sarah*, *cats* and *Sarah's cat*. Without the ∅, you would need a separate rule for each. Fewer rules that cover more is the whole goal.",
+          "id": "dp.4a54fe8f"
+        },
+        {
+          "type": "trap",
+          "body": "Forgetting the ∅. *Nadia*, *berries*, *night* (in *at night*) all need [D ∅]. A tree with a DP that has no D is marked wrong.",
+          "source": "Week 6 handout, assumptions",
+          "points": null,
+          "slide": "Don't forget the ∅",
+          "id": "dp.5617cecc"
+        },
+        {
+          "type": "check",
+          "prompt": "Bracket the DP *very round red berries*.",
+          "answer": "[DP [D ∅] [NP [AdjP [AdvP [Adv very]] [Adj round]] [AdjP [Adj red]] [N berries]]]. A bare plural gets a null D; each adjective is its own AdjP; *very* modifies *round* only.",
+          "sectionRef": "dp",
+          "id": "dp.81ecc28f"
+        }
+      ]
+    },
+    {
+      "id": "tp",
+      "heading": "Every sentence is a TP, and T is never empty",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "TP (tense phrase)",
+          "body": "The sentence. Rule: `TP → DP T VP`: the subject DP, then **T**, then the VP. T is the slot for **tense**: a modal or auxiliary (*will, can, had, is*) or, if there is none, just the tense itself, written **PAST** or **PRES**.",
+          "id": "tp.a82663d3"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Sentence",
+            "T",
+            "VP"
+          ],
+          "rows": [
+            [
+              "Sarah **will** run the race.",
+              "will",
+              "run the race"
+            ],
+            [
+              "Sarah **ran** the race.",
+              "PAST",
+              "ran the race"
+            ],
+            [
+              "Sarah **runs** races.",
+              "PRES",
+              "runs races"
+            ],
+            [
+              "She **had** left.",
+              "had",
+              "left"
+            ]
+          ],
+          "title": "Filling T",
+          "slide": "What goes in T",
+          "id": "tp.acff4e30"
+        },
+        {
+          "type": "example",
+          "title": "Proof that T sits outside the VP: the do so test",
+          "body": "Sarah will [run the race], and Tom will [do so], too.\n\n'do so' replaces 'run the race' but leaves 'will' behind.\nSo 'will' is not inside the VP. It is in T, between the subject and the VP.",
+          "slide": true,
+          "id": "tp.ecb252c7"
+        },
+        {
+          "type": "prose",
+          "md": "When there is no auxiliary, the tense still exists (you can hear it in *ran* vs *runs*), so T still gets a value: **PAST** or **PRES**. The verb itself stays in V. Writing T = PAST and V = *ran* is the convention on the handout.",
+          "id": "tp.75b5dcda"
+        },
+        {
+          "type": "trap",
+          "body": "Leaving T out of a sentence with no auxiliary. *The thief tripped the man* still has T: it is [T PAST]. No TP without a T.",
+          "source": "Week 6 handout, assumptions",
+          "points": null,
+          "id": "tp.414fb5f3"
+        },
+        {
+          "type": "check",
+          "prompt": "What goes in T for *The owner very clearly adores each piece in her collection*?",
+          "answer": "PRES. There is no modal or auxiliary, and *adores* is present tense. *adores* stays in V.",
+          "sectionRef": "tp",
+          "id": "tp.0b2e4277"
+        }
+      ]
+    },
+    {
+      "id": "cp",
+      "heading": "Clauses inside clauses: CP",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "CP (complementizer phrase)",
+          "body": "A sentence introduced by a **complementizer**, a word like *that*, *if*, *whether*. Rule: `CP → C TP`. *that she had left* = [CP [C that] [TP she had left]].",
+          "id": "cp.362e0c2b"
+        },
+        {
+          "type": "prose",
+          "md": "A CP shows up in two places in our rules: after a verb (`VP → … (CP) …`, *Henry **said** that she had left*) and after a noun (`NP → … (CP)`, *a dubious **rumor** that he threw the game*). Inside the CP is a whole TP, with its own subject, T and VP. That is where the endless nesting comes from: *I think that you said that she knows that…*",
+          "id": "cp.109d2a57"
+        },
+        {
+          "type": "example",
+          "title": "Two CPs, two homes (handout (10) and (11))",
+          "body": "(10) Henry said [CP that she had left rather quietly at night].\n     The CP is what Henry said: it sits in the VP, after 'said'.\n\n(11) We heard a dubious rumor [CP that he threw the game].\n     The CP says what the rumor was: it sits in the NP, after 'rumor'.",
+          "slide": "CP after a verb vs after a noun",
+          "id": "cp.85816aa9"
+        },
+        {
+          "type": "check",
+          "prompt": "In *We heard a dubious rumor that he threw the game*, is the CP inside the VP directly, or inside the object DP?",
+          "answer": "Inside the object DP (in its NP, after *rumor*). Test: *We heard **it*** replaces *a dubious rumor that he threw the game* as one piece.",
+          "sectionRef": "cp",
+          "id": "cp.b658e2cd"
+        }
+      ]
+    },
+    {
+      "id": "draw",
+      "heading": "Drawing a tree, step by step",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Here is a recipe that works on every sentence in the handout. Do it in brackets first; the tree is just the brackets drawn out.",
+          "slide": "The recipe",
+          "id": "draw.c90e1d7e"
+        },
+        {
+          "type": "stepper",
+          "title": "Bracketing (6): The young officer inspected the brand new license.",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "The young officer inspected the brand new license."
+              ],
+              "active": 0,
+              "caption": "Start with the plain sentence. Our goal: TP → DP T VP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[TP [DP The young officer] [T PAST] [VP inspected the brand new license]]"
+              ],
+              "active": 0,
+              "caption": "Step 1: find T. No modal or auxiliary, and *inspected* is past, so T = PAST. Everything before the verb is the subject DP; the verb and what follows is the VP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[TP [DP The young officer] [T PAST] [VP inspected the brand new license]]",
+                "[DP [D The] [NP young officer]]"
+              ],
+              "active": 1,
+              "caption": "Step 2: split each DP into D + NP. *The* is D; *young officer* is the NP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[DP [D The] [NP [AdjP [Adj young]] [N officer]]]"
+              ],
+              "active": 0,
+              "caption": "Step 3: inside the NP, each adjective is its own AdjP (rule NP → (AdjP+) N …). The noun is the head, N."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[VP [V inspected] [DP the brand new license]]"
+              ],
+              "active": 0,
+              "caption": "Step 4: in the VP, the verb is V; *the brand new license* is its object DP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[DP [D the] [NP [AdjP [AdvP [Adv brand]] [Adj new]] [N license]]]"
+              ],
+              "active": 0,
+              "caption": "Step 5: *brand* modifies *new* (it says how new), so it is an AdvP inside the AdjP (rule AdjP → (AdvP+) Adj)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "[TP [DP [D The] [NP [AdjP [Adj young]] [N officer]]] [T PAST] [VP [V inspected] [DP [D the] [NP [AdjP [AdvP [Adv brand]] [Adj new]] [N license]]]]]"
+              ],
+              "active": 0,
+              "caption": "Put it together. Check: every DP has a D, the TP has a T, every phrase has its head."
+            }
+          ],
+          "slide": true,
+          "id": "draw.4bb31bc6"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Sentence (6) as a tree. Click any node to see the words it covers and the pro-form test that proves it. Then edit the brackets and try (7) yourself.",
+          "params": {
+            "bracket": "[TP [DP [D The] [NP [AdjP [Adj young]] [N officer]]] [T PAST] [VP [V inspected] [DP [D the] [NP [AdjP [AdvP [Adv brand]] [Adj new]] [N license]]]]]"
+          },
+          "slide": "Try it",
+          "id": "draw.c4d404f7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "Ask",
+            "Write"
+          ],
+          "rows": [
+            [
+              "1",
+              "Is there a modal/auxiliary? What tense?",
+              "[TP [DP subject] [T will / PAST / PRES] [VP …]]"
+            ],
+            [
+              "2",
+              "What are the DPs?",
+              "[DP [D the / a / ∅] [NP …]] for each"
+            ],
+            [
+              "3",
+              "What is inside each NP?",
+              "AdjPs before N; PP / CP after N"
+            ],
+            [
+              "4",
+              "What follows the verb?",
+              "objects (DP), then DP/PP, then CP, then adjuncts"
+            ],
+            [
+              "5",
+              "Any adverbs or adjectives modifying another word?",
+              "nest an AdvP inside the AdjP / AdvP it modifies"
+            ]
+          ],
+          "title": "The five questions",
+          "slide": "Checklist while you draw",
+          "id": "draw.0f850d9f"
+        },
+        {
+          "type": "example",
+          "title": "Handout (8), done with the recipe",
+          "body": "Nadia will carefully hand a fragile vase to the buyer in the morning.\n\n[TP [DP [D ∅] [NP [N Nadia]]]\n    [T will]\n    [VP [AdvP [Adv carefully]] [V hand]\n        [DP [D a] [NP [AdjP [Adj fragile]] [N vase]]]\n        [PP [P to] [DP [D the] [NP [N buyer]]]]\n        [PP [P in] [DP [D the] [NP [N morning]]]]]]\n\nVP rule used: (AdvP+) V (DP) (DP / PP) … (PP+): carefully, hand, a fragile vase, to the buyer, in the morning.",
+          "slide": true,
+          "id": "draw.a441a0cc"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Handout (8). Click the two PPs: *to the buyer* is an argument of *hand* (you hand something TO someone); *in the morning* is an adjunct (a time add-on).",
+          "params": {
+            "bracket": "[TP [DP [D ∅] [NP [N Nadia]]] [T will] [VP [AdvP [Adv carefully]] [V hand] [DP [D a] [NP [AdjP [Adj fragile]] [N vase]]] [PP [P to] [DP [D the] [NP [N buyer]]]] [PP [P in] [DP [D the] [NP [N morning]]]]]]"
+          },
+          "id": "draw.112a08a6"
+        }
+      ]
+    },
+    {
+      "id": "ambig",
+      "heading": "One string, two trees: structural ambiguity",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Structural ambiguity",
+          "body": "When the same string of words can be built by the rules in **two different ways**, and each way means something different. The words are not ambiguous; the grouping is.",
+          "id": "ambig.9c9fc7d2"
+        },
+        {
+          "type": "example",
+          "title": "Handout (4) and (5): The thief tripped that unlucky man with a cane.",
+          "body": "Reading A: the thief used a cane to trip him.\n  The PP is in the VP, next to the object: a tool for the tripping.\n  [VP [V tripped] [DP that unlucky man] [PP with a cane]]\n\nReading B: the man was holding a cane.\n  The PP is inside the NP: it describes the man.\n  [VP [V tripped] [DP [D that] [NP unlucky man [PP with a cane]]]]",
+          "slide": "Who has the cane?",
+          "id": "ambig.2ba5d73b"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Reading A: the PP hangs off the VP. Click the object DP: it is just *that unlucky man*.",
+          "params": {
+            "bracket": "[TP [DP [D The] [NP [N thief]]] [T PAST] [VP [V tripped] [DP [D that] [NP [AdjP [Adj unlucky]] [N man]]] [PP [P with] [DP [D a] [NP [N cane]]]]]]"
+          },
+          "id": "ambig.1d596486"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Reading B: the PP is inside the NP. Click the object DP now: it covers *that unlucky man with a cane*.",
+          "params": {
+            "bracket": "[TP [DP [D The] [NP [N thief]]] [T PAST] [VP [V tripped] [DP [D that] [NP [AdjP [Adj unlucky]] [N man] [PP [P with] [DP [D a] [NP [N cane]]]]]]]]"
+          },
+          "id": "ambig.301cb25f"
+        },
+        {
+          "type": "prose",
+          "md": "**Prove each tree with a test** (Week 5): replace the object with *him*. *The thief tripped **him** with a cane* keeps the PP outside, so it matches reading A. For reading B, the pronoun swallows the PP: *The thief tripped **him*** (him = the man with the cane). Fragment answer works too: *Who did the thief trip?* *That unlucky man with a cane.* works only for B.",
+          "slide": "The tests pull them apart",
+          "id": "ambig.ce510abb"
+        },
+        {
+          "type": "check",
+          "prompt": "In reading B, what does *him* replace?",
+          "answer": "The whole DP *that unlucky man with a cane*, because in B the PP is inside that DP.",
+          "sectionRef": "ambig",
+          "id": "ambig.051c01a8"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "heading": "Practice: handout (7), (9), (10), (11)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Bracket each one yourself first, then open the answer. Use the five questions. These are the exact sentences from the handout, so this is quiz practice.",
+          "id": "practice.865ba7da"
+        },
+        {
+          "type": "example",
+          "title": "(7) The owner very clearly adores each piece in her collection.",
+          "body": "[TP [DP [D The] [NP [N owner]]]\n    [T PRES]\n    [VP [AdvP [AdvP [Adv very]] [Adv clearly]] [V adores]\n        [DP [D each] [NP [N piece]\n              [PP [P in] [DP [D her] [NP [N collection]]]]]]]]\n\nNotes: T = PRES (no auxiliary, present tense). 'very' modifies 'clearly', so it nests inside that AdvP. 'in her collection' says which piece: it is in the NP. 'her' is a possessive; here it fills D.",
+          "slide": true,
+          "id": "practice.ac566e9a"
+        },
+        {
+          "type": "example",
+          "title": "(9) The bear savored a huge dinner of very round red berries.",
+          "body": "[TP [DP [D The] [NP [N bear]]]\n    [T PAST]\n    [VP [V savored]\n        [DP [D a] [NP [AdjP [Adj huge]] [N dinner]\n              [PP [P of] [DP [D ∅] [NP [AdjP [AdvP [Adv very]] [Adj round]] [AdjP [Adj red]] [N berries]]]]]]]]\n\nNotes: 'berries' is a bare plural, so D = ∅. 'of very round red berries' is inside the NP of 'dinner'.",
+          "slide": true,
+          "id": "practice.cadb7192"
+        },
+        {
+          "type": "example",
+          "title": "(10) Henry said that she had left rather quietly at night.",
+          "body": "[TP [DP [D ∅] [NP [N Henry]]]\n    [T PAST]\n    [VP [V said]\n        [CP [C that]\n            [TP [DP she] [T had]\n                [VP [V left] [AdvP [AdvP [Adv rather]] [Adv quietly]]\n                    [PP [P at] [DP [D ∅] [NP [N night]]]]]]]]]\n\nNotes: two TPs, two Ts: PAST for 'said', 'had' for the inner clause. A pronoun like 'she' is a whole DP on its own; ask Dr. Nie whether she writes it as [DP [D she]] or [DP she].",
+          "slide": true,
+          "id": "practice.0b4d4de3"
+        },
+        {
+          "type": "example",
+          "title": "(11) We heard a dubious rumor that he threw the game.",
+          "body": "[TP [DP we] [T PAST]\n    [VP [V heard]\n        [DP [D a] [NP [AdjP [Adj dubious]] [N rumor]\n              [CP [C that] [TP [DP he] [T PAST] [VP [V threw] [DP [D the] [NP [N game]]]]]]]]]]\n\nNotes: the CP is inside the NP (it tells you what the rumor is). Rule: NP → (AdjP+) N … (CP).",
+          "slide": true,
+          "id": "practice.883eb6a4"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is *in her collection* inside the NP in (7), and not in the VP?",
+          "answer": "It says which piece (a description of the noun), not how or where the adoring happens. Test: *The owner adores **it*** means the piece in her collection, so the PP went with the pronoun.",
+          "sectionRef": "practice",
+          "id": "practice.8169a3a2"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "which-rule",
+      "title": "Which rule makes this?",
+      "prompt": "Which of Dr. Nie's rules builds the phrase *very carefully*?",
+      "hints": [
+        "Find the head: the word the phrase is named after.",
+        "*carefully* is an adverb, so this is an AdvP. What is *very* doing?",
+        "Look for a rule with AdvP on the left: AdvP → (AdvP+) Adv."
+      ],
+      "solution": [
+        "The head is *carefully* (Adv), so the phrase is an AdvP.",
+        "*very* modifies it, and it is itself an AdvP: [AdvP [AdvP [Adv very]] [Adv carefully]].",
+        "Rule: AdvP → (AdvP+) Adv."
+      ],
+      "why": "Being able to name the rule is how you check a tree: every node and its children must match one rule exactly.",
+      "choices": [
+        {
+          "text": "AdvP → (AdvP+) Adv",
+          "feedback": "Right. *very* is an AdvP stacked in front of the head adverb *carefully*."
+        },
+        {
+          "text": "AdjP → (AdvP+) Adj",
+          "feedback": "*carefully* is an adverb, not an adjective (it describes how, not what kind)."
+        },
+        {
+          "text": "VP → (AdvP+) V …",
+          "feedback": "There is no verb in *very carefully*."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "rules"
+    },
+    {
+      "id": "t-slot",
+      "title": "What goes in T?",
+      "prompt": "For each sentence, what fills T? (a) *The bear savored a huge dinner.* (b) *Nadia will hand a vase to the buyer.* (c) *She had left.* (d) *The owner adores each piece.*",
+      "hints": [
+        "T holds a modal or auxiliary if there is one.",
+        "No auxiliary? Then T holds just the tense: PAST or PRES.",
+        "The main verb never moves into T in these trees; it stays in V."
+      ],
+      "solution": [
+        "(a) PAST: no auxiliary, *savored* is past.",
+        "(b) will.",
+        "(c) had.",
+        "(d) PRES: no auxiliary, *adores* is present."
+      ],
+      "why": "Tense is part of every sentence, heard or not. Giving it a fixed slot is what lets one rule, TP → DP T VP, cover every sentence.",
+      "sectionRef": "tp"
+    },
+    {
+      "id": "bracket-6",
+      "title": "Draw (6) yourself",
+      "prompt": "Bracket *The young officer inspected the brand new license* with the eight rules, then check it with the tree sim.",
+      "hints": [
+        "Step 1: T. There is no auxiliary. What tense is *inspected*?",
+        "Step 2: two DPs, *The young officer* and *the brand new license*. Split each into D + NP.",
+        "Step 3: *brand* describes *new*, not *license*. Where does an adverb that modifies an adjective go?"
+      ],
+      "solution": [
+        "[TP [DP [D The] [NP [AdjP [Adj young]] [N officer]]] [T PAST] [VP [V inspected] [DP [D the] [NP [AdjP [AdvP [Adv brand]] [Adj new]] [N license]]]]]"
+      ],
+      "why": "Once you can bracket, drawing the tree is mechanical, and so is checking your own answer before you hand it in.",
+      "sectionRef": "draw"
+    }
+  ]
+}
