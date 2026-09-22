@@ -116,10 +116,10 @@ export const courses: Course[] = [
       { label: "2 papers", pct: "200 pts" },
     ],
     exam: {
-      label: "Quiz #1 (Ch. 8–9)",
-      date: "2026-09-20",
-      format: "15 multiple choice, 30 minutes, one attempt, open book. Closes Sun 11:59pm.",
-      covers: "Articles of Confederation (what it created, why it failed), how the Constitution changed the government, Anti-Federalist objections, political stability in the 1790s.",
+      label: "Quiz #2 (Ch. 11 + lectures)",
+      date: "2026-10-05",
+      format: "10 multiple choice, 1 point each, 20 minutes, one attempt, open book. Opens Sep 21, closes Mon Oct 5 11:59pm.",
+      covers: "American Promise ch. 11 (pp. 302–317, 320–322) and the lecture content on the Market Revolution, the Lowell mills, and Cherokee removal.",
     },
     deadlines: [
       { date: "2026-09-18", label: "David Walker exercise (40-min timer)", weight: "20 pts", kind: "hw" },
@@ -132,6 +132,9 @@ export const courses: Course[] = [
       { kind: "warn", text: "You opted out of the textbook. The chapters here will be your replacement reading for the quizzes." },
     ],
     checklist: [
+      "Market Revolution: transportation (canals, steamboats, railroads), what changed for farmers and workers.",
+      "Lowell mills: who worked there, the boardinghouse system, why it mattered.",
+      "Cherokee removal: Indian Removal Act, Worcester v. Georgia, Treaty of New Echota, Trail of Tears.",
       "Articles: structure, four failures (incl. Shays), Northwest Ordinance.",
       "Constitution: Great Compromise, Three-fifths, ratification by convention, Federalist vs Anti-Federalist, Bill of Rights.",
       "1790s stability: Washington's precedents, Judiciary Act, Hamilton's program, Whiskey Rebellion.",
