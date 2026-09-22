@@ -10,57 +10,34 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, BookOpen, ChevronRight, ListX, Target } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpen, CheckCircle2, ChevronRight, ListX, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courses, daysUntil, formatDate } from "@/study";
 import { guidesForCourse } from "@/study/loadGuides";
-import { studySectionsAll } from "@/lib/ipc";
+import { ago, courseProgress, stopRoute, type CourseProgress } from "@/study/progress";
 import { attemptsRecent, examsRecent, reviewsAll, sectionsAll, type AttemptRecord } from "@/study/mastery";
 import { plan, type Action } from "@/study/plan";
+import { ProgressBar } from "@/components/study/ProgressBar";
 
 const HUES: Record<string, number> = { hist15: 330, cs146: 217, ling112: 282, ling124: 172, ling115: 48, cs154: 200 };
 export const courseTick = (slug: string) => ({ backgroundColor: `hsl(${HUES[slug] ?? 200} 60% 60% / 0.9)` });
 
-/** Per-course reading progress: mastered / total sections across the
- *  written chapters. Counts come from the mastery store's section rows;
- *  totals from the guide content itself. */
-function useCourseProgress(): Record<string, { mastered: number; shaky: number; total: number }> {
-  const [bySlug, setBySlug] = useState<Record<string, { mastered: number; shaky: number; total: number }>>({});
-
+/** Progress for every course, from the section rows. null until loaded. */
+export function useAllProgress(): Record<string, CourseProgress> | null {
+  const [by, setBy] = useState<Record<string, CourseProgress> | null>(null);
   useEffect(() => {
     let alive = true;
-    void studySectionsAll().then((rows) => {
+    void sectionsAll().then((rows) => {
       if (!alive) return;
-      const byGuide = new Map<string, { mastered: number; shaky: number }>();
-      for (const r of rows) {
-        const g = byGuide.get(r.guideId) ?? { mastered: 0, shaky: 0 };
-        if (r.status === "mastered") g.mastered += 1;
-        else if (r.status === "shaky") g.shaky += 1;
-        byGuide.set(r.guideId, g);
-      }
-      const out: Record<string, { mastered: number; shaky: number; total: number }> = {};
-      for (const c of courses) {
-        const guides = guidesForCourse(c.slug, c.guides);
-        const total = guides.reduce((s, g) => s + g.sections.length, 0);
-        let mastered = 0;
-        let shaky = 0;
-        for (const g of guides) {
-          const counts = byGuide.get(g.id);
-          if (counts) {
-            mastered += counts.mastered;
-            shaky += counts.shaky;
-          }
-        }
-        out[c.slug] = { mastered, shaky, total };
-      }
-      setBySlug(out);
+      const out: Record<string, CourseProgress> = {};
+      for (const c of courses) out[c.slug] = courseProgress(guidesForCourse(c.slug, c.guides), rows);
+      setBy(out);
     });
     return () => {
       alive = false;
     };
   }, []);
-
-  return bySlug;
+  return by;
 }
 
 /** The "next 45 minutes" list: exam pressure × weakness, from the stores. */
@@ -140,7 +117,7 @@ function NextPanel() {
 }
 
 export default function Study() {
-  const progress = useCourseProgress();
+  const progress = useAllProgress();
   const soon = courses
     .flatMap((c) => c.deadlines.map((d) => ({ ...d, course: c, days: daysUntil(d.date) })))
     .filter((d) => d.days >= 0 && d.days <= 7 && d.kind !== "other")
@@ -150,6 +127,8 @@ export default function Study() {
     <div className="mx-auto w-full max-w-[720px] px-8 pb-16 pt-7">
       <h1 className="font-display text-xl font-semibold tracking-tight">Study</h1>
       <p className="mt-1 text-sm text-muted-foreground">Each course is a book of lectures, and every lecture also plays as slides.</p>
+
+      <OverallProgress progress={progress} />
 
       <NextPanel />
 
@@ -181,12 +160,10 @@ export default function Study() {
             const days = daysUntil(c.exam.date);
             const warns = c.alerts?.filter((a) => a.kind === "warn").length ?? 0;
             const written = c.guides.length;
+            const p = progress?.[c.slug];
             return (
-              <li key={c.slug}>
-                <Link
-                  to={`/study/${c.slug}`}
-                  className="group flex items-center gap-4 rounded-xl border border-border/60 bg-card px-4 py-3.5 transition-colors duration-micro hover:bg-fill-ghost/60"
-                >
+              <li key={c.slug} className="overflow-hidden rounded-xl border border-border/60 bg-card">
+                <Link to={`/study/${c.slug}`} className="group flex items-center gap-4 px-4 pb-2.5 pt-3.5 transition-colors duration-micro hover:bg-fill-ghost/60">
                   <span aria-hidden className="h-9 w-1 shrink-0 rounded-full" style={courseTick(c.slug)} />
                   <div className="w-[7.5rem] shrink-0">
                     <div className="font-display text-base font-semibold tracking-tight">{c.code}</div>
@@ -209,7 +186,6 @@ export default function Study() {
                         {days <= 0 ? "now" : `${days} days`}
                       </span>
                     </div>
-                    <CourseProgressBar p={progress[c.slug]} />
                   </div>
                   {warns > 0 && (
                     <span className="chip shrink-0 bg-at-risk/10 text-at-risk-fg">
@@ -218,6 +194,7 @@ export default function Study() {
                   )}
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
                 </Link>
+                {p && p.total > 0 && <CourseProgressRow p={p} />}
               </li>
             );
           })}
@@ -227,24 +204,95 @@ export default function Study() {
   );
 }
 
-/** A quiet two-tone strip: mastered solid, shaky faded, the rest empty.
- *  Absent entirely until something has been read — an all-empty bar on
- *  every row would just be furniture. */
-function CourseProgressBar({ p }: { p?: { mastered: number; shaky: number; total: number } }) {
-  if (!p || p.total === 0 || (p.mastered === 0 && p.shaky === 0)) return null;
-  const masteredPct = (p.mastered / p.total) * 100;
-  const shakyPct = (p.shaky / p.total) * 100;
+/** Under each course: the bar, the count, and where to pick up. */
+function CourseProgressRow({ p }: { p: CourseProgress }) {
+  const done = p.next === null;
   return (
-    <div className="mt-1.5 flex items-center gap-2">
-      <div className="h-1 w-40 overflow-hidden rounded-full bg-fill-ghost">
-        <div className="flex h-full">
-          <div className="h-full bg-on-track" style={{ width: `${masteredPct}%` }} />
-          <div className="h-full bg-at-risk/50" style={{ width: `${shakyPct}%` }} />
-        </div>
+    <div className="border-t border-border/50 px-4 pb-3 pt-2.5 pl-9">
+      <div className="flex items-center gap-3">
+        <ProgressBar p={p} className="flex-1" />
+        <span data-numeric className="w-[9.5rem] shrink-0 text-right font-mono text-2xs tabular-nums text-muted-foreground">
+          {p.mastered}/{p.total} done · <span className={cn(p.pct > 0 && "text-on-track-fg")}>{p.pct}%</span>
+        </span>
       </div>
-      <span data-numeric className="font-mono text-2xs tabular-nums text-muted-foreground">
-        {p.mastered}/{p.total} mastered
-      </span>
+      {done ? (
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-on-track-fg">
+          <CheckCircle2 className="h-3.5 w-3.5" /> Every written chapter done. Keep it fresh with recall.
+        </div>
+      ) : (
+        p.next && (
+          <Link to={stopRoute(p.next)} className="group mt-2 flex items-center gap-2 rounded-lg px-2 py-1.5 -mx-2 text-xs transition-colors duration-micro hover:bg-fill-ghost/60">
+            <span className="shrink-0 font-medium text-brand-fg">{p.next.status === "shaky" ? "Fix next" : p.mastered + p.shaky === 0 ? "Start" : "Next"}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {p.next.heading}
+              <span className="text-muted-foreground"> · {p.next.guideLessons}, section {p.next.index}</span>
+            </span>
+            {p.last && <span className="hidden shrink-0 text-2xs text-muted-foreground sm:inline">last studied {ago(p.last.at)}</span>}
+            <span className="flex shrink-0 items-center gap-1 rounded-md bg-brand-solid px-2 py-1 text-2xs font-medium text-primary-foreground group-hover:opacity-90">
+              Continue <ArrowRight className="h-3 w-3" />
+            </span>
+          </Link>
+        )
+      )}
     </div>
+  );
+}
+
+/** One bar for the whole semester, plus the per-course split underneath. */
+function OverallProgress({ progress }: { progress: Record<string, CourseProgress> | null }) {
+  if (!progress) return null;
+  const all = Object.values(progress);
+  const total = all.reduce((s, p) => s + p.total, 0);
+  if (total === 0) return null;
+  const mastered = all.reduce((s, p) => s + p.mastered, 0);
+  const shaky = all.reduce((s, p) => s + p.shaky, 0);
+  const pct = Math.round((mastered / total) * 100);
+  const chaptersDone = all.reduce((s, p) => s + p.chapters.filter((c) => c.done).length, 0);
+  const chapters = all.reduce((s, p) => s + p.chapters.length, 0);
+  return (
+    <section className="mt-6 rounded-xl border border-border/60 bg-card px-4 py-3.5">
+      <div className="flex items-baseline gap-2">
+        <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Semester progress</h2>
+        <span data-numeric className="ml-auto font-display text-lg font-semibold tabular-nums">
+          {pct}%
+        </span>
+      </div>
+      <ProgressBar p={{ mastered, shaky, total }} className="mt-2 h-2.5" />
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-2xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-on-track" />
+          <span data-numeric className="font-mono">{mastered}</span> sections done
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-at-risk/60" />
+          <span data-numeric className="font-mono">{shaky}</span> shaky
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-fill-ghost ring-1 ring-border" />
+          <span data-numeric className="font-mono">{total - mastered - shaky}</span> not started
+        </span>
+        <span className="ml-auto">
+          <span data-numeric className="font-mono">{chaptersDone}/{chapters}</span> chapters finished
+        </span>
+      </div>
+      <div className="mt-3 grid grid-cols-6 gap-2">
+        {courses.map((c) => {
+          const p = progress[c.slug];
+          return (
+            <Link key={c.slug} to={`/study/${c.slug}`} className="group min-w-0" title={`${c.code}: ${p?.mastered ?? 0} of ${p?.total ?? 0} sections done`}>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="truncate text-2xs font-semibold text-foreground/80 group-hover:text-foreground">{c.code}</span>
+                <span data-numeric className="font-mono text-2xs text-muted-foreground">
+                  {p && p.total > 0 ? `${p.pct}%` : "–"}
+                </span>
+              </div>
+              <div className="mt-1 h-1 overflow-hidden rounded-full bg-fill-ghost">
+                <div className="h-full rounded-full" style={{ width: `${p?.pct ?? 0}%`, ...courseTick(c.slug) }} />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }

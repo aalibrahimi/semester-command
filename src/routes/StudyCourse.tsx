@@ -12,22 +12,27 @@
  */
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { AlertTriangle, RotateCcw, Timer, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, RotateCcw, Timer, ArrowLeft, BookOpen, Clock, Info, Presentation, PencilLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { guidesForCourse } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
-import { courseTick } from "./Study";
+import { stopRoute } from "@/study/progress";
+import { ProgressBar } from "@/components/study/ProgressBar";
+import { courseTick, useAllProgress } from "./Study";
 
 export default function StudyCourse() {
   const { course: slug } = useParams();
   const c = courseBySlug(slug);
   const guides = c ? guidesForCourse(c.slug, c.guides) : [];
   const [tab, setTab] = useState<"lectures" | "exam">("lectures");
+  const all = useAllProgress();
   if (!c) return <Navigate to="/study" replace />;
 
   const examDays = daysUntil(c.exam.date);
   const warns = c.alerts?.filter((a) => a.kind === "warn") ?? [];
   const infos = c.alerts?.filter((a) => a.kind === "info") ?? [];
+  const prog = all?.[c.slug];
+  const nextGuide = prog?.next?.guideId;
 
   return (
     <div className="mx-auto w-full max-w-[720px] px-8 pb-16 pt-6">
@@ -63,12 +68,45 @@ export default function StudyCourse() {
 
       {tab === "lectures" ? (
         <div className="mt-6 flex flex-col gap-8">
+          {prog && prog.total > 0 && (
+            <section className="rounded-xl border border-border/60 bg-card px-4 py-3.5">
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Your progress</h2>
+                <span data-numeric className="ml-auto font-mono text-2xs text-muted-foreground">
+                  {prog.mastered}/{prog.total} sections · {prog.chapters.filter((x) => x.done).length}/{prog.chapters.length} chapters
+                </span>
+                <span data-numeric className="font-display text-lg font-semibold tabular-nums">
+                  {prog.pct}%
+                </span>
+              </div>
+              <ProgressBar p={prog} className="mt-2 h-2.5" />
+              {prog.next ? (
+                <Link to={stopRoute(prog.next)} className="group mt-3 flex items-center gap-2 rounded-lg bg-brand/[0.07] px-3 py-2 text-sm transition-colors duration-micro hover:bg-brand/[0.12]">
+                  <span className="shrink-0 font-medium text-brand-fg">{prog.next.status === "shaky" ? "Fix next:" : "Next:"}</span>
+                  <span className="min-w-0 flex-1 truncate">
+                    {prog.next.heading}
+                    <span className="text-muted-foreground"> · {prog.next.guideLessons}, section {prog.next.index}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1 rounded-md bg-brand-solid px-2.5 py-1 text-xs font-medium text-primary-foreground group-hover:opacity-90">
+                    Continue <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              ) : (
+                <p className="mt-3 flex items-center gap-1.5 text-sm text-on-track-fg">
+                  <CheckCircle2 className="h-4 w-4" /> Every written chapter is done. Recall keeps it from fading.
+                </p>
+              )}
+            </section>
+          )}
           {guides.length > 0 && (
             <section>
               <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Written</h2>
               <ul className="mt-2 flex flex-col gap-3">
-                {guides.map((ch) => (
-                  <li key={ch.id} className="rounded-xl border border-border/60 bg-card px-4 py-3.5">
+                {guides.map((ch) => {
+                  const cp = prog?.chapters.find((x) => x.guideId === ch.id);
+                  const here = nextGuide === ch.id;
+                  return (
+                  <li key={ch.id} className={cn("rounded-xl border bg-card px-4 py-3.5", here ? "border-brand/60 ring-1 ring-brand/30" : "border-border/60")}>
                     <div className="flex items-baseline gap-2">
                       <span className="font-mono text-2xs text-muted-foreground">{ch.lessons}</span>
                       <span className="flex items-center gap-1 font-mono text-2xs text-muted-foreground">
@@ -78,6 +116,13 @@ export default function StudyCourse() {
                         <span className="flex items-center gap-1 font-mono text-2xs text-brand-fg">
                           <PencilLine className="h-3 w-3" /> {ch.exercises.length} to do yourself
                         </span>
+                      ) : null}
+                      {cp?.done ? (
+                        <span className="ml-auto flex items-center gap-1 text-2xs font-medium text-on-track-fg">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Completed
+                        </span>
+                      ) : here ? (
+                        <span className="ml-auto rounded-full bg-brand/10 px-2 py-0.5 text-2xs font-medium text-brand-fg">Continue here</span>
                       ) : null}
                     </div>
                     <div className="mt-0.5 text-base font-medium">{ch.title}</div>
@@ -95,12 +140,20 @@ export default function StudyCourse() {
                         })}
                       </p>
                     )}
+                    {cp && (
+                      <div className="mt-2.5 flex items-center gap-3">
+                        <ProgressBar p={cp} className="flex-1" />
+                        <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
+                          {cp.mastered}/{cp.total} sections{cp.shaky > 0 ? ` · ${cp.shaky} shaky` : ""}
+                        </span>
+                      </div>
+                    )}
                     <div className="mt-3 flex gap-2">
                       <Link
-                        to={`/study/${ch.id}`}
+                        to={cp?.next && cp.mastered + cp.shaky > 0 ? stopRoute(cp.next) : `/study/${ch.id}`}
                         className="flex items-center gap-1.5 rounded-lg bg-brand-solid px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
                       >
-                        <BookOpen className="h-3.5 w-3.5" /> Read
+                        <BookOpen className="h-3.5 w-3.5" /> {cp?.done ? "Review" : cp && cp.mastered + cp.shaky > 0 ? `Resume at ${cp.next?.index}` : "Read"}
                       </Link>
                       <Link
                         to={`/study/${ch.id}/slides`}
@@ -110,7 +163,8 @@ export default function StudyCourse() {
                       </Link>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </section>
           )}

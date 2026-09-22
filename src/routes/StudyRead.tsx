@@ -27,6 +27,7 @@ import { courseBySlug } from "@/study";
 import type { CheckBlock, Guide, GuideSection } from "@/study/guide";
 import { drillsForGuide } from "@/study/drills";
 import { guideById } from "@/study/loadGuides";
+import { ProgressBar } from "@/components/study/ProgressBar";
 import { recordReview, saveScratch, sectionStatus, setSectionStatus, useMastery, type GuideMastery, type SectionStatus } from "@/study/mastery";
 
 /* ── Mastery colours: one place, used by every view ─────────────────────── */
@@ -297,6 +298,21 @@ export default function StudyRead() {
         {/* ── Left rail ───────────────────────────────────────────────── */}
         <nav aria-label="Sections" className="hidden w-[260px] shrink-0 lg:block">
           <div className="sticky top-4">
+            {(() => {
+              const m = sections.filter((s) => sectionStatus(mastery, s.id) === "mastered").length;
+              const sh = sections.filter((s) => sectionStatus(mastery, s.id) === "shaky").length;
+              return (
+                <div className="mb-3 px-2.5">
+                  <div className="flex items-baseline justify-between text-2xs text-muted-foreground">
+                    <span>This chapter</span>
+                    <span data-numeric className="font-mono tabular-nums">
+                      {m}/{sections.length} done
+                    </span>
+                  </div>
+                  <ProgressBar p={{ mastered: m, shaky: sh, total: sections.length }} className="mt-1.5" />
+                </div>
+              );
+            })()}
             <ol className="flex flex-col gap-px">
               {sections.map((s, i) => {
                 const st = sectionStatus(mastery, s.id);
