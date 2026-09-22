@@ -1,0 +1,669 @@
+{
+  "id": "cs154/8-nfa-intro",
+  "course": "cs154",
+  "lessons": "Lesson 8",
+  "title": "NFAs: machines that can guess",
+  "summary": "Say what 'deterministic' means and the two ways an NFA breaks the DFA rule; run an NFA by hand with processes (copy on a choice, halt on no arrow); decide accept or reject with the h ∧ c ∧ f rule; find L(M) for a small NFA in set-builder form; answer Chen's ten true/false questions.",
+  "estimatedMinutes": 55,
+  "sourceNote": "Lesson 8 slides 'NFA 1: Introduction' (Sep 18, pulled from Canvas); Linz ch. 2.2. Assignment 4 (DFA/NFA quiz, due Sep 29) covers lessons 1 to 8.",
+  "requires": [
+    "cs154/5-dfa"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why NFAs exist",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem with DFAs** A DFA must have **exactly one** arrow for every symbol out of every state. So even a tiny language like {abb} needs a trap state and a pile of arrows into it, just to say 'no'. The machine also has to read every symbol, even when the answer is already obvious.",
+          "label": "why",
+          "slide": "What's annoying about DFAs",
+          "id": "why.331365a4"
+        },
+        {
+          "type": "prose",
+          "md": "An **NFA** (nondeterministic finite automaton) drops that rule. A state may have **no** arrow for a symbol, or **more than one**. The drawing gets much simpler, and it turns out NFAs recognize exactly the same languages as DFAs (you'll prove that with the subset construction in Lessons 9 and 10).",
+          "id": "why.fcd4e214"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this** Every regex engine (grep, your editor's search, Python's `re`) starts by turning the pattern into an NFA, because that's easy to build from a regex piece by piece. Then it either simulates the NFA directly (exactly what this lesson does) or converts it to a DFA for speed. Lexers in compilers work the same way.",
+          "slide": "Regex engines are NFAs",
+          "id": "why.a4269473"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "heading": "Three terms first",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Computation",
+          "body": "The whole sequence of configurations, from when the machine starts until it halts. If the machine never halts, there is no computation.",
+          "id": "terms.1e47b887"
+        },
+        {
+          "type": "definition",
+          "term": "Equivalent machines",
+          "body": "M₁ and M₂ are **equivalent** iff **L(M₁) = L(M₂)** over Σ: they accept exactly the same set of strings. Chen's warning: 'two machines are equivalent if both accept a same string' is **wrong**. One shared string is not enough; the whole languages must match.",
+          "id": "terms.0d6e71a2"
+        },
+        {
+          "type": "definition",
+          "term": "Deterministic",
+          "body": "At every timeframe there is **no more than one** possible transition: 0 or 1. A DFA is the strict special case: **exactly** 1, never 0.",
+          "id": "terms.7fc332e2"
+        },
+        {
+          "type": "trap",
+          "body": "Writing 'equivalent if they accept the same language' is fine; writing 'equivalent if they both accept a string w' is the wrong definition Chen puts on the slide on purpose.",
+          "source": "Lesson 8 terminology",
+          "points": null,
+          "slide": "The wrong definition",
+          "id": "terms.70d2f4ab"
+        },
+        {
+          "type": "check",
+          "prompt": "A machine has a state with no arrow for 'b'. Is it deterministic?",
+          "answer": "Yes, it can still be deterministic: 'no more than one' allows zero. It is just not a DFA (a DFA needs exactly one).",
+          "sectionRef": "terms",
+          "id": "terms.147d8620"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "heading": "How an NFA runs: the two violations",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "An NFA is built from the same three blocks as a DFA: an input tape (read only, left to right), a control unit, and a result. It starts the same way. The only new questions are what happens when a DFA rule is broken.",
+          "slide": "Same machine, two new cases",
+          "id": "rules.ffdcc4cc"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Situation",
+            "DFA",
+            "NFA does this"
+          ],
+          "rows": [
+            [
+              "no arrow for the current symbol (violation #1)",
+              "impossible (δ is total)",
+              "**halts**; this process **rejects** because a symbol was not consumed"
+            ],
+            [
+              "two or more arrows (violation #2)",
+              "impossible",
+              "**copies itself**: one process per arrow, each continues alone"
+            ],
+            [
+              "exactly one arrow",
+              "follows it",
+              "follows it, just like a DFA"
+            ]
+          ],
+          "title": "Violation #1 and #2",
+          "slide": "What an NFA does",
+          "id": "rules.93abb4d4"
+        },
+        {
+          "type": "definition",
+          "term": "Process",
+          "body": "One copy of the machine following one sequence of choices. When there are two possible arrows, the NFA 'replicates the entire structure' and starts a new process with the current configuration; from then on the processes run independently.",
+          "id": "rules.d7acd85d"
+        },
+        {
+          "type": "example",
+          "title": "The halt, accept and reject rules (Chen's logic)",
+          "body": "h = the process halts\nc = all input symbols are consumed\nf = it is in an accepting (final) state\na = it accepts\n\nHalts:    (c ∨ z) ⇔ h      z = zero possible transitions\nAccepts:  (h ∧ c ∧ f) ⇔ a\nRejects:  (¬h ∨ ¬c ∨ ¬f) ⇔ ¬a     (De Morgan)\n\nThe WHOLE NFA accepts if at least one process accepts.\nIt rejects only if every process rejects.",
+          "slide": "h ∧ c ∧ f",
+          "id": "rules.17269f59"
+        },
+        {
+          "type": "prose",
+          "md": "Why can't you simplify h ∧ c ∧ f? Because in an NFA a process can halt **before** reading everything (h true, c false). In a DFA halting and consuming everything always happen together; here they don't.",
+          "id": "rules.65274347"
+        },
+        {
+          "type": "trap",
+          "body": "Saying 'the NFA is in an accepting state, so it accepts'. Being in an accepting state is only f. You also need the process to have halted with every symbol consumed.",
+          "source": "Lesson 8 exercises",
+          "points": null,
+          "id": "rules.9aa78ace"
+        },
+        {
+          "type": "check",
+          "prompt": "A process is in accepting state q₃, but there is still one unread symbol and q₃ has no arrow for it. Accept or reject?",
+          "answer": "Reject. It halts (no transition) with a symbol not consumed: c is false, so h ∧ c ∧ f is false.",
+          "sectionRef": "rules",
+          "id": "rules.5c09f1ff"
+        }
+      ]
+    },
+    {
+      "id": "ex1",
+      "heading": "Example 1: L = {abb}, with and without a trap",
+      "blocks": [
+        {
+          "type": "sim",
+          "sim": "nfa",
+          "caption": "Chen's first NFA. Run abb (accept), then aa and abba from the test set: the process gets stuck with a symbol left over and rejects.",
+          "params": {
+            "start": "q0",
+            "accept": [
+              "q3"
+            ],
+            "delta": {
+              "q0": {
+                "a": [
+                  "q1"
+                ]
+              },
+              "q1": {
+                "b": [
+                  "q2"
+                ]
+              },
+              "q2": {
+                "b": [
+                  "q3"
+                ]
+              }
+            },
+            "input": "abb",
+            "tests": [
+              "",
+              "abb",
+              "aa",
+              "abba",
+              "ab",
+              "b"
+            ],
+            "layout": {
+              "q0": [
+                0,
+                0.5
+              ],
+              "q1": [
+                0.33,
+                0.5
+              ],
+              "q2": [
+                0.66,
+                0.5
+              ],
+              "q3": [
+                1,
+                0.5
+              ]
+            }
+          },
+          "slide": "Try it",
+          "id": "ex1.37065b34"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Input",
+            "What happens",
+            "Result"
+          ],
+          "rows": [
+            [
+              "abb",
+              "q₀ →a q₁ →b q₂ →b q₃; all consumed, q₃ accepting",
+              "accept"
+            ],
+            [
+              "aa",
+              "q₀ →a q₁; q₁ has no arrow for a; halts with 'a' unread",
+              "reject"
+            ],
+            [
+              "abba",
+              "reaches q₃ after abb, but q₃ has no arrow for a; the last a is unread",
+              "reject"
+            ]
+          ],
+          "title": "Three runs",
+          "id": "ex1.a5ab0055"
+        },
+        {
+          "type": "prose",
+          "md": "Now the DFA for the same language. Every missing arrow has to go somewhere, so a **trap state** q₄ appears with five extra arrows. Same language, twice the drawing. That is the whole pitch for NFAs: **no trap needed**.",
+          "slide": "The same language as a DFA",
+          "id": "ex1.d19924b4"
+        },
+        {
+          "type": "sim",
+          "sim": "dfa",
+          "caption": "The equivalent DFA from the slide. q₄ is the trap. Compare the number of arrows: 3 for the NFA, 10 here.",
+          "params": {
+            "start": "q0",
+            "accept": [
+              "q3"
+            ],
+            "delta": {
+              "q0": {
+                "a": "q1",
+                "b": "q4"
+              },
+              "q1": {
+                "b": "q2",
+                "a": "q4"
+              },
+              "q2": {
+                "b": "q3",
+                "a": "q4"
+              },
+              "q3": {
+                "a": "q4",
+                "b": "q4"
+              },
+              "q4": {
+                "a": "q4",
+                "b": "q4"
+              }
+            },
+            "input": "abb",
+            "editable": false,
+            "tests": [
+              "",
+              "abb",
+              "aa",
+              "abba"
+            ]
+          },
+          "id": "ex1.d693cfef"
+        }
+      ]
+    },
+    {
+      "id": "ex2",
+      "heading": "Example 2: a choice, and two processes",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "In this machine, q₁ has **two** arrows for **a**: one to q₂, one to q₄. That is violation #2, so reading an a in q₁ splits the machine into two processes.",
+          "slide": "Two arrows for 'a'",
+          "id": "ex2.888b7efc"
+        },
+        {
+          "type": "sim",
+          "sim": "nfa",
+          "caption": "Run ba: after 'b' there is one process (in q₁); after 'a' there are two, in q₂ and q₄. q₄ accepts, so ba is accepted. Then click baa and baba in the test set.",
+          "params": {
+            "start": "q0",
+            "accept": [
+              "q3",
+              "q4"
+            ],
+            "delta": {
+              "q0": {
+                "b": [
+                  "q1"
+                ]
+              },
+              "q1": {
+                "a": [
+                  "q2",
+                  "q4"
+                ]
+              },
+              "q2": {
+                "a": [
+                  "q3"
+                ]
+              },
+              "q4": {
+                "b": [
+                  "q4"
+                ]
+              }
+            },
+            "input": "ba",
+            "tests": [
+              "",
+              "b",
+              "ba",
+              "baa",
+              "bab",
+              "babb",
+              "baba",
+              "baab"
+            ],
+            "layout": {
+              "q0": [
+                0,
+                0.55
+              ],
+              "q1": [
+                0.3,
+                0.55
+              ],
+              "q2": [
+                0.62,
+                0.15
+              ],
+              "q3": [
+                1,
+                0.15
+              ],
+              "q4": [
+                0.62,
+                0.95
+              ]
+            }
+          },
+          "slide": "Try it",
+          "id": "ex2.8ce783d0"
+        },
+        {
+          "type": "stepper",
+          "title": "baa, process by process (slides 29 to 32)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "time 0: one process, in q0",
+                "tape: b a a"
+              ],
+              "active": 0,
+              "caption": "Start configuration. Only q₀ is active."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "time 0: one process, in q0",
+                "time 1: read b → q1 (one arrow, no split)"
+              ],
+              "active": 1,
+              "caption": "q₀ has exactly one arrow for b. Nothing special."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "time 1: in q1",
+                "time 2: read a → TWO arrows: q2 and q4",
+                "   process #1 → q2",
+                "   process #2 → q4"
+              ],
+              "active": 1,
+              "caption": "q₁ has two arrows for a: the NFA copies itself. Each copy continues with the rest of the tape (one more a)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "process #1: q2 reads a → q3",
+                "process #2: q4 has no arrow for a → halts, 'a' not consumed → REJECT"
+              ],
+              "active": 1,
+              "caption": "Process #2 is stuck: q₄ only has an arrow for b. It halts with a symbol left, so it rejects."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "process #1: q3, all symbols consumed, q3 accepting → ACCEPT",
+                "process #2: reject",
+                "overall: ACCEPT (at least one process accepts)"
+              ],
+              "active": 2,
+              "caption": "One accepting process is enough."
+            }
+          ],
+          "slide": true,
+          "id": "ex2.9f7e3aa1"
+        },
+        {
+          "type": "example",
+          "title": "baba: every process rejects (Example 3)",
+          "body": "b → q1\na → split: #1 in q2, #2 in q4\nb → #1: q2 has no arrow for b → halts, reject\n    #2: q4 -b→ q4\na → #2: q4 has no arrow for a → halts, reject\n\nAll processes reject → the NFA rejects baba.",
+          "slide": true,
+          "id": "ex2.b580bfbd"
+        },
+        {
+          "type": "example",
+          "title": "What language is this? (Chen's exercise)",
+          "body": "Path through q2: b, a, a → ends in q3. Only 'baa'.\nPath through q4: b, a, then any number of b's (the loop).\n\nL(M) = {baa} ∪ {b a bⁿ : n ≥ 0}",
+          "answer": "L(M) = {baa} ∪ {b a bⁿ : n ≥ 0}",
+          "slide": "L(M) for Examples 2 and 3",
+          "id": "ex2.c27a9c53"
+        },
+        {
+          "type": "check",
+          "prompt": "Is 'bab' accepted by this NFA?",
+          "answer": "Yes. b → q₁, a → {q₂, q₄}. The q₂ process dies on b; the q₄ process loops on b and ends in accepting q₄ with everything consumed.",
+          "sectionRef": "ex2",
+          "id": "ex2.8e220b26"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "heading": "The one-process flowchart",
+      "blocks": [
+        {
+          "type": "example",
+          "title": "Run this for each process (Lesson 8 appendix)",
+          "body": "1. All symbols consumed?\n     yes → in an accepting state? yes: ACCEPT*   no: REJECT**\n     no  → go to 2\n2. Any transition for (current state, current symbol)?\n     no  → REJECT** (halt, symbol not consumed)\n     yes → consume one symbol and move\n           (more than one arrow? copy the process first)\n           then back to 1\n\n* the NFA accepts if ONE process accepts\n** the NFA rejects only if ALL processes reject",
+          "slide": "Flowchart for one process",
+          "id": "flow.124406c7"
+        },
+        {
+          "type": "prose",
+          "md": "To get good at this fast, write the **set** of states the processes are in after each symbol: start {q₀}, after b {q₁}, after a {q₂, q₄}, and so on. If the final set contains an accepting state, accept. The sims show this line under the tape. That set-tracking is exactly the subset construction you'll do in Lesson 10.",
+          "id": "flow.0b423232"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "heading": "Chen's exercises",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Statement",
+            "T / F",
+            "Why"
+          ],
+          "rows": [
+            [
+              "You can read and write on an NFA's input tape.",
+              "F",
+              "read only"
+            ],
+            [
+              "You can move the cursor back after it moves right.",
+              "F",
+              "left to right only"
+            ],
+            [
+              "An NFA must have at least one accepting state.",
+              "F",
+              "with none, L(M) = ϕ, still a valid NFA"
+            ],
+            [
+              "An NFA must have one and only one initial state.",
+              "T",
+              "q₀ is a single state"
+            ],
+            [
+              "If an NFA halts, all symbols must be consumed.",
+              "F",
+              "it can halt on 'no transition' with symbols left"
+            ],
+            [
+              "If there is no transition during a timeframe, the NFA halts.",
+              "T",
+              "violation #1"
+            ],
+            [
+              "If an NFA is in an accepting state, it halts.",
+              "F",
+              "it keeps going while there is input and an arrow"
+            ],
+            [
+              "If an NFA is in an accepting state, the string is accepted.",
+              "F",
+              "also needs halted and all consumed"
+            ],
+            [
+              "An NFA rejects a string if one of its processes rejects.",
+              "F",
+              "needs ALL processes to reject"
+            ],
+            [
+              "NFA transition graphs are more complex than DFAs'.",
+              "F",
+              "generally simpler: no trap"
+            ]
+          ],
+          "title": "True or false (Lesson 8 exercises)",
+          "slide": "Ten true / false",
+          "id": "practice.32f26935"
+        },
+        {
+          "type": "example",
+          "title": "M₁: one state q, not accepting, no arrows",
+          "body": "Nothing can ever be accepted.\nL(M₁) = ϕ",
+          "answer": "ϕ",
+          "id": "practice.035a544d"
+        },
+        {
+          "type": "example",
+          "title": "M₂: one state q, accepting, no arrows",
+          "body": "λ: zero symbols, halts immediately (all consumed), in accepting q → accept.\nAny symbol: no arrow → halt with it unread → reject.\nL(M₂) = {λ}",
+          "answer": "{λ}",
+          "id": "practice.b3890851"
+        },
+        {
+          "type": "sim",
+          "sim": "nfa",
+          "caption": "M₃ from the exercise slide. Before you look at the answer below, test some strings: which ones reach q₂ with nothing left over?",
+          "params": {
+            "start": "q0",
+            "accept": [
+              "q2"
+            ],
+            "delta": {
+              "q0": {
+                "a": [
+                  "q0",
+                  "q2"
+                ],
+                "b": [
+                  "q1"
+                ]
+              },
+              "q1": {
+                "b": [
+                  "q1"
+                ],
+                "a": [
+                  "q2"
+                ]
+              },
+              "q2": {
+                "a": [
+                  "q2"
+                ]
+              }
+            },
+            "input": "aba",
+            "tests": [
+              "",
+              "a",
+              "b",
+              "ab",
+              "ba",
+              "aba",
+              "abba",
+              "abab",
+              "bbaa"
+            ],
+            "layout": {
+              "q0": [
+                0,
+                0.8
+              ],
+              "q1": [
+                0.45,
+                0.2
+              ],
+              "q2": [
+                0.9,
+                0.8
+              ]
+            }
+          },
+          "id": "practice.b893ba62"
+        },
+        {
+          "type": "example",
+          "title": "M₃: q₀ loops on a; q₀ -b→ q₁; q₁ loops on b; q₁ -a→ q₂; q₀ -a→ q₂; q₂ loops on a; q₂ accepting",
+          "body": "Route 1: aⁿ, then a into q2, then more a's: all a's, at least one.\nRoute 2: aⁿ, b, more b's, then a into q2, then more a's.\nBoth routes: some a's, then some b's (maybe none), then at least one a.\n\nL(M₃) = {aⁿ bᵐ aᵏ : n ≥ 0, m ≥ 0, k ≥ 1}",
+          "answer": "{aⁿ bᵐ aᵏ : n ≥ 0, m ≥ 0, k ≥ 1}",
+          "slide": "L(M₃)",
+          "id": "practice.2e14adcd"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is λ NOT in L(M₃)?",
+          "answer": "The only accepting state is q₂ and q₀ is not accepting. With no input the machine halts in q₀: all consumed but not accepting.",
+          "sectionRef": "practice",
+          "id": "practice.f58628e4"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "run-by-hand",
+      "title": "Run it with processes",
+      "prompt": "Using the Example 2 NFA (q₀ -b→ q₁, q₁ -a→ q₂ and q₄, q₂ -a→ q₃, q₄ loops on b; q₃ and q₄ accepting), decide babb and baab. For each, list every process and say why it accepts or rejects.",
+      "hints": [
+        "Write the set of active states after each symbol, starting from {q₀}.",
+        "When q₁ reads a, there are two processes. Follow each alone.",
+        "A process with no arrow for the next symbol halts and rejects right there."
+      ],
+      "solution": [
+        "babb: {q0} →b {q1} →a {q2, q4} →b {q4} (q2 died) →b {q4}. The q4 process consumes everything and q4 accepts: ACCEPT.",
+        "baab: {q0} →b {q1} →a {q2, q4} →a {q3} (q4 died: no arrow for a) →b ∅ (q3 has no arrow for b). Every process rejects: REJECT."
+      ],
+      "why": "This is the exact mechanics of the timed Assignment 4 T/F and short answers, and it is how a regex engine runs a pattern.",
+      "sectionRef": "ex2"
+    },
+    {
+      "id": "tf-accepting",
+      "title": "Accepting state vs accepted string",
+      "prompt": "True or false: 'If an NFA is in an accepting state, the input string is accepted.'",
+      "hints": [
+        "What three things must be true for a process to accept?",
+        "h ∧ c ∧ f. Being in an accepting state is only f.",
+        "Can a process be in an accepting state with symbols still unread?"
+      ],
+      "solution": [
+        "False. Acceptance needs h ∧ c ∧ f: halted, all symbols consumed, accepting state. A process can pass through an accepting state mid-string (Example 1: abba reaches q3 with one 'a' left) and still reject."
+      ],
+      "why": "Chen reuses these T/F statements on quizzes almost word for word.",
+      "choices": [
+        {
+          "text": "False",
+          "feedback": "Right: it also has to halt with every symbol consumed."
+        },
+        {
+          "text": "True",
+          "feedback": "abba reaches accepting q₃ after 'abb' but still has an 'a' to read, and q₃ has no arrow for it: reject."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "rules"
+    }
+  ]
+}

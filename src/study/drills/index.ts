@@ -19,6 +19,7 @@ import { drills as cs146Quick } from "./cs146--9-quicksort";
 import { drills as cs154Sets } from "./cs154--1-sets-functions";
 import { drills as cs154Strings } from "./cs154--3-strings-languages";
 import { drills as cs154Dfa } from "./cs154--5-dfa";
+import { drills as cs154Nfa } from "./cs154--8-nfa-intro";
 import { drills as hist15Walker } from "./hist15--6-walker";
 import { drills as hist15Constitution } from "./hist15--8-confederation-to-constitution";
 import { drills as hist15Market } from "./hist15--11-market-revolution";
@@ -47,6 +48,7 @@ const ALL: Drill[][] = [
   cs154Sets,
   cs154Strings,
   cs154Dfa,
+  cs154Nfa,
   hist15Walker,
   hist15Constitution,
   hist15Market,

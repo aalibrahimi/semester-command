@@ -12,6 +12,7 @@ import type { ComponentType } from "react";
 import type { SimName } from "@/study/sims";
 import { DfaSim } from "./DfaSim";
 import { FourierSim } from "./FourierSim";
+import { NfaSim } from "./NfaSim";
 import { RegexSim } from "./RegexSim";
 import { SamplingSim } from "./SamplingSim";
 import { SortSim } from "./SortSim";
@@ -23,6 +24,7 @@ export interface SimProps {
 
 const REGISTRY: Record<SimName, ComponentType<SimProps>> = {
   dfa: DfaSim,
+  nfa: NfaSim,
   sampling: SamplingSim,
   fourier: FourierSim,
   sort: SortSim,

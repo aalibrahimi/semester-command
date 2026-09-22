@@ -96,9 +96,9 @@ export const courses: Course[] = [
       "Compute L₁L₂, Lⁿ, Lᴿ, L̄.",
       "Describe DFA structure and workflow; analyze a DFA into L(M); design a DFA with hell/heaven and every (state, symbol) covered.",
     ],
-    guides: ["1-sets-functions", "3-strings-languages", "5-dfa"],
+    guides: ["1-sets-functions", "3-strings-languages", "5-dfa", "8-nfa-intro"],
     planned: [
-      { label: "Lessons 8–10", title: "NFA, λ-transitions, subset construction (Sep 21–28)" },
+      { label: "Lessons 9–10", title: "λ-transitions, NFA design, subset construction (Sep 21–28)" },
       { label: "Lesson 11", title: "Regular languages and closure (Sep 30)" },
       { label: "Lessons 12–12.5", title: "Non-regular languages: the pumping lemma (Oct 5–7)" },
     ],
