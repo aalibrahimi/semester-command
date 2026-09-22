@@ -63,8 +63,8 @@ function useCourseData(c: Course | undefined, guides: Guide[]): { prog: CoursePr
   return state;
 }
 
-const H2 = "text-2xs font-medium uppercase tracking-wider text-muted-foreground";
-const CARD = "rounded-xl border border-border/60 bg-card";
+const H2 = "text-2xs font-semibold uppercase tracking-wider text-foreground/70";
+const CARD = "rounded-xl border border-foreground/15 bg-card shadow-sm";
 
 export default function StudyCourse() {
   const { course: slug } = useParams();
@@ -93,7 +93,7 @@ export default function StudyCourse() {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-1 border-b border-border/60">
+      <div className="mt-6 flex gap-1 border-b border-foreground/15">
         {(["lectures", "exam"] as const).map((t) => (
           <button
             key={t}
@@ -129,7 +129,7 @@ export default function StudyCourse() {
                 <h2 className={H2}>{guides.length > 0 ? "Still to write" : "Planned"}</h2>
                 <ul className="mt-2 grid gap-2 sm:grid-cols-2">
                   {c.planned.map((p, i) => (
-                    <li key={i} className="flex items-baseline gap-3 rounded-lg border border-dashed border-border/70 px-3.5 py-2.5 text-sm text-muted-foreground">
+                    <li key={i} className="flex items-baseline gap-3 rounded-lg border border-dashed border-foreground/20 px-3.5 py-2.5 text-sm text-muted-foreground">
                       <span className="w-20 shrink-0 font-mono text-2xs">{p.label}</span>
                       <span className="min-w-0">{p.title}</span>
                     </li>
@@ -217,13 +217,13 @@ export default function StudyCourse() {
 const STATUS_ICON: Record<SectionStatus, { icon: typeof Circle; cls: string; label: string }> = {
   mastered: { icon: CheckCircle2, cls: "text-on-track-fg", label: "done" },
   shaky: { icon: CircleDot, cls: "text-at-risk-fg", label: "shaky" },
-  unread: { icon: Circle, cls: "text-muted-foreground/50", label: "not started" },
+  unread: { icon: Circle, cls: "text-foreground/40", label: "not started" },
 };
 
 function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: ChapterProgress; here: boolean; nextSection?: string; guides: Guide[] }) {
   const started = cp ? cp.mastered + cp.shaky > 0 : false;
   return (
-    <li className={cn("rounded-xl border bg-card px-5 py-4", here ? "border-brand/60 ring-1 ring-brand/30" : "border-border/60")}>
+    <li className={cn("rounded-xl border bg-card px-5 py-4 shadow-sm", here ? "border-brand ring-2 ring-brand/25" : "border-foreground/15")}>
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-2xs text-muted-foreground">{ch.lessons}</span>
         <span className="flex items-center gap-1 font-mono text-2xs text-muted-foreground">
@@ -239,7 +239,7 @@ function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: Ch
             <CheckCircle2 className="h-3.5 w-3.5" /> Completed
           </span>
         ) : here ? (
-          <span className="ml-auto rounded-full bg-brand/10 px-2 py-0.5 text-2xs font-medium text-brand-fg">Continue here</span>
+          <span className="ml-auto rounded-full bg-brand/20 px-2 py-0.5 text-2xs font-semibold text-brand-fg">Continue here</span>
         ) : null}
       </div>
 
@@ -271,10 +271,10 @@ function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: Ch
             >
               <BookOpen className="h-3.5 w-3.5" /> {cp?.done ? "Review" : started ? `Resume at ${cp?.next?.index}` : "Read"}
             </Link>
-            <Link to={`/study/${ch.id}/slides`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground/90 hover:bg-fill-ghost">
+            <Link to={`/study/${ch.id}/slides`} className="flex items-center gap-1.5 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-medium text-foreground/90 hover:bg-fill-ghost">
               <Presentation className="h-3.5 w-3.5" /> Slides
             </Link>
-            <Link to={`/study/${ch.id}/recall`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground/90 hover:bg-fill-ghost">
+            <Link to={`/study/${ch.id}/recall`} className="flex items-center gap-1.5 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-medium text-foreground/90 hover:bg-fill-ghost">
               <RotateCcw className="h-3.5 w-3.5" /> Recall
             </Link>
           </div>
@@ -282,7 +282,7 @@ function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: Ch
 
         {/* Right: the sections, as a checklist */}
         {cp && (
-          <div className="min-w-0 xl:border-l xl:border-border/50 xl:pl-6">
+          <div className="min-w-0 xl:border-l xl:border-foreground/10 xl:pl-6">
             <div className="flex items-center gap-3">
               <ProgressBar p={cp} className="flex-1" />
               <span data-numeric className="shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
@@ -301,7 +301,7 @@ function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: Ch
                       title={`${s.heading} (${S.label})`}
                       className={cn(
                         "group -mx-2 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors duration-micro hover:bg-fill-ghost/70",
-                        isNext && "bg-brand/[0.08]",
+                        isNext && "bg-brand/[0.15] font-medium",
                       )}
                     >
                       <S.icon className={cn("h-3.5 w-3.5 shrink-0", S.cls)} />
@@ -337,9 +337,9 @@ function ProgressCard({ prog }: { prog: CourseProgress }) {
         {[
           { n: prog.mastered, l: "done", dot: "bg-on-track" },
           { n: prog.shaky, l: "shaky", dot: "bg-at-risk/60" },
-          { n: prog.total - prog.mastered - prog.shaky, l: "to go", dot: "bg-fill-ghost ring-1 ring-border" },
+          { n: prog.total - prog.mastered - prog.shaky, l: "to go", dot: "bg-foreground/15 ring-1 ring-foreground/30" },
         ].map((x) => (
-          <div key={x.l} className="flex flex-col-reverse rounded-lg bg-fill-ghost/50 py-1.5">
+          <div key={x.l} className="flex flex-col-reverse rounded-lg border border-foreground/10 bg-foreground/[0.04] py-1.5">
             <dt className="flex items-center justify-center gap-1 text-2xs text-muted-foreground">
               <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", x.dot)} />
               {x.l}
@@ -357,7 +357,7 @@ function ProgressCard({ prog }: { prog: CourseProgress }) {
         chapters finished{prog.last ? ` · last studied ${ago(prog.last.at)}` : ""}
       </p>
       {prog.next ? (
-        <Link to={stopRoute(prog.next)} className="group mt-3 block rounded-lg bg-brand/[0.08] px-3 py-2.5 transition-colors duration-micro hover:bg-brand/[0.14]">
+        <Link to={stopRoute(prog.next)} className="group mt-3 block rounded-lg border border-brand/40 bg-brand/[0.12] px-3 py-2.5 transition-colors duration-micro hover:bg-brand/[0.18]">
           <div className="text-2xs font-medium uppercase tracking-wider text-brand-fg">{prog.next.status === "shaky" ? "Fix next" : "Up next"}</div>
           <div className="mt-0.5 text-sm font-medium leading-snug">{prog.next.heading}</div>
           <div className="mt-1 flex items-center justify-between gap-2 text-2xs text-muted-foreground">
@@ -404,7 +404,7 @@ function ExamCard({ c }: { c: Course }) {
         <Link to={`/study/${c.slug}/exam`} className="flex items-center justify-center gap-1.5 rounded-lg bg-brand-solid px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90">
           <Timer className="h-3.5 w-3.5" /> Mock exam
         </Link>
-        <Link to={`/study/${c.slug}/recall`} className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-fill-ghost">
+        <Link to={`/study/${c.slug}/recall`} className="flex items-center justify-center gap-1.5 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-medium hover:bg-fill-ghost">
           <RotateCcw className="h-3.5 w-3.5" /> Recall all
         </Link>
       </div>
@@ -418,11 +418,11 @@ function DoNextCard({ actions }: { actions: Action[] }) {
       <h2 className={cn(H2, "flex items-center gap-1.5 px-4 pt-3.5")}>
         <Target className="h-3.5 w-3.5 text-brand-fg" /> Do next
       </h2>
-      <ol className="mt-1.5 divide-y divide-border/50 pb-1">
+      <ol className="mt-1.5 divide-y divide-foreground/10 pb-1">
         {actions.map((a) => (
           <li key={a.to}>
             <Link to={a.to} className="group flex items-center gap-2.5 px-4 py-2 transition-colors duration-micro hover:bg-fill-ghost/60">
-              <span className="w-14 shrink-0 rounded bg-fill-ghost px-1 py-px text-center font-mono text-2xs uppercase tracking-wider text-muted-foreground">{KIND_LABEL[a.kind]}</span>
+              <span className="w-14 shrink-0 rounded bg-foreground/10 px-1 py-px text-center font-mono text-2xs uppercase tracking-wider text-muted-foreground">{KIND_LABEL[a.kind]}</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs">{a.title.replace(/^[A-Za-z ]+: /, "")}</span>
                 <span className="block truncate text-2xs text-muted-foreground">
@@ -449,7 +449,7 @@ function DatesCard({ c, all }: { c: Course; all: boolean }) {
       </h2>
       <ol className="mt-2 flex flex-col">
         {shown.map((d, i) => (
-          <li key={i} className="flex items-baseline gap-3 border-b border-border/50 py-1.5 text-xs last:border-0">
+          <li key={i} className="flex items-baseline gap-3 border-b border-foreground/10 py-1.5 text-xs last:border-0">
             <span
               data-numeric
               className={cn(

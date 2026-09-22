@@ -15,7 +15,7 @@ export function ProgressBar({ p, className }: { p: { mastered: number; shaky: nu
       aria-valuemax={p.total}
       aria-valuenow={p.mastered}
       aria-label={`${p.mastered} of ${p.total} sections done`}
-      className={cn("h-1.5 overflow-hidden rounded-full bg-fill-ghost", className)}
+      className={cn("h-1.5 overflow-hidden rounded-full bg-foreground/10", className)}
     >
       <div className="flex h-full">
         <div className="h-full bg-on-track transition-[width] duration-500" style={{ width: `${m}%` }} />
