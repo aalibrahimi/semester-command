@@ -10,7 +10,7 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowRight, BookOpen, CheckCircle2, ChevronRight, ListX, Target } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpen, CalendarClock, CheckCircle2, ChevronRight, ListX, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courses, daysUntil, formatDate } from "@/study";
 import { guidesForCourse } from "@/study/loadGuides";
@@ -63,14 +63,16 @@ function usePlan(): { actions: Action[]; mistakes: number; loaded: boolean } {
 
 const KIND_LABEL: Record<Action["kind"], string> = { drill: "Drill", recall: "Recall", reread: "Reread", read: "Read", mock: "Mock exam", mistakes: "Mistakes" };
 
-function NextPanel() {
-  const { actions, mistakes, loaded } = usePlan();
+const H2 = "text-2xs font-semibold uppercase tracking-wider text-foreground/70";
+const CARD = "rounded-xl border border-foreground/15 bg-card shadow-sm";
+
+function NextPanel({ actions, loaded }: { actions: Action[]; loaded: boolean }) {
   if (!loaded) return null;
   const total = actions.reduce((s, a) => s + a.minutes, 0);
   return (
-    <section className="mt-8">
+    <section>
       <div className="flex items-baseline gap-3">
-        <h2 className="flex items-center gap-1.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+        <h2 className={cn(H2, "flex items-center gap-1.5")}>
           <Target className="h-3.5 w-3.5 text-brand-fg" /> What to do now
         </h2>
         {actions.length > 0 && (
@@ -78,29 +80,22 @@ function NextPanel() {
             ~{total} min
           </span>
         )}
-        <Link to="/study/mistakes" className="ml-auto flex items-center gap-1 text-2xs text-muted-foreground hover:text-foreground">
-          <ListX className="h-3.5 w-3.5" /> {mistakes > 0 ? `${mistakes} mistake${mistakes === 1 ? "" : "s"} this week` : "Mistake log"}
-        </Link>
       </div>
       {actions.length === 0 ? (
-        <p className="mt-2 rounded-xl border border-border/60 bg-card px-4 py-3 text-sm text-muted-foreground">
-          Nothing pressing. Open a course and read the next section, or drill one you finished.
-        </p>
+        <p className={cn(CARD, "mt-2 px-4 py-3 text-sm text-muted-foreground")}>Nothing pressing. Open a course and read the next section, or drill one you finished.</p>
       ) : (
-        <ol className="mt-2 divide-y divide-border/50 rounded-xl border border-border/60 bg-card">
+        <ol className={cn(CARD, "mt-2 divide-y divide-foreground/10")}>
           {actions.map((a, i) => (
             <li key={a.to}>
               <Link to={a.to} className="group flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-micro hover:bg-fill-ghost/60">
                 <span data-numeric className="w-4 shrink-0 font-mono text-2xs text-muted-foreground">
                   {i + 1}
                 </span>
-                <span aria-hidden className="h-4 w-1 shrink-0 rounded-full" style={courseTick(a.course.slug)} />
-                <span className="w-16 shrink-0 text-2xs font-semibold text-foreground/80">{a.course.code}</span>
+                <span aria-hidden className="h-6 w-1 shrink-0 rounded-full" style={courseTick(a.course.slug)} />
+                <span className="w-16 shrink-0 text-2xs font-semibold text-foreground/85">{a.course.code}</span>
+                <span className="w-20 shrink-0 rounded bg-foreground/10 px-1 py-px text-center font-mono text-2xs uppercase tracking-wider text-foreground/70">{KIND_LABEL[a.kind]}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate">
-                    <span className="mr-1.5 rounded bg-fill-ghost px-1 py-px font-mono text-2xs uppercase tracking-wider text-muted-foreground">{KIND_LABEL[a.kind]}</span>
-                    {a.title.replace(/^[A-Za-z ]+: /, "")}
-                  </span>
+                  <span className="block truncate">{a.title.replace(/^[A-Za-z ]+: /, "")}</span>
                   <span className="block truncate text-2xs text-muted-foreground">{a.reason}</span>
                 </span>
                 <span data-numeric className="shrink-0 font-mono text-2xs text-muted-foreground">
@@ -118,127 +113,164 @@ function NextPanel() {
 
 export default function Study() {
   const progress = useAllProgress();
+  const { actions, mistakes, loaded } = usePlan();
   const soon = courses
     .flatMap((c) => c.deadlines.map((d) => ({ ...d, course: c, days: daysUntil(d.date) })))
     .filter((d) => d.days >= 0 && d.days <= 7 && d.kind !== "other")
     .sort((a, b) => a.days - b.days);
 
   return (
-    <div className="mx-auto w-full max-w-[720px] px-8 pb-16 pt-7">
+    <div className="mx-auto w-full max-w-[1280px] px-8 pb-16 pt-7">
       <h1 className="font-display text-xl font-semibold tracking-tight">Study</h1>
       <p className="mt-1 text-sm text-muted-foreground">Each course is a book of lectures, and every lecture also plays as slides.</p>
 
-      <OverallProgress progress={progress} />
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        {/* ── Main column ─────────────────────────────────────────────── */}
+        <div className="flex min-w-0 flex-col gap-8">
+          <NextPanel actions={actions} loaded={loaded} />
 
-      <NextPanel />
-
-      {soon.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Due this week</h2>
-          <ul className="mt-2 divide-y divide-border/50 rounded-xl border border-border/60 bg-card">
-            {soon.map((d, i) => (
-              <li key={i} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                <span aria-hidden className="h-4 w-1 shrink-0 rounded-full" style={courseTick(d.course.slug)} />
-                <span className="w-16 shrink-0 text-2xs font-semibold text-foreground/80">{d.course.code}</span>
-                <span className="min-w-0 flex-1 truncate">{d.label}</span>
-                <span
-                  data-numeric
-                  className={cn("shrink-0 font-mono text-2xs", d.days <= 1 ? "text-critical-fg" : d.days <= 3 ? "text-at-risk-fg" : "text-muted-foreground")}
-                >
-                  {d.days === 0 ? "today" : d.days === 1 ? "tomorrow" : formatDate(d.date, "short")}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <section className="mt-8">
-        <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Courses</h2>
-        <ul className="mt-2 flex flex-col gap-3">
-          {courses.map((c) => {
-            const days = daysUntil(c.exam.date);
-            const warns = c.alerts?.filter((a) => a.kind === "warn").length ?? 0;
-            const written = c.guides.length;
-            const p = progress?.[c.slug];
-            return (
-              <li key={c.slug} className="overflow-hidden rounded-xl border border-border/60 bg-card">
-                <Link to={`/study/${c.slug}`} className="group flex items-center gap-4 px-4 pb-2.5 pt-3.5 transition-colors duration-micro hover:bg-fill-ghost/60">
-                  <span aria-hidden className="h-9 w-1 shrink-0 rounded-full" style={courseTick(c.slug)} />
-                  <div className="w-[7.5rem] shrink-0">
-                    <div className="font-display text-base font-semibold tracking-tight">{c.code}</div>
-                    <div className="truncate text-2xs text-muted-foreground">{c.instructor}</div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 text-sm">
-                      <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
-                      {written > 0 ? (
-                        <span>
-                          {written} chapter{written === 1 ? "" : "s"} written · {c.planned.length} to come
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">Chapters coming · {c.planned.length} planned</span>
-                      )}
-                    </div>
-                    <div className="mt-0.5 text-2xs text-muted-foreground">
-                      {c.exam.label} · {formatDate(c.exam.date)} ·{" "}
-                      <span data-numeric className={cn("font-mono", days <= 7 ? "text-critical-fg" : days <= 21 ? "text-at-risk-fg" : "")}>
-                        {days <= 0 ? "now" : `${days} days`}
-                      </span>
-                    </div>
-                  </div>
-                  {warns > 0 && (
-                    <span className="chip shrink-0 bg-at-risk/10 text-at-risk-fg">
-                      <AlertTriangle className="h-3 w-3" /> {warns}
-                    </span>
-                  )}
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
-                </Link>
-                {p && p.total > 0 && <CourseProgressRow p={p} />}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
-  );
-}
-
-/** Under each course: the bar, the count, and where to pick up. */
-function CourseProgressRow({ p }: { p: CourseProgress }) {
-  const done = p.next === null;
-  return (
-    <div className="border-t border-border/50 px-4 pb-3 pt-2.5 pl-9">
-      <div className="flex items-center gap-3">
-        <ProgressBar p={p} className="flex-1" />
-        <span data-numeric className="w-[9.5rem] shrink-0 text-right font-mono text-2xs tabular-nums text-muted-foreground">
-          {p.mastered}/{p.total} done · <span className={cn(p.pct > 0 && "text-on-track-fg")}>{p.pct}%</span>
-        </span>
-      </div>
-      {done ? (
-        <div className="mt-2 flex items-center gap-1.5 text-xs text-on-track-fg">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Every written chapter done. Keep it fresh with recall.
+          <section>
+            <h2 className={H2}>Courses</h2>
+            <ul className="mt-2 grid gap-3 xl:grid-cols-2">
+              {courses.map((c) => (
+                <CourseCard key={c.slug} c={c} p={progress?.[c.slug]} />
+              ))}
+            </ul>
+          </section>
         </div>
-      ) : (
-        p.next && (
-          <Link to={stopRoute(p.next)} className="group mt-2 flex items-center gap-2 rounded-lg px-2 py-1.5 -mx-2 text-xs transition-colors duration-micro hover:bg-fill-ghost/60">
-            <span className="shrink-0 font-medium text-brand-fg">{p.next.status === "shaky" ? "Fix next" : p.mastered + p.shaky === 0 ? "Start" : "Next"}</span>
-            <span className="min-w-0 flex-1 truncate">
-              {p.next.heading}
-              <span className="text-muted-foreground"> · {p.next.guideLessons}, section {p.next.index}</span>
+
+        {/* ── Rail ────────────────────────────────────────────────────── */}
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto">
+          <OverallProgress progress={progress} />
+
+          <section className={cn(CARD, "px-4 py-3.5")}>
+            <h2 className={cn(H2, "flex items-center gap-1.5")}>
+              <CalendarClock className="h-3.5 w-3.5" /> Due this week
+            </h2>
+            {soon.length === 0 ? (
+              <p className="mt-2 text-xs text-muted-foreground">Nothing due in the next 7 days.</p>
+            ) : (
+              <ul className="mt-2 flex flex-col">
+                {soon.map((d, i) => (
+                  <li key={i} className="flex items-center gap-2.5 border-b border-foreground/10 py-1.5 text-xs last:border-0">
+                    <span aria-hidden className="h-4 w-1 shrink-0 rounded-full" style={courseTick(d.course.slug)} />
+                    <span className="w-14 shrink-0 text-2xs font-semibold text-foreground/85">{d.course.code}</span>
+                    <span className="min-w-0 flex-1 truncate" title={d.label}>
+                      {d.label}
+                    </span>
+                    <span data-numeric className={cn("shrink-0 font-mono text-2xs", d.days <= 1 ? "text-critical-fg" : d.days <= 3 ? "text-at-risk-fg" : "text-muted-foreground")}>
+                      {d.days === 0 ? "today" : d.days === 1 ? "tomorrow" : formatDate(d.date, "short")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <Link to="/study/mistakes" className={cn(CARD, "group flex items-center gap-3 px-4 py-3 transition-colors duration-micro hover:bg-fill-ghost/60")}>
+            <ListX className={cn("h-4 w-4 shrink-0", mistakes > 0 ? "text-at-risk-fg" : "text-muted-foreground")} />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-medium">Mistake log</span>
+              <span className="block text-2xs text-muted-foreground">
+                {mistakes > 0 ? `${mistakes} wrong answer${mistakes === 1 ? "" : "s"} this week to retry` : "No misses this week"}
+              </span>
             </span>
-            {p.last && <span className="hidden shrink-0 text-2xs text-muted-foreground sm:inline">last studied {ago(p.last.at)}</span>}
-            <span className="flex shrink-0 items-center gap-1 rounded-md bg-brand-solid px-2 py-1 text-2xs font-medium text-primary-foreground group-hover:opacity-90">
-              Continue <ArrowRight className="h-3 w-3" />
-            </span>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
           </Link>
-        )
-      )}
+        </aside>
+      </div>
     </div>
   );
 }
 
-/** One bar for the whole semester, plus the per-course split underneath. */
+/** One course: who, when the exam is, how far along, where to pick up. */
+function CourseCard({ c, p }: { c: (typeof courses)[number]; p?: CourseProgress }) {
+  const days = daysUntil(c.exam.date);
+  const warns = c.alerts?.filter((a) => a.kind === "warn").length ?? 0;
+  const written = c.guides.length;
+  const done = p && p.total > 0 && p.next === null;
+  return (
+    <li className={cn(CARD, "flex flex-col overflow-hidden")}>
+      <Link to={`/study/${c.slug}`} className="group flex items-start gap-3 px-4 pb-3 pt-3.5 transition-colors duration-micro hover:bg-fill-ghost/60">
+        <span aria-hidden className="mt-0.5 h-10 w-1 shrink-0 rounded-full" style={courseTick(c.slug)} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-base font-semibold tracking-tight">{c.code}</span>
+            <span className="truncate text-2xs text-muted-foreground">{c.instructor}</span>
+          </div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-foreground/85">
+            <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
+            {written > 0 ? (
+              <span>
+                {written} chapter{written === 1 ? "" : "s"} written · {c.planned.length} to come
+              </span>
+            ) : (
+              <span className="text-muted-foreground">Chapters coming · {c.planned.length} planned</span>
+            )}
+          </div>
+          <div className="mt-0.5 truncate text-2xs text-muted-foreground">
+            {c.exam.label} · {formatDate(c.exam.date)}
+          </div>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span data-numeric className={cn("font-mono text-sm font-semibold", days <= 7 ? "text-critical-fg" : days <= 21 ? "text-at-risk-fg" : "text-foreground/80")}>
+            {days <= 0 ? "now" : `${days}d`}
+          </span>
+          {warns > 0 && (
+            <span className="chip bg-at-risk/10 text-at-risk-fg">
+              <AlertTriangle className="h-3 w-3" /> {warns}
+            </span>
+          )}
+        </div>
+      </Link>
+
+      <div className="mt-auto border-t border-foreground/10 px-4 pb-3.5 pt-3">
+        {p && p.total > 0 ? (
+          <>
+            <div className="flex items-center gap-3">
+              <ProgressBar p={p} className="h-2 flex-1" />
+              <span data-numeric className="shrink-0 font-mono text-xs font-semibold tabular-nums">
+                {p.pct}%
+              </span>
+            </div>
+            <div className="mt-1 flex justify-between text-2xs text-muted-foreground">
+              <span data-numeric className="font-mono">
+                {p.mastered}/{p.total} sections{p.shaky > 0 ? ` · ${p.shaky} shaky` : ""}
+              </span>
+              {p.last && <span>last studied {ago(p.last.at)}</span>}
+            </div>
+            {done ? (
+              <div className="mt-2.5 flex items-center gap-1.5 text-xs text-on-track-fg">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Every written chapter done. Keep it fresh with recall.
+              </div>
+            ) : (
+              p.next && (
+                <Link to={stopRoute(p.next)} className="group mt-2.5 flex items-center gap-2.5 rounded-lg border border-brand/40 bg-brand/[0.12] px-3 py-2 transition-colors duration-micro hover:bg-brand/[0.18]">
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-2xs font-semibold uppercase tracking-wider text-brand-fg">
+                      {p.next.status === "shaky" ? "Fix next" : p.mastered + p.shaky === 0 ? "Start here" : "Up next"}
+                    </span>
+                    <span className="block truncate text-sm font-medium">{p.next.heading}</span>
+                    <span className="block truncate text-2xs text-muted-foreground">
+                      {p.next.guideLessons}, section {p.next.index}
+                    </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1 rounded-md bg-brand-solid px-2.5 py-1.5 text-xs font-medium text-primary-foreground group-hover:opacity-90">
+                    Continue <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              )
+            )}
+          </>
+        ) : (
+          <p className="text-xs text-muted-foreground">No chapters written yet.</p>
+        )}
+      </div>
+    </li>
+  );
+}
+
+/** One bar for the whole semester, plus a bar per course underneath. */
 function OverallProgress({ progress }: { progress: Record<string, CourseProgress> | null }) {
   if (!progress) return null;
   const all = Object.values(progress);
@@ -250,49 +282,57 @@ function OverallProgress({ progress }: { progress: Record<string, CourseProgress
   const chaptersDone = all.reduce((s, p) => s + p.chapters.filter((c) => c.done).length, 0);
   const chapters = all.reduce((s, p) => s + p.chapters.length, 0);
   return (
-    <section className="mt-6 rounded-xl border border-border/60 bg-card px-4 py-3.5">
-      <div className="flex items-baseline gap-2">
-        <h2 className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">Semester progress</h2>
-        <span data-numeric className="ml-auto font-display text-lg font-semibold tabular-nums">
+    <section className={cn(CARD, "px-4 py-3.5")}>
+      <div className="flex items-baseline justify-between">
+        <h2 className={H2}>Semester progress</h2>
+        <span data-numeric className="font-display text-2xl font-semibold tabular-nums">
           {pct}%
         </span>
       </div>
       <ProgressBar p={{ mastered, shaky, total }} className="mt-2 h-2.5" />
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-2xs text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden className="h-2 w-2 rounded-full bg-on-track" />
-          <span data-numeric className="font-mono">{mastered}</span> sections done
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden className="h-2 w-2 rounded-full bg-at-risk/60" />
-          <span data-numeric className="font-mono">{shaky}</span> shaky
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden className="h-2 w-2 rounded-full bg-fill-ghost ring-1 ring-border" />
-          <span data-numeric className="font-mono">{total - mastered - shaky}</span> not started
-        </span>
-        <span className="ml-auto">
-          <span data-numeric className="font-mono">{chaptersDone}/{chapters}</span> chapters finished
-        </span>
-      </div>
-      <div className="mt-3 grid grid-cols-6 gap-2">
+      <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+        {[
+          { n: mastered, l: "done", dot: "bg-on-track" },
+          { n: shaky, l: "shaky", dot: "bg-at-risk/60" },
+          { n: total - mastered - shaky, l: "to go", dot: "bg-foreground/15 ring-1 ring-foreground/30" },
+        ].map((x) => (
+          <div key={x.l} className="flex flex-col-reverse rounded-lg border border-foreground/10 bg-foreground/[0.04] py-1.5">
+            <dt className="flex items-center justify-center gap-1 text-2xs text-muted-foreground">
+              <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", x.dot)} />
+              {x.l}
+            </dt>
+            <dd data-numeric className="font-mono text-base font-semibold tabular-nums">
+              {x.n}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-2xs text-muted-foreground">
+        <span data-numeric className="font-mono">
+          {chaptersDone}/{chapters}
+        </span>{" "}
+        chapters finished · {mastered}/{total} sections
+      </p>
+      <ul className="mt-3 flex flex-col gap-2.5 border-t border-foreground/10 pt-3">
         {courses.map((c) => {
           const p = progress[c.slug];
           return (
-            <Link key={c.slug} to={`/study/${c.slug}`} className="group min-w-0" title={`${c.code}: ${p?.mastered ?? 0} of ${p?.total ?? 0} sections done`}>
-              <div className="flex items-baseline justify-between gap-1">
-                <span className="truncate text-2xs font-semibold text-foreground/80 group-hover:text-foreground">{c.code}</span>
-                <span data-numeric className="font-mono text-2xs text-muted-foreground">
-                  {p && p.total > 0 ? `${p.pct}%` : "–"}
-                </span>
-              </div>
-              <div className="mt-1 h-1 overflow-hidden rounded-full bg-fill-ghost">
-                <div className="h-full rounded-full" style={{ width: `${p?.pct ?? 0}%`, ...courseTick(c.slug) }} />
-              </div>
-            </Link>
+            <li key={c.slug}>
+              <Link to={`/study/${c.slug}`} className="group block" title={`${c.code}: ${p?.mastered ?? 0} of ${p?.total ?? 0} sections done`}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-xs font-semibold text-foreground/85 group-hover:text-foreground">{c.code}</span>
+                  <span data-numeric className="font-mono text-2xs text-muted-foreground">
+                    {p && p.total > 0 ? `${p.mastered}/${p.total} · ${p.pct}%` : "no chapters yet"}
+                  </span>
+                </div>
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-foreground/10">
+                  <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${p?.pct ?? 0}%`, ...courseTick(c.slug) }} />
+                </div>
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }
