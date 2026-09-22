@@ -57,7 +57,8 @@ export type GuideBlock =
   | CheckBlock
   | StepperBlock
   | FigureBlock
-  | SimBlock;
+  | SimBlock
+  | CodeBlock;
 
 /** A verified external link that teaches this exact block's idea — an
  *  interactive visualization or a video. Curated and CHECKED (the URL was
@@ -121,6 +122,31 @@ export interface SimBlock extends BlockBase {
   params?: Record<string, unknown>;
   /** What to try, in one or two sentences. */
   caption: string;
+}
+
+/**
+ * A Python cell the reader edits and runs in the app (Pyodide, see
+ * lib/python). With `check` it is an exercise: after the reader's code runs,
+ * the hidden check runs in the same namespace and each failed `assert`
+ * shows its message as the feedback. Without `check` it is a "try it" cell.
+ */
+export interface CodeBlock extends BlockBase {
+  type: "code";
+  title: string;
+  /** What to do, in the reader's words. Same inline markup as prose. */
+  task: string;
+  /** What the editor starts with. */
+  starter: string;
+  /** Hidden code run first, e.g. data the task needs. */
+  setup?: string;
+  /** Hidden asserts with plain-language messages. */
+  check?: string;
+  /** Up to three hints, shown one at a time. */
+  hints?: string[];
+  /** A working answer, revealed on request. */
+  solution?: string;
+  /** Shown once the check passes: what just happened and why it matters. */
+  success?: string;
 }
 
 /** "The bold terms." One term, one body. */

@@ -1,0 +1,707 @@
+{
+  "id": "ling124/p1-python-waves-plots",
+  "course": "ling124",
+  "lessons": "Python for the labs · Part 1",
+  "title": "Python for the labs, part 1: arrays, waves, and plots",
+  "summary": "Read and write the code in Koo's notebooks yourself: make a time axis, turn a wave formula into one line of numpy, and draw it with matplotlib (labels, zoom, several panels). Every step runs right here and checks your answer.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Built from the code in LING 124 Labs 1 to 6 (ling124_lab1 to lab6.ipynb): the sinusoid() and plot_sinusoid() helpers from Lab 2, the subplot grids from Labs 1, 2 and 6, the time slices from Lab 1. Every code cell runs in the app.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "start",
+      "heading": "How this chapter works",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every LING 124 lab notebook does the same few things over and over: **make a time axis**, **make a wave** (or load a sound), **cut out a piece**, **plot it**, and later **take its FFT**. This chapter teaches each of those moves as a few lines of Python, one at a time.",
+          "slide": "The labs repeat six moves",
+          "id": "start.efa9b7cd"
+        },
+        {
+          "type": "prose",
+          "md": "The grey boxes with a **Python** tag are real code. Click **Run** (or press Cmd+Enter) and it runs right here, no Colab needed. Boxes marked **Your turn** also check your answer the moment you run it and tell you exactly what's off. The first run takes about 10 seconds while Python loads; after that it's instant.",
+          "id": "start.375cbe87"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Move",
+            "The code you'll see",
+            "Where it shows up"
+          ],
+          "rows": [
+            [
+              "Load the tools",
+              "`import numpy as np` and `import matplotlib.pyplot as plt`",
+              "The first cell of every lab"
+            ],
+            [
+              "Make a time axis",
+              "`t = np.arange(int(duration * fs)) / fs`",
+              "Lab 2 `sinusoid()`, Lab 3, 4, 6"
+            ],
+            [
+              "Make a wave",
+              "`x = A * np.cos(2 * np.pi * F * t + phase)`",
+              "Lab 2, Lab 5 `sum_cos()`"
+            ],
+            [
+              "Cut a piece",
+              "`x[int(0.4 * fs):int(0.6 * fs)]`",
+              "Lab 1 (the two \"per\" syllables)"
+            ],
+            [
+              "Plot it",
+              "`fig, ax = plt.subplots()` then `ax.plot(t, x)`",
+              "Every lab"
+            ],
+            [
+              "Get the recipe (spectrum)",
+              "`fft.fft(x)`",
+              "Labs 5 and 6 (part 2 of this chapter)"
+            ]
+          ],
+          "title": "The six moves",
+          "slide": "The six moves",
+          "id": "start.b1c3ba06"
+        },
+        {
+          "type": "code",
+          "title": "Your first run",
+          "task": "Click **Run**. The first line loads numpy and gives it the short name `np`, which is why every lab writes `np.something`.",
+          "starter": "import numpy as np\n\nprint(\"Python is working.\")\nprint(\"pi is\", np.pi)\n",
+          "id": "start.4d6b925c"
+        }
+      ]
+    },
+    {
+      "id": "arrays",
+      "heading": "numpy arrays: a list you can do math on",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "array",
+          "body": "A row of numbers that numpy treats as one thing. When you do math to an array, it happens to **every number at once**. You make one with `np.array([...])` or `np.arange(n)`.",
+          "slide": true,
+          "id": "arrays.91add01d"
+        },
+        {
+          "type": "example",
+          "title": "A plain list vs. an array",
+          "body": "Plain Python list:  [1, 2, 3] * 2   gives  [1, 2, 3, 1, 2, 3]   (it repeats the list)\nnumpy array:        np.array([1, 2, 3]) * 2   gives  [2 4 6]   (it doubles every number)",
+          "answer": "Signals are arrays, so `x * 2` doubles the loudness of the whole wave in one step.",
+          "id": "arrays.b3933077"
+        },
+        {
+          "type": "code",
+          "title": "See the difference yourself",
+          "task": "Run it and compare the two printed lines.",
+          "starter": "import numpy as np\n\nplain = [1, 2, 3]\narr = np.array([1, 2, 3])\n\nprint(\"list * 2  :\", plain * 2)\nprint(\"array * 2 :\", arr * 2)\nprint(\"array + 10:\", arr + 10)\n",
+          "id": "arrays.ec3f598c"
+        },
+        {
+          "type": "definition",
+          "term": "np.arange(n)",
+          "body": "The array `0, 1, 2, ..., n-1`: **n numbers, starting at 0**, never reaching n itself. It's how every lab counts samples.",
+          "slide": true,
+          "id": "arrays.b7b05839"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: math on a whole array",
+          "task": "Make `a` the array `[0, 0.5, 1]`. Then make `b` equal to **3 times a, plus 1**, in one line (no loop).",
+          "starter": "import numpy as np\n\na = None   # replace None\nb = None   # replace None\n\nprint(b)\n",
+          "check": "import numpy as np\nassert a is not None and b is not None, \"Replace both `None`s with real code.\"\nassert isinstance(a, np.ndarray), \"`a` should be a numpy array: use `np.array([0, 0.5, 1])`.\"\nassert np.allclose(a, [0, 0.5, 1]), f\"`a` should be [0, 0.5, 1]. Yours is {a}.\"\nassert np.allclose(b, [1, 2.5, 4]), f\"`b` should be [1, 2.5, 4]. Yours is {b}. Remember: 3 * a + 1.\"",
+          "solution": "import numpy as np\n\na = np.array([0, 0.5, 1])\nb = 3 * a + 1\n\nprint(b)\n",
+          "hints": [
+            "An array is made from a list: `np.array([0, 0.5, 1])`.",
+            "Write the math exactly as you'd say it: `3 * a + 1`. numpy applies it to every number."
+          ],
+          "success": "`3 * a + 1` ran on all three numbers at once. That's the whole trick of numpy, and it's why `A * np.cos(...)` can build a whole wave in one line.",
+          "id": "arrays.4204c14a"
+        },
+        {
+          "type": "prose",
+          "md": "Getting numbers out works like lists: `x[0]` is the first, `x[-1]` is the last, and `x[2:5]` is positions 2, 3, 4 (the end number is **not** included).",
+          "id": "arrays.b1f478ea"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: pick numbers out",
+          "task": "`idx` is the array 0 to 9. Make `first3` hold the first three numbers and `last2` the last two. Use slices, not typed-out numbers.",
+          "starter": "import numpy as np\n\nidx = np.arange(10)\nfirst3 = None   # replace None\nlast2 = None    # replace None\n\nprint(first3, last2)\n",
+          "check": "import numpy as np\nassert first3 is not None and last2 is not None, \"Replace both `None`s.\"\nassert list(first3) == [0, 1, 2], f\"`first3` should be [0 1 2]. Yours is {first3}. A slice `idx[:3]` stops before position 3.\"\nassert list(last2) == [8, 9], f\"`last2` should be [8 9]. Yours is {last2}. Negative numbers count from the end: `idx[-2:]`.\"",
+          "solution": "import numpy as np\n\nidx = np.arange(10)\nfirst3 = idx[:3]\nlast2 = idx[-2:]\n\nprint(first3, last2)\n",
+          "hints": [
+            "`idx[:3]` means \"from the start up to (not including) position 3\".",
+            "`idx[-2:]` means \"from the second-to-last to the end\"."
+          ],
+          "success": "Slices are how Lab 1 cuts the two \"per\" syllables out of the recording. Same syntax, just with sample numbers.",
+          "id": "arrays.bd6c5f53"
+        },
+        {
+          "type": "trap",
+          "body": "Powers are `**`, not `^`. In Python `2 ^ 3` is 1 (a bitwise trick), not 8. Write `x ** 2` for x squared.",
+          "source": "Every lab",
+          "points": null,
+          "id": "arrays.a658916a"
+        },
+        {
+          "type": "trap",
+          "body": "Forgot the `np.`? `cos(t)` gives **NameError: name 'cos' is not defined**. numpy's functions always start with `np.`: `np.cos`, `np.pi`, `np.abs`.",
+          "source": "Every lab",
+          "points": null,
+          "id": "arrays.75388f81"
+        }
+      ]
+    },
+    {
+      "id": "time",
+      "heading": "The time axis: turning sample numbers into seconds",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "sampling rate (fs)",
+          "body": "How many samples (measurements) per second. `fs = 16000` means 16,000 numbers for every second of sound.",
+          "slide": true,
+          "id": "time.85320265"
+        },
+        {
+          "type": "definition",
+          "term": "time axis (t)",
+          "body": "The time, in seconds, of every sample. Sample number n happens at **n / fs** seconds. So `t = np.arange(N) / fs`.",
+          "slide": true,
+          "id": "time.26236ba5"
+        },
+        {
+          "type": "example",
+          "title": "fs = 1000, first 5 samples",
+          "body": "sample numbers n:  0      1      2      3      4\nt = n / fs:        0.000  0.001  0.002  0.003  0.004  seconds",
+          "answer": "One sample every 1/fs = 0.001 s.",
+          "id": "time.80a91510"
+        },
+        {
+          "type": "prose",
+          "md": "How many samples is a duration? **duration × fs**. Half a second at 16,000 Hz is 0.5 × 16000 = 8000 samples. That's why Lab 2's helper starts with this exact line:",
+          "id": "time.0147d41d"
+        },
+        {
+          "type": "example",
+          "title": "From Lab 2's sinusoid()",
+          "body": "t = np.arange(int(duration * sampling_rate)) / sampling_rate",
+          "answer": "Count the samples, number them 0 to N-1, divide by fs to get seconds.",
+          "id": "time.34f0b35f"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: build a time axis",
+          "task": "Make the time axis for **0.1 seconds at fs = 1000 Hz**. First set `n_samples`, then `t`.",
+          "starter": "import numpy as np\n\nfs = 1000\nduration = 0.1\n\nn_samples = None   # how many samples?\nt = None           # the time of each sample, in seconds\n\nprint(n_samples, t[:3], t[-1])\n",
+          "check": "import numpy as np\nassert n_samples is not None and t is not None, \"Replace both `None`s.\"\nassert int(n_samples) == 100, f\"0.1 s at 1000 samples per second is 100 samples. You have {n_samples}.\"\nassert len(t) == 100, f\"`t` should have 100 values. Yours has {len(t)}.\"\nassert abs(t[1] - 0.001) < 1e-12, f\"The second sample should be at 0.001 s. Yours is at {t[1]}. Did you divide by fs?\"\nassert abs(t[-1] - 0.099) < 1e-12, f\"The last sample should be at 0.099 s (not 0.1: counting starts at 0). Yours is {t[-1]}.\"",
+          "solution": "import numpy as np\n\nfs = 1000\nduration = 0.1\n\nn_samples = int(duration * fs)\nt = np.arange(n_samples) / fs\n\nprint(n_samples, t[:3], t[-1])\n",
+          "hints": [
+            "Samples = duration × fs. Wrap it in `int(...)` so it's a whole number.",
+            "`np.arange(n_samples)` gives 0, 1, ..., 99. Divide that by `fs`."
+          ],
+          "success": "The last time is 0.099 s, not 0.1, because the numbering starts at 0. That's also why Lab 2 Q12 (\"how many samples in 0.1 s?\") is duration × fs.",
+          "id": "time.e9aea729"
+        },
+        {
+          "type": "trap",
+          "body": "Always wrap the sample count in `int(...)`. `0.3 * 16000` is `4800.000000000001` on a computer, and `np.arange` of that gives 4801 samples, one too many. `int()` cuts it back to 4800.",
+          "source": "Labs 1, 2, 6",
+          "points": null,
+          "id": "time.64611d18"
+        }
+      ]
+    },
+    {
+      "id": "wave",
+      "heading": "Making a wave from its formula",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Once you have `t`, a wave is one line. Each piece of the formula maps to one piece of code:",
+          "slide": "Formula to code",
+          "id": "wave.66ac87e1"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Formula",
+            "Code",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "A",
+              "`A` or `amplitude`",
+              "How tall the peaks are"
+            ],
+            [
+              "cos",
+              "`np.cos(...)`",
+              "The wave shape (works on a whole array)"
+            ],
+            [
+              "2π",
+              "`2 * np.pi`",
+              "One full circle, in radians"
+            ],
+            [
+              "F",
+              "`F` or `frequency`",
+              "Cycles per second (Hz)"
+            ],
+            [
+              "t",
+              "`t`",
+              "The time axis you just built"
+            ],
+            [
+              "ϕ",
+              "`phase`, e.g. `np.pi / 3`",
+              "Where the cycle starts, in radians"
+            ]
+          ],
+          "title": "x(t) = A cos(2πFt + ϕ)",
+          "slide": "x(t) = A cos(2πFt + ϕ)",
+          "id": "wave.0d7b00bf"
+        },
+        {
+          "type": "example",
+          "title": "Lab 2's wave: x(t) = 2 cos(2π·100·t + π/3)",
+          "body": "x = 2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)",
+          "answer": "Read left to right: amplitude 2, frequency 100 Hz, phase π/3.",
+          "id": "wave.7dbf6f03"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: Lab 2's wave",
+          "task": "Build `t` for **0.1 s at fs = 16000**, then `x` for **x(t) = 2 cos(2π·100·t + π/3)**.",
+          "starter": "import numpy as np\n\nfs = 16000\nduration = 0.1\nt = None   # time axis\nx = None   # the wave\n\nprint(len(x), x[0])\n",
+          "check": "import numpy as np\nassert t is not None and x is not None, \"Replace both `None`s.\"\nassert len(t) == 1600, f\"0.1 s at 16000 Hz is 1600 samples. Your `t` has {len(t)}.\"\nexp = 2 * np.cos(2 * np.pi * 100 * (np.arange(1600) / 16000) + np.pi / 3)\nassert len(x) == 1600, f\"`x` should have 1600 values, one per time. Yours has {len(x)}.\"\nassert abs(x[0] - 1.0) < 1e-9, f\"At t = 0 the wave is 2·cos(π/3) = 1. Yours starts at {x[0]:.4f}. Check the amplitude and the phase `np.pi / 3`.\"\nassert np.allclose(x, exp), \"The start is right but the shape isn't. Check the frequency (100) and that it's `2 * np.pi * 100 * t`.\"",
+          "solution": "import numpy as np\n\nfs = 16000\nduration = 0.1\nt = np.arange(int(duration * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)\n\nprint(len(x), x[0])\n",
+          "hints": [
+            "The time axis is the same line as before: `np.arange(int(duration * fs)) / fs`.",
+            "Copy the formula piece by piece from the table: `2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)`."
+          ],
+          "success": "At t = 0 the wave is 2·cos(π/3) = 1. That starting value is exactly what the phase controls, which is Lab 2 Q4 and Q5.",
+          "id": "wave.8d4984a4"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: Lab 2 Q3 in code",
+          "task": "Same wave, but with the **peak 3 times as high** and the **frequency twice as high**. Keep the phase. Store it in `y`.",
+          "starter": "import numpy as np\n\nfs = 16000\nt = np.arange(int(0.1 * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)\n\ny = None   # 3x the amplitude, 2x the frequency\n\nprint(y.max())\n",
+          "check": "import numpy as np\nassert y is not None, \"Replace `None` with the new wave.\"\nexp = 6 * np.cos(2 * np.pi * 200 * t + np.pi / 3)\nassert abs(np.max(np.abs(y)) - 6) < 0.05, f\"The peak should be 3 × 2 = 6. Yours is about {np.max(np.abs(y)):.2f}.\"\nassert np.allclose(y, exp), \"The peak is right, so check the frequency: twice 100 Hz is 200 Hz.\"",
+          "solution": "import numpy as np\n\nfs = 16000\nt = np.arange(int(0.1 * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)\n\ny = 6 * np.cos(2 * np.pi * 200 * t + np.pi / 3)\n\nprint(y.max())\n",
+          "hints": [
+            "Three times amplitude 2 is 6. Twice 100 Hz is 200 Hz.",
+            "Only two numbers change: `6 * np.cos(2 * np.pi * 200 * t + np.pi / 3)`."
+          ],
+          "success": "Only A and F changed. That's the whole point of the formula: each dial does one job.",
+          "id": "wave.ccdf90e3"
+        },
+        {
+          "type": "definition",
+          "term": "function (def)",
+          "body": "A reusable recipe with a name. `def sinusoid(...):` defines it, the lines pushed in by 4 spaces are the recipe, and `return` hands the result back. Lab 2 starts by defining `sinusoid()` so each question is one short call.",
+          "slide": true,
+          "id": "wave.356a620a"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: write Lab 2's sinusoid() yourself",
+          "task": "Finish the function so it returns the time axis `t` and the wave `x` for any amplitude, frequency, phase, duration, and sampling rate. The last two lines call it.",
+          "starter": "import numpy as np\n\ndef sinusoid(amplitude=1, frequency=10, phase=0, duration=1.0, sampling_rate=16000):\n    t = None   # the time axis\n    x = None   # the wave\n    return t, x\n\nt, x = sinusoid(amplitude=2, frequency=100, phase=np.pi/3, duration=0.1)\nprint(len(t), x[0])\n",
+          "check": "import numpy as np\nt1, x1 = sinusoid(amplitude=3, frequency=50, phase=0, duration=0.02, sampling_rate=1000)\nassert t1 is not None and x1 is not None, \"Inside the function, replace both `None`s.\"\nassert len(t1) == 20, f\"sinusoid(duration=0.02, sampling_rate=1000) should give 20 samples. Yours gave {len(t1)}. Use the function's own `duration` and `sampling_rate`, not fixed numbers.\"\nassert np.allclose(x1, 3 * np.cos(2 * np.pi * 50 * np.arange(20) / 1000)), \"The time axis is right, the wave isn't. Use `amplitude`, `frequency` and `phase` (the names in the parentheses) in the formula.\"\nt2, x2 = sinusoid()\nassert len(t2) == 16000, \"Called with no arguments, it should use the defaults: 1 second at 16000 Hz.\"",
+          "solution": "import numpy as np\n\ndef sinusoid(amplitude=1, frequency=10, phase=0, duration=1.0, sampling_rate=16000):\n    t = np.arange(int(duration * sampling_rate)) / sampling_rate\n    x = amplitude * np.cos(2 * np.pi * frequency * t + phase)\n    return t, x\n\nt, x = sinusoid(amplitude=2, frequency=100, phase=np.pi/3, duration=0.1)\nprint(len(t), x[0])\n",
+          "hints": [
+            "Inside the function, use the names from the first line (`duration`, `sampling_rate`, `amplitude`, ...), not fixed numbers.",
+            "The two lines are the time-axis line and the wave line from before, with names instead of numbers."
+          ],
+          "success": "This is Lab 2's exact helper. Now `sinusoid(frequency=-100, ...)` or `sinusoid(sampling_rate=500, ...)` in the aliasing questions is just you calling your own function.",
+          "id": "wave.94b0be32"
+        },
+        {
+          "type": "trap",
+          "body": "`np.cos` wants **radians**. A phase of 60° must be written `np.pi / 3`, not `60`. If a lab says π/3, type `np.pi / 3`.",
+          "source": "Lab 2 Q4 and Q5",
+          "points": null,
+          "id": "wave.529e6cec"
+        }
+      ]
+    },
+    {
+      "id": "plot",
+      "heading": "Plotting: figure, axes, plot, labels, show",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "figure (fig)",
+          "body": "The whole picture, like one sheet of paper.",
+          "slide": true,
+          "id": "plot.76c09069"
+        },
+        {
+          "type": "definition",
+          "term": "axes (ax)",
+          "body": "One graph drawn on that sheet: its own x-axis, y-axis, lines and labels. A figure can hold several.",
+          "slide": true,
+          "id": "plot.1962b517"
+        },
+        {
+          "type": "prose",
+          "md": "Every plot in the labs is these steps:",
+          "slide": "Every plot is these steps",
+          "id": "plot.67b51a04"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Code",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "`fig, ax = plt.subplots(figsize=(10, 3))`",
+              "Make a sheet (10 wide, 3 tall) with one graph on it"
+            ],
+            [
+              "`ax.plot(t, x)`",
+              "Draw a line through the points (t, x): time across, amplitude up"
+            ],
+            [
+              "`ax.set_xlabel('time (s)')`",
+              "Label the x-axis"
+            ],
+            [
+              "`ax.set_ylabel('amplitude')`",
+              "Label the y-axis"
+            ],
+            [
+              "`ax.set_title('100 Hz')`",
+              "Title above the graph (Lab 1 writes `ax.title.set_text(...)`, same thing)"
+            ],
+            [
+              "`ax.set_xlim(0, 0.01)`",
+              "Zoom the x-axis to 0 to 0.01 s"
+            ],
+            [
+              "`ax.axhline(0, color='black')`",
+              "Draw a horizontal line at 0 (Lab 2's dotted center line)"
+            ],
+            [
+              "`plt.show()`",
+              "Display it"
+            ]
+          ],
+          "title": "The plotting calls from the labs",
+          "id": "plot.d5b471ce"
+        },
+        {
+          "type": "code",
+          "title": "Try it: Lab 2's plot",
+          "task": "Run it. Then change `frequency=100` to `200` and run again: twice as many cycles fit in the same 0.02 s.",
+          "starter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t + np.pi / 3)\n\nfig, ax = plt.subplots(figsize=(10, 3))\nax.plot(t, x)\nax.axhline(0, linestyle='dotted', color='black')\nax.set_xlabel('time (s)')\nax.set_ylabel('amplitude')\nplt.show()\n",
+          "id": "plot.fe8ee2ca"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: a labeled plot",
+          "task": "Plot the 100 Hz wave `x` against `t`. Label the x-axis **time (s)**, the y-axis **amplitude**, and give it the title **100 Hz**.",
+          "starter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t)\n\nfig, ax = plt.subplots(figsize=(10, 3))\n# your lines here\n\nplt.show()\n",
+          "check": "import _sc\nf = _sc.last()\nassert f is not None and f.axes, \"No plot found. Start with `fig, ax = plt.subplots(...)` and draw with `ax.plot(t, x)`.\"\na = f.axes[0]\nassert a.lines, \"The axes are empty. Draw the wave with `ax.plot(t, x)`.\"\nassert len(a.lines[0].get_xdata()) == len(t), \"The line doesn't use all of `t`. Plot `ax.plot(t, x)`: time first, then the wave.\"\nassert a.get_xlabel().strip().lower() == \"time (s)\", f\"The x-axis label should be 'time (s)'. Yours is '{a.get_xlabel()}'.\"\nassert a.get_ylabel().strip().lower() == \"amplitude\", f\"The y-axis label should be 'amplitude'. Yours is '{a.get_ylabel()}'.\"\nassert a.get_title().strip() == \"100 Hz\", f\"The title should be '100 Hz'. Yours is '{a.get_title()}'. Use `ax.set_title('100 Hz')`.\"",
+          "solution": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nx = 2 * np.cos(2 * np.pi * 100 * t)\n\nfig, ax = plt.subplots(figsize=(10, 3))\nax.plot(t, x)\nax.set_xlabel('time (s)')\nax.set_ylabel('amplitude')\nax.set_title('100 Hz')\n\nplt.show()\n",
+          "hints": [
+            "Every call goes on `ax`: `ax.plot(...)`, `ax.set_xlabel(...)`, and so on.",
+            "Text goes in quotes: `ax.set_title('100 Hz')`."
+          ],
+          "success": "Those four lines are in every single lab. From here on, a lab plot is something you can read line by line, not a black box.",
+          "id": "plot.b6c5a76f"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: zoom in",
+          "task": "The plot shows 0.1 s, which is too crowded. Zoom the x-axis to the first **0.01 seconds** (one cycle of 100 Hz).",
+          "starter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.1 * fs)) / fs\nx = np.cos(2 * np.pi * 100 * t)\n\nfig, ax = plt.subplots(figsize=(10, 3))\nax.plot(t, x)\n# zoom here\n\nplt.show()\n",
+          "check": "import _sc\na = _sc.last().axes[0]\nlo, hi = a.get_xlim()\nassert abs(lo) < 1e-9 and abs(hi - 0.01) < 1e-9, f\"The x-axis should go from 0 to 0.01. It goes from {lo:.4g} to {hi:.4g}. Use `ax.set_xlim(0, 0.01)`.\"",
+          "solution": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.1 * fs)) / fs\nx = np.cos(2 * np.pi * 100 * t)\n\nfig, ax = plt.subplots(figsize=(10, 3))\nax.plot(t, x)\nax.set_xlim(0, 0.01)\n\nplt.show()\n",
+          "hints": [
+            "The call is `ax.set_xlim(start, end)` with times in seconds."
+          ],
+          "success": "Zooming changes only what you see, not the data. Lab 1's syllabus plots use the same move with `set_xticks` to put tick marks where the vowel starts.",
+          "id": "plot.15c9584a"
+        },
+        {
+          "type": "trap",
+          "body": "`plt.plot(...)` and `ax.plot(...)` both draw, but mixing them draws on whichever graph was made last. With more than one panel, always use the `ax` you mean.",
+          "source": "Labs 1, 2, 6",
+          "points": null,
+          "id": "plot.a254e55f"
+        }
+      ]
+    },
+    {
+      "id": "panels",
+      "heading": "Several graphs in one figure",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "plt.subplots(rows, cols)",
+          "body": "Makes a grid of graphs. Now `ax` is a **list of axes**, not one axes: `ax[0]`, `ax[1]` for one column, `ax[row, col]` for a grid.",
+          "slide": true,
+          "id": "panels.e0a8e0fd"
+        },
+        {
+          "type": "example",
+          "title": "Lab 2 Q13 layout: two graphs stacked",
+          "body": "fig, ax = plt.subplots(2, 1, figsize=(10, 6))\nax[0].plot(t, x1, color='blue')   # top\nax[1].plot(t, x2, color='red')    # bottom\nplt.show()",
+          "answer": "`2, 1` means 2 rows, 1 column. `ax[0]` is the top, `ax[1]` the bottom.",
+          "id": "panels.7d484301"
+        },
+        {
+          "type": "example",
+          "title": "Lab 1's 2 × 2 grid",
+          "body": "fig, ax = plt.subplots(2, 2)\nax[0, 0]  top left      ax[0, 1]  top right\nax[1, 0]  bottom left   ax[1, 1]  bottom right",
+          "answer": "First number is the row, second is the column, both counting from 0.",
+          "id": "panels.42acf178"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: two waves, stacked",
+          "task": "Draw the **100 Hz** wave `x1` on the **top** graph and the **200 Hz** wave `x2` on the **bottom** graph.",
+          "starter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nx1 = np.cos(2 * np.pi * 100 * t)\nx2 = np.cos(2 * np.pi * 200 * t)\n\nfig, ax = plt.subplots(2, 1, figsize=(10, 5))\n# draw x1 on top, x2 on the bottom\n\nplt.show()\n",
+          "check": "import _sc, numpy as np\nf = _sc.last()\nassert f is not None and len(f.axes) == 2, \"You need a figure with 2 graphs: `plt.subplots(2, 1, ...)`.\"\ntop, bottom = f.axes\nassert top.lines and bottom.lines, \"Both graphs need a line. Use `ax[0].plot(...)` and `ax[1].plot(...)`.\"\nassert np.allclose(top.lines[0].get_ydata(), x1), \"The top graph should show `x1` (100 Hz). Is it on `ax[0]`?\"\nassert np.allclose(bottom.lines[0].get_ydata(), x2), \"The bottom graph should show `x2` (200 Hz). Is it on `ax[1]`?\"",
+          "solution": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nx1 = np.cos(2 * np.pi * 100 * t)\nx2 = np.cos(2 * np.pi * 200 * t)\n\nfig, ax = plt.subplots(2, 1, figsize=(10, 5))\nax[0].plot(t, x1)\nax[1].plot(t, x2)\n\nplt.show()\n",
+          "hints": [
+            "`ax` is now a list. The top graph is `ax[0]`.",
+            "`ax[0].plot(t, x1)` and `ax[1].plot(t, x2)`."
+          ],
+          "success": "Stacking two signals on the same time axis is how Labs 2 and 6 show aliasing: two different frequencies that look the same after sampling.",
+          "id": "panels.76d016a1"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: a loop that fills the panels",
+          "task": "Lab 2 Q15 draws 11 graphs with a `for` loop. Do a small version: 3 stacked graphs showing **100, 200 and 300 Hz**, each titled like **F = 100 Hz**.",
+          "starter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nfreqs = [100, 200, 300]\n\nfig, ax = plt.subplots(3, 1, figsize=(10, 7))\nfor i in range(3):\n    F = freqs[i]\n    # plot the F Hz cosine on ax[i], and set its title\n\nfig.subplots_adjust(hspace=0.6)\nplt.show()\n",
+          "check": "import _sc, numpy as np\nf = _sc.last()\nassert f is not None and len(f.axes) == 3, \"Keep the 3 × 1 grid from the starter.\"\nfor i, F in enumerate([100, 200, 300]):\n    a = f.axes[i]\n    assert a.lines, f\"Graph {i + 1} is empty. Inside the loop, plot on `ax[i]`.\"\n    assert np.allclose(a.lines[0].get_ydata(), np.cos(2 * np.pi * F * t)), f\"Graph {i + 1} should be the {F} Hz cosine. Use `F` in the formula, not a fixed number.\"\n    assert a.get_title().replace(\" \", \"\") == f\"F={F}Hz\", f\"Graph {i + 1}'s title should be 'F = {F} Hz'. Yours is '{a.get_title()}'. Try `ax[i].set_title(f'F = {{F}} Hz')`.\"",
+          "solution": "import numpy as np\nimport matplotlib.pyplot as plt\n\nfs = 16000\nt = np.arange(int(0.02 * fs)) / fs\nfreqs = [100, 200, 300]\n\nfig, ax = plt.subplots(3, 1, figsize=(10, 7))\nfor i in range(3):\n    F = freqs[i]\n    ax[i].plot(t, np.cos(2 * np.pi * F * t))\n    ax[i].set_title(f'F = {F} Hz')\n\nfig.subplots_adjust(hspace=0.6)\nplt.show()\n",
+          "hints": [
+            "Inside the loop, the graph for this round is `ax[i]`.",
+            "An f-string puts a variable into text: `f'F = {F} Hz'`."
+          ],
+          "success": "Loop plus `ax[i]` is how every \"compare many versions\" figure in the labs is made.",
+          "id": "panels.38514c14"
+        },
+        {
+          "type": "trap",
+          "body": "With `plt.subplots(2, 1)`, writing `ax.plot(...)` fails with **AttributeError: 'numpy.ndarray' object has no attribute 'plot'**. `ax` is a list of graphs now; pick one with `ax[0]`.",
+          "source": "Labs 1, 2, 6",
+          "points": null,
+          "id": "panels.2e27a306"
+        }
+      ]
+    },
+    {
+      "id": "slice",
+      "heading": "Cutting out a piece by time",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "To grab the stretch from 0.4 s to 0.6 s, turn each time into a **sample number** (time × fs), then slice. This is exactly Lab 1's code for the first \"per\":",
+          "slide": "From seconds to sample numbers",
+          "id": "slice.03b31384"
+        },
+        {
+          "type": "example",
+          "title": "Lab 1",
+          "body": "start_1 = int(0.4 * fs); end_1 = int(0.6 * fs)\ninterval_1 = x[start_1:end_1]\n# its own time axis, for plotting:\nnp.arange(start_1, end_1) / fs",
+          "answer": "Seconds × fs = sample number. Slice with those numbers.",
+          "id": "slice.7a0d40e3"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: cut 0.25 s to 0.5 s",
+          "task": "`x` is a 1-second signal at `fs = 8000`. Make `piece` = the samples from **0.25 s to 0.5 s**, and `t_piece` = their times in seconds.",
+          "starter": "import numpy as np\n\nstart = None     # sample number at 0.25 s\nend = None       # sample number at 0.5 s\npiece = None\nt_piece = None\n\nprint(len(piece), t_piece[0], t_piece[-1])\n",
+          "setup": "import numpy as np\nfs = 8000\n_t = np.arange(fs) / fs\nx = np.cos(2 * np.pi * 220 * _t) * np.exp(-2 * _t)",
+          "check": "import numpy as np\nassert start is not None and end is not None, \"Set `start` and `end` first.\"\nassert int(start) == 2000 and int(end) == 4000, f\"0.25 s × 8000 = 2000 and 0.5 s × 8000 = 4000. You have {start} and {end}.\"\nassert piece is not None and len(piece) == 2000, \"`piece` should be `x[start:end]`: 2000 samples.\"\nassert np.allclose(piece, x[2000:4000]), \"`piece` has the right length but the wrong samples. Slice `x` itself.\"\nassert t_piece is not None and len(t_piece) == 2000 and abs(t_piece[0] - 0.25) < 1e-12, \"`t_piece` should start at 0.25 s: `np.arange(start, end) / fs`.\"",
+          "solution": "import numpy as np\n\nstart = int(0.25 * fs)\nend = int(0.5 * fs)\npiece = x[start:end]\nt_piece = np.arange(start, end) / fs\n\nprint(len(piece), t_piece[0], t_piece[-1])\n",
+          "hints": [
+            "`fs` and `x` already exist (they were loaded for you). Sample number = seconds × fs.",
+            "`piece = x[start:end]`, and the times are `np.arange(start, end) / fs`."
+          ],
+          "success": "If you plotted `piece` against `np.arange(len(piece)) / fs` instead, the axis would start at 0, not 0.25. That's why Lab 1 adds `+ 0.4` to its spectrogram times.",
+          "id": "slice.7720a2cb"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "py1-samples",
+      "title": "How many samples?",
+      "prompt": "What does `len(np.arange(int(0.2 * 16000)))` print?",
+      "hints": [
+        "Samples = duration × fs.",
+        "0.2 × 16000.",
+        "np.arange(N) has exactly N numbers."
+      ],
+      "solution": [
+        "0.2 × 16000 = 3200",
+        "np.arange(3200) is 0 to 3199: 3200 numbers."
+      ],
+      "why": "Counting samples is the first step of every time axis.",
+      "accept": [
+        "3200"
+      ],
+      "sectionRef": "time"
+    },
+    {
+      "id": "py1-last-t",
+      "title": "The last time",
+      "prompt": "With `fs = 100` and `t = np.arange(50) / fs`, what is `t[-1]`?",
+      "hints": [
+        "The last sample number is 49, not 50.",
+        "t = n / fs.",
+        "49 / 100."
+      ],
+      "solution": [
+        "np.arange(50) ends at 49.",
+        "49 / 100 = 0.49 s."
+      ],
+      "why": "The time axis stops one sample short of the duration.",
+      "accept": [
+        "0.49"
+      ],
+      "sectionRef": "time"
+    },
+    {
+      "id": "py1-code-formula",
+      "title": "Which line is x(t) = 3 cos(2π·50·t)?",
+      "prompt": "Pick the correct numpy line.",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Amplitude multiplies the whole cosine.",
+        "Everything else goes inside `np.cos(...)`."
+      ],
+      "why": "Mapping formula to code is Lab 2 Q3 in reverse.",
+      "choices": [
+        {
+          "text": "`x = 3 * np.cos(2 * np.pi * 50 * t)`",
+          "feedback": "Right: every piece of the formula has its code piece."
+        },
+        {
+          "text": "`x = 3 * cos(2 * pi * 50 * t)`",
+          "feedback": "Missing `np.`: Python doesn't know `cos` or `pi` on their own (NameError)."
+        },
+        {
+          "text": "`x = 3 * np.cos(2 * 3.14 * 50) * t`",
+          "feedback": "The `* t` is outside the cosine, so this is a straight line times a constant, not a wave."
+        },
+        {
+          "text": "`x = np.cos(3 * 2 * np.pi * 50 * t)`",
+          "feedback": "The 3 moved inside the cosine: that triples the frequency instead of the height."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "wave"
+    },
+    {
+      "id": "py1-ax",
+      "title": "What is ax[1]?",
+      "prompt": "After `fig, ax = plt.subplots(2, 1)`, what is `ax[1]`?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Counting starts at 0.",
+        "Row 0 is the top."
+      ],
+      "why": "Reading `ax[...]` is how you know which panel a lab's question is about.",
+      "choices": [
+        {
+          "text": "The bottom graph",
+          "feedback": "Right: rows count from 0, so 1 is the second row."
+        },
+        {
+          "text": "The top graph",
+          "feedback": "The top one is `ax[0]`."
+        },
+        {
+          "text": "The second line on the only graph",
+          "feedback": "`ax[1]` is a whole graph, not a line."
+        },
+        {
+          "text": "An error: ax is one graph",
+          "feedback": "With 2 rows, `ax` is a list of 2 graphs."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "panels"
+    },
+    {
+      "id": "py1-error",
+      "title": "Read the error",
+      "prompt": "You run `ax.plot(t, x)` after `fig, ax = plt.subplots(3, 1)` and get **'numpy.ndarray' object has no attribute 'plot'**. What's the fix?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "The error says `ax` is an array.",
+        "An array of graphs needs an index."
+      ],
+      "why": "This is the single most common plotting error in the labs.",
+      "choices": [
+        {
+          "text": "Pick a graph: `ax[0].plot(t, x)`",
+          "feedback": "Right: with several graphs, `ax` is an array of them."
+        },
+        {
+          "text": "Import matplotlib again",
+          "feedback": "The import is fine; the problem is which object you called `.plot` on."
+        },
+        {
+          "text": "Convert x to a list",
+          "feedback": "x is fine as an array."
+        },
+        {
+          "text": "Use `np.plot`",
+          "feedback": "Plotting lives in matplotlib, not numpy."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "panels"
+    },
+    {
+      "id": "py1-slice",
+      "title": "Slice by time",
+      "prompt": "With `fs = 16000`, which sample number is 1.53 s (Lab 1's second \"per\")? Type the number `int(1.53 * fs)` gives.",
+      "hints": [
+        "Seconds × fs.",
+        "1.53 × 16000.",
+        "1.53 × 16000 = 24480."
+      ],
+      "solution": [
+        "1.53 × 16000 = 24480"
+      ],
+      "why": "Times become sample numbers before you can slice.",
+      "accept": [
+        "24480"
+      ],
+      "sectionRef": "slice"
+    }
+  ]
+}

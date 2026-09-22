@@ -11,6 +11,7 @@
  *   stepper     the existing click-through Stepper
  *   figure      inline SVG with caption
  *   sim         an interactive simulator from sims/ (dials, machines, sound)
+ *   code        a Python cell you edit and run in the app (PyCell)
  *   check       not rendered here — the right rail's "Test me" owns checks
  *
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
@@ -23,6 +24,7 @@ import type { GuideBlock } from "@/study/guide";
 import { Inline } from "./Blocks";
 import { ExampleBody } from "./ExampleBody";
 import { ResourceChips } from "./ResourceChips";
+import { PyCell } from "./PyCell";
 import { Sim } from "./sims";
 import { Stepper } from "./Stepper";
 
@@ -192,6 +194,13 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
             <Inline text={block.caption} />
           </figcaption>
         </figure>
+      );
+
+    case "code":
+      return (
+        <PyCell block={block}>
+          <Markdown md={block.task} />
+        </PyCell>
       );
 
     case "check":

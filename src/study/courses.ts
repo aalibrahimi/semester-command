@@ -221,7 +221,7 @@ export const courses: Course[] = [
       "Fourier series: three forms, conversions, compute X_k for a sum of cosines, orthogonality.",
       "DFT/IDFT, bin spacing Fs/N, leakage, STFT parameters, narrow vs broad band.",
     ],
-    guides: ["0-reading-a-wave", "3-sampling-aliasing", "4-complex-sinusoids", "5-fourier-series", "6-transform-dft-stft", "9-pitch-asr", "11-feature-extraction"],
+    guides: ["0-reading-a-wave", "3-sampling-aliasing", "4-complex-sinusoids", "5-fourier-series", "6-transform-dft-stft", "9-pitch-asr", "11-feature-extraction", "p1-python-waves-plots", "p2-python-fft-spectra"],
     planned: [
       { label: "Days 12–13", title: "Dynamic time warping, GMMs, HMMs" },
       { label: "Days 14+", title: "Neural ASR and TTS" },
@@ -261,7 +261,7 @@ export const courses: Course[] = [
       "Six annotation levels; datasheets; the data-linguist process.",
       "Parsing vs tagging; three ambiguity types; Brown vs PTB.",
     ],
-    guides: ["1-what-is-a-corpus", "4-regex", "5-words-tokens-normalization", "7-annotation-pos", "9-frequency-keyness"],
+    guides: ["1-what-is-a-corpus", "4-regex", "5-words-tokens-normalization", "7-annotation-pos", "9-frequency-keyness", "p-python-for-corpora"],
     planned: [
       { label: "Week 7", title: "Building an annotated dataset; annotation guidelines (Oct 1)" },
       { label: "Week 8", title: "Collocations and concordances: KWIC, MI, t-score (Oct 6–8)" },

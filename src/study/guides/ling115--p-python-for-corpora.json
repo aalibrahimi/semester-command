@@ -1,0 +1,653 @@
+{
+  "id": "ling115/p-python-for-corpora",
+  "course": "ling115",
+  "lessons": "Python for the homework",
+  "title": "Python for corpus work: count, sort, search, and show",
+  "summary": "Write the code Kraus's homework asks for by yourself: loop over tagged (word, tag) pairs, count with a dictionary or Counter, sort to get a top-10 table, search with re (groups, backreferences, lookahead done right), turn counts into per-1,000 rates and TTR, and show results as a pandas table and a bar chart.",
+  "estimatedMinutes": 75,
+  "sourceNote": "Built from the Ling 115 Python Refresher, Homework 1 (Gutenberg and Brown regex searches, -eth verbs, reduplication), Homework 2 (Brown top-10 words and tags, adverbs, the three tags of 'so'), and the Lecture 7 Brown corpus explorer (FreqDist, per-1,000 rates, TTR, keyness, bar charts). Sample data here is small and made up so it runs instantly; the code is the same you'd run on NLTK's corpora.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "shape",
+      "heading": "Every homework notebook has the same shape",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Homework 1 and 2 look long, but every question is the same five steps: **get the words**, **loop** over them, **keep** the ones that match, **count** them, and **show** the top ones as a table. Learn those five and the homework stops being a wall of code.",
+          "slide": "Five steps, every question",
+          "id": "shape.2974eeeb"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "What it looks like in the homework"
+          ],
+          "rows": [
+            [
+              "Get the words",
+              "`brown.tagged_words(categories='mystery')`, `gutenberg.sents(fileid)`"
+            ],
+            [
+              "Loop",
+              "`for word, tag in tagged:` / `for sent in ...:`"
+            ],
+            [
+              "Keep what matches",
+              "`if tag == 'RB':` or `pattern.finditer(sentence_text)`"
+            ],
+            [
+              "Count",
+              "`counts[word] = counts.get(word, 0) + 1` or `Counter(...)`"
+            ],
+            [
+              "Show",
+              "`sorted(...)[:10]` and `print(f\"{word:15s} {count}\")`"
+            ]
+          ],
+          "title": "The five steps",
+          "slide": "The five steps",
+          "id": "shape.8cf323af"
+        },
+        {
+          "type": "prose",
+          "md": "NLTK's corpora are big and need downloading, so the boxes here use a tiny made-up sample with the **same shape** (a list of `(word, tag)` pairs, or a string of text). Code that works here works on `brown.tagged_words()` unchanged.",
+          "id": "shape.aec580b2"
+        },
+        {
+          "type": "code",
+          "title": "Try it: the data",
+          "task": "Run it to see what a tagged sample looks like. `tagged` was loaded for you.",
+          "starter": "print(len(tagged), \"tokens\")\nprint(tagged[:5])\n\nword, tag = tagged[1]\nprint(\"word:\", word, \"| tag:\", tag)\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]",
+          "id": "shape.76d67cf1"
+        }
+      ]
+    },
+    {
+      "id": "fstrings",
+      "heading": "Printing a neat table with f-strings",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "f-string",
+          "body": "Text with an `f` in front, where anything in `{curly braces}` is replaced by its value: `f\"{word} {count}\"`. Add `:15s` to pad text to 15 characters, `:>5` to right-align a number in 5, `:.2f` for 2 decimals.",
+          "slide": true,
+          "id": "fstrings.4926aa80"
+        },
+        {
+          "type": "example",
+          "title": "The homework's table line",
+          "body": "word = \"loveth\"; count = 12\nprint(f\"{word:15s} {count}\")      ->   loveth          12\nprint(f\"{word:>10} | {count:5d}\")  ->       loveth |    12\nprint(f\"{0.123456:.2f}\")           ->   0.12",
+          "answer": "`:15s` pads text to 15 characters, so the numbers line up in a column.",
+          "id": "fstrings.874b619a"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: one table row",
+          "task": "Make `row` the text **`so` padded to 10 characters, then a space, then the count 126**, using an f-string. It should look like `so         126`.",
+          "starter": "word = \"so\"\ncount = 126\n\nrow = None   # an f-string\n\nprint(row)\n",
+          "check": "assert row is not None, \"Replace `None` with an f-string.\"\nassert row == \"so         126\", f\"Expected 'so' padded to 10 characters, a space, then 126: 'so         126'. Yours is {row!r}.\"",
+          "solution": "word = \"so\"\ncount = 126\n\nrow = f\"{word:10s} {count}\"\n\nprint(row)\n",
+          "hints": [
+            "Start with `f\"...\"` and put the variables in `{}`.",
+            "`{word:10s}` pads the word to 10 characters: `f\"{word:10s} {count}\"`."
+          ],
+          "success": "Every summary table in Homework 1 and 2 is this line inside a loop.",
+          "id": "fstrings.12f6be2c"
+        }
+      ]
+    },
+    {
+      "id": "loops",
+      "heading": "Looping over (word, tag) pairs",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "tuple unpacking",
+          "body": "A pair like `(\"walked\", \"VBD\")` can be split into two names in one go: `word, tag = pair`. In a loop: `for word, tag in tagged:` gives you both parts every round.",
+          "slide": true,
+          "id": "loops.4f01209c"
+        },
+        {
+          "type": "definition",
+          "term": "list comprehension",
+          "body": "A one-line loop that builds a list: `[w.lower() for w, t in tagged if t == 'RB']` means \"for every pair, if the tag is RB, keep the lowercased word\".",
+          "slide": true,
+          "id": "loops.8f607630"
+        },
+        {
+          "type": "example",
+          "title": "The same thing two ways",
+          "body": "adverbs = []\nfor word, tag in tagged:\n    if tag == \"RB\":\n        adverbs.append(word.lower())\n\nadverbs = [word.lower() for word, tag in tagged if tag == \"RB\"]",
+          "answer": "Both give the same list. The second is the Refresher's \"comprehension\".",
+          "id": "loops.66cbee60"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: collect the adverbs",
+          "task": "Homework 2 Q6: make `adverbs`, a list of every word tagged **RB**, **lowercased**. (In the real Brown tags, also keep RBR and RBT.)",
+          "starter": "adverbs = []\n# loop over tagged and fill adverbs\n\nprint(adverbs)\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]",
+          "check": "assert adverbs, \"The list is empty. Loop with `for word, tag in tagged:` and append when `tag == 'RB'`.\"\nassert adverbs == [\"slowly\", \"back\", \"again\", \"so\", \"never\", \"back\", \"early\"], f\"Expected 7 adverbs in order: slowly, back, again, so, never, back, early. You have {adverbs}. Did you lowercase them (the sample has a capital 'So')?\"",
+          "solution": "adverbs = [word.lower() for word, tag in tagged if tag == \"RB\"]\n\nprint(adverbs)\n",
+          "hints": [
+            "`for word, tag in tagged:` then `if tag == \"RB\":` then `adverbs.append(...)`.",
+            "Lowercase with `word.lower()` so 'So' and 'so' count as the same word."
+          ],
+          "success": "Lowercasing is the \"think about capitalization\" hint from Homework 2 Q4: without it, 'So' and 'so' are counted as two different words.",
+          "id": "loops.9d2225c0"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: the tags of 'so'",
+          "task": "Homework 2 Q7: make `so_tags`, the list of tags that the word **so** (any capitalization) has in `tagged`.",
+          "starter": "so_tags = None   # a list of tags\n\nprint(so_tags)\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]",
+          "check": "assert so_tags is not None, \"Replace `None` with a list.\"\nassert sorted(so_tags) == [\"CS\", \"QL\", \"RB\"], f\"'so' appears 3 times, tagged QL, RB and CS. You have {so_tags}. Compare `word.lower() == 'so'`.\"",
+          "solution": "so_tags = [tag for word, tag in tagged if word.lower() == \"so\"]\n\nprint(so_tags)\n",
+          "hints": [
+            "Keep the **tag** this time, when the **word** is 'so'.",
+            "`[tag for word, tag in tagged if word.lower() == \"so\"]`"
+          ],
+          "success": "QL (so tired), CS (so she could), RB (So the case...). One spelling, three jobs: that's the lexical ambiguity Homework 2 is about.",
+          "id": "loops.de4d8ccf"
+        }
+      ]
+    },
+    {
+      "id": "counting",
+      "heading": "Counting: dictionary, .get, and Counter",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "dictionary",
+          "body": "A lookup table from keys to values: `counts = {\"the\": 2, \"he\": 3}`. `counts[\"he\"]` gives 3. Perfect for \"how many times did each word appear\".",
+          "slide": true,
+          "id": "counting.c42fb364"
+        },
+        {
+          "type": "prose",
+          "md": "There are three ways to count with it. All three give the same answer; the last is shortest.",
+          "slide": "Three ways to count",
+          "id": "counting.4f8c7b64"
+        },
+        {
+          "type": "example",
+          "title": "Three ways",
+          "body": "# 1. try / except (Homework 1 style)\ntry:\n    counts[w] += 1\nexcept KeyError:\n    counts[w] = 1\n\n# 2. .get with a default of 0\ncounts[w] = counts.get(w, 0) + 1\n\n# 3. Counter does the whole loop for you\nfrom collections import Counter\ncounts = Counter(words)",
+          "answer": "`counts.get(w, 0)` means \"the count so far, or 0 if this word is new\".",
+          "id": "counting.7f297c9d"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: count the tags with .get",
+          "task": "Make `tag_counts`, a dictionary from each tag to how many times it appears in `tagged`. Use a loop and `.get`.",
+          "starter": "tag_counts = {}\nfor word, tag in tagged:\n    pass   # replace this line\n\nprint(tag_counts)\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]",
+          "check": "from collections import Counter\nexp = Counter(t for w, t in tagged)\nassert tag_counts, \"Still empty. Inside the loop: `tag_counts[tag] = tag_counts.get(tag, 0) + 1`.\"\nassert dict(tag_counts) == dict(exp), f\"Some counts are off. RB should be 7, VBD 4, PPS 5. You have RB={tag_counts.get('RB')}, VBD={tag_counts.get('VBD')}, PPS={tag_counts.get('PPS')}.\"",
+          "solution": "tag_counts = {}\nfor word, tag in tagged:\n    tag_counts[tag] = tag_counts.get(tag, 0) + 1\n\nprint(tag_counts)\n",
+          "hints": [
+            "The key is the tag, the value is the count so far.",
+            "`tag_counts[tag] = tag_counts.get(tag, 0) + 1`"
+          ],
+          "success": "That one line replaces Homework 1's four-line try/except. Same result.",
+          "id": "counting.0eab4e7b"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: the same with Counter",
+          "task": "Now do it in one line with `Counter`, and store the **3 most common tags** (with their counts) in `top3`.",
+          "starter": "from collections import Counter\n\ncounts = None\ntop3 = None\n\nprint(top3)\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]",
+          "check": "from collections import Counter\nassert counts is not None and top3 is not None, \"Replace both `None`s.\"\nassert list(top3) == Counter(t for w, t in tagged).most_common(3), f\"Expected {Counter(t for w, t in tagged).most_common(3)}. You have {top3}. Build the Counter from the tags, then `.most_common(3)`.\"",
+          "solution": "from collections import Counter\n\ncounts = Counter(tag for word, tag in tagged)\ntop3 = counts.most_common(3)\n\nprint(top3)\n",
+          "hints": [
+            "Give Counter just the tags: `Counter(tag for word, tag in tagged)`.",
+            "`counts.most_common(3)` returns a list of (tag, count) pairs, biggest first."
+          ],
+          "success": "`most_common(n)` is the `get_top_10` function from Homework 2 in one call. NLTK's `FreqDist` (Lecture 7 notebook) works the same way.",
+          "id": "counting.e9de3be5"
+        }
+      ]
+    },
+    {
+      "id": "sorting",
+      "heading": "Sorting to get a top-N list",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "sorted(..., key=..., reverse=True)",
+          "body": "Sorts anything. `key` says what to sort by; `key=lambda pair: pair[1]` means \"by the second thing in each pair\" (the count). `reverse=True` puts the biggest first.",
+          "slide": true,
+          "id": "sorting.849935ef"
+        },
+        {
+          "type": "example",
+          "title": "Two ways to rank (word, count) pairs",
+          "body": "pairs = [(\"the\", 3), (\"back\", 2), (\"so\", 3)]\n\nsorted(pairs, key=lambda p: p[1], reverse=True)\n  ->  [('the', 3), ('so', 3), ('back', 2)]\n\n# Homework 1's trick: flip to (count, word) and sort that\nsorted([(c, w) for w, c in pairs], reverse=True)\n  ->  [(3, 'the'), (3, 'so'), (2, 'back')]",
+          "answer": "Either works. `key=` keeps the pairs in (word, count) order.",
+          "id": "sorting.ec73228d"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: top 3 words",
+          "task": "`word_counts` (a dictionary) was made for you from the sample, with every word lowercased. Make `top3`: the 3 most frequent **(word, count)** pairs, biggest first, using `sorted`. Punctuation counts as a word here.",
+          "starter": "top3 = None\n\nfor word, count in top3:\n    print(f\"{word:10s} {count}\")\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]\n\nword_counts = {}\nfor w, t in tagged:\n    word_counts[w.lower()] = word_counts.get(w.lower(), 0) + 1",
+          "check": "assert top3 is not None, \"Replace `None` with a sorted slice.\"\nexp = sorted(word_counts.values(), reverse=True)[:3]\nassert [c for w, c in top3] == exp, f\"The top three counts are {exp}. Yours are {[c for w, c in top3]}. Sort `word_counts.items()` by the count, biggest first, and take `[:3]`.\"\nassert all(word_counts[w] == c for w, c in top3), \"Each pair should be (word, its count) from `word_counts`.\"\nassert top3[0][0] == \".\", f\"The most common 'word' is the period '.' (4 times). You have {top3[0]}.\"",
+          "solution": "top3 = sorted(word_counts.items(), key=lambda pair: pair[1], reverse=True)[:3]\n\nfor word, count in top3:\n    print(f\"{word:10s} {count}\")\n",
+          "hints": [
+            "`word_counts.items()` gives (word, count) pairs.",
+            "`sorted(word_counts.items(), key=lambda pair: pair[1], reverse=True)[:3]`"
+          ],
+          "success": "Punctuation and function words top every list: that's Zipf's law, and the reason the Lecture 7 notebook removes stopwords before plotting.",
+          "id": "sorting.3762c607"
+        }
+      ]
+    },
+    {
+      "id": "regex",
+      "heading": "Regex in Python: findall, finditer, compile",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Code",
+            "What you get"
+          ],
+          "rows": [
+            [
+              "`re.findall(r'...', text)`",
+              "A list of every matching piece of text"
+            ],
+            [
+              "`for m in re.finditer(r'...', text):`",
+              "Each match as an object: `m.group()` is the text, `m.start()` where it starts"
+            ],
+            [
+              "`pattern = re.compile(r'...')`",
+              "Save a pattern to reuse; then `pattern.finditer(text)`"
+            ],
+            [
+              "`re.sub(r'...', 'new', text)`",
+              "Replace every match"
+            ],
+            [
+              "`flags=re.IGNORECASE`",
+              "Upper and lower case match alike"
+            ]
+          ],
+          "title": "The four re functions from the Refresher",
+          "slide": "The re toolkit",
+          "id": "regex.a249aa97"
+        },
+        {
+          "type": "definition",
+          "term": "\\b (word boundary)",
+          "body": "Matches the **edge of a word** (between a letter and a space or punctuation), without using up a character. `eth\\b` means \"eth at the end of a word\".",
+          "slide": true,
+          "id": "regex.9821014b"
+        },
+        {
+          "type": "trap",
+          "body": "Always write patterns as raw strings, `r'...'`. Without the `r`, Python turns `\\b` into a backspace character before re ever sees it, and the pattern silently matches nothing.",
+          "source": "Homework 1",
+          "points": null,
+          "id": "regex.818414f6"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: the -eth verbs",
+          "task": "Homework 1, Problem 1.1: make `eth_words`, every word in `text` that **ends in eth**, using `re.findall` and `\\b`.",
+          "starter": "import re\n\neth_words = None\n\nprint(eth_words)\n",
+          "setup": "# A few lines in the style of the Gutenberg texts\ntext = \"\"\"He that loveth his brother abideth in the light. The Lord giveth and the Lord taketh away.\nNo, no, I will not go. She laughed and said very, very well. His teeth were white as snow.\nQueen Elizabeth came on the twentieth day. The wind bloweth where it listeth.\nChoo-choo went the little train, and the baby said night night.\"\"\"",
+          "check": "import re\nassert eth_words is not None, \"Replace `None` with `re.findall(...)`.\"\nexp = [\"loveth\", \"abideth\", \"giveth\", \"taketh\", \"teeth\", \"Elizabeth\", \"twentieth\", \"bloweth\", \"listeth\"]\nassert list(eth_words) == exp, f\"Expected {exp}. You have {eth_words}. Try r'[a-zA-Z]+eth\\\\b' (letters, then eth, then the end of the word).\"",
+          "solution": "import re\n\neth_words = re.findall(r\"[a-zA-Z]+eth\\b\", text)\n\nprint(eth_words)\n",
+          "hints": [
+            "One or more letters is `[a-zA-Z]+`.",
+            "`re.findall(r\"[a-zA-Z]+eth\\b\", text)`"
+          ],
+          "success": "It also caught teeth, Elizabeth and twentieth: spelling can't tell a verb from a noun. The next two sections fix that.",
+          "id": "regex.cdd6cf21"
+        }
+      ]
+    },
+    {
+      "id": "groups",
+      "heading": "Groups and backreferences: finding reduplication",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "group ( )",
+          "body": "Parentheses in a pattern capture the part they wrap. `m.group(1)` is the text the first group matched.",
+          "slide": true,
+          "id": "groups.a00cf930"
+        },
+        {
+          "type": "definition",
+          "term": "backreference \\1",
+          "body": "Means \"the **same text** group 1 matched, again\". `(\\w+) \\1` matches a word followed by the same word: *night night*.",
+          "slide": true,
+          "id": "groups.de131f1f"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: reduplication",
+          "task": "Homework 1, Problem 1.2: match a word repeated right after itself, allowing a **space**, a **comma and space**, or a **hyphen** in between (*no, no*, *very, very*, *choo-choo*, *night night*). Store all the full matches in `redups`.",
+          "starter": "import re\n\npattern = None   # r\"...\" with a group and \\1\nredups = [m.group() for m in re.finditer(pattern, text, flags=re.IGNORECASE)]\n\nprint(redups)\n",
+          "setup": "# A few lines in the style of the Gutenberg texts\ntext = \"\"\"He that loveth his brother abideth in the light. The Lord giveth and the Lord taketh away.\nNo, no, I will not go. She laughed and said very, very well. His teeth were white as snow.\nQueen Elizabeth came on the twentieth day. The wind bloweth where it listeth.\nChoo-choo went the little train, and the baby said night night.\"\"\"",
+          "check": "assert pattern is not None, \"Write a pattern string.\"\nassert redups == [\"No, no\", \"very, very\", \"Choo-choo\", \"night night\"], f\"Expected ['No, no', 'very, very', 'Choo-choo', 'night night']. You have {redups}. The part between the two words can be ', ' or ' ' or '-': something like (, |-| ).\"",
+          "solution": "import re\n\npattern = r\"\\b(\\w+)(, |-| )\\1\\b\"\nredups = [m.group() for m in re.finditer(pattern, text, flags=re.IGNORECASE)]\n\nprint(redups)\n",
+          "hints": [
+            "Start with `r\"\\b(\\w+) \\1\\b\"`: word, space, same word.",
+            "Replace the space with a choice: `(, |-| )`. Order matters: try `, ` before ` `."
+          ],
+          "success": "`\\1` is the whole trick: a regex can't \"remember\" a word any other way. Note it still misses *the the* when the two copies differ in case unless you add `re.IGNORECASE`, which is why 'No, no' needed it.",
+          "id": "groups.6e47adf7"
+        }
+      ]
+    },
+    {
+      "id": "lookahead",
+      "heading": "Lookahead: excluding words, the right way",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "negative lookahead (?!...)",
+          "body": "Checks that what comes **next** does **not** match `...`, without using up any text. Put it **before** the part it guards: `\\b(?!teeth\\b)[a-z]+eth\\b` means \"at the start of a word that isn't teeth, match an -eth word\".",
+          "slide": true,
+          "id": "lookahead.a4788b6e"
+        },
+        {
+          "type": "trap",
+          "body": "`[a-zA-Z]+(?!eth)` doesn't mean \"words not ending in eth\". The `+` grabs as many letters as it can, then the lookahead checks the text **after** the word (a space), which is never \"eth\", so it matches **every** word. The lookahead must sit at the **start** of the word, before the letters it's about.",
+          "source": "Homework 1 Q4",
+          "points": null,
+          "id": "lookahead.bbbec007"
+        },
+        {
+          "type": "example",
+          "title": "Where the lookahead goes",
+          "body": "WRONG:  [a-zA-Z]+(?!eth)                 matches every word\nRIGHT:  \\b(?!(?:teeth|elizabeth)\\b)[a-zA-Z]+eth\\b\n        ^ start of word, then \"not teeth/elizabeth\", then the -eth word",
+          "answer": "Check at the start of the word, then match it.",
+          "id": "lookahead.0a2ee42f"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: only the verbs",
+          "task": "Make `verbs`: the **-eth** words in `text` **except** *teeth*, *Elizabeth*, and ordinal numbers ending in **-ieth** (twentieth, thirtieth). Use one pattern with negative lookahead(s) and `re.IGNORECASE`.",
+          "starter": "import re\n\npattern = None   # r\"...\"\nverbs = re.findall(pattern, text, flags=re.IGNORECASE)\n\nprint(verbs)\n",
+          "setup": "# A few lines in the style of the Gutenberg texts\ntext = \"\"\"He that loveth his brother abideth in the light. The Lord giveth and the Lord taketh away.\nNo, no, I will not go. She laughed and said very, very well. His teeth were white as snow.\nQueen Elizabeth came on the twentieth day. The wind bloweth where it listeth.\nChoo-choo went the little train, and the baby said night night.\"\"\"",
+          "check": "import re\nassert pattern is not None, \"Write a pattern string.\"\nexp = [\"loveth\", \"abideth\", \"giveth\", \"taketh\", \"bloweth\", \"listeth\"]\nassert verbs == exp, f\"Expected only the verbs {exp}. You have {verbs}. Put `(?!...)` right after `\\\\b`, before `[a-z]+eth\\\\b`.\"\nt2 = \"The fiftieth man speaketh; Macbeth's teeth.\"\ngot = re.findall(pattern, t2, flags=re.IGNORECASE)\nassert \"fiftieth\" not in [w.lower() for w in got], \"Your pattern lists the words one by one. Block the whole -ieth family with a lookahead like (?![a-z]*ieth\\\\b) so fiftieth, thirtieth and so on are all excluded.\"",
+          "solution": "import re\n\npattern = r\"\\b(?!(?:teeth|elizabeth)\\b)(?![a-z]*ieth\\b)[a-z]+eth\\b\"\nverbs = re.findall(pattern, text, flags=re.IGNORECASE)\n\nprint(verbs)\n",
+          "hints": [
+            "Two lookaheads can sit side by side after `\\b`: one for the word list, one for the -ieth pattern.",
+            "`(?!(?:teeth|elizabeth)\\b)` blocks those two words; `(?![a-z]*ieth\\b)` blocks every ordinal."
+          ],
+          "success": "Now compare this with Homework 1 Part 2: on the tagged Brown corpus, `[a-z]+eth/VBZ` gets the same verbs with no lookaheads at all. That's the \"tagged vs raw\" point of the whole homework.",
+          "id": "lookahead.17365497"
+        }
+      ]
+    },
+    {
+      "id": "rates",
+      "heading": "From counts to rates: per 1,000 words and TTR",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "relative frequency",
+          "body": "A count divided by the corpus size. **Per 1,000 words** = count / total × 1000. It's the only fair way to compare a 14k-word genre with a 182k-word one.",
+          "slide": true,
+          "id": "rates.a39a7ea6"
+        },
+        {
+          "type": "definition",
+          "term": "type-token ratio (TTR)",
+          "body": "Number of **different** words (types) ÷ number of **words** (tokens). `len(set(words)) / len(words)`. Only compare TTRs of texts of the same size.",
+          "slide": true,
+          "id": "rates.b499a7b2"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: rate and TTR",
+          "task": "`words` is a list of lowercase words (no punctuation). Compute `per_1000`, how often **the** appears per 1,000 words, and `ttr`, the type-token ratio.",
+          "starter": "per_1000 = None\nttr = None\n\nprint(round(per_1000, 1), round(ttr, 3))\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]\n\nwords = [w.lower() for w, t in tagged if w.isalpha()]",
+          "check": "assert per_1000 is not None and ttr is not None, \"Replace both `None`s.\"\nn = len(words)\nassert abs(per_1000 - words.count(\"the\") / n * 1000) < 1e-6, f\"'the' appears {words.count('the')} times in {n} words, so {words.count('the') / n * 1000:.1f} per 1,000. You have {per_1000}.\"\nassert abs(ttr - len(set(words)) / n) < 1e-9, f\"TTR = {len(set(words))} types / {n} tokens = {len(set(words)) / n:.3f}. You have {ttr}. Types are `len(set(words))`.\"",
+          "solution": "per_1000 = words.count(\"the\") / len(words) * 1000\nttr = len(set(words)) / len(words)\n\nprint(round(per_1000, 1), round(ttr, 3))\n",
+          "hints": [
+            "`words.count(\"the\")` counts one word; `len(words)` is the total.",
+            "A `set` drops duplicates, so `len(set(words))` is the number of types."
+          ],
+          "success": "These two numbers are columns in the Lecture 7 notebook's diversity table (TTR, per-1,000).",
+          "id": "rates.8c96ff15"
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "heading": "Showing results: a pandas table and a bar chart",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "DataFrame",
+          "body": "pandas' table: rows and named columns. Build one from a list of dictionaries (one per row): `pd.DataFrame([{\"word\": \"the\", \"count\": 3}, ...])`. Print it with `df.to_string(index=False)`.",
+          "slide": true,
+          "id": "show.ca1b36b5"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: a ranked table",
+          "task": "Make `df`, a DataFrame with columns **word**, **count**, **per_1000** for the 5 most common words in `words`, sorted from most to least common.",
+          "starter": "import pandas as pd\nfrom collections import Counter\n\nrows = []\nfor word, count in Counter(words).most_common(5):\n    pass   # add a dictionary to rows\n\ndf = None\nprint(df.to_string(index=False))\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]\n\nwords = [w.lower() for w, t in tagged if w.isalpha()]",
+          "check": "import pandas as pd\nfrom collections import Counter\nassert df is not None, \"Make `df = pd.DataFrame(rows)`.\"\nassert list(df.columns) == [\"word\", \"count\", \"per_1000\"], f\"The columns should be word, count, per_1000 in that order. You have {list(df.columns)}.\"\ntop = Counter(words).most_common(5)\nassert list(df[\"count\"]) == [c for w, c in top], f\"The counts should be {[c for w, c in top]}. You have {list(df['count'])}.\"\nassert abs(df[\"per_1000\"].iloc[0] - top[0][1] / len(words) * 1000) < 1e-6, \"per_1000 should be count / len(words) * 1000.\"",
+          "solution": "import pandas as pd\nfrom collections import Counter\n\nrows = []\nfor word, count in Counter(words).most_common(5):\n    rows.append({\"word\": word, \"count\": count, \"per_1000\": count / len(words) * 1000})\n\ndf = pd.DataFrame(rows)\nprint(df.to_string(index=False))\n",
+          "hints": [
+            "Each row is a dictionary with the three keys: `{\"word\": word, \"count\": count, \"per_1000\": ...}`.",
+            "`rows.append({...})` inside the loop, then `df = pd.DataFrame(rows)` after it."
+          ],
+          "success": "This is exactly how the Lecture 7 notebook's `display_top_words` builds its tables.",
+          "id": "show.58ae2312"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: a horizontal bar chart",
+          "task": "Plot the 5 most common words as a **horizontal bar chart** (`ax.barh`), **most common at the top**, with the x-axis labeled **count**.",
+          "starter": "import matplotlib.pyplot as plt\nfrom collections import Counter\n\ntop = Counter(words).most_common(5)\nlabels = [w for w, c in top]\ncounts = [c for w, c in top]\n\nfig, ax = plt.subplots(figsize=(6, 3))\n# bars, flip so the biggest is on top, label the x-axis\n\nplt.show()\n",
+          "setup": "# A tiny Brown-style sample: a list of (word, tag) pairs, like brown.tagged_words()\ntagged = [\n    (\"The\", \"AT\"), (\"detective\", \"NN\"), (\"walked\", \"VBD\"), (\"slowly\", \"RB\"), (\"back\", \"RB\"),\n    (\"to\", \"IN\"), (\"the\", \"AT\"), (\"house\", \"NN\"), (\".\", \".\"),\n    (\"He\", \"PPS\"), (\"was\", \"BEDZ\"), (\"so\", \"QL\"), (\"tired\", \"JJ\"), (\"that\", \"CS\"), (\"he\", \"PPS\"),\n    (\"sat\", \"VBD\"), (\"down\", \"RP\"), (\"again\", \"RB\"), (\".\", \".\"),\n    (\"So\", \"RB\"), (\"the\", \"AT\"), (\"case\", \"NN\"), (\"was\", \"BEDZ\"), (\"closed\", \"VBN\"), (\",\", \",\"),\n    (\"and\", \"CC\"), (\"he\", \"PPS\"), (\"never\", \"RB\"), (\"looked\", \"VBD\"), (\"back\", \"RB\"), (\".\", \".\"),\n    (\"She\", \"PPS\"), (\"left\", \"VBD\"), (\"early\", \"RB\"), (\"so\", \"CS\"), (\"she\", \"PPS\"), (\"could\", \"MD\"),\n    (\"rest\", \"VB\"), (\".\", \".\"),\n]\n\nwords = [w.lower() for w, t in tagged if w.isalpha()]",
+          "check": "import _sc\na = _sc.last().axes[0]\nassert a.patches, \"No bars yet. Use `ax.barh(labels, counts)`.\"\nassert len(a.patches) == 5, f\"There should be 5 bars. You have {len(a.patches)}.\"\nassert a.yaxis_inverted(), \"The biggest bar is at the bottom. Flip it with `ax.invert_yaxis()`.\"\nassert \"count\" in a.get_xlabel().lower(), \"Label the x-axis 'count'.\"",
+          "solution": "import matplotlib.pyplot as plt\nfrom collections import Counter\n\ntop = Counter(words).most_common(5)\nlabels = [w for w, c in top]\ncounts = [c for w, c in top]\n\nfig, ax = plt.subplots(figsize=(6, 3))\nax.barh(labels, counts)\nax.invert_yaxis()\nax.set_xlabel('count')\n\nplt.show()\n",
+          "hints": [
+            "`ax.barh(labels, counts)` draws horizontal bars.",
+            "`barh` puts the first item at the bottom; `ax.invert_yaxis()` flips it."
+          ],
+          "success": "Same three calls as the notebook's `plot_top_words`, minus the colors.",
+          "id": "show.1f636d50"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "py115-get",
+      "title": "What does .get do?",
+      "prompt": "What is `counts.get(\"zebra\", 0)` if \"zebra\" was never counted?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "`.get(key, default)`.",
+        "The default is 0 here."
+      ],
+      "why": "`.get` is how you count without try/except.",
+      "choices": [
+        {
+          "text": "0",
+          "feedback": "Right: the second argument is the default when the key is missing."
+        },
+        {
+          "text": "An error (KeyError)",
+          "feedback": "That's what `counts[\"zebra\"]` would do; `.get` avoids it."
+        },
+        {
+          "text": "None",
+          "feedback": "Only if you leave out the default."
+        },
+        {
+          "text": "\"zebra\"",
+          "feedback": ".get returns the value, not the key."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "counting"
+    },
+    {
+      "id": "py115-ttr",
+      "title": "TTR by hand",
+      "prompt": "\"a rose is a rose is a rose\": what is the TTR? (types ÷ tokens, as a decimal)",
+      "hints": [
+        "Count tokens: every word.",
+        "8 tokens; types are a, rose, is.",
+        "3 / 8."
+      ],
+      "solution": [
+        "8 tokens, 3 types",
+        "3 / 8 = 0.375"
+      ],
+      "why": "Same method as the Gertrude Stein example on Kraus's TTR slide: count every word, then count the different ones, then divide.",
+      "accept": [
+        "0.375",
+        "3/8"
+      ],
+      "sectionRef": "rates"
+    },
+    {
+      "id": "py115-lookahead",
+      "title": "Why does it match everything?",
+      "prompt": "Why does `[a-zA-Z]+(?!eth)` match every word?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Think about where the regex is standing when it reaches `(?!eth)`.",
+        "After `[a-zA-Z]+`, it's already past the word."
+      ],
+      "why": "Lookaheads guard what comes next, so put them before the part they're about.",
+      "choices": [
+        {
+          "text": "The lookahead checks what comes after the whole word (a space), which is never 'eth'",
+          "feedback": "Right: `+` eats the word first, then the lookahead looks past it."
+        },
+        {
+          "text": "Lookaheads don't work in Python",
+          "feedback": "They work; this one is just in the wrong place."
+        },
+        {
+          "text": "It needs re.IGNORECASE",
+          "feedback": "Case isn't the issue."
+        },
+        {
+          "text": "`+` should be `*`",
+          "feedback": "That would make it match even empty strings."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "lookahead"
+    },
+    {
+      "id": "py115-backref",
+      "title": "What does \\1 match?",
+      "prompt": "In `(\\w+) \\1`, what does `\\1` match?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "It refers back to a group.",
+        "Same text, not same kind of text."
+      ],
+      "why": "Backreferences are how regex finds repetition.",
+      "choices": [
+        {
+          "text": "Exactly the same text group 1 matched",
+          "feedback": "Right: it's a copy of whatever group 1 captured."
+        },
+        {
+          "text": "Any word",
+          "feedback": "That would be `\\w+` again, which allows different words."
+        },
+        {
+          "text": "The digit 1",
+          "feedback": "In a pattern, `\\1` is a backreference, not a digit."
+        },
+        {
+          "text": "The first character of the line",
+          "feedback": "That's `^`."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "groups"
+    },
+    {
+      "id": "py115-per1000",
+      "title": "Per 1,000",
+      "prompt": "'said' appears 450 times in a 90,000-word genre. How many per 1,000 words?",
+      "hints": [
+        "count / total × 1000.",
+        "450 / 90000 = 0.005.",
+        "× 1000."
+      ],
+      "solution": [
+        "450 / 90000 × 1000 = 5"
+      ],
+      "why": "Rates let you compare genres of different sizes.",
+      "accept": [
+        "5"
+      ],
+      "sectionRef": "rates"
+    },
+    {
+      "id": "py115-sorted",
+      "title": "Biggest first",
+      "prompt": "Which gives (word, count) pairs from most to least common?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "You need both the word and the count.",
+        "`key=` picks what to sort by."
+      ],
+      "why": "Sorted pairs are every top-N table.",
+      "choices": [
+        {
+          "text": "`sorted(d.items(), key=lambda p: p[1], reverse=True)`",
+          "feedback": "Right: sort by the count (p[1]), biggest first."
+        },
+        {
+          "text": "`sorted(d.items())`",
+          "feedback": "That sorts alphabetically by word."
+        },
+        {
+          "text": "`sorted(d.values(), reverse=True)`",
+          "feedback": "That loses the words: you only get the numbers."
+        },
+        {
+          "text": "`d.sort(reverse=True)`",
+          "feedback": "Dictionaries don't have .sort()."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "sorting"
+    }
+  ]
+}

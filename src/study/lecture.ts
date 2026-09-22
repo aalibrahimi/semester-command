@@ -44,6 +44,8 @@ function blockText(b: GuideBlock): string {
       return `Try it yourself. ${plain(b.caption)}`;
     case "stepper":
       return b.title;
+    case "code":
+      return `Your turn in Python. ${b.title}. ${plain(b.task)}`;
     case "check":
       return b.prompt;
   }

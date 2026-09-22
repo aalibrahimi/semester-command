@@ -75,6 +75,12 @@ for (const f of readdirSync(dir)) {
           else if (!(SIM_NAMES as readonly string[]).includes(b.sim)) at(`${id}: unknown sim "${b.sim}" (see src/study/sims.ts)`);
           if (b.params !== undefined && (typeof b.params !== "object" || b.params === null || Array.isArray(b.params))) at(`${id}: sim.params must be an object`);
           break;
+        case "code":
+          if (!isStr(b.title) || !isStr(b.task) || typeof b.starter !== "string") at(`${id}: code title/task/starter`);
+          for (const k of ["setup", "check", "solution", "success"]) if (b[k] !== undefined && !isStr(b[k])) at(`${id}: code.${k} must be a string`);
+          if (b.hints !== undefined && (!isArr(b.hints) || b.hints.length > 3 || !b.hints.every(isStr))) at(`${id}: code.hints must be up to 3 strings`);
+          if (b.check !== undefined && b.solution === undefined) at(`${id}: a checked code cell needs a solution`);
+          break;
         default: at(`${String(id)}: unknown block type ${String(b.type)}`);
       }
     }
