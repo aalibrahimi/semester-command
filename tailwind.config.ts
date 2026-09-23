@@ -155,10 +155,13 @@ export default {
         // A notification's remaining time (components/inbox). Duration is
         // set inline per card; hovering the stack pauses it.
         "toast-timer": { from: { transform: "scaleX(1)" }, to: { transform: "scaleX(0)" } },
+        // An animation frame's dwell time (components/study/Stepper).
+        "frame-progress": { from: { transform: "scaleX(0)" }, to: { transform: "scaleX(1)" } },
       },
       animation: {
         shimmer: "shimmer 1.6s infinite",
         "toast-timer": "toast-timer 8s linear forwards",
+        "frame-progress": "frame-progress 3s linear forwards",
       },
     },
   },

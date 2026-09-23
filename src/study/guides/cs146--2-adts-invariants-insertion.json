@@ -103,106 +103,182 @@
           "title": "An array stack, operation by operation",
           "frames": [
             {
-              "kind": "array",
-              "cells": [
-                "·",
-                "·",
-                "·",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "note": "top = −1  (empty)",
-              "caption": "An array stack with room for 4. `top` is the index of the most recent item. −1 means nothing is there yet. Reading `a[top]` now would be an **underflow** error."
+              "caption": "An empty array stack with room for 4. top = −1 means nothing is there yet.",
+              "note": "top = -1 (empty)"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                "·",
-                "·",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
               ],
-              "hl": [
-                0
-              ],
-              "note": "push(5): top = 0",
-              "caption": "push(5): move `top` up by one, then write 5 there. Two steps, no loops, no matter how full the stack is: that's O(1)."
+              "caption": "push(10): top goes up to 0, and 10 is written at a[0]. One step, O(1).",
+              "ptrs": {
+                "top": [
+                  0,
+                  0
+                ]
+              },
+              "note": "top = 0"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                9,
-                "·",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    20,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                }
               ],
-              "hl": [
-                1
-              ],
-              "note": "push(9): top = 1",
-              "caption": "push(9): same two steps. 9 sits on top of 5."
+              "caption": "push(20): top goes up to 1, and 20 is written at a[1]. One step, O(1).",
+              "ptrs": {
+                "top": [
+                  0,
+                  1
+                ]
+              },
+              "note": "top = 1"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                9,
-                2,
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    20,
+                    30,
+                    null
+                  ],
+                  "hl": [
+                    2
+                  ]
+                }
               ],
-              "hl": [
-                2
-              ],
-              "note": "push(2): top = 2",
-              "caption": "push(2). The last thing in is always at `a[top]`."
+              "caption": "push(30): top goes up to 2, and 30 is written at a[2]. One step, O(1).",
+              "ptrs": {
+                "top": [
+                  0,
+                  2
+                ]
+              },
+              "note": "top = 2"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                9,
-                2,
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    20,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "hl": [
-                2
-              ],
-              "note": "peek() → 2",
-              "caption": "peek(): read `a[top]` and change nothing. Answer 2."
+              "caption": "pop() returns 30, the most recent item, and top goes down to 1. Last in, first out.",
+              "ptrs": {
+                "top": [
+                  0,
+                  1
+                ]
+              },
+              "note": "top = 1"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                9,
-                "2",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    20,
+                    40,
+                    null
+                  ],
+                  "hl": [
+                    2
+                  ]
+                }
               ],
-              "done": [
-                2
-              ],
-              "hl": [
-                1
-              ],
-              "note": "pop() → 2, top = 1",
-              "caption": "pop(): read `a[top]` (2), then move `top` down. The 2 is still physically in the array, but nothing points at it: it's gone as far as the stack is concerned. The next push will overwrite it."
+              "caption": "push(40): top goes up to 2, and 40 is written at a[2]. One step, O(1).",
+              "ptrs": {
+                "top": [
+                  0,
+                  2
+                ]
+              },
+              "note": "top = 2"
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                "9",
-                "2",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    20,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "done": [
-                1,
-                2
+              "caption": "pop() returns 40, the most recent item, and top goes down to 1. Last in, first out.",
+              "ptrs": {
+                "top": [
+                  0,
+                  1
+                ]
+              },
+              "note": "top = 1"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    10,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "hl": [
-                0
-              ],
-              "note": "pop() → 9, top = 0",
-              "caption": "pop() again gives 9. Last in, first out: we pushed 5, 9, 2 and got back 2, 9. That order reversal is the whole point of a stack."
+              "caption": "pop() returns 20, the most recent item, and top goes down to 0. Last in, first out.",
+              "ptrs": {
+                "top": [
+                  0,
+                  0
+                ]
+              },
+              "note": "top = 0"
             }
           ],
           "slide": true,
@@ -304,94 +380,279 @@
         },
         {
           "type": "stepper",
-          "title": "The circular array queue, and the moment `%` matters",
+          "title": "The circular queue, and the moment % wraps around",
           "frames": [
             {
-              "kind": "array",
-              "cells": [
-                "·",
-                "·",
-                "·",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "note": "head = 0, tail = −1, size 0",
-              "caption": "A queue in an array of capacity 4. `head` is where the next dequeue reads; `tail` is where the last enqueue wrote."
+              "caption": "An empty circular queue, capacity 4. head is where the next dequeue reads.",
+              "ptrs": {
+                "head": [
+                  0,
+                  0
+                ]
+              },
+              "note": "head = 0, size = 0"
             },
             {
-              "kind": "array",
-              "cells": [
-                "A",
-                "B",
-                "C",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "A",
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
               ],
-              "hl": [
-                0
-              ],
-              "done": [
-                1,
-                2
-              ],
-              "note": "enqueue A, B, C → tail = 2",
-              "caption": "Three enqueues. Each one moves `tail` right by one and writes there. `head` still points at A, the oldest."
+              "caption": "enqueue(A): write at (head + size) % 4 = 0.",
+              "ptrs": {
+                "head": [
+                  0,
+                  0
+                ],
+                "tail": [
+                  0,
+                  0
+                ]
+              },
+              "note": "head = 0, size = 1"
             },
             {
-              "kind": "array",
-              "cells": [
-                "A",
-                "B",
-                "C",
-                "·"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "A",
+                    "B",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                }
               ],
-              "hl": [
-                1
-              ],
-              "done": [
-                2
-              ],
-              "note": "dequeue() → A, head = 1",
-              "caption": "dequeue(): read `a[head]` (A) and move `head` right. Nothing shifts. The naive version would copy B and C one slot left: O(n) work for one removal. We just moved an index: O(1)."
+              "caption": "enqueue(B): write at (head + size) % 4 = 1.",
+              "ptrs": {
+                "head": [
+                  0,
+                  0
+                ],
+                "tail": [
+                  0,
+                  1
+                ]
+              },
+              "note": "head = 0, size = 2"
             },
             {
-              "kind": "array",
-              "cells": [
-                "·",
-                "B",
-                "C",
-                "D"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "A",
+                    "B",
+                    "C",
+                    null
+                  ],
+                  "hl": [
+                    2
+                  ]
+                }
               ],
-              "hl": [
-                1
-              ],
-              "done": [
-                2,
-                3
-              ],
-              "note": "enqueue D → tail = 3",
-              "caption": "enqueue(D) fills the last slot. The array now looks full: but slot 0 is free. Without a trick, the next enqueue fails even though there's room."
+              "caption": "enqueue(C): write at (head + size) % 4 = 2.",
+              "ptrs": {
+                "head": [
+                  0,
+                  0
+                ],
+                "tail": [
+                  0,
+                  2
+                ]
+              },
+              "note": "head = 0, size = 3"
             },
             {
-              "kind": "array",
-              "cells": [
-                "E",
-                "B",
-                "C",
-                "D"
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    null,
+                    "B",
+                    "C",
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "hl": [
-                1
+              "caption": "dequeue() returns A from a[0]; head moves to (0 + 1) % 4 = 1. Nothing shifts.",
+              "ptrs": {
+                "head": [
+                  0,
+                  1
+                ],
+                "tail": [
+                  0,
+                  2
+                ]
+              },
+              "note": "head = 1, size = 2"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    null,
+                    null,
+                    "C",
+                    null
+                  ],
+                  "hl": []
+                }
               ],
-              "done": [
-                2,
-                3,
-                0
+              "caption": "dequeue() returns B from a[1]; head moves to (1 + 1) % 4 = 2. Nothing shifts.",
+              "ptrs": {
+                "head": [
+                  0,
+                  2
+                ],
+                "tail": [
+                  0,
+                  2
+                ]
+              },
+              "note": "head = 2, size = 1"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    null,
+                    null,
+                    "C",
+                    "D"
+                  ],
+                  "hl": [
+                    3
+                  ]
+                }
               ],
-              "note": "enqueue E → tail = (3+1) % 4 = 0",
-              "caption": "The trick: `tail = (tail + 1) % capacity`. 4 % 4 = 0, so `tail` wraps around to slot 0 and E goes there. The queue order is still B, C, D, E: it just bends around the end of the array. That's why Poon's efficient queue uses modulo."
+              "caption": "enqueue(D): write at (head + size) % 4 = 3.",
+              "ptrs": {
+                "head": [
+                  0,
+                  2
+                ],
+                "tail": [
+                  0,
+                  3
+                ]
+              },
+              "note": "head = 2, size = 2"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "E",
+                    null,
+                    "C",
+                    "D"
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "enqueue(E): write at (head + size) % 4 = 0. (2 + 2) % 4 = 0: it wrapped around to the front!",
+              "ptrs": {
+                "head": [
+                  0,
+                  2
+                ],
+                "tail": [
+                  0,
+                  0
+                ]
+              },
+              "note": "head = 2, size = 3"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "E",
+                    "F",
+                    "C",
+                    "D"
+                  ],
+                  "hl": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "enqueue(F): write at (head + size) % 4 = 1. (2 + 3) % 4 = 1: it wrapped around to the front!",
+              "ptrs": {
+                "head": [
+                  0,
+                  2
+                ],
+                "tail": [
+                  0,
+                  1
+                ]
+              },
+              "note": "head = 2, size = 4"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "cells": [
+                    "E",
+                    "F",
+                    null,
+                    "D"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "dequeue() returns C from a[2]; head moves to (2 + 1) % 4 = 3. Nothing shifts.",
+              "ptrs": {
+                "head": [
+                  0,
+                  3
+                ],
+                "tail": [
+                  0,
+                  1
+                ]
+              },
+              "note": "head = 3, size = 3"
             }
           ],
           "slide": true,
-          "id": "queue.31199ab1"
+          "id": "queue.50a67eee"
         },
         {
           "type": "sim",
@@ -755,158 +1016,513 @@
           "title": "Insertion sort on [8, 5, 2, 6, 9] (HW 3 Problem 2)",
           "frames": [
             {
-              "kind": "array",
-              "cells": [
-                8,
-                5,
-                2,
-                6,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    5,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
               ],
-              "done": [
-                0
-              ],
-              "hl": [
-                1
-              ],
-              "note": "j = 1, key = 5",
-              "caption": "Start. The first element alone counts as 'sorted' (green). The key is the first unsorted element, 5. We'll walk it left until it's in place."
+              "caption": "Insertion sort on [8, 5, 2, 6, 9]. The first item alone counts as a sorted hand (green)."
             },
             {
-              "kind": "array",
-              "cells": [
-                8,
-                8,
-                2,
-                6,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    null,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
               ],
-              "done": [
-                0
-              ],
-              "hl": [
-                1
-              ],
-              "note": "8 > 5 → shift 8 right",
-              "caption": "Compare the key with the element to its left: 8 > 5, so copy 8 one slot to the right. There's now a 'hole' at index 0 (still showing the old 8)."
+              "caption": "j = 1: lift the key, 5, out of the array. Everything left of the hole, a[0..0], is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                8,
-                2,
-                6,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    8,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                }
               ],
-              "done": [
-                0,
-                1
-              ],
-              "hl": [
-                2
-              ],
-              "note": "drop key at index 0 · j = 2, key = 2",
-              "caption": "Nothing left to compare, so drop 5 into the hole. Sorted prefix is now [5, 8]. Next key: 2."
+              "caption": "8 > 5: slide 8 one slot right. The hole moves left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                5,
-                5,
-                8,
-                6,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1
+                  ]
+                }
               ],
-              "done": [
-                0,
-                1
-              ],
-              "hl": [
-                2
-              ],
-              "note": "8 > 2 shift, 5 > 2 shift",
-              "caption": "8 > 2 → shift 8. Then 5 > 2 → shift 5. The hole has walked all the way to index 0."
+              "caption": "Nothing left to compare: stop. Drop 5 into the hole at index 0. Now a[0..1] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                2,
-                5,
-                8,
-                6,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    null,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
               ],
-              "done": [
-                0,
-                1,
-                2
-              ],
-              "hl": [
-                3
-              ],
-              "note": "drop key at index 0 · j = 3, key = 6",
-              "caption": "Drop 2 into the hole. Sorted prefix [2, 5, 8]. Next key: 6."
+              "caption": "j = 2: lift the key, 2, out of the array. Everything left of the hole, a[0..1], is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                2,
-                5,
-                8,
-                8,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
               ],
-              "done": [
-                0,
-                1,
-                2
-              ],
-              "hl": [
-                3
-              ],
-              "note": "8 > 6 shift · 5 > 6? no → stop",
-              "caption": "8 > 6 → shift 8. Now compare 5 with 6: 5 is not greater, so **stop**. This early stop is what makes insertion sort fast on nearly-sorted input."
+              "caption": "8 > 2: slide 8 one slot right. The hole moves left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                2,
-                5,
-                6,
-                8,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    5,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    2
+                  ]
+                }
               ],
-              "done": [
-                0,
-                1,
-                2,
-                3
-              ],
-              "hl": [
-                4
-              ],
-              "note": "drop key at index 2 · j = 4, key = 9",
-              "caption": "Drop 6 into the hole at index 2. Sorted prefix [2, 5, 6, 8]. Last key: 9."
+              "caption": "5 > 2: slide 5 one slot right. The hole moves left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
             },
             {
-              "kind": "array",
-              "cells": [
-                2,
-                5,
-                6,
-                8,
-                9
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1,
+                    2
+                  ]
+                }
               ],
-              "done": [
-                0,
-                1,
-                2,
-                3,
-                4
+              "caption": "Nothing left to compare: stop. Drop 2 into the hole at index 0. Now a[0..2] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    null,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
               ],
-              "note": "8 > 9? no → zero shifts",
-              "caption": "8 is not greater than 9, so zero shifts; 9 stays put. The loop has run out of keys. Every element is in the sorted prefix: [2, 5, 6, 8, 9]. That's HW 3 Problem 2's answer, and the trace format Poon grades: key, sorted prefix, array after each iteration."
+              "caption": "j = 3: lift the key, 6, out of the array. Everything left of the hole, a[0..2], is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "8 > 6: slide 8 one slot right. The hole moves left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    3
+                  ]
+                }
+              ],
+              "caption": "5 ≤ 6: stop. Drop 6 into the hole at index 2. Now a[0..3] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    9
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    null
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "j = 4: lift the key, 9, out of the array. Everything left of the hole, a[0..3], is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "8 ≤ 9: stop. Drop 9 into the hole at index 4. Now a[0..4] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Sorted: [2, 5, 6, 8, 9]. Each key slid left past every bigger item before it."
             }
           ],
           "slide": true,

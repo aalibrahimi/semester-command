@@ -1,93 +1,121 @@
 {
   "id": "cs146/6-recurrences",
   "course": "cs146",
-  "lessons": "Lectures 6–7",
-  "title": "Recurrences: recursion tree, substitution, master method",
-  "summary": "Given any T(n) = aT(n/b) + f(n), say what it means, draw its tree, and produce its Θ runtime — by tree, by substitution, or by the master method — and know which one Poon wants.",
-  "estimatedMinutes": 75,
-  "sourceNote": "Lecture 6 slides (updated Sep 9), Lecture 7 slides (Sep 14), HW 6, HW 7, CLRS 4.3–4.5.",
+  "lessons": "Lecture 6",
+  "title": "Recurrences: reading them, unrolling them, the recursion tree, and substitution",
+  "summary": "Read a recurrence as a sentence about one call, compute one by hand, solve it by drawing the recursion tree and adding row by row, and prove the answer with substitution. The master method shortcut gets its own chapter next.",
+  "estimatedMinutes": 70,
+  "sourceNote": "Lecture 6 'Recurrences: Substitution, Recursion Tree' (Sep 9) slides, HW 6, CLRS 4.3–4.4. Real-world notes are general industry practice.",
   "requires": [
-    "cs146/0-notation"
+    "cs146/0-notation",
+    "cs146/4-big-o-merge-sort"
   ],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why recurrences exist",
+      "id": "map",
+      "heading": "The big picture: timing a function that calls itself",
       "blocks": [
+        {
+          "type": "prose",
+          "md": "A loop is easy to time: count how many times it runs. A **recursive** function is harder, because its cost depends on the cost of the calls it makes, which depend on the calls *they* make. A **recurrence** is the tool for that. This chapter: write one, compute one, and solve one two ways.",
+          "slide": "What this chapter answers",
+          "id": "map.fa0ebe2e"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec1' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='20' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This chapter, in order:</text><text x='10' y='40' font-size='17.2' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >How long does a recursive function take?</text><g><title>1. Read T(n): a sentence about ONE call.</title><circle cx='22' cy='77' r='11' fill='rgb(var(--accent))'/><text x='22' y='81' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><rect x='42' y='58' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='75' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Read T(n)</text><text x='56' y='89' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >a sentence about ONE call</text><text x='470' y='82' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/2) + kn</text><line x1='22' y1='89' x2='22' y2='115' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>2. Unroll it: plug in n = 8 by hand.</title><circle cx='22' cy='127' r='11' fill='rgb(var(--accent))'/><text x='22' y='131' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><rect x='42' y='108' width='290' height='38' rx='9' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='56' y='125' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Unroll it</text><text x='56' y='139' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >plug in n = 8 by hand</text><text x='470' y='132' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(8) = 24k + 8</text><line x1='22' y1='139' x2='22' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>3. Recursion tree: add up the work row by row.</title><circle cx='22' cy='177' r='11' fill='rgb(var(--accent))'/><text x='22' y='181' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><rect x='42' y='158' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='175' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Recursion tree</text><text x='56' y='189' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >add up the work row by row</text><text x='470' y='182' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn × log n</text><line x1='22' y1='189' x2='22' y2='215' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>4. Substitution: prove the guess by induction.</title><circle cx='22' cy='227' r='11' fill='rgb(var(--accent))'/><text x='22' y='231' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><rect x='42' y='208' width='290' height='38' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='225' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Substitution</text><text x='56' y='239' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >prove the guess by induction</text><text x='470' y='232' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >c ≥ k</text><line x1='22' y1='239' x2='22' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>5. Next chapter: the master method shortcut.</title><circle cx='22' cy='277' r='11' fill='rgb(var(--accent))'/><text x='22' y='281' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><rect x='42' y='258' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='275' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Next chapter</text><text x='56' y='289' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the master method shortcut</text><text x='470' y='282' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3 cases</text></g></g>",
+          "viewBox": "0 0 480 314",
+          "caption": "The chapter in five steps. The last step, the master method, is the next chapter.",
+          "slide": "Five steps",
+          "id": "map.39b3adb3"
+        },
         {
           "type": "prose",
           "label": "why",
           "md": "**The question** In Lecture 5 you saw merge sort, and Poon argued it runs in O(n log n) with a picture: n−1 divisions, then O(n) of merging per level times log n levels. That argument works for merge sort. But what about an algorithm that splits into three pieces? Or four pieces each a third the size? Or does n² of work to combine? You'd need a new hand-wavy picture every time. Recurrences are the *general* tool: write one equation describing a single level of recursion, then solve it with a method that works for every shape.",
           "slide": "The question this answers",
-          "id": "why.3c7acb7b"
-        },
-        {
-          "type": "prose",
-          "md": "That's the entire chapter: **(1)** write the equation, **(2)** solve it. Writing it is easy once you can read T(n) as a sentence. Solving it has three methods — the recursion tree (draw it), substitution (guess and prove), the master method (look it up in a three-case table). Poon teaches them in that order because each one explains the next.",
-          "slide": "The whole chapter in one line",
-          "slideNotes": "Keep the pipeline straight and this chapter stops feeling like three unrelated tricks: **recursion tree** is how you GUESS the answer (draw levels, add them up), **substitution** is how you PROVE the guess (induction from Chapter 0 wearing a costume), and the **master theorem** is the shortcut once you notice most homework recurrences have the same aT(n/b)+f(n) shape. On the exam, read the question's verb: 'solve' or 'find Θ' usually wants tree or master; 'prove' or 'show by induction' demands substitution.",
-          "id": "why.b341e8cc"
+          "id": "map.36d34663"
         },
         {
           "type": "trap",
           "body": "**What Poon will ask** HW 6: draw the first three levels of a tree and fill in a table. HW 7: four recurrences, \"give the Θ solution if the master method applies, state which case and show the conditions are met; if it doesn't apply, say why.\" On the midterm the three master cases are printed on the exam sheet; computing n^(log_b a), picking the case, and spotting when it fails are not.",
           "source": "HW 6",
           "points": null,
-          "id": "why.420b6bee"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet recurrences after the exam** Every time you write a recursive function and someone asks how it scales — which in interviews is every time. A filesystem walker, a JSON parser, a React component tree render: each is 'T(n) = (calls on children) + (work at this node)', and the recurrence is ==the only honest way to answer 'what's the complexity of your solution'== for recursive code. It's also how you diagnose disasters: quicksort with a bad pivot becomes T(n) = T(n−1) + n — unroll it and the staircase sum from Chapter 0 appears, so !!n² out of an algorithm advertised as n log n!!. Write the equation, solve it with any of this chapter's three methods, and you've replaced a guess with a fact.",
-          "id": "why.f3a8d956"
+          "id": "map.3162f33a"
         }
       ]
     },
     {
       "id": "read",
-      "heading": "Writing the recurrence for merge sort",
+      "heading": "Step 1: read a recurrence as a sentence",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Recurrence",
+          "body": "An equation that describes a function's cost **in terms of its own cost on smaller inputs**, plus a **base case** that stops it. Example: T(n) = 2T(n/2) + kn, T(1) = 1.",
+          "id": "read.d6d64efe"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec2' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='30' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) = </text><text x='136.3' y='50' font-size='25.3' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='151.4' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/</text><text x='212.2' y='50' font-size='25.3' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='227.3' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >) + </text><text x='288.1' y='50' font-size='25.3' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text><g><title>2: how many calls.</title><line x1='143.8' y1='58' x2='143.8' y2='79' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><circle cx='143.8' cy='58' r='3' fill='rgb(var(--at-risk))'/><text x='143.8' y='92' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >how many calls</text></g><g><title>n/2: size of each call.</title><line x1='219.8' y1='58' x2='219.8' y2='109' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='219.8' cy='58' r='3' fill='rgb(var(--on-track))'/><text x='219.8' y='122' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >size of each call</text></g><g><title>kn: work in THIS call.</title><line x1='303.2' y1='58' x2='303.2' y2='139' stroke='rgb(var(--accent))' stroke-width='1.6'/><circle cx='303.2' cy='58' r='3' fill='rgb(var(--accent))'/><text x='303.2' y='152' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >work in THIS call</text></g><rect x='10' y='184' width='460' height='148' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='210' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >mergeSort(a):</text><text x='24' y='235' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  if n == 1: return      </text><g><title>This line costs T(1) = 1.</title><text x='456' y='235' font-size='14.4' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(1) = 1</text></g><text x='24' y='260' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  mergeSort(left half)   </text><g><title>This line costs T(n/2).</title><text x='456' y='260' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2)</text></g><text x='24' y='285' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  mergeSort(right half)  </text><g><title>This line costs T(n/2).</title><text x='456' y='285' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2)</text></g><text x='24' y='310' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  merge(left, right)     </text><g><title>This line costs kn.</title><text x='456' y='310' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text></g><text x='240' y='352' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Two half-size calls plus the merge: the whole recurrence.</text></g>",
+          "viewBox": "0 0 480 362",
+          "caption": "Merge sort's recurrence, piece by piece, next to the code each piece comes from. Hover a label.",
+          "slide": "Reading T(n) = 2T(n/2) + kn",
+          "id": "read.f5fc792f"
+        },
+        {
           "type": "prose",
-          "md": "Chapter 0 gave you T(n) as \"steps to handle n things.\" A recurrence describes what happens in one call of the recursive function — not the whole recursion, just one level. Merge sort on n things does exactly three things: it splits (cheap, constant), it calls itself on two halves, and it merges the results (a pass over n things, so some constant k per element).",
-          "slide": "Describe ONE level",
-          "id": "read.6343fbde"
+          "md": "**Read it out loud as one sentence.** 'To handle n things, I make **2** calls on **n/2** things each, and do **kn** work myself.' The recurrence only describes ONE call; the T(n/2) terms stand for everything the smaller calls do.",
+          "label": "think",
+          "id": "read.621daba1"
         },
         {
           "type": "example",
           "title": "Lecture 6 slides 9–10. The +kn is the merge; Poon writes it as O(n) first, then as kn to keep a constant to track.",
           "body": "mergeSort(a):                         T(n) =\n  if a.length == 1: return a            T(1) = 1                  ← base case\n  left  = mergeSort(first half)         T(n/2)\n  right = mergeSort(second half)      + T(n/2)      = 2T(n/2)     ← two recursive calls\n  return merge(left, right)           + kn                        ← merge: k steps per element",
           "slide": "Merge sort's recurrence",
-          "id": "read.4fe059ad"
+          "id": "read.7ec26143"
         },
         {
           "type": "prose",
-          "md": "Why only one level? Because the recursion handles the rest — the same way a recursive function doesn't re-describe its inner calls. Poon asks this on slide 9 (\"Recurrence relations only need to capture what happens on one level. Why?\"). The answer: the T(n/2) terms *are* the deeper levels, by definition.",
-          "id": "read.3b334eb8"
+          "md": "Why only one level? Because the recursion handles the rest: the same way a recursive function doesn't re-describe its inner calls. Poon asks this on slide 9 (\"Recurrence relations only need to capture what happens on one level. Why?\"). The answer: the T(n/2) terms *are* the deeper levels, by definition.",
+          "id": "read.606b410e"
         },
         {
           "type": "prose",
-          "md": "- T(n) = 3T(n/5) + 17 — \"three subproblems of a fifth the size, plus 17 fixed steps.\"\n- T(n) = 3T(n/5) + 4n — \"three subproblems of a fifth the size, plus 4n steps.\"\n- T(n) = T(n−1) + 1 — \"one subproblem of size one less, plus one step.\" (A loop in disguise: that's n steps total.)\n- T(n) = 2T(n/2) + O(n) — same as merge sort with the constant hidden; Poon writes both.",
+          "md": "A few more, read out loud:",
+          "id": "read.0e0658c8"
+        },
+        {
+          "type": "prose",
+          "md": "- T(n) = 3T(n/5) + 17: \"three subproblems of a fifth the size, plus 17 fixed steps.\"\n- T(n) = 3T(n/5) + 4n: \"three subproblems of a fifth the size, plus 4n steps.\"\n- T(n) = T(n−1) + 1: \"one subproblem of size one less, plus one step.\" (A loop in disguise: that's n steps total.)\n- T(n) = 2T(n/2) + O(n): same as merge sort with the constant hidden; Poon writes both.",
           "slide": "Other recurrences read the same way",
-          "id": "read.c414db0c"
+          "id": "read.4cf2bf48"
+        },
+        {
+          "type": "prose",
+          "md": "**Anything recursive has a recurrence.** Computing a folder's total size: the folder's own files plus a recursive call on each subfolder. Rendering a web page's tree of components: each component plus its children. The FFT that turns sound into a spectrum (you'll meet it in LING 124) is T(n) = 2T(n/2) + n, exactly merge sort's shape, which is why it's fast enough to run live on your phone's microphone.",
+          "label": "world",
+          "id": "read.47e467ae"
         },
         {
           "type": "check",
           "prompt": "Write the recurrence for binary search (Lecture 5 slide 9: check the middle, recurse on one half).",
           "answer": "T(n) = T(n/2) + 1: one subproblem of half size, plus a constant to compare the middle. (Solution: log n levels × constant = O(log n).)",
           "sectionRef": "read",
-          "id": "read.250f0c00"
+          "id": "read.a137e9d2"
         }
       ]
     },
     {
       "id": "unroll",
-      "heading": "Solving by hand for n = 8 — where n log n actually comes from",
+      "heading": "Step 2: compute one by hand (n = 8)",
       "blocks": [
         {
           "type": "prose",
           "md": "Before the three methods, do the dumbest possible thing once: pick n = 8 and compute T(8) by plugging numbers in. This is what a recurrence *is*. Everything after is a shortcut for this.",
           "slide": "Before any method: just compute it",
-          "id": "unroll.5b4df710"
+          "id": "unroll.52a15668"
         },
         {
           "type": "stepper",
@@ -124,7 +152,7 @@
                 "T(1) = 1"
               ],
               "active": 2,
-              "caption": "Plug n = 2. T(2) needs T(1) — and T(1) is the base case."
+              "caption": "Plug n = 2. T(2) needs T(1): and T(1) is the base case."
             },
             {
               "kind": "lines",
@@ -135,7 +163,7 @@
                 "T(8) = 2·(4 + 8k) + 8k = 8 + 24k"
               ],
               "active": 0,
-              "caption": "Now go back up. T(1) = 1 — one thing, one step."
+              "caption": "Now go back up. T(1) = 1: one thing, one step."
             },
             {
               "kind": "lines",
@@ -168,28 +196,57 @@
                 "T(8) = 2·(4 + 8k) + 8k = 8 + 24k"
               ],
               "active": 3,
-              "caption": "T(8) = 8 + 24k. Look at the 24k: it's 8k + 8k + 8k — one kn for each of the 3 levels of merging. That's n log n: 8 · log₂ 8 = 8 · 3 = 24. The recursion tree is this computation drawn as a picture."
+              "caption": "T(8) = 8 + 24k. Look at the 24k: it's 8k + 8k + 8k: one kn for each of the 3 levels of merging. That's n log n: 8 · log₂ 8 = 8 · 3 = 24. The recursion tree is this computation drawn as a picture."
             }
           ],
           "slide": true,
-          "id": "unroll.010b8469"
+          "id": "unroll.9d0b691e"
         },
         {
           "type": "prose",
-          "md": "Two things to take from that. First, the recursion bottoms out at T(1) — without a base case the chain never ends, which is why Poon insists on T(1) = 1. Second, the 24k is 3 × 8k: three levels of merging, each costing k×8. The number of levels was log₂ 8 = 3. That's n log n appearing from arithmetic, no theory. The recursion tree is the same computation, drawn.",
-          "id": "unroll.67f55129"
+          "md": "Two things to take from that. First, the recursion bottoms out at T(1): without a base case the chain never ends, which is why Poon insists on T(1) = 1. Second, the 24k is 3 × 8k: three levels of merging, each costing k×8. The number of levels was log₂ 8 = 3. That's n log n appearing from arithmetic, no theory. The recursion tree is the same computation, drawn.",
+          "id": "unroll.516ddd3b"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: let the computer unroll it",
+          "task": "Write `T(n)` exactly as the recurrence says: T(1) = 1, otherwise T(n) = 2·T(n/2) + n (use `n // 2`). Then compare it with n·log₂ n + n for powers of 2.",
+          "starter": "import math\n\ndef T(n):\n    # base case: T(1) = 1\n    # otherwise: two calls on n // 2, plus n of your own work\n    return 0\n\nfor n in [1, 2, 4, 8, 16, 1024]:\n    print(f\"n = {n:5}:  T(n) = {T(n):6}   n·log2(n) + n = {round(n * math.log2(n) + n):6}\")\n",
+          "check": "assert T(1) == 1, \"T(1) should be 1: that's the base case.\"\nassert T(2) == 4, f\"T(2) = 2·T(1) + 2 = 4. Got {T(2)}.\"\nassert T(8) == 32, f\"T(8) = 2·T(4) + 8 = 2·12 + 8 = 32. Got {T(8)}.\"\nassert T(1024) == 1024 * 10 + 1024, f\"T(1024) should be 1024·10 + 1024 = 11264. Got {T(1024)}.\"",
+          "solution": "import math\n\ndef T(n):\n    if n == 1:\n        return 1\n    return 2 * T(n // 2) + n\n\nfor n in [1, 2, 4, 8, 16, 1024]:\n    print(f\"n = {n:5}:  T(n) = {T(n):6}   n·log2(n) + n = {round(n * math.log2(n) + n):6}\")\n",
+          "hints": [
+            "Start with `if n == 1: return 1`.",
+            "Then `return 2 * T(n // 2) + n`.",
+            "The function calls itself exactly like the recurrence does."
+          ],
+          "success": "The two columns match exactly: T(n) = n log₂ n + n. The recursion tree below shows why.",
+          "id": "unroll.64b82856"
         }
       ]
     },
     {
       "id": "tree",
-      "heading": "Method 1 — The recursion tree",
+      "heading": "Step 3: the recursion tree (add it up row by row)",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Recursion tree",
+          "body": "A drawing of every call: each box is one call, under it are the calls it makes, and inside it is the work that call does **itself** (the f(n) part). Total cost = the sum of all boxes = the sum of the **rows**.",
+          "id": "tree.06ef0668"
+        },
+        {
           "type": "prose",
-          "md": "Draw every call as a box. Under each box, draw the boxes it calls. Write each box's *own* work (the f(n) part — the merge) next to it. Then add up a whole row at a time, because every box in a row is the same size and does the same work. Total = sum of the rows.",
-          "slide": "The idea",
-          "id": "tree.091c4a40"
+          "md": "**Why add by rows?** Every box in a row has the same size and does the same work, so a row is just (number of boxes) × (work per box). That turns a huge sum into a short one.",
+          "label": "why",
+          "id": "tree.075db02d"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec3' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Write each call's own work, then add each ROW.</text><g><title>Level 0: 1 call × kn = kn.</title><text x='10' y='60' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 0</text><rect x='183' y='40' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='225' y='59.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text><text x='470' y='60' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='76' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1 call × kn</text></g><g><title>Level 1: 2 calls × kn/2 = kn.</title><text x='10' y='122' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 1</text><line x1='225' y1='72' x2='147.5' y2='102' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='105.5' y='102' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='147.5' y='121.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/2</text><line x1='225' y1='72' x2='302.5' y2='102' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='260.5' y='102' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='302.5' y='121.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/2</text><text x='470' y='122' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='138' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2 calls × kn/2</text></g><g><title>Level 2: 4 calls × kn/4 = kn.</title><text x='10' y='184' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 2</text><line x1='147.5' y1='134' x2='108.8' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='73' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='108.8' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='147.5' y1='134' x2='186.2' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='150.5' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='186.2' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='302.5' y1='134' x2='263.8' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='228' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='263.8' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='302.5' y1='134' x2='341.2' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='305.5' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='341.2' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><text x='470' y='184' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='200' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4 calls × kn/4</text></g><g><title>Level 3: 8 calls × kn/8 = kn.</title><text x='10' y='246' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 3</text><line x1='108.8' y1='196' x2='89.4' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='73' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='108.8' y1='196' x2='128.1' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='111.8' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='186.2' y1='196' x2='166.9' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='150.5' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='186.2' y1='196' x2='205.6' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='189.2' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='263.8' y1='196' x2='244.4' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='228' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='263.8' y1='196' x2='283.1' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='266.8' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='341.2' y1='196' x2='321.9' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='305.5' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='341.2' y1='196' x2='360.6' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='344.2' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='470' y='246' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='262' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >8 calls × kn/8</text></g><g><title>The number of calls doubles while each call's work halves, so every row costs kn.</title><text x='10' y='300' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >calls double, work per call halves → every row costs kn</text></g><g><title>Rows: sizes n, n/2, …, 1 → log₂ n + 1 rows. Total = kn(log n + 1) = O(n log n).</title><rect x='10' y='312' width='460' height='50' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='334' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >log₂ n + 1 rows × kn per row</text><text x='240' y='353' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn log n + kn = O(n log n)</text></g></g>",
+          "viewBox": "0 0 480 370",
+          "caption": "Merge sort's tree. Going down a row, the number of calls doubles but each one's work halves, so every row costs exactly kn. Count the rows, multiply, done.",
+          "slide": "Row by row",
+          "id": "tree.12c03957"
         },
         {
           "type": "stepper",
@@ -205,7 +262,7 @@
                   "work": "1 · kn = kn"
                 }
               ],
-              "caption": "Level 0: one call on n things. Its own work — the merge — is k·n. Under it hang two calls it makes."
+              "caption": "Level 0: one call on n things. Its own work: the merge: is k·n. Under it hang two calls it makes."
             },
             {
               "kind": "tree",
@@ -345,7 +402,7 @@
             }
           ],
           "slide": true,
-          "id": "tree.fd7c6b85"
+          "id": "tree.fa707499"
         },
         {
           "type": "table",
@@ -393,108 +450,136 @@
               "2ⁱ · kn/2ⁱ = kn"
             ]
           ],
-          "slide": "Poon's table (Lecture 6 slide 24) — this is what HW 6 asks for",
-          "slideNotes": "Fill the table columns in this order and it never goes wrong: (1) nodes at level i — usually aⁱ; (2) size of each subproblem — n/bⁱ; (3) cost per node — plug that size into the non-recursive term; (4) row total = column 1 × column 3. Then the answer is the SUM of the row totals, and the whole game is recognizing whether rows are constant (multiply by the level count), growing (last row dominates), or shrinking (first row dominates). This table is merge sort's recursion-tree figure from Lecture 4, converted to algebra.",
-          "id": "tree.cd65f2da"
+          "slide": "Poon's table (Lecture 6 slide 24): this is what HW 6 asks for",
+          "slideNotes": "Fill the table columns in this order and it never goes wrong: (1) nodes at level i: usually aⁱ; (2) size of each subproblem: n/bⁱ; (3) cost per node: plug that size into the non-recursive term; (4) row total = column 1 × column 3. Then the answer is the SUM of the row totals, and the whole game is recognizing whether rows are constant (multiply by the level count), growing (last row dominates), or shrinking (first row dominates). This table is merge sort's recursion-tree figure from Lecture 4, converted to algebra.",
+          "id": "tree.ebb665a0"
         },
         {
           "type": "prose",
-          "md": "The row for level i is the one that matters, because it's true for every level at once. At level i there are 2ⁱ boxes (doubling each level — Chapter 0's picture), each of size n/2ⁱ (halving each level), each doing k times its size. Multiply: 2ⁱ · k · n/2ⁱ — the 2ⁱ cancels — = kn. Every row costs kn, no matter how deep.",
+          "md": "The row for level i is the one that matters, because it's true for every level at once. At level i there are 2ⁱ boxes (doubling each level: Chapter 0's picture), each of size n/2ⁱ (halving each level), each doing k times its size. Multiply: 2ⁱ · k · n/2ⁱ: the 2ⁱ cancels: = kn. Every row costs kn, no matter how deep.",
           "slide": "Row i in general",
-          "id": "tree.1540211c"
+          "id": "tree.06453316"
         },
         {
           "type": "example",
           "title": "Counting the depth",
-          "body": "The tree stops when a box has size 1. At level i the size is n/2ⁱ. At what level does that hit 1?\n\n1. Set n/2ⁱ = 1.\n2. Multiply both sides by 2ⁱ: n = 2ⁱ.\n3. \"2 to what power is n?\" — that's log₂ n. So i = log₂ n is the last level.\n4. Levels are numbered from 0, so there are log₂ n + 1 levels in total (Poon's little table: n=1 → 1 level, n=8 → 4 levels, n=16 → 5).",
+          "body": "The tree stops when a box has size 1. At level i the size is n/2ⁱ. At what level does that hit 1?\n\n1. Set n/2ⁱ = 1.\n2. Multiply both sides by 2ⁱ: n = 2ⁱ.\n3. \"2 to what power is n?\": that's log₂ n. So i = log₂ n is the last level.\n4. Levels are numbered from 0, so there are log₂ n + 1 levels in total (Poon's little table: n=1 → 1 level, n=8 → 4 levels, n=16 → 5).",
           "answer": "log₂ n + 1 levels",
           "slide": "How many levels? (slides 25–26)",
-          "id": "tree.7a38a103"
+          "id": "tree.e518ed56"
         },
         {
           "type": "example",
           "title": "Lecture 6 slide 27. Drop the +1 and the constant k when you switch to Big-O.",
           "body": "Total = (cost per level) × (number of levels)\n      = kn × (log n + 1)\n      = kn log n + kn\n      = O(n log n)",
           "slide": "The total",
-          "id": "tree.e7f19ca5"
+          "id": "tree.4edb0524"
         },
         {
           "type": "prose",
-          "md": "**When the rows are NOT all equal**",
-          "id": "tree.a948f818"
+          "md": "**The recipe for any tree.** Make a table with one row per level and four columns: number of nodes (aⁱ), size of each (n/bⁱ), work per node (f of that size), total (multiply). Fill level 0, 1, 2, then write the general level i. Count levels (log_b n + 1). Add up the totals.",
+          "label": "think",
+          "id": "tree.03e47e73"
         },
         {
           "type": "prose",
-          "md": "Merge sort is the special case where every row costs the same. Change the numbers and the rows change size. Poon does two on slides 28–33, and they're the intuition behind the master method, so slow down here.",
-          "slide": "Trees where each level grows or shrinks",
-          "id": "tree.97917b03"
+          "md": "**When the rows are NOT all equal.** Merge sort is the special case where every row costs the same. Change a or b and the rows grow or shrink. Poon works two on slides 28–33:",
+          "slide": "Trees where rows grow or shrink",
+          "id": "tree.083be2d3"
         },
         {
           "type": "example",
           "title": "Three subproblems of half size",
           "body": "Fill the row for level i.\n\n1. Nodes: each box makes 3 children, so level i has 3ⁱ boxes (not 2ⁱ).\n2. Size: each child is half the parent, so size at level i is still n/2ⁱ.\n3. Work per node: k · n/2ⁱ.\n4. Total at level i: 3ⁱ · k · n/2ⁱ = (3/2)ⁱ · kn.\n5. (3/2)ⁱ grows with i: level 0 costs kn, level 1 costs 1.5kn, level 2 costs 2.25kn… The BOTTOM row is the biggest. The leaves dominate.\n6. Depth is still log₂ n (sizes halve). Bottom row has 3^(log₂ n) = n^(log₂ 3) ≈ n^1.58 leaves, each O(1). Total is Θ(n^1.58).",
-          "slide": "T(n) = 3T(n/2) + kn — rows GROW",
-          "id": "tree.401755a9"
+          "slide": "T(n) = 3T(n/2) + kn: rows GROW",
+          "id": "tree.052374f8"
         },
         {
           "type": "example",
           "title": "Two subproblems of a third the size",
           "body": "Fill the row for level i.\n\n1. Nodes: 2ⁱ (each box makes 2 children).\n2. Size: n/3ⁱ (each child is a third of the parent).\n3. Work per node: k · n/3ⁱ. Total at level i: 2ⁱ · kn/3ⁱ = (2/3)ⁱ · kn.\n4. (2/3)ⁱ shrinks: kn, then 0.67kn, then 0.44kn… The TOP row is the biggest. The root dominates.\n5. Depth: sizes divide by 3, so n/3ⁱ = 1 → i = log₃ n → log₃ n + 1 levels (slide 32).\n6. A shrinking geometric series adds up to a constant times its first term, so the total is Θ(kn) = Θ(n).",
-          "slide": "T(n) = 2T(n/3) + kn — rows SHRINK",
-          "id": "tree.711a9e15"
+          "slide": "T(n) = 2T(n/3) + kn: rows SHRINK",
+          "id": "tree.7623b3e2"
         },
         {
           "type": "figure",
-          "svg": "<g font-family=\"ui-monospace, monospace\" font-size=\"11\" fill=\"currentColor\">\n<rect x=\"70\" y=\"20\" width=\"60\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"60\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"50\" y=\"72\" width=\"100\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"40\" y=\"98\" width=\"120\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"30\" y=\"124\" width=\"140\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"30\" y=\"160\" opacity=\".7\">grows → leaves dominate</text>\n<rect x=\"270\" y=\"20\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"72\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"98\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"270\" y=\"124\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"240\" y=\"160\" opacity=\".7\">equal → cost × log n</text>\n<rect x=\"460\" y=\"20\" width=\"100\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"470\" y=\"46\" width=\"80\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"480\" y=\"72\" width=\"60\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"490\" y=\"98\" width=\"40\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/><rect x=\"500\" y=\"124\" width=\"20\" height=\"18\" rx=\"3\" fill=\"rgb(59 130 246 / .5)\"/>\n<text x=\"440\" y=\"160\" opacity=\".7\">shrinks → root dominates</text>\n</g>",
-          "viewBox": "0 0 600 180",
-          "caption": "Row cost by level. Left: rows grow (leaves win — Case 1). Middle: rows equal (multiply by #levels — Case 2). Right: rows shrink (root wins — Case 3). This picture IS the master method.",
-          "slide": "Three shapes, one picture",
-          "slideNotes": "This picture is the secret decoder for the master theorem one section ahead: **rows even** → every level contributes equally → multiply one row by log n (that's case 2); **rows grow** → the bottom of the tree does almost all the work → the leaf count n^(log_b a) wins (case 1); **rows shrink** → the first row already did most of the work → f(n) at the root wins (case 3). If you remember one image from this chapter, make it this one — the theorem is just this figure with inequalities attached.",
-          "id": "tree.a8b1f3df"
+          "svg": "<defs><marker id='arrowSc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec4' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><g><title>3T(n/2) + kn: rows GROW ×3/2, so the leaves win.</title><rect x='6' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='81' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3T(n/2) + kn</text><rect x='63.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='54.5' y='78' width='52.9' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='41.3' y='108' width='79.4' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='21' y='138' width='120' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='81' y='186' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows GROW ×3/2</text><text x='81' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the leaves win</text></g><g><title>2T(n/2) + kn: rows EQUAL, so every row counts.</title><rect x='164' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='239' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/2) + kn</text><rect x='221.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='221.4' y='78' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='221.4' y='108' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='221.4' y='138' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='239' y='186' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows EQUAL</text><text x='239' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >every row counts</text></g><g><title>2T(n/3) + kn: rows SHRINK ×2/3, so the root wins.</title><rect x='322' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='397' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/3) + kn</text><rect x='379.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='385.2' y='78' width='23.6' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='389.2' y='108' width='15.5' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='391.7' y='138' width='10.6' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='397' y='186' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows SHRINK ×2/3</text><text x='397' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the root wins</text></g><text x='10' y='250' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Each bar is one row's total work (top = root, bottom = deeper).</text><text x='10' y='268' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This picture is the whole idea behind the master method.</text></g>",
+          "viewBox": "0 0 480 276",
+          "caption": "Row totals for three recurrences. Rows that grow: the bottom (the leaves) dominates. Rows that stay equal: multiply by the number of rows. Rows that shrink: the top (the root) dominates. Remember this picture; it's the next chapter.",
+          "slide": "Three shapes",
+          "id": "tree.71355c4a"
+        },
+        {
+          "type": "sim",
+          "sim": "rectree",
+          "caption": "Set a, b and f(n) and watch the rows. Start at merge sort (2, 2, n): equal bars. Then set a = 3 (rows grow) and b = 3 with a = 2 (rows shrink). The level ratio a/bᵏ tells you which, before you draw anything.",
+          "params": {
+            "a": 2,
+            "b": 2,
+            "k": 1,
+            "n": 64
+          },
+          "slide": "Try it",
+          "id": "tree.b22fc53f"
+        },
+        {
+          "type": "code",
+          "title": "See the rows",
+          "task": "This prints the recursion-tree table for T(n) = a·T(n/b) + n^k and plots each row's total. Run it for merge sort, then change `a`, `b`, `k` to 3, 2, 1 and to 2, 3, 1 and watch the shape of the bars change.",
+          "starter": "import math\nimport matplotlib.pyplot as plt\n\na, b, k = 2, 2, 1        # T(n) = a·T(n/b) + n^k\nn = 256\n\nlevels = round(math.log(n, b))\ntotals = []\nprint(f\"{'level':>5} {'nodes':>7} {'size':>8} {'work/node':>10} {'row total':>10}\")\nfor i in range(levels + 1):\n    nodes = a ** i\n    size = n / b ** i\n    work = size ** k if i < levels else 1     # leaves cost 1 each\n    totals.append(nodes * work)\n    print(f\"{i:>5} {nodes:>7} {size:>8.2f} {work:>10.2f} {nodes * work:>10.1f}\")\nprint(\"total ≈\", round(sum(totals)))\n\nplt.barh(range(len(totals)), totals)\nplt.gca().invert_yaxis()\nplt.xlabel(\"row total\"); plt.ylabel(\"level (0 = root)\")\nplt.title(f\"T(n) = {a}T(n/{b}) + n^{k}\")\nplt.show()\n",
+          "id": "tree.69c05ce1"
         },
         {
           "type": "check",
           "prompt": "HW 6 Problem 1: T(n) = 4T(n/3) + cn. How many subproblems, what size, what combine cost? Cost at the root and at levels 1 and 2?",
-          "answer": "4 subproblems of size n/3, combine cost cn. Root: cn. Level 1: 4 nodes × c·n/3 = (4/3)cn. Level 2: 16 nodes × c·n/9 = (16/9)cn. Rows grow (4/3 > 1) → leaves dominate. Level i: (4/3)ⁱ cn; depth log₃ n; total Θ(n^(log₃ 4)) ≈ Θ(n^1.26). (That's the 'QUITE hard' Problem 2 — it's just the growing case.)",
+          "answer": "4 subproblems of size n/3, combine cost cn. Root: cn. Level 1: 4 nodes × c·n/3 = (4/3)cn. Level 2: 16 nodes × c·n/9 = (16/9)cn. Rows grow (4/3 > 1) → leaves dominate. Level i: (4/3)ⁱ cn; depth log₃ n; total Θ(n^(log₃ 4)) ≈ Θ(n^1.26). (That's the 'QUITE hard' Problem 2: it's just the growing case.)",
           "sectionRef": "tree",
-          "id": "tree.f78cd485"
+          "id": "tree.9c37ef93"
         }
       ]
     },
     {
       "id": "substitution",
-      "heading": "Method 2 — Substitution (guess, then prove by induction)",
+      "heading": "Step 4: substitution (guess, then prove it)",
       "blocks": [
         {
           "type": "prose",
           "label": "why",
           "md": "**Why it exists** The tree gives you a strong guess but the hand-waving (\"about kn per level\") isn't a proof. Substitution is how you prove a guess is right. It's induction from Chapter 0: assume the formula works for smaller inputs, show it then works for n.",
           "slide": "Why a second method",
-          "id": "substitution.33af4352"
+          "id": "substitution.66f7779a"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec5' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Substitution = induction, in four boxes.</text><g><title>Step 1 Guess: T(n) ≤ c · n log n (from the tree).</title><rect x='10' y='34' width='460' height='54' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='56' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1 Guess</text><text x='24' y='76' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >from the tree</text><text x='456' y='66' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) ≤ c · n log n</text><line x1='240' y1='89' x2='240' y2='102' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 2 Assume: T(n/2) ≤ c · (n/2) log(n/2) (true for smaller inputs).</title><rect x='10' y='104' width='460' height='54' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='126' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2 Assume</text><text x='24' y='146' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >true for smaller inputs</text><text x='456' y='136' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2) ≤ c · (n/2) log(n/2)</text><line x1='240' y1='159' x2='240' y2='172' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 3 Substitute: T(n) ≤ c·n log n − cn + kn (plug in, simplify).</title><rect x='10' y='174' width='460' height='54' rx='10' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='24' y='196' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3 Substitute</text><text x='24' y='216' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >plug in, simplify</text><text x='456' y='206' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) ≤ c·n log n − cn + kn</text><line x1='240' y1='229' x2='240' y2='242' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 4 Prove: −cn + kn ≤ 0  ⟺  c ≥ k (pick c = k: done).</title><rect x='10' y='244' width='460' height='54' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='24' y='266' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4 Prove</text><text x='24' y='286' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >pick c = k: done</text><text x='456' y='276' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >−cn + kn ≤ 0  ⟺  c ≥ k</text></g><text x='240' y='330' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The leftover −cn + kn is the only thing between you and the guess.</text></g>",
+          "viewBox": "0 0 480 340",
+          "caption": "The whole method on merge sort. It's induction from Chapter 0: assume the formula for the smaller input, plug it in, and show what's left over is never positive.",
+          "slide": "Four boxes",
+          "id": "substitution.28f6c83b"
         },
         {
           "type": "definition",
           "term": "Guess",
           "body": "the solution. From the tree: T(n) = O(n log n), i.e. T(n) ≤ c·n log n for some c.",
-          "id": "substitution.dc84b505"
+          "id": "substitution.6372edc5"
         },
         {
           "type": "definition",
           "term": "Inductive assumption",
           "body": "assume it's true for the smaller input the recurrence uses. Here that's n/2: T(n/2) ≤ c·(n/2)·log(n/2).",
-          "id": "substitution.dcfc43d2"
+          "id": "substitution.46613c12"
         },
         {
           "type": "definition",
           "term": "Substitute",
           "body": "the assumption into the recurrence and simplify.",
-          "id": "substitution.2b97ed2c"
+          "id": "substitution.b541edec"
         },
         {
           "type": "definition",
           "term": "Prove",
           "body": "the result is ≤ c·n log n for some choice of c. If you can, the guess is confirmed.",
-          "id": "substitution.75132f86"
+          "id": "substitution.b3fb3946"
         },
         {
           "type": "example",
@@ -502,387 +587,270 @@
           "body": "Every line uses one fact from Chapter 0. I'll name which.\n\n1. Guess: T(n) ≤ c·n log n.\n2. Assume for n/2: T(n/2) ≤ c·(n/2)·log(n/2).\n3. Substitute into T(n) = 2T(n/2) + kn:   T(n) ≤ 2·c·(n/2)·log(n/2) + kn.\n4. Simplify 2·(n/2) = n:   T(n) ≤ c·n·log(n/2) + kn.\n5. Log rule 1: log(n/2) = log n − 1:   T(n) ≤ c·n·(log n − 1) + kn.\n6. Distribute:   T(n) ≤ c·n·log n − c·n + kn.\n7. We need this ≤ c·n·log n. Subtract c·n·log n from both sides: need −cn + kn ≤ 0, i.e. kn ≤ cn, i.e. **c ≥ k**.\n8. k is a constant (the merge's cost per element), so pick any c ≥ k. The inequality holds. QED: merge sort is O(n log n).",
           "answer": "Any c ≥ k works.",
           "slide": "Merge sort by substitution (slides 13–16)",
-          "id": "substitution.a6482ea3"
+          "id": "substitution.8cd01677"
         },
         {
           "type": "prose",
-          "md": "**The step people get stuck on** Step 7 feels like it appeared from nowhere. It didn't: after substituting, you have T(n) ≤ (what you wanted) − cn + kn. The leftover \"− cn + kn\" is the only thing standing between you and the guess. It's ≤ 0 exactly when c ≥ k. That's the entire proof — the algebra is just clearing the way to that one comparison.",
-          "id": "substitution.2d8dd217"
+          "md": "**The step people get stuck on** Step 7 feels like it appeared from nowhere. It didn't: after substituting, you have T(n) ≤ (what you wanted) − cn + kn. The leftover \"− cn + kn\" is the only thing standing between you and the guess. It's ≤ 0 exactly when c ≥ k. That's the entire proof: the algebra is just clearing the way to that one comparison.",
+          "id": "substitution.bba162e9"
+        },
+        {
+          "type": "prose",
+          "md": "**Use the tree** to discover the answer. **Use substitution** when a question says 'prove' or 'show', or to double-check a guess. **Use the master method** (next chapter) when the recurrence has the shape aT(n/b) + f(n) and you just need the answer fast.",
+          "label": "when",
+          "id": "substitution.4b0c88b7"
         },
         {
           "type": "check",
           "prompt": "Use substitution to check that T(n) = T(n/2) + 1 (binary search) is O(log n). Guess T(n) ≤ c·log n.",
           "answer": "Assume T(n/2) ≤ c·log(n/2) = c(log n − 1). Then T(n) ≤ c·log n − c + 1. Need ≤ c·log n: need −c + 1 ≤ 0, i.e. c ≥ 1. ✓ So T(n) = O(log n).",
           "sectionRef": "substitution",
-          "id": "substitution.90098e0d"
-        }
-      ]
-    },
-    {
-      "id": "master",
-      "heading": "Method 3 — The master method",
-      "blocks": [
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**Why it exists** Trees and substitution work but take a page each. Most recurrences you'll ever meet have the shape aT(n/b) + f(n), and for that shape someone did the tree once, in general, and wrote down the answer as three cases. You match your recurrence to the shape, do one comparison, and read off the answer. It's a lookup table with one calculation.",
-          "slide": "Why a third method",
-          "id": "master.85868c9e"
-        },
-        {
-          "type": "example",
-          "title": "a ≥ 1, b > 1, f(n) positive. Merge sort: a = 2, b = 2, f(n) = n.",
-          "body": "T(n) = a·T(n/b) + f(n)\n        │     │      └─ work done OUTSIDE the recursive calls (divide + combine)\n        │     └─ each subproblem is 1/b the size\n        └─ number of subproblems",
-          "slide": "The shape (Lecture 7 slides 10–11)",
-          "id": "master.e2d85093"
-        },
-        {
-          "type": "prose",
-          "md": "Every case is a comparison between two things: **f(n)** — the work at the root — and **n^(log_b a)** — which, as the tree section showed, is the number of leaves, i.e. the work at the bottom (Lecture 7 slide 21: a^(log_b n) = n^(log_b a) = # leaves). Poon borrows CLRS's word *watershed* for n^(log_b a): a ridge line. If f is below it, water runs to the leaves (they dominate). If f is above it, water runs to the root. If f is exactly on it, every level is equal and you multiply by the number of levels.",
-          "slide": "The watershed function",
-          "id": "master.ac6747fd"
-        },
-        {
-          "type": "table",
-          "columns": [
-            "Case",
-            "When",
-            "Meaning",
-            "Answer"
-          ],
-          "rows": [
-            [
-              "1",
-              "f(n) is polynomially SMALLER than n^(log_b a)",
-              "leaves dominate (rows grow)",
-              "Θ(n^(log_b a))"
-            ],
-            [
-              "2",
-              "f(n) is the SAME as n^(log_b a)",
-              "rows equal",
-              "Θ(n^(log_b a) · log n)"
-            ],
-            [
-              "3",
-              "f(n) is polynomially LARGER than n^(log_b a)",
-              "root dominates (rows shrink)",
-              "Θ(f(n))"
-            ]
-          ],
-          "slide": "The three cases — printed on the exam",
-          "slideNotes": "Even though the cases are printed on the exam, the POINTS are in executing the comparison cleanly: compute the watershed n^(log_b a) first, write it next to f(n), and say out loud which one is polynomially bigger. The three cases are just the three tree shapes — leaves dominate (case 1), every level ties (case 2), root dominates (case 3). Abdul Bari's video below runs six full examples through exactly this ritual; watch two of them and the pattern locks in.",
-          "resources": [
-            { "label": "Master theorem, worked examples (Abdul Bari)", "url": "https://www.youtube.com/watch?v=OynWkEj0S-s", "kind": "video" }
-          ],
-          "id": "master.093117b9"
-        },
-        {
-          "type": "prose",
-          "md": "\"Polynomially smaller\" means the *exponents* differ by some fixed amount ε > 0: f(n) = O(n^(log_b a − ε)). n vs n² qualifies (ε = 1). n^1.9 vs n² qualifies (ε = 0.1). But n/log n vs n does NOT — they have the same exponent 1, and a log factor is not a polynomial gap. That's the trap on slide 28, and it's HW 7 Problem 4.",
-          "slide": "What 'polynomially' means — the ε",
-          "id": "master.70bb43cb"
-        },
-        {
-          "type": "prose",
-          "md": "- Match the shape. Write a, b, f(n) explicitly.\n- Compute the watershed n^(log_b a). (Chapter 0 table: log₂ 4 = 2, log₂ 8 = 3, log₃ 27 = 3, log₂ 1 = 0.)\n- Compare f(n)'s exponent to the watershed's exponent. Smaller by a constant → Case 1. Equal → Case 2. Larger by a constant → Case 3.\n- Case 3 only: check regularity — a·f(n/b) ≤ c·f(n) for some c < 1. (Plug n/b into f, multiply by a, confirm it's a fraction of f(n).)\n- Write the answer with the case named.",
-          "slide": "The procedure (this is HW 7's answer format)",
-          "id": "master.4587e5ba"
-        },
-        {
-          "type": "stepper",
-          "title": "The three canonical examples, worked (Lecture 7 slides 13–17)",
-          "frames": [
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 0,
-              "caption": "Example 1 (Lecture 7 slide 13). Start by matching the shape aT(n/b) + f(n)."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 1,
-              "caption": "Read off a (subproblems), b (shrink factor), f(n) (the non-recursive work)."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 2,
-              "caption": "Compute the watershed: log₂ 4 = 2, so n². (Chapter 0 if this stalls.)"
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 3,
-              "caption": "Compare the work-outside-recursion f(n) to the watershed."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 4,
-              "caption": "n¹ vs n²: the exponents differ by 1, a real polynomial gap. Case 1: the leaves dominate."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n",
-                "a = 4, b = 2, f(n) = n",
-                "n^(log_b a) = n^(log₂ 4) = n²",
-                "compare f(n) = n  vs  n²",
-                "n is polynomially smaller (n = n^(2−1), ε = 1) → Case 1",
-                "T(n) = Θ(n²)"
-              ],
-              "active": 5,
-              "caption": "Case 1's answer is the watershed itself: Θ(n²)."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n²",
-                "a = 4, b = 2, f(n) = n²,  watershed n²",
-                "n² vs n² — the same → Case 2",
-                "T(n) = Θ(n² log n)"
-              ],
-              "active": 2,
-              "caption": "Example 2 (slide 16). f(n) equals the watershed. Every level does the same work, and there are log n levels — so multiply by log n."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n²",
-                "a = 4, b = 2, f(n) = n²,  watershed n²",
-                "n² vs n² — the same → Case 2",
-                "T(n) = Θ(n² log n)"
-              ],
-              "active": 3,
-              "caption": "Case 2: Θ(watershed · log n) = Θ(n² log n)."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n³",
-                "a = 4, b = 2, f(n) = n³,  watershed n²",
-                "n³ vs n² — f is polynomially larger (ε = 1) → Case 3",
-                "regularity: 4·(n/2)³ = 4n³/8 = n³/2 ≤ c·n³ with c = ½ < 1  ✓",
-                "T(n) = Θ(n³)"
-              ],
-              "active": 2,
-              "caption": "Example 3 (slide 17). Now f is bigger than the watershed by a polynomial gap. The root's own work dominates."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n³",
-                "a = 4, b = 2, f(n) = n³,  watershed n²",
-                "n³ vs n² — f is polynomially larger (ε = 1) → Case 3",
-                "regularity: 4·(n/2)³ = 4n³/8 = n³/2 ≤ c·n³ with c = ½ < 1  ✓",
-                "T(n) = Θ(n³)"
-              ],
-              "active": 3,
-              "caption": "Case 3 has an extra check: the work must shrink going down the tree. Plug n/2 into f, multiply by a, and see it's at most a fraction c < 1 of f(n). Here it's exactly half. ✓"
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "T(n) = 4T(n/2) + n³",
-                "a = 4, b = 2, f(n) = n³,  watershed n²",
-                "n³ vs n² — f is polynomially larger (ε = 1) → Case 3",
-                "regularity: 4·(n/2)³ = 4n³/8 = n³/2 ≤ c·n³ with c = ½ < 1  ✓",
-                "T(n) = Θ(n³)"
-              ],
-              "active": 4,
-              "caption": "Case 3's answer is f(n) itself: Θ(n³)."
-            }
-          ],
-          "slide": true,
-          "id": "master.3aca9ca1"
-        },
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**Why the regularity check exists (slides 29–31)** Case 3 claims the root's work dominates everything below it. That's only true if the work actually shrinks as you go down — geometrically, by a constant factor per level. a·f(n/b) is the total work at the next level; c·f(n) with c < 1 says \"strictly less than the level above.\" A weird f(n) that oscillates (his example: n²(2 + cos n)) can be polynomially larger and still fail this, so the shortcut isn't safe. For every polynomial f(n) = nᵖ you'll meet, regularity holds automatically: a·(n/b)ᵖ = (a/bᵖ)·nᵖ, and a/bᵖ < 1 is the same condition as Case 3 itself.",
-          "id": "master.3a7c2e3a"
-        },
-        {
-          "type": "prose",
-          "md": "**When the master method does NOT apply**",
-          "id": "master.6e9ff128"
-        },
-        {
-          "type": "definition",
-          "term": "a is not a constant.",
-          "body": "T(n) = n·T(n/2) + n². The number of subproblems changes with n; the shape breaks.",
-          "id": "master.d22192e9"
-        },
-        {
-          "type": "definition",
-          "term": "The subproblem isn't n/b.",
-          "body": "T(n) = T(n−1) + 1. Subtracting, not dividing — not the shape. (It's a loop; solve by unrolling: n steps.)",
-          "id": "master.1ed2a7a0"
-        },
-        {
-          "type": "definition",
-          "term": "The gap isn't polynomial.",
-          "body": "T(n) = 2T(n/2) + n/log n. Watershed is n; f is smaller but only by a log factor. Falls between Case 1 and Case 2. Say \"does not apply\" — that's the graded answer.",
-          "id": "master.d55771de"
-        },
-        {
-          "type": "definition",
-          "term": "Case 3 without regularity.",
-          "body": "f(n) = n²(2 + cos n): polynomially larger than the watershed but doesn't shrink steadily. Say \"does not apply.\"",
-          "id": "master.a6d42787"
-        },
-        {
-          "type": "definition",
-          "term": "Master theorem",
-          "body": "For T(n) = aT(n/b) + f(n): compare f(n) to n^(log_b a). Polynomially smaller → Θ(n^(log_b a)). Equal → Θ(n^(log_b a) log n). Polynomially larger and regular → Θ(f(n)). Otherwise the theorem is silent.",
-          "id": "master.b704983e"
+          "id": "substitution.d5947db7"
         }
       ]
     },
     {
       "id": "hw",
-      "heading": "HW 6 and HW 7, solved in full",
+      "heading": "HW 6, solved in full",
       "blocks": [
         {
           "type": "prose",
-          "md": "These are the questions the midterm will look like. Cover the answers, try each, then compare.",
-          "id": "hw.e10e9785"
+          "md": "Cover the answer, try it, then compare. This is the shape of the midterm's recurrence-tree question.",
+          "id": "hw.c10d3e37"
         },
         {
           "type": "example",
           "title": "HW 6 Problem 1 and the 'quite hard' Problem 2",
           "body": "Draw the first 3 levels, then generalize to level i, count levels, and total.\n\n1. Subproblems: 4. Size of each: n/3. Combine cost per node: c × its size.\n2. Level 0: 1 node, size n, work cn. Total cn.\n3. Level 1: 4 nodes, size n/3, work cn/3 each. Total 4cn/3.\n4. Level 2: 16 nodes, size n/9, work cn/9 each. Total 16cn/9.\n5. Level i: 4ⁱ nodes × c·n/3ⁱ = (4/3)ⁱ · cn.\n6. Levels: size n/3ⁱ = 1 → i = log₃ n → log₃ n + 1 levels.\n7. Total: cn · Σ (4/3)ⁱ for i = 0…log₃ n. Growing series → dominated by the last term ≈ cn·(4/3)^(log₃ n) = c·n^(log₃ 4). Answer Θ(n^(log₃ 4)) ≈ Θ(n^1.26). Cross-check with the master method: a=4, b=3, watershed n^1.26, f = n is smaller → Case 1 → same answer.",
           "slide": "HW 6 · T(n) = 4T(n/3) + cn",
-          "id": "hw.f8b204bd"
-        },
-        {
-          "type": "example",
-          "title": "T(n) = 8T(n/2) + n²",
-          "body": "Master method with justification.\n\n1. a = 8, b = 2, f(n) = n².\n2. Watershed: n^(log₂ 8) = n³.\n3. n² vs n³: exponent smaller by 1 (ε = 1). Case 1.\n4. T(n) = Θ(n³).",
-          "answer": "Θ(n³), Case 1",
-          "slide": "HW 7 · Problem 1",
-          "id": "hw.6c15e9df"
-        },
-        {
-          "type": "example",
-          "title": "T(n) = 7T(n/2) + n³",
-          "body": "Master method with justification.\n\n1. a = 7, b = 2, f(n) = n³.\n2. Watershed: n^(log₂ 7) ≈ n^2.81.\n3. n³ vs n^2.81: exponent larger by ≈ 0.19 (ε = 0.19 > 0). Case 3.\n4. Regularity: 7·(n/2)³ = 7n³/8 ≤ c·n³ with c = 7/8 < 1. ✓\n5. T(n) = Θ(n³).",
-          "answer": "Θ(n³), Case 3",
-          "slide": "HW 7 · Problem 2",
-          "id": "hw.065dc67a"
-        },
-        {
-          "type": "example",
-          "title": "T(n) = 27T(n/3) + Θ(n³)",
-          "body": "Master method with justification.\n\n1. a = 27, b = 3, f(n) = Θ(n³).\n2. Watershed: n^(log₃ 27) = n³.\n3. n³ vs n³: equal. Case 2.\n4. T(n) = Θ(n³ log n).",
-          "answer": "Θ(n³ log n), Case 2",
-          "slide": "HW 7 · Problem 3",
-          "id": "hw.fa4e22f0"
-        },
-        {
-          "type": "example",
-          "title": "T(n) = T(n/2) + log n",
-          "body": "Master method with justification.\n\n1. a = 1, b = 2, f(n) = log n.\n2. Watershed: n^(log₂ 1) = n⁰ = 1.\n3. log n vs 1: log n is bigger, but is it *polynomially* bigger? That needs log n = Ω(n^ε) for some ε > 0. No — log n grows slower than every n^ε, no matter how tiny ε is.\n4. So it's not Case 2 (not equal) and not Case 3 (gap isn't polynomial). **The master method does not apply.** State that.\n5. (For your own curiosity: unrolling gives log n + log(n/2) + log(n/4) + … ≈ log n terms of size ≤ log n → Θ(log² n). Not required.)",
-          "answer": "Does not apply — the gap between log n and 1 is not polynomial.",
-          "slide": "HW 7 · Problem 4",
-          "id": "hw.b69e42d8"
-        }
-      ]
-    },
-    {
-      "id": "practice",
-      "heading": "Practice set",
-      "blocks": [
-        {
-          "type": "check",
-          "prompt": "T(n) = 2T(n/2) + n log n. Does the master method apply?",
-          "answer": "Watershed n. f = n log n is larger than n but only by a log factor — not polynomially. Does not apply (the famous gap between Case 2 and 3). The tree gives Θ(n log² n).",
-          "sectionRef": "practice",
-          "id": "practice.4ab23748"
-        },
-        {
-          "type": "check",
-          "prompt": "T(n) = 3T(n/3) + n",
-          "answer": "a=3, b=3, watershed n^(log₃ 3) = n. f = n equal → Case 2 → Θ(n log n).",
-          "sectionRef": "practice",
-          "id": "practice.b8fc6b7e"
-        },
-        {
-          "type": "check",
-          "prompt": "T(n) = 16T(n/4) + n²",
-          "answer": "a=16, b=4, log₄ 16 = 2 → watershed n². f = n² equal → Case 2 → Θ(n² log n).",
-          "sectionRef": "practice",
-          "id": "practice.2135895d"
-        },
-        {
-          "type": "check",
-          "prompt": "T(n) = 2T(n/4) + √n",
-          "answer": "a=2, b=4, log₄ 2 = ½ → watershed n^½ = √n. f = √n equal → Case 2 → Θ(√n log n).",
-          "sectionRef": "practice",
-          "id": "practice.55b9afb8"
-        },
-        {
-          "type": "check",
-          "prompt": "T(n) = T(n/2) + n",
-          "answer": "a=1, b=2, watershed n⁰ = 1. f = n polynomially larger (ε = 1) → Case 3. Regularity: 1·(n/2) = n/2 ≤ c·n with c = ½. ✓ Θ(n). (Rows shrink by half each level: n + n/2 + n/4 + … = 2n.)",
-          "sectionRef": "practice",
-          "id": "practice.ebc80684"
-        },
-        {
-          "type": "check",
-          "prompt": "Draw the level-i row for T(n) = 5T(n/2) + n² and say which case it is without the formula.",
-          "answer": "5ⁱ nodes × (n/2ⁱ)² = 5ⁱ · n²/4ⁱ = (5/4)ⁱ n². Rows grow (5/4 > 1) → leaves dominate → Case 1 → Θ(n^(log₂ 5)) ≈ Θ(n^2.32).",
-          "sectionRef": "practice",
-          "id": "practice.043eb6e6"
+          "id": "hw.0c2f0696"
         },
         {
           "type": "check",
           "prompt": "Explain in one sentence why every level of merge sort's tree costs the same.",
           "answer": "The number of nodes doubles each level while the work per node halves, and 2ⁱ · (kn/2ⁱ) = kn.",
-          "sectionRef": "practice",
-          "id": "practice.c44e02ff"
+          "sectionRef": "hw",
+          "id": "hw.e6ed4f29"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Recurrence",
+              "a cost written in terms of the same cost on smaller inputs, plus a base case"
+            ],
+            [
+              "Base case",
+              "the input small enough to cost a fixed amount, like T(1) = 1"
+            ],
+            [
+              "Unrolling",
+              "plugging the recurrence into itself until you hit the base case"
+            ],
+            [
+              "Recursion tree",
+              "one box per call, the call's own work inside; total = sum of the rows"
+            ],
+            [
+              "Level i",
+              "the row i steps below the root: aⁱ calls of size n/bⁱ"
+            ],
+            [
+              "Depth",
+              "number of rows: log_b n + 1 when the size shrinks by b each level"
+            ],
+            [
+              "Substitution",
+              "guess the answer, then prove it by induction"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
   ],
   "exercises": [
+    {
+      "id": "rec-read",
+      "title": "Read it out loud",
+      "prompt": "What does T(n) = 3T(n/4) + n² say?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "The number in front of T is how many calls.",
+        "The fraction inside T is the size of each call.",
+        "The added term is the call's own work."
+      ],
+      "why": "Reading the three parts correctly is the first line of every master-method and tree answer.",
+      "choices": [
+        {
+          "text": "Three steps, then n/4 calls, then n² more",
+          "feedback": "The order is: number of calls, size of each, own work."
+        },
+        {
+          "text": "Each call makes 3 recursive calls on n/4 items and does n² work itself",
+          "feedback": "Right: a = 3 calls, each of size n/4, plus n² of its own work."
+        },
+        {
+          "text": "The answer is 3n/4 + n²",
+          "feedback": "A recurrence isn't the answer; it's the rule for one call."
+        },
+        {
+          "text": "It makes 4 calls on n/3 items",
+          "feedback": "That swaps a and b."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "read"
+    },
+    {
+      "id": "rec-unroll",
+      "title": "Unroll it",
+      "prompt": "With T(1) = 1 and T(n) = 2T(n/2) + n, what is T(4)?",
+      "hints": [
+        "Compute T(2) first.",
+        "T(2) = 2·T(1) + 2 = 4.",
+        "T(4) = 2·T(2) + 4."
+      ],
+      "solution": [
+        "T(2) = 2·1 + 2 = 4.",
+        "T(4) = 2·4 + 4 = 12.",
+        "Check: n log₂ n + n = 4·2 + 4 = 12."
+      ],
+      "why": "Unrolling small cases is the fastest way to sanity-check any formula you derive.",
+      "accept": [
+        "12"
+      ],
+      "sectionRef": "unroll"
+    },
+    {
+      "id": "rec-rows",
+      "title": "Count the rows",
+      "prompt": "Merge sort on n = 64: how many rows does the recursion tree have (including the leaf row)?",
+      "hints": [
+        "Sizes: 64, 32, 16, 8, 4, 2, 1.",
+        "Count them.",
+        "log₂ 64 + 1."
+      ],
+      "solution": [
+        "Sizes halve from 64 to 1: 64, 32, 16, 8, 4, 2, 1.",
+        "That's 7 rows.",
+        "= log₂ 64 + 1 = 6 + 1."
+      ],
+      "why": "The '+ 1' is the leaf row; in Big-O it disappears, but on a tree-table question it counts.",
+      "accept": [
+        "7"
+      ],
+      "sectionRef": "tree"
+    },
+    {
+      "id": "rec-leveli",
+      "title": "Level i's total",
+      "prompt": "For T(n) = 4T(n/2) + n, what is the total work on level i?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Nodes on level i: 4ⁱ.",
+        "Size of each: n/2ⁱ, and f(size) = size.",
+        "Multiply: 4ⁱ · n/2ⁱ = 2ⁱ n."
+      ],
+      "why": "Rows that grow means the leaves dominate: this recurrence is Θ(n²). The next chapter gets there in one line.",
+      "choices": [
+        {
+          "text": "n",
+          "feedback": "That's merge sort's; here there are 4 calls per node, not 2."
+        },
+        {
+          "text": "4ⁱ · n",
+          "feedback": "Don't forget each call's size shrinks too."
+        },
+        {
+          "text": "2ⁱ · n",
+          "feedback": "Right: 4ⁱ nodes × n/2ⁱ each = (4/2)ⁱ n = 2ⁱ n. The rows double."
+        },
+        {
+          "text": "n / 2ⁱ",
+          "feedback": "That's the size of ONE node, not the row total."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "tree"
+    },
+    {
+      "id": "rec-level2",
+      "title": "Rows that grow",
+      "prompt": "For T(n) = 3T(n/2) + kn, the level-2 row costs how many times kn? (Give a decimal.)",
+      "hints": [
+        "Level 2 has 3² = 9 nodes.",
+        "Each has size n/4, so work k·n/4.",
+        "9 · kn/4 = (9/4) kn."
+      ],
+      "solution": [
+        "Nodes: 9.",
+        "Work each: kn/4.",
+        "Row: 9kn/4 = 2.25 kn."
+      ],
+      "why": "(3/2)ⁱ growth per row is why this recurrence ends up Θ(n^(log₂ 3)) ≈ n^1.58: Karatsuba's fast multiplication.",
+      "accept": [
+        "2.25",
+        "9/4"
+      ],
+      "sectionRef": "tree"
+    },
+    {
+      "id": "rec-subst",
+      "title": "The leftover",
+      "prompt": "In the substitution proof for T(n) = 2T(n/2) + kn, you reach T(n) ≤ c·n log n − cn + kn. What makes the proof work?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "What's standing between you and c·n log n?",
+        "The leftover −cn + kn.",
+        "It's ≤ 0 exactly when c ≥ k."
+      ],
+      "why": "Substitution is the one method that gives a real proof; the leftover step is where marks are won or lost.",
+      "choices": [
+        {
+          "text": "Nothing; the proof fails",
+          "feedback": "It works for the right c."
+        },
+        {
+          "text": "Choosing c ≥ k, so −cn + kn ≤ 0",
+          "feedback": "Right: then the leftover is never positive, and T(n) ≤ c·n log n."
+        },
+        {
+          "text": "Choosing c = 0",
+          "feedback": "c = 0 would claim T(n) ≤ 0."
+        },
+        {
+          "text": "Dropping the kn because it's lower order",
+          "feedback": "In a proof you can't just drop terms; you have to show they're ≤ 0."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "substitution"
+    },
     {
       "id": "write-recurrence",
       "title": "Write the recurrence from the code",
@@ -890,7 +858,7 @@
       "code": "int f(int[] a, int lo, int hi) {\n  if (hi - lo < 1) return a[lo];          // one element\n  int mid = (lo + hi) / 2;\n  int x = f(a, lo, mid);\n  int y = f(a, mid + 1, hi);\n  int z = f(a, lo, mid);                   // yes, again\n  for (int i = lo; i <= hi; i++) x += a[i];\n  return x + y + z;\n}",
       "hints": [
         "Count three things at the current call: how many recursive calls, how big is each, and how much other work is done. That's a, n/b, and f(n).",
-        "The trap is missing the third call — it's a repeat of the first, but the computer runs it again. Count calls, not distinct subproblems.",
+        "The trap is missing the third call: it's a repeat of the first, but the computer runs it again. Count calls, not distinct subproblems.",
         "The for loop runs hi − lo + 1 = n times. Everything else at this level is constant."
       ],
       "solution": [
@@ -899,7 +867,7 @@
         "T(n) = 3T(n/2) + n, with T(1) = 1.",
         "For later: n^(log₂3) ≈ n^1.58, and n is polynomially smaller, so master case 1 gives Θ(n^1.58)."
       ],
-      "why": "Reading the recurrence off code is the whole game. Every 'why is this recursive function slow' investigation starts by writing T(n) — and a duplicated recursive call like the third one here is the single most common performance bug in recursive code (it's what makes naive Fibonacci exponential)."
+      "why": "Reading the recurrence off code is the whole game. Every 'why is this recursive function slow' investigation starts by writing T(n): and a duplicated recursive call like the third one here is the single most common performance bug in recursive code (it's what makes naive Fibonacci exponential)."
     },
     {
       "id": "tree-table",
@@ -908,7 +876,7 @@
       "hints": [
         "Level 0 is one node of size n doing n work. Level 1: how many nodes (a), each of what size (n/b), each doing how much (f of that size)?",
         "The most common error is the level total: it's nodes × work-per-node, and both change with i. Write it as a product first, then simplify. Here: 2ⁱ × n/4ⁱ.",
-        "2ⁱ/4ⁱ = (2/4)ⁱ = (1/2)ⁱ. The per-level total *shrinks* by half each level. When the series shrinks, the root dominates — the whole sum is at most 2 × the root."
+        "2ⁱ/4ⁱ = (2/4)ⁱ = (1/2)ⁱ. The per-level total *shrinks* by half each level. When the series shrinks, the root dominates: the whole sum is at most 2 × the root."
       ],
       "solution": [
         "Level 0: 1 node, size n, work n, total n. Level 1: 2 nodes, size n/4, work n/4 each, total n/2. Level 2: 4 nodes, size n/16, work n/16, total n/4.",
@@ -916,24 +884,7 @@
         "Levels: n/4ᵏ = 1 → k = log₄ n, so log₄ n + 1 levels.",
         "Total = n(1 + ½ + ¼ + …) ≤ 2n. The root dominates: T(n) = Θ(n). (Master: n^(log₄2) = n^0.5, f = n is polynomially larger, case 3 → Θ(n). Same answer.)"
       ],
-      "why": "The table is how you reason about any divide-and-conquer cost — including parallel programs, where 'work per level' becomes 'work per round of machines'. If the per-level series shrinks, the top dominates; if it grows, the leaves do. That instinct transfers far beyond sorting."
-    },
-    {
-      "id": "master-mix",
-      "title": "Master method, four in a row",
-      "prompt": "Solve with the master method, stating a, b, the watershed n^(log_b a), the case, and the answer. If it doesn't apply, say why. (1) T(n) = 9T(n/3) + n. (2) T(n) = T(2n/3) + 1. (3) T(n) = 3T(n/4) + n log n. (4) T(n) = 2T(n/2) + n log n.",
-      "hints": [
-        "For each: write a, b, f(n) first, then compute log_b a as 'b to what power gives a'. Only then compare f to the watershed.",
-        "Two traps: (2) has a = 1, so the watershed is n⁰ = 1 — people forget log_b 1 = 0. And (4) is the famous gap: n log n is bigger than n, but not *polynomially* bigger, so no case fits.",
-        "Case 3 needs the regularity check: a·f(n/b) ≤ c·f(n) with c < 1. Do it explicitly for (3)."
-      ],
-      "solution": [
-        "(1) a = 9, b = 3, watershed n^(log₃9) = n². f = n is polynomially smaller (ε = 1). Case 1 → Θ(n²).",
-        "(2) a = 1, b = 3/2, watershed n^(log₁.₅ 1) = n⁰ = 1. f = 1 = Θ(1) matches. Case 2 → Θ(log n). (Binary-search-like.)",
-        "(3) a = 3, b = 4, watershed n^(log₄3) ≈ n^0.79. f = n log n is polynomially larger (n log n ≥ n^(0.79+ε) for ε = 0.2). Regularity: 3·(n/4)log(n/4) ≤ (3/4)·n log n ✓ (c = 3/4). Case 3 → Θ(n log n).",
-        "(4) a = 2, b = 2, watershed n. f = n log n is larger than n but only by a log factor — not n^ε for any ε > 0. Falls in the gap between cases 2 and 3: **master method does not apply**. (Recursion tree gives Θ(n log² n), but 'does not apply' is the graded answer.)"
-      ],
-      "why": "The master method is the two-minute estimate engineers use before writing a divide-and-conquer algorithm at all — 'if I split in 3 and combine in linear time, is that worth it?' Knowing its blind spots (the log gap, non-constant a) is what stops you from applying a formula where it lies."
+      "why": "The table is how you reason about any divide-and-conquer cost: including parallel programs, where 'work per level' becomes 'work per round of machines'. If the per-level series shrinks, the top dominates; if it grows, the leaves do. That instinct transfers far beyond sorting."
     }
   ]
 }

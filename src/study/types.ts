@@ -9,8 +9,25 @@ import type { GuideBlock, GuideResource } from "./guide";
 
 export type Frame =
   /** An array being transformed. `hl` = indices to highlight, `done` = indices
-   *  shown as settled. `note` renders under the array (e.g. "key = 5"). */
-  | { kind: "array"; cells: (number | string)[]; hl?: number[]; done?: number[]; note?: string; caption: string }
+   *  shown as settled, `dim` = indices out of play (grayed, dashed). `ptrs`
+   *  names indexes with a labeled arrow under the cell ({ low: 0, mid: 4 });
+   *  the arrows slide between frames. `note` renders under the array.
+   *  Items with the same value keep their identity across frames, so a
+   *  swap or a shift is animated as the items actually moving. */
+  | { kind: "array"; cells: (number | string)[]; hl?: number[]; done?: number[]; dim?: number[]; ptrs?: Record<string, number>; note?: string; caption: string }
+  /** Several labeled arrays at once (two piles and an output, a heap and its
+   *  sorted tail). An item that moves from one row to another flies there.
+   *  `null` cells are empty slots (dashed); "" cells are nothing at all
+   *  (spacing). `offset` shifts a row right by that many columns (may be
+   *  fractional, to center it); `at` instead gives each cell its own column
+   *  (for tree-shaped layouts). `ptrs` entries are [row, index]. */
+  | {
+      kind: "rows";
+      rows: { label?: string; cells: (number | string | null)[]; offset?: number; at?: number[]; hl?: number[]; done?: number[]; dim?: number[] }[];
+      ptrs?: Record<string, [number, number]>;
+      note?: string;
+      caption: string;
+    }
   /** A recursion tree drawn level by level. `levels[i].nodes` are the labels
    *  inside the boxes; `work` is the per-level total shown on the right.
    *  Frames add levels cumulatively — pass the full list each time. */

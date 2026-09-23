@@ -1,12 +1,16 @@
 /**
- * Drills for CS 146 · Recurrences: write T(n) from a description, count
- * leaves and levels in the recursion tree, and apply the master method
- * (including the "does not apply" cases Poon grades).
+ * Drills for CS 146 · Recurrences (Lecture 6) and the master method
+ * (Lecture 7): write T(n) from a description, count leaves and levels in
+ * the recursion tree, and apply the master method (including the "does
+ * not apply" cases Poon grades). The master drills point at the
+ * 7-master-method guide.
  */
 import type { Drill } from "../drill";
 import { choice, fmt } from "../drill";
 
 const G = "cs146/6-recurrences";
+/** The master-method drills live with Lecture 7's own chapter. */
+const G7 = "cs146/7-master-method";
 
 export const drills: Drill[] = [
   {
@@ -85,7 +89,7 @@ export const drills: Drill[] = [
   },
   {
     id: "master!case",
-    guideId: G,
+    guideId: G7,
     sectionRef: "master",
     title: "Master method: which case, what answer",
     skill: "Compare f(n) to n^(log_b a); polynomially smaller, equal, or larger; or say 'does not apply'.",
@@ -121,7 +125,7 @@ export const drills: Drill[] = [
   },
   {
     id: "master!watershed",
-    guideId: G,
+    guideId: G7,
     sectionRef: "master",
     title: "The watershed exponent",
     skill: "log_b a, computed exactly.",
