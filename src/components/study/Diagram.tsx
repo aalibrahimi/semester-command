@@ -14,7 +14,8 @@
  *              chart of the total for a few n
  *   cards      side-by-side cards, each with an optional tiny chart
  *              (ceiling / floor / sandwich / bars)
- *   levels     one row of bars per level, with each row's total
+ *   levels     one row of bars per level, with each row's total (parts from
+ *              `ghostFrom` on are drawn as faint outlines)
  *   bigo       f(n) against c·g(n) with the n₀ region shaded
  *   formula    a big formula whose parts are colored chips with labels,
  *              and optional code lines tagged with the part they produce
@@ -261,7 +262,14 @@ function Levels({ d }: { d: Record<string, unknown> }) {
               <span className="font-mono text-xs text-muted-foreground">{S(r.label)}</span>
               <div className="flex gap-1">
                 {parts.map((p, i) => (
-                  <span key={i} className={cn("flex h-8 items-center justify-center rounded-lg font-mono text-xs font-semibold ring-1", TONE_SOFT[t], TONE_TEXT[t])} style={{ width: `${(p / unit) * 100}%` }}>
+                  <span
+                    key={i}
+                    className={cn(
+                      "flex h-8 items-center justify-center rounded-lg font-mono text-xs font-semibold",
+                      typeof r.ghostFrom === "number" && i >= r.ghostFrom ? "border border-dashed border-border bg-transparent text-muted-foreground" : cn("ring-1", TONE_SOFT[t], TONE_TEXT[t]),
+                    )}
+                    style={{ width: `${(p / unit) * 100}%` }}
+                  >
                     {parts.length <= 8 ? S(r.partLabel, String(p)) : ""}
                   </span>
                 ))}

@@ -14,132 +14,221 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Every CS 146 lecture is a conversation in a language you haven't been taught. When Poon writes T(n) = 2T(n/2) + kn he reads it out loud as a sentence — \"the time to sort n things is twice the time to sort half as many, plus a linear amount of extra work\" — but the slide only shows the symbols. If the symbols aren't sentences to you yet, the lecture is noise, no matter how well he teaches. This chapter turns eight symbols into sentences. It's the whole reason the later chapters will make sense.",
+          "md": "Every CS 146 lecture is a conversation in a language you haven't been taught. When Poon writes T(n) = 2T(n/2) + kn he reads it out loud as a sentence: \"the time to sort n things is twice the time to sort half as many, plus a linear amount of extra work\": but the slide only shows the symbols. If the symbols aren't sentences to you yet, the lecture is noise, no matter how well he teaches. This chapter turns eight symbols into sentences. It's the whole reason the later chapters will make sense.",
           "slide": "The problem",
-          "id": "why.adb4f82c"
+          "id": "why.8278d516"
         },
         {
           "type": "prose",
           "md": "You already have the one thing this needs: you can program. Every idea here has a for-loop or a function behind it, and I'll show you that version first, because that's the version your brain already trusts.",
-          "id": "why.3436eeea"
+          "id": "why.45748362"
         },
         {
-          "type": "definition",
-          "term": "2ⁿ, n², 2ⁱ",
-          "body": "exponents: repeated multiplication",
-          "id": "why.0c0c325a"
-        },
-        {
-          "type": "definition",
-          "term": "log n",
-          "body": "the number of times you can halve n",
-          "id": "why.d001fd38"
-        },
-        {
-          "type": "definition",
-          "term": "Σ",
-          "body": "a for-loop that adds",
-          "id": "why.bcb88d79"
-        },
-        {
-          "type": "definition",
-          "term": "n^(log_b a)",
-          "body": "an exponent that happens to be a log (only looks scary)",
-          "id": "why.b3a3b7b3"
-        },
-        {
-          "type": "definition",
-          "term": "T(n)",
-          "body": "a function that returns \"how many steps\"",
-          "id": "why.396de10d"
-        },
-        {
-          "type": "definition",
-          "term": "O(g(n))",
-          "body": "\"grows no faster than g\"",
-          "id": "why.f82da7c0"
-        },
-        {
-          "type": "definition",
-          "term": "Induction",
-          "body": "proving something for all n by proving it for n+1",
-          "id": "why.b87503af"
-        },
-        {
-          "type": "prose",
-          "md": "- **n** — how big the input is",
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The language of CS 146",
+            "question": "Eight symbols, each with a **for-loop** behind it",
+            "steps": [
+              {
+                "title": "n",
+                "sub": "the size of the input",
+                "result": "n = 8"
+              },
+              {
+                "title": "2ⁿ, n², 2ⁱ",
+                "sub": "exponents: repeated multiplication",
+                "result": "2⁵ = 32",
+                "tone": "brand"
+              },
+              {
+                "title": "log n",
+                "sub": "how many times you can halve n",
+                "result": "log₂ 16 = 4",
+                "tone": "green"
+              },
+              {
+                "title": "Σ",
+                "sub": "a for-loop that adds",
+                "result": "1+…+n",
+                "tone": "amber"
+              },
+              {
+                "title": "n^(log_b a)",
+                "sub": "an exponent that happens to be a log",
+                "result": "n^(log₂ 8) = n³",
+                "tone": "brand"
+              },
+              {
+                "title": "T(n)",
+                "sub": "a function that returns 'how many steps'",
+                "result": "T(8)"
+              },
+              {
+                "title": "O(g(n))",
+                "sub": "grows no faster than g",
+                "result": "O(n²)",
+                "tone": "green"
+              },
+              {
+                "title": "Induction",
+                "sub": "prove it for every n",
+                "result": "n → n + 1",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "Every lecture after this one is written in these eight symbols. One section each, in this order.",
           "slide": "The eight symbols",
-          "id": "why.a5d2cff6"
+          "id": "why.83cd66eb"
         }
       ]
     },
     {
       "id": "n",
-      "heading": "n — the size of the input",
+      "heading": "n: the size of the input",
       "blocks": [
         {
           "type": "prose",
           "md": "n is always \"how many things did you give me.\" Sort an array of 8 numbers: n = 8. Search a list of a million users: n = 1,000,000. We never care about a specific n; we care about what happens as n grows. That's the mental shift of this entire course: stop asking \"how long does this take on my array\" and ask \"if I double the array, what happens to the time?\"",
           "slide": "n is a variable, not a number",
-          "id": "n.79360629"
+          "id": "n.e5ae0931"
         },
         {
           "type": "example",
           "title": "Every algorithm is a function of n. The question is always: how does the count of steps change as n grows?",
           "body": "for (int i = 0; i < n; i++) print(a[i]);   // runs n times\nfor (int i = 0; i < n; i++)\n  for (int j = 0; j < n; j++) print(i, j);  // runs n × n = n² times",
           "slide": "Counting steps in code",
-          "id": "n.1a6a7ada"
+          "id": "n.b1261c39"
         },
         {
           "type": "definition",
           "term": "n",
           "body": "The size of the input. Runtime is always described as a function of n, because the only thing we're allowed to vary is how much data we're given.",
-          "id": "n.07bdbc8a"
+          "id": "n.ba0e184a"
         }
       ]
     },
     {
       "id": "exponents",
-      "heading": "Exponents — repeated multiplication (and why 2ⁱ keeps showing up)",
+      "heading": "Exponents: repeated multiplication (and why 2ⁱ keeps showing up)",
       "blocks": [
         {
           "type": "prose",
-          "md": "2⁵ means \"multiply 2 by itself 5 times\": 2·2·2·2·2 = 32. n² means n·n. That's all an exponent is. The reason it's everywhere in this course: **anything that doubles once per step is a power of 2.** One thing that splits in two, then each half splits in two again — after i splits you have 2ⁱ pieces.",
+          "md": "2⁵ means \"multiply 2 by itself 5 times\": 2·2·2·2·2 = 32. n² means n·n. That's all an exponent is. The reason it's everywhere in this course: **anything that doubles once per step is a power of 2.** One thing that splits in two, then each half splits in two again: after i splits you have 2ⁱ pieces.",
           "slide": "What an exponent is",
-          "id": "exponents.e7730150"
+          "id": "exponents.59074f64"
         },
         {
-          "type": "figure",
-          "svg": "<g font-family=\"ui-monospace, monospace\" font-size=\"12\">\n<text x=\"10\" y=\"24\" fill=\"currentColor\" opacity=\".6\">i = 0</text><rect x=\"240\" y=\"10\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><text x=\"300\" y=\"24\" fill=\"currentColor\" opacity=\".6\">2⁰ = 1</text>\n<text x=\"10\" y=\"64\" fill=\"currentColor\" opacity=\".6\">i = 1</text><rect x=\"210\" y=\"50\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"270\" y=\"50\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><text x=\"330\" y=\"64\" fill=\"currentColor\" opacity=\".6\">2¹ = 2</text>\n<text x=\"10\" y=\"104\" fill=\"currentColor\" opacity=\".6\">i = 2</text><rect x=\"150\" y=\"90\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"200\" y=\"90\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"280\" y=\"90\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"330\" y=\"90\" width=\"40\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><text x=\"390\" y=\"104\" fill=\"currentColor\" opacity=\".6\">2² = 4</text>\n<text x=\"10\" y=\"144\" fill=\"currentColor\" opacity=\".6\">i = 3</text><rect x=\"70\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"115\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"160\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"205\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"270\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"315\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"360\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><rect x=\"405\" y=\"130\" width=\"36\" height=\"20\" rx=\"3\" fill=\"none\" stroke=\"currentColor\"/><text x=\"455\" y=\"144\" fill=\"currentColor\" opacity=\".6\">2³ = 8</text>\n</g>",
-          "viewBox": "0 0 520 170",
-          "caption": "Each row doubles the row above. Row i has 2ⁱ boxes. Merge sort's recursion tree is exactly this picture.",
+          "type": "diagram",
+          "kind": "levels",
+          "data": {
+            "rows": [
+              {
+                "label": "2⁰ = 1",
+                "parts": [
+                  16
+                ],
+                "partLabel": "",
+                "total": "1 piece"
+              },
+              {
+                "label": "2¹ = 2",
+                "parts": [
+                  8,
+                  8
+                ],
+                "partLabel": "",
+                "total": "2 pieces"
+              },
+              {
+                "label": "2² = 4",
+                "parts": [
+                  4,
+                  4,
+                  4,
+                  4
+                ],
+                "partLabel": "",
+                "total": "4 pieces"
+              },
+              {
+                "label": "2³ = 8",
+                "parts": [
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2
+                ],
+                "partLabel": "",
+                "total": "8 pieces"
+              },
+              {
+                "label": "2⁴ = 16",
+                "parts": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "partLabel": "",
+                "total": "16 pieces",
+                "tone": "green"
+              }
+            ],
+            "summary": "Split every piece in two, i times → **2ⁱ** pieces",
+            "detail": "merge sort's recursion tree is exactly this picture"
+          },
+          "caption": "Each row doubles the row above: row i has 2ⁱ pieces.",
           "slide": "Doubling makes powers of 2",
-          "id": "exponents.479a7ea5"
+          "id": "exponents.c879038a"
         },
         {
           "type": "prose",
           "md": "Two rules you'll use constantly, both of which are just counting multiplications. **Multiplying powers adds exponents:** 2³·2² = (2·2·2)·(2·2) = 2⁵. **A power of a power multiplies exponents:** (2³)² = 2³·2³ = 2⁶. And the odd-looking one: **anything to the power 0 is 1**, because \"multiply by 2 zero times\" leaves you with what you started with, which is 1.",
-          "id": "exponents.500e7e0c"
+          "id": "exponents.e760d884"
         },
         {
           "type": "check",
           "prompt": "After 10 rounds of splitting every piece in two, how many pieces are there? And if you have n pieces, what's n as a power of 2 when n = 64?",
-          "answer": "2¹⁰ = 1024 pieces. 64 = 2⁶ (2·2·2·2·2·2). That second question is a log question in disguise — next section.",
+          "answer": "2¹⁰ = 1024 pieces. 64 = 2⁶ (2·2·2·2·2·2). That second question is a log question in disguise: next section.",
           "sectionRef": "exponents",
-          "id": "exponents.b32cfff8"
+          "id": "exponents.6c4b3316"
         }
       ]
     },
     {
       "id": "log",
-      "heading": "log n — how many times can you halve it?",
+      "heading": "log n: how many times can you halve it?",
       "blocks": [
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why it exists** Some algorithms don't look at every element — they throw half away at each step. Binary search on a sorted array of 1,000,000 numbers checks the middle, throws away the wrong half, and repeats. How many steps until one element is left? That count is what log means. It's not a mysterious function; it's a counter of halvings.",
+          "md": "**Why it exists** Some algorithms don't look at every element: they throw half away at each step. Binary search on a sorted array of 1,000,000 numbers checks the middle, throws away the wrong half, and repeats. How many steps until one element is left? That count is what log means. It's not a mysterious function; it's a counter of halvings.",
           "slide": "Why logs appear in algorithms",
-          "id": "log.f9469c31"
+          "id": "log.43f9bbcf"
+        },
+        {
+          "type": "prose",
+          "md": "**log n is why big systems stay fast.** A sorted list of a billion usernames needs only about 30 checks to find one (binary search). Database indexes, 'git bisect', and every balanced tree you'll meet later in CS 146 are built on this halving.",
+          "label": "world",
+          "id": "log.2933307f"
         },
         {
           "type": "stepper",
@@ -148,73 +237,193 @@
             {
               "kind": "array",
               "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
                 16
               ],
-              "hl": [
-                0
-              ],
-              "note": "0 halvings so far",
-              "caption": "Start with n = 16."
+              "caption": "Start with n = 16 items. How many times can you cut it in half before one is left?",
+              "note": "16 left"
             },
             {
               "kind": "array",
               "cells": [
-                8
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
               ],
-              "hl": [
-                0
+              "caption": "Halving #1: keep half, throw half away. 8 left.",
+              "dim": [
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
               ],
-              "note": "1 halving",
-              "caption": "Halve it: 8."
+              "note": "8 left after 1 halving"
             },
             {
               "kind": "array",
               "cells": [
-                4
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
               ],
-              "hl": [
-                0
+              "caption": "Halving #2: keep half, throw half away. 4 left.",
+              "dim": [
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
               ],
-              "note": "2 halvings",
-              "caption": "Halve it: 4."
+              "note": "4 left after 2 halvings"
             },
             {
               "kind": "array",
               "cells": [
-                2
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
               ],
-              "hl": [
-                0
+              "caption": "Halving #3: keep half, throw half away. 2 left.",
+              "dim": [
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
               ],
-              "note": "3 halvings",
-              "caption": "Halve it: 2."
+              "note": "2 left after 3 halvings"
             },
             {
               "kind": "array",
               "cells": [
-                1
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
               ],
+              "caption": "Halving #4: keep half, throw half away. 1 left. Done: one item. That took 4 halvings, so log₂ 16 = 4.",
               "done": [
                 0
               ],
-              "note": "4 halvings — done",
-              "caption": "Halve it: 1. It took 4 halvings, so log₂ 16 = 4. Check: 2⁴ = 16."
+              "dim": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "note": "1 left after 4 halvings"
             }
           ],
           "slide": true,
-          "id": "log.b366e0b5"
+          "id": "log.0cd6d04e"
         },
         {
           "type": "prose",
-          "md": "So **log₂ n answers the question \"2 to what power gives n?\"** — which is the same as \"how many halvings from n to 1\" and the same as \"how many doublings from 1 to n.\" Those are three phrasings of one fact, and Poon uses all three in Lecture 5: he asks \"how many times must we halve our search space\" and later \"how many times must we double 1 to reach n.\" Same number.",
-          "id": "log.48fc5dd2"
+          "md": "So **log₂ n answers the question \"2 to what power gives n?\"**: which is the same as \"how many halvings from n to 1\" and the same as \"how many doublings from 1 to n.\" Those are three phrasings of one fact, and Poon uses all three in Lecture 5: he asks \"how many times must we halve our search space\" and later \"how many times must we double 1 to reach n.\" Same number.",
+          "id": "log.d3fd02de"
         },
         {
           "type": "example",
           "title": "This loop IS the definition. If you can read this, you can read log.",
           "body": "int log2(int n) {\n  int count = 0;\n  while (n > 1) { n = n / 2; count++; }\n  return count;          // log2(16) → 4,  log2(1024) → 10\n}",
           "slide": "log as code",
-          "id": "log.edf1e483"
+          "id": "log.33d7fec2"
         },
         {
           "type": "table",
@@ -256,103 +465,159 @@
             ]
           ],
           "slide": "The values you'll actually meet",
-          "id": "log.ddf5d0a4"
+          "id": "log.bc94f70f"
         },
         {
           "type": "prose",
-          "md": "That last row is the whole reason logs matter: a billion items, thirty steps. An algorithm that's O(log n) barely notices how big the input is. When Poon writes plain \"log n\" with no little 2, he means log₂ — he says so on Lecture 5 slide 35. Other bases work the same way: log₃ 27 = 3 because 3³ = 27, i.e. \"how many times can you cut 27 into thirds.\"",
-          "id": "log.346a62d6"
+          "md": "That last row is the whole reason logs matter: a billion items, thirty steps. An algorithm that's O(log n) barely notices how big the input is. When Poon writes plain \"log n\" with no little 2, he means log₂: he says so on Lecture 5 slide 35. Other bases work the same way: log₃ 27 = 3 because 3³ = 27, i.e. \"how many times can you cut 27 into thirds.\"",
+          "id": "log.46cc0b64"
         },
         {
           "type": "prose",
           "md": "**Rule 1: log(a/b) = log a − log b.** Dividing inside the log becomes subtracting outside. The one you'll see: log(n/2) = log n − log 2 = log n − 1. Halving n costs exactly one halving. **Rule 2: log(aᵇ) = b·log a.** An exponent inside can hop out front as a multiplier. That's the rule that makes n^(log_b a) readable in the next section.",
           "slide": "Two log rules you need",
-          "id": "log.6211e438"
+          "id": "log.9e835310"
         },
         {
           "type": "check",
           "prompt": "log₂ 32 = ? log₂ (32/2) = ? log₃ 81 = ?",
-          "answer": "5 (2⁵ = 32). 4 — either compute log₂ 16 directly, or use rule 1: 5 − 1. 4 (3⁴ = 81).",
+          "answer": "5 (2⁵ = 32). 4: either compute log₂ 16 directly, or use rule 1: 5 − 1. 4 (3⁴ = 81).",
           "sectionRef": "log",
-          "id": "log.b2e0d861"
+          "id": "log.abe5d9ff"
         },
         {
           "type": "definition",
           "term": "log_b n",
           "body": "The power you raise b to in order to get n. Equivalently, the number of times you can divide n by b before reaching 1. Plain \"log\" in this course means log₂.",
-          "id": "log.35cd75b9"
+          "id": "log.0117b7f9"
         }
       ]
     },
     {
       "id": "sum",
-      "heading": "Σ and 1 + 2 + … + (n−1) — a for-loop that adds",
+      "heading": "Σ and 1 + 2 + … + (n−1): a for-loop that adds",
       "blocks": [
         {
           "type": "prose",
           "md": "The Greek letter Σ (sigma) is a for-loop with an accumulator. Everything below the Σ is the loop's start, everything above is the end, everything to the right is what gets added each iteration.",
           "slide": "Σ is a loop",
-          "id": "sum.f8a85b93"
+          "id": "sum.953f8f2b"
         },
         {
           "type": "example",
           "title": "Read Σ from the bottom up: start i at 1, stop at n, add i each time.",
           "body": "  n\n  Σ  i      =     int sum = 0;\n i=1              for (int i = 1; i <= n; i++) sum += i;\n\n  n−1\n  Σ  i      =     for (int i = 1; i <= n-1; i++) sum += i;   // insertion sort's shifts\n i=1",
           "slide": true,
-          "id": "sum.083cd8ec"
+          "id": "sum.687afe19"
         },
         {
           "type": "prose",
           "label": "why",
           "md": "**Why this particular sum matters** Insertion sort in the worst case shifts 1 element on the first pass, 2 on the second, 3 on the third, up to n−1. Poon writes that total as 1 + 2 + 3 + … + (n−1) on Lecture 4 slide 13 and then just says \"= n²-ish.\" Here's why that's true, so you never have to take it on faith.",
-          "id": "sum.1e25f6eb"
+          "id": "sum.2bad25a3"
         },
         {
-          "type": "figure",
-          "svg": "<g><rect x=\"20\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"50\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"80\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"110\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"140\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"170\" y=\"20\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"20\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"50\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"80\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"110\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"140\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"170\" y=\"50\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"20\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"50\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"80\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"110\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"140\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"170\" y=\"80\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"20\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"50\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"80\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"110\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"140\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"170\" y=\"110\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/><rect x=\"20\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"50\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"80\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"110\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"140\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"rgb(59 130 246 / .55)\" opacity=\"1\"/><rect x=\"170\" y=\"140\" width=\"28\" height=\"28\" rx=\"3\" fill=\"currentColor\" opacity=\"0.18\"/>\n<text x=\"215\" y=\"45\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\" opacity=\".7\">5 rows</text>\n<text x=\"215\" y=\"65\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\" opacity=\".7\">6 columns  (n and n+1)</text>\n<text x=\"215\" y=\"100\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\">blue = 1+2+3+4+5</text>\n<text x=\"215\" y=\"120\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\">blue + grey = 5 × 6 = 30</text>\n<text x=\"215\" y=\"140\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\">blue = 30 / 2 = 15</text>\n<text x=\"215\" y=\"170\" font-family=\"ui-monospace, monospace\" font-size=\"12\" fill=\"currentColor\" opacity=\".7\">in general: n(n+1)/2</text>\n</g>",
-          "viewBox": "0 0 460 190",
-          "caption": "1+2+3+4+5 drawn as a staircase (blue). A flipped copy (grey) completes a 5×6 rectangle. Two staircases = 5·6 = 30, so one staircase = 15.",
-          "slide": "The staircase trick",
-          "slideNotes": "Same trick, no picture: pair the first and last terms. 1 + 100 = 101, 2 + 99 = 101, 3 + 98 = 101 … fifty pairs of 101 = 5,050. That's the schoolboy-Gauss story, and it's the SAME argument as the flipped staircase — pairing IS flipping. Either version is a full-credit justification if an exam asks you to explain why the formula holds, and the pairing version works in your head when there's no paper.",
-          "id": "sum.aaf49260"
+          "type": "diagram",
+          "kind": "levels",
+          "data": {
+            "rows": [
+              {
+                "label": "i = 1",
+                "parts": [
+                  1,
+                  5
+                ],
+                "ghostFrom": 1,
+                "partLabel": "",
+                "total": "+ 1",
+                "tone": "brand"
+              },
+              {
+                "label": "i = 2",
+                "parts": [
+                  2,
+                  4
+                ],
+                "ghostFrom": 1,
+                "partLabel": "",
+                "total": "+ 2",
+                "tone": "brand"
+              },
+              {
+                "label": "i = 3",
+                "parts": [
+                  3,
+                  3
+                ],
+                "ghostFrom": 1,
+                "partLabel": "",
+                "total": "+ 3",
+                "tone": "brand"
+              },
+              {
+                "label": "i = 4",
+                "parts": [
+                  4,
+                  2
+                ],
+                "ghostFrom": 1,
+                "partLabel": "",
+                "total": "+ 4",
+                "tone": "brand"
+              },
+              {
+                "label": "i = 5",
+                "parts": [
+                  5,
+                  1
+                ],
+                "ghostFrom": 1,
+                "partLabel": "",
+                "total": "+ 5",
+                "tone": "brand"
+              }
+            ],
+            "summary": "1 + 2 + 3 + 4 + 5 = 15 = 5 · 6 / 2",
+            "detail": "the staircase is half of a 5 × 6 rectangle: 1 + 2 + … + n = n(n + 1)/2"
+          },
+          "caption": "The sum as a staircase: row i is i blocks long. Flip a copy into the empty part and together they fill a 5 × 6 rectangle, so one staircase is half of it.",
+          "slide": "Why n(n+1)/2",
+          "id": "sum.cc0c8ba0"
         },
         {
           "type": "prose",
-          "md": "So 1 + 2 + … + n = n(n+1)/2, and the insertion-sort version 1 + 2 + … + (n−1) = (n−1)·n/2 = (n² − n)/2. When n is big, the n² term dominates and the /2 is a constant, so this is \"about n²\" — which is the honest content of the phrase O(n²). ==This is where O(n²) comes from==: not a rule to memorize, but a staircase you counted.",
-          "id": "sum.772e1a4c"
+          "md": "So 1 + 2 + … + n = n(n+1)/2, and the insertion-sort version 1 + 2 + … + (n−1) = (n−1)·n/2 = (n² − n)/2. When n is big, the n² term dominates and the /2 is a constant, so this is \"about n²\": which is the honest content of the phrase O(n²). ==This is where O(n²) comes from==: not a rule to memorize, but a staircase you counted.",
+          "id": "sum.b9de5241"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this sum after the exam** Any time work grows with progress. Comparing every pair of n things (users, points, files) is this sum — n(n−1)/2 pairs, which is why 'compare all pairs' code dies on big inputs. Appending n items to a structure that shifts or rewrites what's already there: same staircase. Even the party trick is real: n people all shaking hands is n(n−1)/2 handshakes. When you see nested loops where the inner one runs `i` times, ==your brain should say 'staircase, so about n²/2'== before you've finished reading the code.",
-          "id": "sum.4b8f2ea7"
+          "md": "**Where you'll meet this sum after the exam** Any time work grows with progress. Comparing every pair of n things (users, points, files) is this sum: n(n−1)/2 pairs, which is why 'compare all pairs' code dies on big inputs. Appending n items to a structure that shifts or rewrites what's already there: same staircase. Even the party trick is real: n people all shaking hands is n(n−1)/2 handshakes. When you see nested loops where the inner one runs `i` times, ==your brain should say 'staircase, so about n²/2'== before you've finished reading the code.",
+          "id": "sum.bb2f58a6"
         },
         {
           "type": "check",
           "prompt": "1 + 2 + … + 100 = ?",
-          "answer": "100·101/2 = 5,050. (Gauss allegedly did this in primary school by pairing 1+100, 2+99, … — same staircase.)",
+          "answer": "100·101/2 = 5,050. (Gauss allegedly did this in primary school by pairing 1+100, 2+99, …: same staircase.)",
           "sectionRef": "sum",
-          "id": "sum.14302018"
+          "id": "sum.d66f412e"
         },
         {
           "type": "definition",
           "term": "Σ (sigma)",
           "body": "A sum over a range: the index starts at the value under the Σ, ends at the value above, and each term to the right is added. The one identity to memorize: 1 + 2 + … + n = n(n+1)/2.",
-          "id": "sum.6999b47b",
-          "related": [
-            "Σ"
-          ]
+          "id": "sum.ec0f8d3b"
         }
       ]
     },
     {
       "id": "nlog",
-      "heading": "n^(log_b a) — the scariest-looking thing in the course, decoded",
+      "heading": "n^(log_b a): the scariest-looking thing in the course, decoded",
       "blocks": [
         {
           "type": "prose",
-          "md": "The master method (Lecture 7) compares everything against n^(log_b a). It looks like a typo. It isn't — it's an ordinary exponent whose value happens to be computed by a log. Read it inside-out: first compute the little number log_b a, then raise n to that.",
+          "md": "The master method (Lecture 7) compares everything against n^(log_b a). It looks like a typo. It isn't: it's an ordinary exponent whose value happens to be computed by a log. Read it inside-out: first compute the little number log_b a, then raise n to that.",
           "slide": "It's just an exponent",
-          "id": "nlog.4c52e096"
+          "id": "nlog.7d711b54"
         },
         {
           "type": "stepper",
@@ -390,7 +655,7 @@
             }
           ],
           "slide": true,
-          "id": "nlog.756ae285"
+          "id": "nlog.990d8dcd"
         },
         {
           "type": "table",
@@ -442,7 +707,7 @@
               "3",
               "≈ 1.26",
               "n^1.26",
-              "3^1.26 ≈ 4 — not a whole number, that's fine"
+              "3^1.26 ≈ 4: not a whole number, that's fine"
             ],
             [
               "7",
@@ -453,81 +718,79 @@
             ]
           ],
           "slide": "The ones you'll meet in HW 7 and on the midterm",
-          "id": "nlog.ccd23b7a"
+          "id": "nlog.95fc968f"
         },
         {
           "type": "prose",
-          "md": "Where does it come from? In Lecture 7 you'll see it's **the number of leaves in the recursion tree**: a problem that splits into a pieces, each 1/b the size, has depth log_b n and therefore a^(log_b n) leaves, and a^(log_b n) = n^(log_b a) by log rule 2 from the log section (swap which one is the base — it's a legal move because both are \"how many times\" counts of the same tree). For now, you only need to be able to compute it.",
-          "id": "nlog.84fad6ad"
+          "md": "Where does it come from? In Lecture 7 you'll see it's **the number of leaves in the recursion tree**: a problem that splits into a pieces, each 1/b the size, has depth log_b n and therefore a^(log_b n) leaves, and a^(log_b n) = n^(log_b a) by log rule 2 from the log section (swap which one is the base: it's a legal move because both are \"how many times\" counts of the same tree). For now, you only need to be able to compute it.",
+          "id": "nlog.9c485439"
         },
         {
           "type": "check",
           "prompt": "T(n) = 9T(n/3) + n. What is n^(log_b a)?",
           "answer": "a = 9, b = 3. log₃ 9 = 2 (3² = 9). So n². (And n is polynomially smaller than n², which will be master-method case 1 → Θ(n²).)",
           "sectionRef": "nlog",
-          "id": "nlog.e9a8c5a4"
+          "id": "nlog.a8e920d6"
         }
       ]
     },
     {
       "id": "T",
-      "heading": "T(n) — a function that returns \"how many steps\"",
+      "heading": "T(n): a function that returns \"how many steps\"",
       "blocks": [
         {
           "type": "prose",
           "md": "T(n) is a function like any you'd write: input a size n, output the number of steps the algorithm takes on an input that size. T(8) is the steps to sort 8 things. T(n/2) is the steps to sort half as many. 2T(n/2) is the steps to sort two halves. You can read every recurrence in the course by translating each term into that sentence.",
           "slide": "T is a function, not a mystery symbol",
-          "id": "T.93881835"
+          "id": "T.02a1338d"
         },
         {
           "type": "example",
           "title": "This is Lecture 6 slide 7, in words. Practice saying each term.",
           "body": "T(n)      \"the steps to handle n things\"\n  =  2T(n/2)   \"twice the steps to handle half as many\"   ← the two recursive calls\n  +  kn        \"plus k·n more steps\"                       ← the merge, a constant per element\nT(1) = 1  \"one thing takes one step\"                       ← the base case, where recursion stops",
           "slide": "Read T(n) = 2T(n/2) + kn out loud",
-          "id": "T.f0e7c845"
+          "id": "T.c3713adc"
         },
         {
           "type": "prose",
-          "md": "Why is T defined in terms of itself? Because the algorithm is defined in terms of itself — merge sort calls merge sort. A recurrence is just the runtime version of a recursive function. And exactly like a recursive function, it needs a base case or it never stops; Poon says \"in most problems it's safe to assume T(1) = 1.\"",
-          "id": "T.6ed5445e"
+          "md": "Why is T defined in terms of itself? Because the algorithm is defined in terms of itself: merge sort calls merge sort. A recurrence is just the runtime version of a recursive function. And exactly like a recursive function, it needs a base case or it never stops; Poon says \"in most problems it's safe to assume T(1) = 1.\"",
+          "id": "T.c9c305f2"
         },
         {
           "type": "definition",
           "term": "T(n) and a recurrence relation",
           "body": "T(n) = the number of steps on input size n. A recurrence relation is an equation that defines T(n) using T of smaller inputs, plus a base case. Solving it means finding a plain formula (no T on the right side) for how T grows.",
-          "id": "T.77b305d5"
+          "id": "T.64e6e895"
         }
       ]
     },
     {
       "id": "bigo",
-      "heading": "O(g(n)) — \"grows no faster than\"",
+      "heading": "O(g(n)): \"grows no faster than\"",
       "blocks": [
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why this exists — the problem it solves** Suppose you write a search and your friend writes a different one, and you race them. Yours wins. What did you learn? Almost nothing: maybe your laptop is faster, maybe your test array was tiny, maybe your language's `for` loop compiles tighter. Exact timings are ==contaminated by everything that isn't the algorithm== — the CPU, the language, whether `a[i]` counts as one step or three. The question that actually separates algorithms is: **what happens as the input grows?** Double n — does the time double (linear), quadruple (quadratic), or barely move (logarithmic)? That *shape of growth* is the algorithm's own property; it survives every hardware and language change. Big-O is nothing more than a notation for the shape with the contaminated details thrown away on purpose. !!It deliberately cannot tell you which of two O(n) programs is faster!! — that's the detail it discards to say something machine-independent.",
+          "md": "**Why this exists: the problem it solves** Suppose you write a search and your friend writes a different one, and you race them. Yours wins. What did you learn? Almost nothing: maybe your laptop is faster, maybe your test array was tiny, maybe your language's `for` loop compiles tighter. Exact timings are ==contaminated by everything that isn't the algorithm==: the CPU, the language, whether `a[i]` counts as one step or three. The question that actually separates algorithms is: **what happens as the input grows?** Double n: does the time double (linear), quadruple (quadratic), or barely move (logarithmic)? That *shape of growth* is the algorithm's own property; it survives every hardware and language change. Big-O is nothing more than a notation for the shape with the contaminated details thrown away on purpose. !!It deliberately cannot tell you which of two O(n) programs is faster!!: that's the detail it discards to say something machine-independent.",
           "slide": "Why we don't count exact steps",
-          "id": "bigo.4dce2007"
+          "id": "bigo.a24598f6"
         },
         {
           "type": "prose",
-          "md": "**When you actually reach for it** Three moments, and they'll repeat for your whole career. **Before writing code**: choosing — 'contacts are sorted, so binary search O(log n) instead of scanning O(n)'; 'this needs lookups by key, so a hash map O(1) instead of a list walk O(n)'. **After writing code**: explaining — a code review that says ==\"this is O(n²) in cart size; it dies at 10k items\"== ends an argument that 'it felt fast on my machine' never will. **Predicting**: your endpoint handles 1,000 users today; will it survive 100,000? If it's O(n) you buy one bigger box; if it's O(n²) ##no box exists## — you rewrite. Interviews are just this three-way skill compressed into 45 minutes: every LeetCode 'Time Limit Exceeded' is the grader telling you your shape is wrong, not your code.",
+          "md": "**When you actually reach for it** Three moments, and they'll repeat for your whole career. **Before writing code**: choosing: 'contacts are sorted, so binary search O(log n) instead of scanning O(n)'; 'this needs lookups by key, so a hash map O(1) instead of a list walk O(n)'. **After writing code**: explaining: a code review that says ==\"this is O(n²) in cart size; it dies at 10k items\"== ends an argument that 'it felt fast on my machine' never will. **Predicting**: your endpoint handles 1,000 users today; will it survive 100,000? If it's O(n) you buy one bigger box; if it's O(n²) ##no box exists##: you rewrite. Interviews are just this three-way skill compressed into 45 minutes: every LeetCode 'Time Limit Exceeded' is the grader telling you your shape is wrong, not your code.",
           "slide": "When you reach for Big-O",
-          "id": "bigo.8e12f4a7"
+          "id": "bigo.c7a2ce50"
         },
         {
-          "type": "figure",
-          "viewBox": "0 0 560 300",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><line x1='42' y1='262' x2='545' y2='262' stroke='currentColor' opacity='0.4'/><line x1='42' y1='262' x2='42' y2='24' stroke='currentColor' opacity='0.4'/><text x='545' y='280' text-anchor='end' font-size='11' opacity='0.6'>input size n →</text><text x='30' y='20' font-size='11' opacity='0.6'>time</text><g><title>Your patience budget. Every curve eventually crosses any horizontal line — the question is at what n. The whole game of algorithm choice is pushing that crossing past the n you will ever see.</title><line x1='42' y1='90' x2='545' y2='90' stroke='currentColor' stroke-dasharray='5 5' opacity='0.45'/><text x='58' y='82' font-size='10' opacity='0.6'>your one-second budget</text></g><g><title>O(1) and O(log n): flat and almost-flat. A billion items is ~30 halvings — log n barely notices input size. Hash lookups, binary search, balanced-tree operations live here.</title><path d='M42 250 L 545 250' stroke='rgb(var(--on-track))' stroke-width='2' fill='none'/><path d='M42 252 C 160 240, 340 234, 545 228' stroke='rgb(var(--on-track))' stroke-width='2' stroke-dasharray='7 4' fill='none'/><text x='548' y='253' font-size='11' fill='rgb(var(--on-track))' text-anchor='end' dx='-4' dy='14'>1</text><text x='544' y='224' font-size='11' fill='rgb(var(--on-track))' text-anchor='end'>log n</text></g><g><title>O(n) and O(n log n): the honest workhorses. n = touch everything once (a scan). n log n = touch everything once per halving-level (good sorts: merge sort, and every library sort). Doubling n roughly doubles the time.</title><path d='M42 256 L 545 150' stroke='rgb(var(--accent-fg))' stroke-width='2' fill='none'/><path d='M42 256 C 220 224, 420 150, 545 84' stroke='rgb(var(--accent-fg))' stroke-width='2' stroke-dasharray='7 4' fill='none'/><text x='500' y='142' font-size='11' fill='rgb(var(--accent-fg))'>n</text><text x='480' y='80' font-size='11' fill='rgb(var(--accent-fg))'>n log n</text></g><g><title>O(n²): every item against every item — nested loops, insertion sort's worst case, comparing all pairs. Doubling n QUADRUPLES the time. Fine for hundreds, hours for millions.</title><path d='M42 258 C 220 246, 380 170, 452 30' stroke='rgb(var(--at-risk))' stroke-width='2' fill='none'/><text x='458' y='40' font-size='11' fill='rgb(var(--at-risk))'>n²</text></g><g><title>O(2ⁿ): the input's every subset. Adding ONE element doubles the time. Usable to about n = 40, then never again. If your solution is 2ⁿ, the interview answer is 'and now let me do better'.</title><path d='M42 258 C 170 254, 250 220, 292 28' stroke='rgb(var(--critical))' stroke-width='2' fill='none'/><text x='298' y='36' font-size='11' fill='rgb(var(--critical))'>2ⁿ</text></g></g>",
-          "caption": "The six shapes you'll meet, on one axis — hover any curve for what it means. Reading order: green (flat — size barely matters), blue (grows with n — the honest workhorses), amber (n² — doubling input quadruples time), red (2ⁿ — adding one element doubles time). Every algorithm in CS 146 is a fight to move down this chart: sorting from n² to n log n, searching from n to log n.",
-          "slide": "The shapes, on one axis",
-          "slideNotes": "How to actually use this chart: apply the **doubling test** to whatever code you're staring at. Double the input in your head — if the work doubles, you're on the blue n line; if it quadruples, you're on amber n²; if it barely moves, green. On exams, Poon's 'which is faster for large n' questions are asking you to place two functions on this chart and read off which is lower **on the far right** — never at the left edge, where constants can lie (5n² beats 1000n for small n, loses forever after n = 200).",
-          "resources": [
-            { "label": "Big-O in 100 seconds (Fireship)", "url": "https://www.youtube.com/watch?v=g2o22C3CRfU", "kind": "video" },
-            { "label": "Big-O Cheat Sheet", "url": "https://www.bigocheatsheet.com/", "kind": "site" }
-          ],
-          "id": "bigo.9a4c7e21"
+          "type": "sim",
+          "sim": "growth",
+          "caption": "Race the six shapes: drag the plot's right edge, then slide the input size to a million and read the real time for each shape.",
+          "params": {
+            "xmax": 12,
+            "n": 1000000
+          },
+          "slide": "Try it",
+          "id": "bigo.a74455a6"
         },
         {
           "type": "table",
@@ -541,7 +804,7 @@
             [
               "log n",
               "≈ 20",
-              "0.0000002 s — unmeasurable"
+              "0.0000002 s: unmeasurable"
             ],
             [
               "n",
@@ -565,59 +828,70 @@
             ]
           ],
           "slide": "Why the shape is the whole ballgame",
-          "id": "bigo.5c2d8f13"
+          "id": "bigo.8e4ee0b4"
         },
         {
           "type": "prose",
-          "md": "**Where the definition comes from** — it isn't handed down; it's built from the two things we agreed to ignore. We want 'f grows no faster than g' to be a claim about *shape*, so it must survive two attacks. Attack 1: 'my computer runs every step 3× slower, so your f just tripled.' Fine — the definition allows a constant multiplier: we only demand ==f(n) ≤ c·g(n)== for *some* fixed c, and a 3× slowdown just means a bigger c. Attack 2: 'for n = 2 your f is actually bigger than g.' Also fine — small inputs are noise, everything is fast at n = 5. So the definition only promises things ==past some starting line n₀==. Put both allowances into one sentence and you get Poon's Lecture 4 slide 15 definition, exactly: **f(n) = O(g(n)) if there exist positive constants c and n₀ such that f(n) ≤ c·g(n) for all n ≥ n₀.** Read it as: *once n is big enough, f never rises above some fixed multiple of g.* The c and the n₀ aren't decoration — they ARE the two agreed blind spots, written as math.",
+          "md": "**Where the definition comes from**: it isn't handed down; it's built from the two things we agreed to ignore. We want 'f grows no faster than g' to be a claim about *shape*, so it must survive two attacks. Attack 1: 'my computer runs every step 3× slower, so your f just tripled.' Fine: the definition allows a constant multiplier: we only demand ==f(n) ≤ c·g(n)== for *some* fixed c, and a 3× slowdown just means a bigger c. Attack 2: 'for n = 2 your f is actually bigger than g.' Also fine: small inputs are noise, everything is fast at n = 5. So the definition only promises things ==past some starting line n₀==. Put both allowances into one sentence and you get Poon's Lecture 4 slide 15 definition, exactly: **f(n) = O(g(n)) if there exist positive constants c and n₀ such that f(n) ≤ c·g(n) for all n ≥ n₀.** Read it as: *once n is big enough, f never rises above some fixed multiple of g.* The c and the n₀ aren't decoration: they ARE the two agreed blind spots, written as math.",
           "slide": "The definition, derived not decreed",
-          "slideNotes": "Concrete version of the two attacks, with the numbers from the proof two slides ahead: take f(n) = 5n + 10 and g(n) = n. Attack 1 says 'f has a 5 in front, g doesn't' — absorbed by picking c = 6. Attack 2 says 'at n = 5, f = 35 is way more than 6·5 = 30' — absorbed by n₀ = 10; below the starting line, no promises. Every Big-O proof you'll write is just naming the two absorbers. If Poon's phrasing on the slide feels alien, Abdul Bari's walkthrough of the same definition (link below) is the gentlest one on the internet — 15 minutes, all worked examples.",
+          "slideNotes": "Concrete version of the two attacks, with the numbers from the proof two slides ahead: take f(n) = 5n + 10 and g(n) = n. Attack 1 says 'f has a 5 in front, g doesn't': absorbed by picking c = 6. Attack 2 says 'at n = 5, f = 35 is way more than 6·5 = 30': absorbed by n₀ = 10; below the starting line, no promises. Every Big-O proof you'll write is just naming the two absorbers. If Poon's phrasing on the slide feels alien, Abdul Bari's walkthrough of the same definition (link below) is the gentlest one on the internet: 15 minutes, all worked examples.",
           "resources": [
-            { "label": "Asymptotic notations, worked (Abdul Bari)", "url": "https://www.youtube.com/watch?v=A03oI0znAoc", "kind": "video" }
+            {
+              "label": "Asymptotic notations, worked (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=A03oI0znAoc",
+              "kind": "video"
+            }
           ],
-          "id": "bigo.dc2bcc6d"
+          "id": "bigo.b2ee9f8a"
         },
         {
-          "type": "figure",
-          "svg": "<g font-family='ui-monospace, monospace' font-size='12' fill='currentColor'><g><title>The promise zone: everywhere to the right of n₀, the blue ceiling c·g(n) stays above f(n), forever. This shaded region is the entire content of the definition.</title><rect x='180' y='20' width='260' height='150' fill='rgb(var(--on-track) / 0.07)'/></g><line x1='40' y1='170' x2='440' y2='170' stroke='currentColor' opacity='0.4'/><line x1='40' y1='170' x2='40' y2='20' stroke='currentColor' opacity='0.4'/><g><title>c·g(n): the ceiling. Not g alone — g scaled by whatever constant c you needed. Scaling is allowed because a constant is exactly what changing hardware does to a runtime.</title><path d='M40 165 Q 200 150 440 30' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='360' y='28' fill='rgb(var(--accent-fg))'>c·g(n)</text></g><g><title>f(n): your algorithm's actual step count. Notice it may sit ABOVE the ceiling before n₀ — that is legal, small inputs are outside the promise.</title><path d='M40 150 Q 140 140 220 110 T 440 60' fill='none' stroke='currentColor' stroke-width='2'/><text x='380' y='80'>f(n)</text></g><g><title>n₀: the starting line. Left of it, no promises — f can spike, cross, misbehave. Big-O only speaks about sufficiently large inputs, because growth is a large-n phenomenon.</title><line x1='180' y1='170' x2='180' y2='30' stroke='rgb(var(--at-risk))' stroke-dasharray='4 4' opacity='0.8'/><text x='172' y='188' fill='rgb(var(--at-risk))'>n₀</text></g><text x='440' y='188' opacity='0.6'>n →</text><text x='60' y='34' font-size='10' opacity='0.55'>no promises here</text></g>",
-          "viewBox": "0 0 460 200",
-          "caption": "The definition as one picture — hover each part. Left of n₀ (amber line): no promises, f may even sit above the ceiling. Right of n₀ (green zone): c·g(n) stays above f(n) forever. Finding a Big-O proof (like 5n + 10 = O(n) below) is literally naming a c and an n₀ that make this picture true.",
-          "slide": "The picture",
-          "id": "bigo.681d6017"
+          "type": "diagram",
+          "kind": "bigo",
+          "data": {
+            "fa": 5,
+            "fb": 10,
+            "c": 6,
+            "n0": 10,
+            "xmax": 16,
+            "summary": "Left of n₀: no promises. Right of n₀: f(n) ≤ c·g(n) forever. That's all **f(n) = O(g(n))** says."
+          },
+          "caption": "The definition as one picture: past the point n₀, the algorithm's cost f(n) never rises above c times g(n) again.",
+          "slide": "The definition as a picture",
+          "id": "bigo.3a63dceb"
         },
         {
           "type": "example",
-          "title": "Where the 'random' polynomials come from — count a real program",
-          "body": "Those homework functions like 3n² + 5n + 7 look invented. They're not — they're what falls out when you charge a program one step per operation. Count this:\n\nint sum = 0;                    // 1 step, once\nint count = 0;                  // 1 step, once\nfor (int i = 0; i < n; i++) {   // the check+increment: ~2 steps, n times\n  sum += a[i];                  // read + add + store: ~3 steps, n times\n  for (int j = 0; j < i; j++)   // runs i times → the staircase!\n    count++;                    //   ~2 steps each\n}\n\n1. The two setup lines: 2 steps → the constant term.\n2. The outer loop's own bookkeeping plus the sum line: about 5 steps, n times → the 5n term.\n3. The inner loop: 2 steps, and it runs 0+1+2+…+(n−1) = n(n−1)/2 times → the n² term (times 1, after the ×2 and ÷2 shake out).\n\nTotal: f(n) ≈ n² + 4n + 2. THAT is a 'random polynomial' — every term is a receipt from a piece of the code. The coefficients (was it 3 steps or 5 per iteration?) depend on how you count — which is machine-and-taste-dependent noise, and exactly what O(...) exists to throw away. Simplify: O(n²).",
+          "title": "Where the 'random' polynomials come from: count a real program",
+          "body": "Those homework functions like 3n² + 5n + 7 look invented. They're not: they're what falls out when you charge a program one step per operation. Count this:\n\nint sum = 0;                    // 1 step, once\nint count = 0;                  // 1 step, once\nfor (int i = 0; i < n; i++) {   // the check+increment: ~2 steps, n times\n  sum += a[i];                  // read + add + store: ~3 steps, n times\n  for (int j = 0; j < i; j++)   // runs i times → the staircase!\n    count++;                    //   ~2 steps each\n}\n\n1. The two setup lines: 2 steps → the constant term.\n2. The outer loop's own bookkeeping plus the sum line: about 5 steps, n times → the 5n term.\n3. The inner loop: 2 steps, and it runs 0+1+2+…+(n−1) = n(n−1)/2 times → the n² term (times 1, after the ×2 and ÷2 shake out).\n\nTotal: f(n) ≈ n² + 4n + 2. THAT is a 'random polynomial': every term is a receipt from a piece of the code. The coefficients (was it 3 steps or 5 per iteration?) depend on how you count: which is machine-and-taste-dependent noise, and exactly what O(...) exists to throw away. Simplify: O(n²).",
           "answer": "f(n) ≈ n² + 4n + 2 = O(n²)",
           "slide": "Polynomials are receipts from code",
-          "id": "bigo.2f6b8d41"
+          "id": "bigo.e57f467b"
         },
         {
           "type": "example",
           "title": "Poon's proof pattern, step by step",
-          "body": "Show 5n + 10 = O(n). That means: find a c and an n₀ so that 5n + 10 ≤ c·n whenever n ≥ n₀.\n\n1. Guess a c bigger than the leading coefficient. The 5n needs at least 5; pick c = 6 to leave room for the +10.\n2. Write the inequality with that c: 5n + 10 ≤ 6n.\n3. Simplify: subtract 5n from both sides → 10 ≤ n.\n4. That's true whenever n ≥ 10. So n₀ = 10, c = 6, and the definition is satisfied. Done — 5n + 10 = O(n).",
+          "body": "Show 5n + 10 = O(n). That means: find a c and an n₀ so that 5n + 10 ≤ c·n whenever n ≥ n₀.\n\n1. Guess a c bigger than the leading coefficient. The 5n needs at least 5; pick c = 6 to leave room for the +10.\n2. Write the inequality with that c: 5n + 10 ≤ 6n.\n3. Simplify: subtract 5n from both sides → 10 ≤ n.\n4. That's true whenever n ≥ 10. So n₀ = 10, c = 6, and the definition is satisfied. Done: 5n + 10 = O(n).",
           "answer": "c = 6, n₀ = 10",
           "slide": "Proving 5n + 10 = O(n) (Lecture 4 slides 18–19)",
-          "id": "bigo.bc6a0a7a"
+          "id": "bigo.a337294c"
         },
         {
           "type": "prose",
-          "md": "**So what was the point of hunting c and n₀?** Not the numbers — !!c = 6 and n₀ = 10 are disposable!!; c = 7, n₀ = 100 works just as well, and infinitely many other pairs do too. The exercise is a ==one-time license to simplify==. Every time you casually say '5n + 10 is just O(n)' or 'drop the 40n²', the definition is what makes that legal — and finding one concrete (c, n₀) pair is you *watching the legality happen*: the constant got absorbed into c, the small-n misbehavior got absorbed into n₀. Do it two or three times on paper and something clicks: you'll never need to do it again outside an exam, because ##you now know exactly why dropping terms isn't cheating##. It's the same reason you compute one derivative from the limit definition in calculus and then never touch limits again: the ritual is what earns the shortcut.",
+          "md": "**So what was the point of hunting c and n₀?** Not the numbers: !!c = 6 and n₀ = 10 are disposable!!; c = 7, n₀ = 100 works just as well, and infinitely many other pairs do too. The exercise is a ==one-time license to simplify==. Every time you casually say '5n + 10 is just O(n)' or 'drop the 40n²', the definition is what makes that legal: and finding one concrete (c, n₀) pair is you *watching the legality happen*: the constant got absorbed into c, the small-n misbehavior got absorbed into n₀. Do it two or three times on paper and something clicks: you'll never need to do it again outside an exam, because ##you now know exactly why dropping terms isn't cheating##. It's the same reason you compute one derivative from the limit definition in calculus and then never touch limits again: the ritual is what earns the shortcut.",
           "slide": "The c and n₀ hunt is a one-time license",
-          "id": "bigo.6d94e7a2"
+          "id": "bigo.9045ca5e"
         },
         {
           "type": "prose",
           "md": "In practice nobody hunts for c and n₀ except on an exam question that asks for them. Day to day, you simplify by throwing away what the definition lets you ignore. **Drop lower-order terms** (n² + 100n + 500 → n²: for big n the n² dwarfs the rest). **Drop constants** (the +500). **Drop coefficients** (2n² → n²: that's the c). Poon's slide 23 is exactly these three moves.",
           "slide": "The three-step simplification",
-          "id": "bigo.11c27c16"
+          "id": "bigo.bfe4018e"
         },
         {
           "type": "prose",
-          "md": "**One misconception to kill early** !!Big-O does not mean 'worst case'!! — they're independent ideas that usually travel together. O/Ω/Θ describe a *bound direction* (ceiling / floor / tight); worst/best/average describe *which input* you're measuring. You can put a ceiling on the best case ('even the best case is O(n) — it must read the input') or a floor on the worst case. The reason people conflate them: the most USEFUL sentence in practice is 'a ceiling on the worst case' — ==no input, ever, exceeds this== — so that's the pairing everyone says out loud. When Poon asks for insertion sort's cases: best is Ω(n) (already sorted), worst is O(n²) (reversed) — two different inputs, two different bounds.",
+          "md": "**One misconception to kill early** !!Big-O does not mean 'worst case'!!: they're independent ideas that usually travel together. O/Ω/Θ describe a *bound direction* (ceiling / floor / tight); worst/best/average describe *which input* you're measuring. You can put a ceiling on the best case ('even the best case is O(n): it must read the input') or a floor on the worst case. The reason people conflate them: the most USEFUL sentence in practice is 'a ceiling on the worst case': ==no input, ever, exceeds this==: so that's the pairing everyone says out loud. When Poon asks for insertion sort's cases: best is Ω(n) (already sorted), worst is O(n²) (reversed): two different inputs, two different bounds.",
           "slide": "O is a ceiling, not 'the worst case'",
-          "id": "bigo.7d3e5a90"
+          "id": "bigo.f6bb99cb"
         },
         {
           "type": "table",
@@ -632,85 +906,85 @@
               "O(g)",
               "Big-O",
               "grows no faster than g",
-              "ceiling — worst case"
+              "ceiling: worst case"
             ],
             [
               "Ω(g)",
               "Big-Omega",
               "grows at least as fast as g",
-              "floor — best case"
+              "floor: best case"
             ],
             [
               "Θ(g)",
               "Big-Theta",
               "grows exactly like g (both)",
-              "tight — when floor and ceiling match"
+              "tight: when floor and ceiling match"
             ]
           ],
           "slide": "O, Ω, Θ in one table",
-          "id": "bigo.06335cc3"
+          "id": "bigo.15096880"
         },
         {
           "type": "check",
           "prompt": "Simplify 3n³ + 40n² + 7 to Big-O. Then: is 2n + 1 = O(n)? Find c and n₀.",
-          "answer": "O(n³) — drop 40n² and 7 (lower order), drop the 3 (coefficient). Yes: c = 3 gives 2n + 1 ≤ 3n ⟺ 1 ≤ n, so n₀ = 1. (Lecture 4 slide 16.)",
+          "answer": "O(n³): drop 40n² and 7 (lower order), drop the 3 (coefficient). Yes: c = 3 gives 2n + 1 ≤ 3n ⟺ 1 ≤ n, so n₀ = 1. (Lecture 4 slide 16.)",
           "sectionRef": "bigo",
-          "id": "bigo.89961a0c"
+          "id": "bigo.11ec457e"
         },
         {
           "type": "definition",
           "term": "f(n) = O(g(n))",
           "body": "There exist constants c > 0 and n₀ such that f(n) ≤ c·g(n) for all n ≥ n₀. In words: past some point, f is bounded above by a constant multiple of g.",
-          "id": "bigo.72e880bc"
+          "id": "bigo.b29db7fc"
         }
       ]
     },
     {
       "id": "induction",
-      "heading": "Induction — proving something for every n",
+      "heading": "Induction: proving something for every n",
       "blocks": [
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why it exists** You can't test a claim for every n — there are infinitely many. Induction is the trick that proves a claim for all n with two finite steps: show it for the smallest case, and show that *if* it holds for one value, it must hold for the next. Then it's true for 1, so for 2, so for 3, forever — like dominoes. Poon uses this twice: loop invariants (Lecture 3) and the substitution method (Lecture 6) are both induction wearing different clothes.",
+          "md": "**Why it exists** You can't test a claim for every n: there are infinitely many. Induction is the trick that proves a claim for all n with two finite steps: show it for the smallest case, and show that *if* it holds for one value, it must hold for the next. Then it's true for 1, so for 2, so for 3, forever: like dominoes. Poon uses this twice: loop invariants (Lecture 3) and the substitution method (Lecture 6) are both induction wearing different clothes.",
           "slide": "Why induction",
-          "id": "induction.7e5c38e1"
+          "id": "induction.2959d215"
         },
         {
           "type": "definition",
           "term": "Base case",
           "body": "show the claim for the first value (n = 1, or j = 1 in a loop). Poon's loop-invariant word for this: *Initialization*.",
-          "id": "induction.9e419263"
+          "id": "induction.1e7e1ca3"
         },
         {
           "type": "definition",
           "term": "Inductive step",
           "body": "assume the claim for some n (the *inductive hypothesis*), and use that assumption to prove it for n+1. Poon's word: *Maintenance*.",
-          "id": "induction.313d7dd7"
+          "id": "induction.5bf73717"
         },
         {
           "type": "prose",
           "md": "- Then conclude it holds for all n. Poon's word: *Termination* (for loops, that's where you read off the final answer).",
           "slide": "The two steps (and Poon's names for them)",
-          "id": "induction.9776fe4c"
+          "id": "induction.a197e904"
         },
         {
           "type": "example",
           "title": "Prove 1 + 2 + … + n = n(n+1)/2 for every n ≥ 1",
-          "body": "The staircase picture convinced you; induction proves it.\n\n1. Base case, n = 1: left side is 1; right side is 1·2/2 = 1. ✓\n2. Inductive hypothesis: assume 1 + 2 + … + k = k(k+1)/2 for some k.\n3. Inductive step: then 1 + 2 + … + k + (k+1) = k(k+1)/2 + (k+1) — I used the assumption for the first k terms.\n4. Factor out (k+1): (k+1)·(k/2 + 1) = (k+1)(k+2)/2. That is exactly the formula with n = k+1. ✓\n5. So the claim passes from every k to k+1, and it held at 1. It holds for all n.",
+          "body": "The staircase picture convinced you; induction proves it.\n\n1. Base case, n = 1: left side is 1; right side is 1·2/2 = 1. ✓\n2. Inductive hypothesis: assume 1 + 2 + … + k = k(k+1)/2 for some k.\n3. Inductive step: then 1 + 2 + … + k + (k+1) = k(k+1)/2 + (k+1): I used the assumption for the first k terms.\n4. Factor out (k+1): (k+1)·(k/2 + 1) = (k+1)(k+2)/2. That is exactly the formula with n = k+1. ✓\n5. So the claim passes from every k to k+1, and it held at 1. It holds for all n.",
           "slide": "Induction on the staircase sum",
-          "id": "induction.dd5b7dd0"
+          "id": "induction.7ce2bd66"
         },
         {
           "type": "prose",
-          "md": "The only move that ever feels like cheating is step 3: \"assume it's true for k.\" It isn't cheating, because you're not claiming it's true for k — you're proving the *conditional* \"if it works for k then it works for k+1.\" The base case is what turns that conditional into an actual fact for every n. When the substitution method says \"assume T(n/2) ≤ c(n/2)log(n/2)\" in Lecture 6, that's this same step 3.",
-          "id": "induction.65826360"
+          "md": "The only move that ever feels like cheating is step 3: \"assume it's true for k.\" It isn't cheating, because you're not claiming it's true for k: you're proving the *conditional* \"if it works for k then it works for k+1.\" The base case is what turns that conditional into an actual fact for every n. When the substitution method says \"assume T(n/2) ≤ c(n/2)log(n/2)\" in Lecture 6, that's this same step 3.",
+          "id": "induction.3b2738e6"
         },
         {
           "type": "definition",
           "term": "Proof by induction",
           "body": "To prove P(n) for all n ≥ 1: prove P(1) (base case); prove that P(k) implies P(k+1) (inductive step). Loop invariants and the substitution method are induction.",
-          "id": "induction.93c11f24"
+          "id": "induction.9e8ecee4"
         }
       ]
     },
@@ -720,36 +994,36 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Read each one aloud as a sentence. If any of them still stalls you, go back to that section — the rest of CS 146 will keep using it.",
-          "id": "check.91f0f441"
+          "md": "Read each one aloud as a sentence. If any of them still stalls you, go back to that section: the rest of CS 146 will keep using it.",
+          "id": "check.d2de576b"
         },
         {
           "type": "check",
           "prompt": "T(n) = 3T(n/2) + n",
           "answer": "\"The steps for n things equal three times the steps for half as many things, plus n extra.\" Three subproblems, each half size, linear combine cost. (Its answer, from Lecture 7: n^(log₂ 3) ≈ n^1.58, since 3 > 2 means the leaves dominate.)",
           "sectionRef": "check",
-          "id": "check.ea50973f"
+          "id": "check.b3bc1875"
         },
         {
           "type": "check",
           "prompt": "Σ from i=0 to log n of 2ⁱ",
-          "answer": "\"Add up 2ⁱ for i from 0 up to log n\": 1 + 2 + 4 + … + n. A doubling series — the total is about 2n, which is why the merge sort *divide* step is O(n) overall (n − 1 divisions, Lecture 5 slide 27).",
+          "answer": "\"Add up 2ⁱ for i from 0 up to log n\": 1 + 2 + 4 + … + n. A doubling series: the total is about 2n, which is why the merge sort *divide* step is O(n) overall (n − 1 divisions, Lecture 5 slide 27).",
           "sectionRef": "check",
-          "id": "check.21cafe5f"
+          "id": "check.1f587549"
         },
         {
           "type": "check",
           "prompt": "f(n) = Θ(n log n)",
-          "answer": "\"f grows exactly like n log n\" — bounded above AND below by constant multiples of n·log n. Merge sort is Θ(n log n) in every case.",
+          "answer": "\"f grows exactly like n log n\": bounded above AND below by constant multiples of n·log n. Merge sort is Θ(n log n) in every case.",
           "sectionRef": "check",
-          "id": "check.846b8ffa"
+          "id": "check.238514f0"
         },
         {
           "type": "check",
           "prompt": "n^(log₄ 16)",
           "answer": "log₄ 16 = 2 (4² = 16), so n². ",
           "sectionRef": "check",
-          "id": "check.3c05a7bb"
+          "id": "check.8b3b6dcd"
         }
       ]
     }
@@ -758,17 +1032,17 @@
     {
       "id": "log-halvings",
       "title": "How many halvings?",
-      "prompt": "An array has 1,000,000 elements. Binary search halves it each step until one element is left. About how many steps? Do it without a calculator — you only need to know one power of 2.",
+      "prompt": "An array has 1,000,000 elements. Binary search halves it each step until one element is left. About how many steps? Do it without a calculator: you only need to know one power of 2.",
       "hints": [
         "You're being asked 'how many times can I halve a million before I hit 1'. That number has a name from this chapter.",
-        "People reach for log₁₀ and get 6. Wrong base. Every halving is a division by 2, so it's log₂ — and log₂ 1,000,000 is much bigger than 6.",
+        "People reach for log₁₀ and get 6. Wrong base. Every halving is a division by 2, so it's log₂: and log₂ 1,000,000 is much bigger than 6.",
         "Find a power of 2 near a million: 2¹⁰ = 1,024 ≈ 1,000. So a million ≈ 1,000 × 1,000 ≈ 2¹⁰ × 2¹⁰ = 2²⁰. The exponent is your answer."
       ],
       "solution": [
         "Steps = log₂ 1,000,000 (the number of halvings from n down to 1).",
         "2¹⁰ = 1,024 ≈ 10³, so 10⁶ ≈ (2¹⁰)² = 2²⁰.",
         "log₂ 10⁶ ≈ 20. About 20 steps. (Exact: 19.93.)",
-        "Sanity check the other way: 2²⁰ = 1,048,576 — just over a million. ✓"
+        "Sanity check the other way: 2²⁰ = 1,048,576: just over a million. ✓"
       ],
       "why": "'A million items, twenty steps' is the single most useful number in computing. It's why databases index, why sorted data is worth keeping sorted, and why an O(log n) algorithm feels instant no matter how big the input gets. You'll estimate this in your head for the rest of your career."
     },
@@ -779,7 +1053,7 @@
       "code": "for (int i = 0; i < n; i++)\n  for (int j = 0; j < i; j++)\n    count++;",
       "hints": [
         "Don't try to see it all at once. Ask: when i = 0, how many times does the inner loop run? When i = 1? When i = 2? Write those down.",
-        "The common mistake is 'two nested loops, so n × n'. That would be right if the inner loop always ran n times — but it runs i times, and i changes. Add up the actual counts.",
+        "The common mistake is 'two nested loops, so n × n'. That would be right if the inner loop always ran n times: but it runs i times, and i changes. Add up the actual counts.",
         "You're adding 0 + 1 + 2 + … + (n−1). That sum has a closed form from this chapter. Then: which term grows fastest?"
       ],
       "solution": [
@@ -788,15 +1062,15 @@
         "Expand: (n² − n)/2 = n²/2 − n/2. The n² term dominates; drop the coefficient ½ and the lower-order n/2.",
         "O(n²). (This is HW 4 Problem 2 and the exact shape of insertion sort's worst case.)"
       ],
-      "why": "Almost every 'why is my code slow' question in a real job is this exercise in disguise: a loop hiding inside a loop, doing n(n−1)/2 work where n(log n) was possible. Being able to count it — not guess it — is what lets you find the fix."
+      "why": "Almost every 'why is my code slow' question in a real job is this exercise in disguise: a loop hiding inside a loop, doing n(n−1)/2 work where n(log n) was possible. Being able to count it: not guess it: is what lets you find the fix."
     },
     {
       "id": "induction-shape",
       "title": "Write the shape of an induction proof",
-      "prompt": "Claim: 1 + 2 + 4 + … + 2ⁿ = 2ⁿ⁺¹ − 1 for every n ≥ 0. Don't prove it yet — just write the three labelled parts you'd need (base case, inductive hypothesis, inductive step), each as one sentence with the actual numbers or expressions filled in.",
+      "prompt": "Claim: 1 + 2 + 4 + … + 2ⁿ = 2ⁿ⁺¹ − 1 for every n ≥ 0. Don't prove it yet: just write the three labelled parts you'd need (base case, inductive hypothesis, inductive step), each as one sentence with the actual numbers or expressions filled in.",
       "hints": [
         "The base case is the smallest n the claim mentions. Plug it into both sides and check they match.",
-        "People write the inductive step as 'assume it's true for all n' — that assumes the conclusion. You assume it for ONE value, k, and show it for the NEXT one, k+1.",
+        "People write the inductive step as 'assume it's true for all n': that assumes the conclusion. You assume it for ONE value, k, and show it for the NEXT one, k+1.",
         "In the step, the left side for k+1 is the left side for k plus one more term. Write 'LHS(k+1) = LHS(k) + 2ᵏ⁺¹', then replace LHS(k) with what the hypothesis says it equals."
       ],
       "solution": [
