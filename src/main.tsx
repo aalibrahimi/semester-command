@@ -14,12 +14,21 @@
  * warnings — and it is documented in docs/DEVELOPMENT.md.
  */
 import { createRoot } from "react-dom/client";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import App from "@/App";
+import { ToastApp } from "@/toast/ToastApp";
+import { IS_TAURI } from "@/lib/ipc";
 import "@/styles/globals.css";
+
+/** The corner pop-up window (inbox.rs) loads this same bundle; its label
+ *  decides which app it renders. `?toast-demo` shows it in a browser. */
+const isToastWindow = IS_TAURI
+  ? getCurrentWindow().label === "toast"
+  : new URLSearchParams(window.location.search).has("toast-demo");
 
 const container = document.getElementById("root");
 if (!container) {
   throw new Error("index.html is missing #root — the app cannot mount");
 }
 
-createRoot(container).render(<App />);
+createRoot(container).render(isToastWindow ? <ToastApp /> : <App />);

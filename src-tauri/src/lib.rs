@@ -30,6 +30,7 @@ pub mod db;
 pub mod degree;
 pub mod grades;
 pub mod ical;
+pub mod inbox;
 pub mod mcp;
 pub mod notify;
 pub mod settings;
@@ -123,6 +124,18 @@ pub fn run() {
             commands::study::study_attempts_recent,
             commands::study::record_study_exam,
             commands::study::study_exams_recent,
+            commands::inbox::inbox_list,
+            commands::inbox::inbox_unread_count,
+            commands::inbox::inbox_mark_read,
+            commands::inbox::inbox_mark_unread,
+            commands::inbox::inbox_delete,
+            commands::inbox::inbox_clear_read,
+            commands::inbox::inbox_open,
+            commands::inbox::toast_take,
+            commands::inbox::toast_resize,
+            commands::inbox::get_popup_style,
+            commands::inbox::set_popup_style,
+            commands::inbox::notify_test,
             commands::grades::course_detail,
             commands::grades::course_summaries,
             commands::grades::set_course_hidden,
@@ -152,6 +165,7 @@ pub fn run() {
             let pool = tauri::async_runtime::block_on(db::open(&data_dir))?;
             app.manage(pool);
             app.manage(sync::SyncState::new());
+            app.manage(inbox::ToastQueue::default());
 
             setup_auth(app.handle().clone(), dir);
             setup_sync_schedule(app.handle().clone());
@@ -374,7 +388,7 @@ pub async fn update_tray_menu(app: &tauri::AppHandle) {
     }
 }
 
-fn show_main_window(app: &tauri::AppHandle) {
+pub(crate) fn show_main_window(app: &tauri::AppHandle) {
     if let Some(win) = app.get_webview_window("main") {
         let _ = win.show();
         let _ = win.unminimize();

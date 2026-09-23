@@ -44,6 +44,11 @@ pub struct Settings {
     /// NOTE: it is still a secret in the sense that anyone holding it can read
     /// your due dates, so it is excluded from logs.
     pub calendar_feed_url: Option<String>,
+
+    /// How notifications pop up when the main window isn't in front:
+    /// `"custom"` (the app's own corner pop-up, the default), `"system"`
+    /// (the OS notification) or `"off"` (inbox only). See `crate::inbox`.
+    pub popup_style: Option<String>,
 }
 
 /// Errors this module can produce. Kept concrete so callers can tell "no file

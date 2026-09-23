@@ -39,6 +39,7 @@ import StudySlides from "@/routes/StudySlides";
 import StudyExam from "@/routes/StudyExam";
 import StudyMistakes from "@/routes/StudyMistakes";
 import Settings from "@/routes/Settings";
+import Inbox from "@/routes/Inbox";
 import DevTokens from "@/routes/DevTokens";
 import DevPreview from "@/routes/DevPreview";
 import DevDebug from "@/routes/DevDebug";
@@ -73,6 +74,7 @@ export default function App() {
               <Route path="finance" element={<Finance />} />
               <Route path="finance/:termId" element={<FinanceTerm />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="inbox" element={<Inbox />} />
 
               {/* Stripped from release builds by the bundler, since the
                   condition is statically false there. */}

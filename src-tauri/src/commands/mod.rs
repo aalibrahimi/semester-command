@@ -21,6 +21,7 @@ pub mod auth;
 pub mod data;
 pub mod degree;
 pub mod grades;
+pub mod inbox;
 pub mod settings;
 pub mod study;
 pub mod sync;

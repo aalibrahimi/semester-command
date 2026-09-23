@@ -152,9 +152,13 @@ export default {
       keyframes: {
         // Sync skeletons (§9.7) — shimmer, never a spinner.
         shimmer: { "100%": { transform: "translateX(100%)" } },
+        // A notification's remaining time (components/inbox). Duration is
+        // set inline per card; hovering the stack pauses it.
+        "toast-timer": { from: { transform: "scaleX(1)" }, to: { transform: "scaleX(0)" } },
       },
       animation: {
         shimmer: "shimmer 1.6s infinite",
+        "toast-timer": "toast-timer 8s linear forwards",
       },
     },
   },

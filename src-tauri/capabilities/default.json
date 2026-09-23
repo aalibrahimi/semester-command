@@ -1,8 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capabilities granted to the main window. Deliberately narrow: this app reads Canvas from Rust and writes only to the local database, so the webview needs no filesystem, shell or HTTP permission of its own.",
-  "windows": ["main"],
+  "description": "Capabilities granted to the main window and the notification pop-up window. Deliberately narrow: this app reads Canvas from Rust and writes only to the local database, so the webview needs no filesystem, shell or HTTP permission of its own.",
+  "windows": ["main", "toast"],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",

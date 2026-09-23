@@ -519,6 +519,7 @@ export interface CourseSyllabus {
 export interface GradeEvent {
   /** Canvas assignment id — the stable identity behind the event. */
   assignmentId: string;
+  courseId: string;
   courseCode: string | null;
   assignmentName: string | null;
   score: number | null;
@@ -723,3 +724,26 @@ export interface DetectResult {
   /** False when Canvas was unreachable — results are syllabus-only. */
   canvasChecked: boolean;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Inbox — mirrors inbox.rs InboxItem (migration 0016).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export type InboxKind = "deadline" | "grade" | "missing" | "digest" | "session" | "sync" | "test";
+export type InboxUrgency = "low" | "normal" | "high";
+
+export interface InboxItem {
+  id: number;
+  kind: InboxKind | string;
+  title: string;
+  body: string;
+  /** In-app route a click opens, e.g. "/courses/1629570". */
+  route: string | null;
+  urgency: InboxUrgency | string;
+  /** RFC3339. */
+  createdAt: string;
+  readAt: string | null;
+}
+
+/** How notifications pop up when the main window isn't in front. */
+export type PopupStyle = "custom" | "system" | "off";

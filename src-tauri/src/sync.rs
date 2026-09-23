@@ -119,6 +119,8 @@ pub struct GradeEvent {
     /// Canvas assignment id — the stable dedupe key. A renamed assignment
     /// must not re-fire its "marked missing" ping.
     pub assignment_id: String,
+    /// Where a click on the notification should go.
+    pub course_id: String,
     pub course_code: Option<String>,
     pub assignment_name: Option<String>,
     pub score: Option<f64>,
@@ -398,6 +400,7 @@ async fn sync_one_course(
 
             let event = || GradeEvent {
                 assignment_id: a.parsed.id.clone(),
+                course_id: course_id.clone(),
                 course_code: course_code.clone(),
                 assignment_name: a.parsed.name.clone(),
                 score: sub.score,

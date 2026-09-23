@@ -36,6 +36,8 @@ import type {
   SubmissionComment,
   FinanceSnapshot,
   DegreeBlocks,
+  InboxItem,
+  PopupStyle,
 } from "@/types";
 
 /**
@@ -519,4 +521,74 @@ export async function recordStudyExam(exam: ExamRecord): Promise<ExamRecord> {
 export async function studyExamsRecent(course?: string, limit = 50): Promise<ExamRecord[]> {
   if (!IS_TAURI) return [];
   return call<ExamRecord[]>("study_exams_recent", { course: course ?? null, limit });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Inbox + pop-ups — commands/inbox.rs. Events: "inbox:new" (payload
+   InboxItem), "inbox:changed", "inbox:navigate" (payload route, main window),
+   "toast:wake" (toast window).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export async function inboxList(limit = 200, unreadOnly = false): Promise<InboxItem[]> {
+  if (!IS_TAURI) return [];
+  return call<InboxItem[]>("inbox_list", { limit, unreadOnly });
+}
+
+export async function inboxUnreadCount(): Promise<number> {
+  if (!IS_TAURI) return 0;
+  return call<number>("inbox_unread_count");
+}
+
+/** Mark these read, or everything when `ids` is omitted. */
+export async function inboxMarkRead(ids?: number[]): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("inbox_mark_read", { ids: ids ?? null });
+}
+
+export async function inboxMarkUnread(id: number): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("inbox_mark_unread", { id });
+}
+
+export async function inboxDelete(id: number): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("inbox_delete", { id });
+}
+
+export async function inboxClearRead(): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("inbox_clear_read");
+}
+
+/** From the pop-up window: mark read, focus the app, go to the item's route. */
+export async function inboxOpen(id: number): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("inbox_open", { id });
+}
+
+export async function toastTake(): Promise<InboxItem[]> {
+  if (!IS_TAURI) return [];
+  return call<InboxItem[]>("toast_take");
+}
+
+/** The pop-up window's content height in CSS pixels; 0 hides it. */
+export async function toastResize(height: number): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("toast_resize", { height });
+}
+
+export async function getPopupStyle(): Promise<PopupStyle> {
+  if (!IS_TAURI) return "custom";
+  return call<PopupStyle>("get_popup_style");
+}
+
+export async function setPopupStyle(style: PopupStyle): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("set_popup_style", { style });
+}
+
+/** A sample notification, after `delayMs` so you can hide the window first. */
+export async function notifyTest(delayMs = 0): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("notify_test", { delayMs });
 }

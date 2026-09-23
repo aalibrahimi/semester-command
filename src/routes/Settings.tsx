@@ -14,13 +14,17 @@
  * TODO(M1 step 7): wire Tier 2 (the calendar feed URL field).
  */
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   disable as disableAutostart,
   enable as enableAutostart,
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
-import { KeyRound, Link2, PencilLine } from "lucide-react";
+import { BellOff, BellRing, KeyRound, Link2, Monitor, PencilLine } from "lucide-react";
+import { NotificationCard } from "@/components/inbox/NotificationCard";
+import { getPopupStyle, notifyTest, setPopupStyle } from "@/lib/ipc";
+import { cn } from "@/lib/utils";
+import type { InboxItem, PopupStyle } from "@/types";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -180,6 +184,9 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* ── Notifications ─────────────────────────────────────────────── */}
+        <NotificationSettings />
+
         {/* ── Appearance ────────────────────────────────────────────────── */}
         <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
@@ -330,6 +337,118 @@ function AutostartToggle() {
         aria-label="Start at login"
       />
     </div>
+  );
+}
+
+const STYLES: { id: PopupStyle; name: string; icon: typeof BellRing; text: string }[] = [
+  { id: "custom", name: "Semester Command pop-up", icon: BellRing, text: "The app's own card in the top-right corner. Stays put while you hover, and important ones wait until you close them." },
+  { id: "system", name: "System notification", icon: Monitor, text: "Your operating system's standard notification." },
+  { id: "off", name: "Inbox only", icon: BellOff, text: "No pop-ups. Everything still collects in the Inbox with an unread count." },
+];
+
+const SAMPLE: InboxItem = {
+  id: -1,
+  kind: "deadline",
+  title: "Project 1 · SortingHub: due in 3h",
+  body: "CS 146 · worth 10.0% of your final grade",
+  route: null,
+  urgency: "high",
+  createdAt: new Date().toISOString(),
+  readAt: null,
+};
+
+/**
+ * Notification settings: how pop-ups look when the app isn't in front, and
+ * two test buttons. While this window has focus you always get the in-app
+ * card; the delayed test gives you time to switch away and see the real
+ * pop-up.
+ */
+function NotificationSettings() {
+  const [style, setStyle] = useState<PopupStyle | null>(null);
+  const [waiting, setWaiting] = useState(false);
+  const { hash } = useLocation();
+
+  // The Inbox page's gear links to /settings#notifications.
+  useEffect(() => {
+    if (hash === "#notifications") document.getElementById("notifications")?.scrollIntoView({ block: "start" });
+  }, [hash]);
+
+  useEffect(() => {
+    // oxlint-disable-next-line set-state-in-effect -- reads external state once
+    void getPopupStyle().then(setStyle).catch(() => setStyle("custom"));
+  }, []);
+
+  const choose = (next: PopupStyle) => {
+    const prev = style;
+    setStyle(next);
+    setPopupStyle(next).catch(() => {
+      setStyle(prev);
+      toast.error("Could not save the pop-up setting.");
+    });
+  };
+
+  const testLater = () => {
+    setWaiting(true);
+    notifyTest(5000)
+      .catch(() => toast.error("Could not send the test notification."))
+      .finally(() => setWaiting(false));
+  };
+
+  return (
+    <Card id="notifications" className="scroll-mt-6 rounded-2xl border-border/60 shadow-card">
+      <CardHeader>
+        <CardTitle className="text-base">Notifications</CardTitle>
+        <CardDescription>
+          Every reminder, grade change and missing flag is saved to your Inbox. This picks how it
+          gets your attention when you're not looking at the app. While you are, it slides in at
+          the top right of this window.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Pop-up style">
+          {STYLES.map((s) => {
+            const on = style === s.id;
+            const Icon = s.icon;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                disabled={style === null || !IS_TAURI}
+                onClick={() => choose(s.id)}
+                className={cn(
+                  "flex flex-col gap-1.5 rounded-xl border p-3 text-left transition-colors duration-micro disabled:opacity-60",
+                  on ? "border-brand bg-brand/10" : "border-foreground/15 hover:bg-fill-ghost",
+                )}
+              >
+                <span className="flex items-center gap-2 text-sm font-medium">
+                  <Icon className={cn("h-4 w-4", on ? "text-brand-fg" : "text-muted-foreground")} />
+                  {s.name}
+                </span>
+                <span className="text-xs leading-relaxed text-muted-foreground">{s.text}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="rounded-xl bg-fill-ghost/60 p-3">
+          <div className="mb-2 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">What a pop-up looks like</div>
+          <div className="max-w-[380px]">
+            <NotificationCard item={SAMPLE} onOpen={() => {}} onClose={() => {}} />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" disabled={!IS_TAURI} onClick={() => void notifyTest(0)}>
+            Send a test now
+          </Button>
+          <Button size="sm" variant="outline" disabled={!IS_TAURI || waiting} onClick={testLater}>
+            {waiting ? "Sending in 5 s: switch to another app…" : "Test the pop-up in 5 s"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

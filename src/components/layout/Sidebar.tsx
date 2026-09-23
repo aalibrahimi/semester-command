@@ -32,6 +32,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   GraduationCap,
+  Inbox as InboxIcon,
   ListChecks,
   Loader2,
   NotebookPen,
@@ -47,6 +48,7 @@ import { Fragment } from "react";
 import { useSync } from "@/hooks/useSync";
 import { useCourses } from "@/hooks/useCourses";
 import { useNicknames } from "@/lib/localPrefs";
+import { useInbox } from "@/lib/inbox";
 import { CourseStatusDot } from "@/components/layout/CourseStatusDot";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -74,6 +76,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   const { status, isReconnectRequired } = useSync();
   const nicknames = useNicknames();
   const location = useLocation();
+  const { unread } = useInbox();
   // Hidden courses live only in the Courses page's own section, and dormant
   // enrollments (Title IX shells, stale terms) don't earn sidebar rows at
   // all — the rail is a glance surface for THIS term. Live-but-ungradeable
@@ -87,6 +90,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
   // the first load counts stay null for the same reason.
   const items: NavItem[] = [
     { to: "/", label: "Today", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
+    { to: "/inbox", label: "Inbox", icon: InboxIcon, digit: "0", count: unread > 0 ? unread : null },
     { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
     { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },

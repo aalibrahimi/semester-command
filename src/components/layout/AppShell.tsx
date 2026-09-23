@@ -4,24 +4,32 @@
  * Called by: App.tsx, as the layout route.
  * Calls: Sidebar, SemesterProgress, CommandPalette, react-router <Outlet />.
  *
- * Owns exactly three things and nothing else: the sidebar collapse state, the
- * global keyboard shortcuts, and the header strip. Screen content is the
- * <Outlet />'s business.
+ * Owns the sidebar collapse state, the global keyboard shortcuts, the header
+ * strip (search + the inbox bell), and the in-app notification toasts.
+ * Screen content is the <Outlet />'s business.
+ *
+ * Notifications: Rust stores every one in the inbox and emits "inbox:new".
+ * While this window has focus, the card slides in here (top right); when it
+ * doesn't, inbox.rs shows the corner pop-up window instead. A click on
+ * either lands here as "inbox:navigate" with the route to open.
  */
 import { useCallback, useEffect, useState } from "react";
 import { useSync } from "@/hooks/useSync";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
 import { Search as SearchIcon } from "lucide-react";
-import { toast } from "sonner";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { InboxBell } from "@/components/inbox/InboxBell";
+import { ToastStack } from "@/components/inbox/NotificationCard";
+import { useToastStack } from "@/lib/toastStack";
+import { markRead } from "@/lib/inbox";
 import { SemesterProgress } from "@/components/layout/SemesterProgress";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { Button } from "@/components/ui/button";
 import { currentTermBounds } from "@/lib/academicCalendar";
 import { hasMod, shortcut } from "@/lib/platform";
 import { IS_TAURI } from "@/lib/ipc";
-import type { SyncChanges } from "@/types";
+import type { InboxItem } from "@/types";
 
 /** Synchronous mirror of the collapse preference, same pattern as the theme:
  *  read before first paint so the sidebar does not visibly snap from 220px to
@@ -40,6 +48,7 @@ const DIGIT_ROUTES: Record<string, string> = {
   "7": "/done",
   "8": "/finance",
   "9": "/study",
+  "0": "/inbox",
 };
 
 export function AppShell() {
@@ -56,40 +65,31 @@ export function AppShell() {
     });
   }, []);
 
-  // The sync digest (§6): any run that changed something announces what.
-  // Lives in the shell so it fires regardless of which screen is open.
+  // Notifications while you're in the app: a card in the top-right corner.
+  // (The sync summary used to be a plain toast here; Rust now turns each
+  // change into an inbox notification instead, see notify.rs.)
+  const stack = useToastStack();
+  const { push } = stack;
   useEffect(() => {
     if (!IS_TAURI) return;
-    const unlisten = listen<SyncChanges>("sync:digest", (e) => {
-      const c = e.payload;
-      const lines: string[] = [];
-      if (c.newGrades.length > 0) {
-        const first = c.newGrades[0];
-        lines.push(
-          c.newGrades.length === 1
-            ? `Grade posted: ${first.assignmentName ?? "an assignment"} (${first.courseCode ?? "—"})`
-            : `${c.newGrades.length} new grades posted`,
-        );
-      }
-      for (const m of c.courseMoves) {
-        lines.push(
-          `${m.courseCode ?? "A course"} moved ${m.oldPct.toFixed(1)}% → ${m.newPct.toFixed(1)}%`,
-        );
-      }
-      if (c.missingFlips.length > 0) {
-        lines.push(`${c.missingFlips.length} marked missing`);
-      }
-      if (c.newAssignments > 0) {
-        lines.push(`${c.newAssignments} new assignment${c.newAssignments === 1 ? "" : "s"}`);
-      }
-      if (lines.length > 0) {
-        toast.info("Sync update", { description: lines.join(" · "), duration: 8000 });
-      }
+    const un = listen<InboxItem>("inbox:new", (e) => {
+      if (document.hasFocus()) push([e.payload]);
     });
-    return () => {
-      void unlisten.then((f) => f());
-    };
-  }, []);
+    return () => void un.then((f) => f());
+  }, [push]);
+
+  // A clicked corner pop-up brings this window forward and says where to go.
+  useEffect(() => {
+    if (!IS_TAURI) return;
+    const un = listen<string>("inbox:navigate", (e) => navigate(e.payload));
+    return () => void un.then((f) => f());
+  }, [navigate]);
+
+  const openToast = (item: InboxItem) => {
+    stack.dismiss(item.id);
+    markRead([item.id]);
+    navigate(item.route ?? "/inbox");
+  };
 
   // ⌘\ collapse and ⌘1–⌘9 navigation. ⌘K is owned by CommandPalette.
   useEffect(() => {
@@ -129,6 +129,7 @@ export function AppShell() {
           />
 
           <div className="ml-auto flex items-center gap-2">
+            <InboxBell />
             {/* Styled as the reference's floating search pill rather than a
                 bordered button — same ⌘K affordance, softer body language. */}
             <Button
@@ -171,6 +172,14 @@ export function AppShell() {
       </div>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+
+      <ToastStack
+        toasts={stack.toasts}
+        onOpen={openToast}
+        onDismiss={stack.dismiss}
+        onDismissAll={stack.clear}
+        className="fixed right-5 top-16 z-50 w-[380px]"
+      />
     </div>
   );
 }

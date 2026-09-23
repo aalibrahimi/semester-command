@@ -2,7 +2,8 @@
 //!
 //! Called by: `lib.rs` (a 5-minute tick loop) and the sync engine (after
 //! each run that changed something).
-//! Calls: tauri-plugin-notification, [`crate::db`],
+//! Calls: [`crate::inbox`] (which stores every notification and shows it as
+//! the app's own pop-up, the OS one, or not at all), [`crate::db`],
 //! [`crate::commands::grades::load_bundle`], [`crate::triage`].
 //!
 //! # What fires
@@ -14,6 +15,8 @@
 //! - **Grade movement**: Canvas's current score for a course moved by more
 //!   than a point during a sync.
 //! - **Missing flips**: Canvas newly flagged an assignment `missing`.
+//! - **Grades posted**: a new or changed score (summarised when many land
+//!   at once), and a quiet inbox-only line for new assignments.
 //! - **The 8am digest**: today's due items and the top three triage rows.
 //!
 //! # Dedupe — the hard part and the whole point
@@ -27,10 +30,10 @@
 //! four stacked pings per assignment.
 
 use tauri::AppHandle;
-use tauri_plugin_notification::NotificationExt;
 
 use crate::commands::grades::load_bundle;
 use crate::db::{now_rfc3339, Db};
+use crate::inbox::{self, Note, Urgency};
 use crate::sync::SyncChanges;
 
 /// Reminder thresholds in hours, gated by grade impact (percentage points of
@@ -65,6 +68,9 @@ pub async fn tick(app: &AppHandle) {
     }
     if let Err(e) = prune_ledger(&db).await {
         tracing::warn!(error = %e, "notification ledger prune failed");
+    }
+    if let Err(e) = inbox::prune(&db).await {
+        tracing::warn!(error = %e, "inbox prune failed");
     }
 }
 
@@ -120,13 +126,24 @@ async fn deadline_reminders(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error>
 
         let course = row.course_code.as_deref().unwrap_or("course");
         let name = row.name.as_deref().unwrap_or("Assignment");
-        send(
+        // The 3-hour call stays on screen until you close it.
+        let urgency = if tightest <= 3 {
+            Urgency::High
+        } else {
+            Urgency::Normal
+        };
+        inbox::deliver(
             app,
-            &format!("{name} — due {}", human_hours(hours_left)),
-            &format!(
-                "{course} · worth {:.1}% of your final grade",
-                row.impact_pct
-            ),
+            Note::new(
+                "deadline",
+                format!("{name}: due {}", human_hours(hours_left)),
+                format!(
+                    "{course} · worth {:.1}% of your final grade",
+                    row.impact_pct
+                ),
+            )
+            .route(format!("/courses/{}", row.course_id))
+            .urgency(urgency),
         );
     }
     Ok(())
@@ -194,7 +211,10 @@ async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
     } else {
         format!("{} open items", rows.len())
     };
-    send(app, &title, &format!("Start with: {}", top.join(" · ")));
+    inbox::deliver(
+        app,
+        Note::new("digest", title, format!("Start with: {}", top.join(" · "))).route("/"),
+    );
     Ok(())
 }
 
@@ -202,10 +222,15 @@ async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
 /// `death_notified` flag) — the whole point is reaching the user when the
 /// window is hidden and grades are silently going stale.
 pub fn session_died(app: &AppHandle) {
-    send(
+    inbox::deliver(
         app,
-        "Canvas disconnected",
-        "Your SJSU session expired — grades are frozen until you sign in again. Open Semester Command and click Reconnect.",
+        Note::new(
+            "session",
+            "Canvas disconnected",
+            "Your SJSU session expired, so grades are frozen until you sign in again. Click to reconnect.",
+        )
+        .route("/settings")
+        .urgency(Urgency::High),
     );
 }
 
@@ -223,10 +248,14 @@ pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
             let _ = mark_sent(&db, &key).await;
             let code = m.course_code.as_deref().unwrap_or("A course");
             let dir = if m.new_pct > m.old_pct { "up" } else { "down" };
-            send(
+            inbox::deliver(
                 app,
-                &format!("{code}: grade moved {dir}"),
-                &format!("current {:.1}% → {:.1}%", m.old_pct, m.new_pct),
+                Note::new(
+                    "grade",
+                    format!("{code}: grade moved {dir}"),
+                    format!("Current grade {:.1}% → {:.1}%", m.old_pct, m.new_pct),
+                )
+                .route(format!("/courses/{}", m.course_id)),
             );
         }
     }
@@ -237,18 +266,105 @@ pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
         let key = format!("missing:{}", f.assignment_id);
         if let Ok(false) = already_sent(&db, &key).await {
             let _ = mark_sent(&db, &key).await;
-            send(
+            inbox::deliver(
                 app,
-                &format!(
-                    "Marked missing: {}",
-                    f.assignment_name.as_deref().unwrap_or("an assignment")
-                ),
-                &format!(
-                    "{} — still submittable? Check late policy in Syllabi.",
-                    f.course_code.as_deref().unwrap_or("")
-                ),
+                Note::new(
+                    "missing",
+                    format!(
+                        "Marked missing: {}",
+                        f.assignment_name.as_deref().unwrap_or("an assignment")
+                    ),
+                    format!(
+                        "{}: still submittable? Check the late policy in Syllabi.",
+                        f.course_code.as_deref().unwrap_or("A course")
+                    ),
+                )
+                .route(format!("/courses/{}", f.course_id))
+                .urgency(Urgency::High),
             );
         }
+    }
+
+    grades_posted(app, &db, &changes.new_grades).await;
+
+    if changes.new_assignments > 0 {
+        let n = changes.new_assignments;
+        inbox::deliver(
+            app,
+            Note::new(
+                "sync",
+                format!(
+                    "{n} new assignment{} on Canvas",
+                    if n == 1 { "" } else { "s" }
+                ),
+                "They're in Triage, ranked by how much of your grade they're worth.",
+            )
+            .route("/")
+            .urgency(Urgency::Low),
+        );
+    }
+}
+
+/// New or changed scores. A few get one notification each; a pile (the
+/// first sync, or a professor grading everything at once) gets one summary,
+/// so a sync can never unload twenty pop-ups on you.
+async fn grades_posted(app: &AppHandle, db: &Db, grades: &[crate::sync::GradeEvent]) {
+    let mut fresh = Vec::new();
+    for g in grades {
+        let key = format!("posted:{}:{}", g.assignment_id, g.score.unwrap_or(-1.0));
+        if let Ok(false) = already_sent(db, &key).await {
+            let _ = mark_sent(db, &key).await;
+            fresh.push(g);
+        }
+    }
+    if fresh.len() > 3 {
+        let courses: std::collections::BTreeSet<&str> = fresh
+            .iter()
+            .filter_map(|g| g.course_code.as_deref())
+            .collect();
+        inbox::deliver(
+            app,
+            Note::new(
+                "grade",
+                format!("{} grades posted or changed", fresh.len()),
+                courses.into_iter().collect::<Vec<_>>().join(" · "),
+            )
+            .route("/courses"),
+        );
+        return;
+    }
+    for g in fresh {
+        let score = match (g.score, g.points_possible) {
+            (Some(s), Some(p)) if p > 0.0 => {
+                format!("{} / {} ({:.0}%)", trim(s), trim(p), s / p * 100.0)
+            }
+            (Some(s), _) => trim(s),
+            _ => "graded".to_string(),
+        };
+        inbox::deliver(
+            app,
+            Note::new(
+                "grade",
+                format!(
+                    "Grade posted: {}",
+                    g.assignment_name.as_deref().unwrap_or("an assignment")
+                ),
+                format!(
+                    "{} · {score}",
+                    g.course_code.as_deref().unwrap_or("A course")
+                ),
+            )
+            .route(format!("/courses/{}", g.course_id)),
+        );
+    }
+}
+
+/// 18.0 -> "18", 18.5 -> "18.5".
+fn trim(x: f64) -> String {
+    if (x - x.round()).abs() < 1e-9 {
+        format!("{}", x.round() as i64)
+    } else {
+        format!("{x:.1}")
     }
 }
 
@@ -270,14 +386,6 @@ async fn mark_sent(db: &Db, key: &str) -> Result<(), sqlx::Error> {
         .execute(db)
         .await?;
     Ok(())
-}
-
-fn send(app: &AppHandle, title: &str, body: &str) {
-    if let Err(e) = app.notification().builder().title(title).body(body).show() {
-        tracing::warn!(error = %e, title, "notification failed to send");
-    } else {
-        tracing::info!(title, "notification sent");
-    }
 }
 
 /// "in 2h" / "in 3d" for notification titles.
