@@ -3,25 +3,71 @@
   "course": "cs146",
   "lessons": "Lecture 9",
   "title": "Quicksort: partition, recursion, and why the worst case is n²",
-  "summary": "Trace Lomuto partition on paper (pivot, i, j, the final swap, the return value); run quicksort's recursion on an array; write its recurrence and explain the Θ(n²) worst case, the Θ(n log n) best and average case, and how real libraries avoid the worst case.",
-  "estimatedMinutes": 60,
-  "sourceNote": "Lecture 9 slides 'Quicksort' (Sep 21), HW 9 (due Sep 23), CLRS ch. 7. Builds on merge sort (Lecture 5) and recurrences (Lectures 6 and 7).",
+  "summary": "Trace Lomuto partition (pivot, i, j, the final swap, the return value); run quicksort's recursion on an array; write its recurrence and explain the Θ(n²) worst case, the Θ(n log n) best and average case, and how real libraries avoid the worst case.",
+  "estimatedMinutes": 70,
+  "sourceNote": "Lecture 9 'Quicksort' (Sep 21) slides, HW 9, CLRS ch. 7. Builds on merge sort (Lecture 5) and recurrences (Lectures 6 and 7). Real-world notes are general industry practice.",
   "requires": [
     "cs146/4-big-o-merge-sort",
     "cs146/6-recurrences"
   ],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why quicksort exists",
+      "id": "map",
+      "heading": "The big picture: sort in place by picking a pivot",
       "blocks": [
         {
           "type": "prose",
-          "md": "**The problem with merge sort** Merge sort is always Θ(n log n), but it needs a second array the size of the input to merge into: O(n) extra memory. **Quicksort** sorts *in place*, inside the one array, and on typical inputs it is the fastest comparison sort in practice. That is why it (or a close cousin) is what `Arrays.sort` uses for primitive types in Java and what C's `qsort` is named after.",
-          "label": "why",
-          "slide": "Why another sort?",
-          "id": "why.a5137c2b"
+          "md": "Merge sort is always n log n but needs a second array. Heap sort needs no extra array but is fiddly and not very cache-friendly. **Quicksort** sorts inside the one array and, on typical data, is the fastest of the three. Its one weakness is a bad pivot, and this chapter shows exactly when that happens and how real code avoids it.",
+          "slide": "What this chapter answers",
+          "id": "map.ff4d61be"
         },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The question",
+            "question": "Sort **in place**, fast, by picking a pivot",
+            "steps": [
+              {
+                "title": "Pivot",
+                "sub": "one item goes to its final spot",
+                "result": "the idea"
+              },
+              {
+                "title": "partition",
+                "sub": "small items left, big items right",
+                "result": "O(n)",
+                "tone": "brand"
+              },
+              {
+                "title": "quicksort",
+                "sub": "partition, then recurse on both sides",
+                "result": "3 lines",
+                "tone": "green"
+              },
+              {
+                "title": "Analysis",
+                "sub": "it depends on the pivot",
+                "result": "n log n … n²",
+                "tone": "amber"
+              },
+              {
+                "title": "In practice",
+                "sub": "how libraries dodge n²",
+                "result": "random pivot"
+              }
+            ]
+          },
+          "caption": "The chapter in five steps.",
+          "slide": "Five steps",
+          "id": "map.3e3873f4"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "heading": "The idea: line a class up by height",
+      "blocks": [
         {
           "type": "prose",
           "md": "**Poon's analogy: sorting by height** Pick one student as the **pivot**. Everyone shorter moves to their left, everyone taller to their right. The pivot is now standing exactly where they would be in a fully sorted line, even though the two groups are still messy. Now do the same thing inside each group. When every group is size 0 or 1, the whole line is sorted.",
@@ -33,6 +79,12 @@
           "term": "Pivot",
           "body": "The one element chosen to split the array. After partitioning, smaller-or-equal elements are to its left, larger to its right, and **the pivot is in its final sorted position**. In this lecture the pivot is always the **last** element of the part being sorted (this is called **Lomuto** quicksort).",
           "id": "why.146ac9b4"
+        },
+        {
+          "type": "prose",
+          "md": "**Why pick one item and not sort everything at once?** Because placing ONE item correctly is cheap (one pass, O(n)) and it splits the problem in two independent halves that never need to be combined. Do that again inside each half, and the whole thing sorts itself.",
+          "label": "why",
+          "id": "why.9202e09f"
         }
       ]
     },
@@ -47,20 +99,8 @@
           "id": "partition.68e0018c"
         },
         {
-          "type": "example",
-          "title": "The pseudocode (Lecture 9)",
-          "body": "partition(a, low, high):\n    pivot = a[high]\n    i = low - 1              // zone of '≤ pivot' is empty\n    for j = low to high - 1  // j scouts, skips pivot\n        if a[j] <= pivot\n            i++              // grow the zone\n            swap a[i] with a[j]  // pull it in\n    swap a[i+1] with a[high] // pivot after zone\n    return i + 1",
-          "slide": "partition, line by line",
-          "id": "partition.48bc8e6b"
-        },
-        {
-          "type": "prose",
-          "md": "Two markers do the work. **j is the scout**: it walks left to right over every element except the pivot. **i is the boundary**: everything from `low` to `i` is known to be ≤ pivot. When the scout finds a small element, the boundary grows by one and the small element is swapped into the new spot. Big elements are simply walked past; they end up between the boundary and the scout.",
-          "id": "partition.2c70f4d5"
-        },
-        {
           "type": "stepper",
-          "title": "partition on [9, 3, 1, 7, 5] (the slide's example)",
+          "title": "partition(a, 0, 4) on [9, 3, 1, 7, 5] (the slide's example)",
           "frames": [
             {
               "kind": "array",
@@ -71,11 +111,15 @@
                 7,
                 5
               ],
-              "caption": "partition(a, 0, 4). The pivot is the last element, a[4] = 5. i starts at −1: the '≤ pivot' zone is empty. j (the scout) starts at 0.",
+              "caption": "partition(a, 0, 4): the pivot is the LAST item, 5. i = -1 (the '≤ pivot' zone is empty). j will scout from 0 to 3.",
               "hl": [
                 4
               ],
-              "note": "pivot = 5, i = −1"
+              "ptrs": {
+                "j": 0,
+                "pivot": 4
+              },
+              "note": "i = -1, j = 0"
             },
             {
               "kind": "array",
@@ -86,11 +130,37 @@
                 7,
                 5
               ],
-              "caption": "j = 0: is 9 ≤ 5? No. Skip it. i stays −1.",
+              "caption": "j = 0: 9 > 5. Leave it: it joins the amber '> 5' zone. Only j moves on.",
               "hl": [
                 0
               ],
-              "note": "i = −1, j = 0"
+              "ptrs": {
+                "j": 0,
+                "pivot": 4
+              },
+              "note": "i = -1, j = 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "j = 1: 3 ≤ 5. It belongs in the green zone: i++ → 0, then swap a[0] and a[1].",
+              "hl": [
+                1
+              ],
+              "warn": [
+                0
+              ],
+              "ptrs": {
+                "j": 1,
+                "pivot": 4
+              },
+              "note": "i = -1, j = 1"
             },
             {
               "kind": "array",
@@ -101,28 +171,75 @@
                 7,
                 5
               ],
-              "caption": "j = 1: is 3 ≤ 5? Yes. i++ → 0, then swap a[0] and a[1]. The 3 moves into the '≤ pivot' zone, which is now a[0..0].",
+              "caption": "The green '≤ 5' zone grew to a[0..0].",
               "hl": [
+                0
+              ],
+              "done": [
+                0
+              ],
+              "warn": [
+                1
+              ],
+              "ptrs": {
+                "i": 0,
+                "j": 2,
+                "pivot": 4
+              },
+              "note": "i = 0, j = 2"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                9,
+                1,
+                7,
+                5
+              ],
+              "caption": "j = 2: 1 ≤ 5. It belongs in the green zone: i++ → 1, then swap a[1] and a[2].",
+              "hl": [
+                2
+              ],
+              "done": [
+                0
+              ],
+              "warn": [
+                1
+              ],
+              "ptrs": {
+                "i": 0,
+                "j": 2,
+                "pivot": 4
+              },
+              "note": "i = 0, j = 2"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "The green '≤ 5' zone grew to a[0..1].",
+              "hl": [
+                1
+              ],
+              "done": [
                 0,
                 1
               ],
-              "note": "i = 0, j = 1"
-            },
-            {
-              "kind": "array",
-              "cells": [
-                3,
-                1,
-                9,
-                7,
-                5
-              ],
-              "caption": "j = 2: is 1 ≤ 5? Yes. i++ → 1, swap a[1] and a[2]. The zone a[0..1] = 3, 1 holds everything small so far.",
-              "hl": [
-                1,
+              "warn": [
                 2
               ],
-              "note": "i = 1, j = 2"
+              "ptrs": {
+                "i": 1,
+                "j": 3,
+                "pivot": 4
+              },
+              "note": "i = 1, j = 3"
             },
             {
               "kind": "array",
@@ -133,11 +250,51 @@
                 7,
                 5
               ],
-              "caption": "j = 3: is 7 ≤ 5? No. Skip. The loop stops before high, so we are done scouting.",
+              "caption": "j = 3: 7 > 5. Leave it: it joins the amber '> 5' zone. Only j moves on.",
               "hl": [
                 3
               ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                2
+              ],
+              "ptrs": {
+                "i": 1,
+                "j": 3,
+                "pivot": 4
+              },
               "note": "i = 1, j = 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "The scout is done. Last move: swap the pivot into a[i + 1] = a[2], right after the green zone.",
+              "hl": [
+                4,
+                2
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                2,
+                3
+              ],
+              "ptrs": {
+                "i": 1,
+                "pivot": 4
+              },
+              "note": "i = 1"
             },
             {
               "kind": "array",
@@ -148,18 +305,411 @@
                 7,
                 9
               ],
-              "caption": "Last step: swap a[i+1] = a[2] with the pivot a[4]. The 5 lands at index 2, its final sorted place. Return 2.",
+              "caption": "5 is now at index 2, its FINAL sorted position: everything left is ≤ 5, everything right is > 5. Return 2.",
+              "hl": [
+                2
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "return": 2
+              }
+            }
+          ],
+          "slide": true,
+          "id": "partition.79283631"
+        },
+        {
+          "type": "prose",
+          "md": "Watch the colors: **green** is 'known to be ≤ pivot', **amber** is 'known to be > pivot', white is 'not checked yet'. **j is the scout** walking right; **i is the boundary** of the green zone. A small item gets swapped into the green zone; a big one is simply walked past.",
+          "id": "partition.98caea9b"
+        },
+        {
+          "type": "example",
+          "title": "The pseudocode (Lecture 9)",
+          "body": "partition(a, low, high):\n    pivot = a[high]\n    i = low - 1              // zone of '≤ pivot' is empty\n    for j = low to high - 1  // j scouts, skips pivot\n        if a[j] <= pivot\n            i++              // grow the zone\n            swap a[i] with a[j]  // pull it in\n    swap a[i+1] with a[high] // pivot after zone\n    return i + 1",
+          "slide": "partition, line by line",
+          "id": "partition.48bc8e6b"
+        },
+        {
+          "type": "stepper",
+          "title": "Your turn from the slides: partition(a, 2, 7) on [19, 9, 5, 1, 8, 7, 2, 3, 4, 6]",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                5,
+                1,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "partition(a, 2, 7): the pivot is the LAST item, 3. i = 1 (the '≤ pivot' zone is empty). j will scout from 2 to 6.",
+              "hl": [
+                7
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "j": 2,
+                "pivot": 7
+              },
+              "note": "i = 1, j = 2"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                5,
+                1,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "j = 2: 5 > 3. Leave it: it joins the amber '> 3' zone. Only j moves on.",
+              "hl": [
+                2
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "j": 2,
+                "pivot": 7
+              },
+              "note": "i = 1, j = 2"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                5,
+                1,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "j = 3: 1 ≤ 3. It belongs in the green zone: i++ → 2, then swap a[2] and a[3].",
+              "hl": [
+                3
+              ],
+              "warn": [
+                2
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "j": 3,
+                "pivot": 7
+              },
+              "note": "i = 1, j = 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                5,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "The green '≤ 3' zone grew to a[2..2].",
               "hl": [
                 2
               ],
               "done": [
                 2
               ],
-              "note": "return i + 1 = 2"
+              "warn": [
+                3
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 2,
+                "j": 4,
+                "pivot": 7
+              },
+              "note": "i = 2, j = 4"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                5,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "j = 4: 8 > 3. Leave it: it joins the amber '> 3' zone. Only j moves on.",
+              "hl": [
+                4
+              ],
+              "done": [
+                2
+              ],
+              "warn": [
+                3
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 2,
+                "j": 4,
+                "pivot": 7
+              },
+              "note": "i = 2, j = 4"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                5,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "j = 5: 7 > 3. Leave it: it joins the amber '> 3' zone. Only j moves on.",
+              "hl": [
+                5
+              ],
+              "done": [
+                2
+              ],
+              "warn": [
+                3,
+                4
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 2,
+                "j": 5,
+                "pivot": 7
+              },
+              "note": "i = 2, j = 5"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                5,
+                8,
+                7,
+                2,
+                3,
+                4,
+                6
+              ],
+              "caption": "j = 6: 2 ≤ 3. It belongs in the green zone: i++ → 3, then swap a[3] and a[6].",
+              "hl": [
+                6
+              ],
+              "done": [
+                2
+              ],
+              "warn": [
+                3,
+                4,
+                5
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 2,
+                "j": 6,
+                "pivot": 7
+              },
+              "note": "i = 2, j = 6"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                2,
+                8,
+                7,
+                5,
+                3,
+                4,
+                6
+              ],
+              "caption": "The green '≤ 3' zone grew to a[2..3].",
+              "hl": [
+                3
+              ],
+              "done": [
+                2,
+                3
+              ],
+              "warn": [
+                4,
+                5,
+                6
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 3,
+                "pivot": 7
+              },
+              "note": "i = 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                2,
+                8,
+                7,
+                5,
+                3,
+                4,
+                6
+              ],
+              "caption": "The scout is done. Last move: swap the pivot into a[i + 1] = a[4], right after the green zone.",
+              "hl": [
+                7,
+                4
+              ],
+              "done": [
+                2,
+                3
+              ],
+              "warn": [
+                4,
+                5,
+                6
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "i": 3,
+                "pivot": 7
+              },
+              "note": "i = 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                19,
+                9,
+                1,
+                2,
+                3,
+                7,
+                5,
+                8,
+                4,
+                6
+              ],
+              "caption": "3 is now at index 4, its FINAL sorted position: everything left is ≤ 3, everything right is > 3. Return 4.",
+              "hl": [
+                4
+              ],
+              "done": [
+                2,
+                3
+              ],
+              "warn": [
+                5,
+                6,
+                7
+              ],
+              "dim": [
+                0,
+                1,
+                8,
+                9
+              ],
+              "ptrs": {
+                "return": 4
+              }
             }
           ],
           "slide": true,
-          "id": "partition.740fbf6b"
+          "id": "partition.226c195a"
+        },
+        {
+          "type": "prose",
+          "md": "**The invariant that makes partition correct:** at every moment, a[low..i] ≤ pivot, a[i+1..j−1] > pivot, a[j..high−1] unchecked, a[high] = pivot. Each step keeps it true; when j reaches high, one swap puts the pivot between the two zones.",
+          "label": "think",
+          "id": "partition.2514b59c"
         },
         {
           "type": "sim",
@@ -199,6 +749,21 @@
           "id": "partition.e5f84dca"
         },
         {
+          "type": "code",
+          "title": "Your turn: write partition",
+          "task": "Write Lomuto `partition(a, low, high)` in Python: pivot = a[high], i = low − 1, scout j from low to high − 1, final swap, return i + 1.",
+          "starter": "def partition(a, low, high):\n    pivot = a[high]\n    i = low - 1\n    # for j in range(low, high): if a[j] <= pivot: i += 1 and swap a[i], a[j]\n    # then swap a[i + 1] with a[high] and return i + 1\n    return -1\n\na = [9, 3, 1, 7, 5]\np = partition(a, 0, 4)\nprint(a, \"pivot landed at\", p)     # expect [3, 1, 5, 7, 9] 2\n",
+          "check": "a = [9, 3, 1, 7, 5]\np = partition(a, 0, 4)\nassert (a, p) == ([3, 1, 5, 7, 9], 2), f\"partition([9, 3, 1, 7, 5], 0, 4) should leave [3, 1, 5, 7, 9] and return 2. Got {a}, {p}.\"\nb = [19, 9, 5, 1, 8, 7, 2, 3, 4, 6]\np = partition(b, 2, 7)\nassert p == 4 and b == [19, 9, 1, 2, 3, 7, 5, 8, 4, 6], f\"partition(b, 2, 7) should return 4 (an index into the WHOLE array) and leave a[0..1] and a[8..9] untouched. Got {b}, {p}.\"\nc = [1, 2, 3, 4]\nassert partition(c, 0, 3) == 3, \"On sorted input the pivot (the max) stays at the end: return 3.\"",
+          "solution": "def partition(a, low, high):\n    pivot = a[high]\n    i = low - 1\n    for j in range(low, high):\n        if a[j] <= pivot:\n            i += 1\n            a[i], a[j] = a[j], a[i]\n    a[i + 1], a[high] = a[high], a[i + 1]\n    return i + 1\n\na = [9, 3, 1, 7, 5]\np = partition(a, 0, 4)\nprint(a, \"pivot landed at\", p)\n",
+          "hints": [
+            "`for j in range(low, high):` stops BEFORE high, the pivot.",
+            "Inside: `if a[j] <= pivot: i += 1; a[i], a[j] = a[j], a[i]`.",
+            "After the loop: `a[i + 1], a[high] = a[high], a[i + 1]` and `return i + 1`."
+          ],
+          "success": "Ten lines, and the heart of the fastest general-purpose sort. It's also one of the most-asked interview snippets.",
+          "id": "partition.0b4a7589"
+        },
+        {
           "type": "check",
           "prompt": "partition([4, 8, 2, 6, 5], 0, 4): what is the array afterwards, and what is returned?",
           "answer": "Pivot 5. j=0: 4 ≤ 5, i=0 (swap with itself). j=1: 8 skip. j=2: 2 ≤ 5, i=1, swap → [4, 2, 8, 6, 5]. j=3: 6 skip. Final swap a[2] ↔ a[4] → [4, 2, 5, 6, 8]. Return 2.",
@@ -219,86 +784,431 @@
           "id": "quicksort.29b95e53"
         },
         {
-          "type": "prose",
-          "md": "Notice what is **not** there: no merge step. Once the pivot is in place and both sides are sorted, the whole range is sorted, because every left element ≤ pivot < every right element. And the pivot is **excluded** from both recursive calls (p − 1 and p + 1): it is already done.",
-          "id": "quicksort.34e24c92"
-        },
-        {
           "type": "stepper",
-          "title": "Tracing quicksort on [2, 8, 7, 1, 3, 5, 6, 4] (the slide's example)",
+          "title": "quicksort on [2, 8, 7, 1, 3, 5, 6, 4] (the slide's example)",
           "frames": [
             {
-              "kind": "lines",
-              "lines": [
-                "Q(a, 0, 7)   a = [2, 8, 7, 1, 3, 5, 6, 4]"
+              "kind": "array",
+              "cells": [
+                2,
+                8,
+                7,
+                1,
+                3,
+                5,
+                6,
+                4
               ],
-              "active": 0,
-              "caption": "Sort the whole array. low = 0 < high = 7, so partition."
+              "caption": "quicksort(a, 0, 7) on [2, 8, 7, 1, 3, 5, 6, 4]. Each call partitions its range, which puts ONE pivot in its final spot, then recurses on the two sides.",
+              "ptrs": {
+                "low": 0,
+                "high": 7
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "Q(a, 0, 7)   a = [2, 8, 7, 1, 3, 5, 6, 4]",
-                "  P(a, 0, 7) → a = [2, 1, 3, 4, 7, 5, 6, 8], p = 3"
+              "kind": "array",
+              "cells": [
+                2,
+                8,
+                7,
+                1,
+                3,
+                5,
+                6,
+                4
               ],
-              "active": 1,
-              "caption": "Pivot 4 lands at index 3. Everything left of it is ≤ 4, everything right is > 4. Index 3 is finished forever."
+              "caption": "quicksort(0, 7): work only on a[0..7]. Pivot = a[7] = 4.",
+              "hl": [
+                7
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 7
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "Q(a, 0, 7)",
-                "  P → p = 3",
-                "  Q(a, 0, 2) on [2, 1, 3]",
-                "    P(a, 0, 2) → no change, p = 2"
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
               ],
-              "active": 3,
-              "caption": "Recurse on the left part, indexes 0 to 2. Pivot 3 is already the biggest, so it stays at index 2."
+              "caption": "After partition: 4 lands at index 3, final. Left of it ≤ 4, right of it > 4. Now recurse on each side.",
+              "hl": [
+                3
+              ],
+              "ptrs": {
+                "p": 3
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "Q(a, 0, 7)",
-                "  P → p = 3",
-                "  Q(a, 0, 2) → p = 2",
-                "    Q(a, 0, 1) on [2, 1]",
-                "      P(a, 0, 1) → a = [1, 2, …], p = 0"
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
               ],
-              "active": 4,
-              "caption": "Left of that: [2, 1] with pivot 1. It moves to index 0."
+              "caption": "quicksort(0, 2): work only on a[0..2]. Pivot = a[2] = 3.",
+              "hl": [
+                2
+              ],
+              "done": [
+                3
+              ],
+              "dim": [
+                4,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 2
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "      Q(a, 0, −1) → base case (empty)",
-                "      Q(a, 1, 1)  → base case (one element)",
-                "    Q(a, 3, 2)    → base case (empty)"
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
               ],
-              "active": 0,
-              "caption": "Base case: low ≥ high means 0 or 1 elements. Nothing to sort. This is where the recursion stops."
+              "caption": "After partition: 3 lands at index 2, final. Left of it ≤ 3, right of it > 3. Now recurse on each side.",
+              "hl": [
+                2
+              ],
+              "done": [
+                3
+              ],
+              "dim": [
+                4,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "p": 2
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "  Q(a, 4, 7) on [7, 5, 6, 8]",
-                "    P(a, 4, 7) → no change, p = 7",
-                "    Q(a, 4, 6) on [7, 5, 6] → p = 5 …",
-                "    Q(a, 8, 7) → base case"
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
               ],
-              "active": 0,
-              "caption": "Now the right side of the first pivot. The same three lines, over and over, until every element has been a pivot or a base case."
+              "caption": "quicksort(0, 1): work only on a[0..1]. Pivot = a[1] = 1.",
+              "hl": [
+                1
+              ],
+              "done": [
+                2,
+                3
+              ],
+              "dim": [
+                4,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 1
+              }
             },
             {
-              "kind": "lines",
-              "lines": [
-                "a = [1, 2, 3, 4, 5, 6, 7, 8]"
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
               ],
-              "active": 0,
-              "caption": "Sorted, in place. There was never a merge step: once both sides are sorted around the pivot, the whole thing is sorted."
+              "caption": "After partition: 1 lands at index 0, final. Left of it ≤ 1, right of it > 1. Now recurse on each side.",
+              "hl": [
+                0
+              ],
+              "done": [
+                2,
+                3
+              ],
+              "dim": [
+                4,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "p": 0
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
+              ],
+              "caption": "quicksort(1, 1): one item is already sorted (base case). a[1] = 2 is final.",
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "dim": [
+                0,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "low": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
+              ],
+              "caption": "quicksort(4, 7): work only on a[4..7]. Pivot = a[7] = 8.",
+              "hl": [
+                7
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "ptrs": {
+                "low": 4,
+                "high": 7
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
+              ],
+              "caption": "After partition: 8 lands at index 7, final. Left of it ≤ 8, right of it > 8. Now recurse on each side.",
+              "hl": [
+                7
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "ptrs": {
+                "p": 7
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                7,
+                5,
+                6,
+                8
+              ],
+              "caption": "quicksort(4, 6): work only on a[4..6]. Pivot = a[6] = 6.",
+              "hl": [
+                6
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                7
+              ],
+              "ptrs": {
+                "low": 4,
+                "high": 6
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "caption": "After partition: 6 lands at index 5, final. Left of it ≤ 6, right of it > 6. Now recurse on each side.",
+              "hl": [
+                5
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                7
+              ],
+              "ptrs": {
+                "p": 5
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "caption": "quicksort(4, 4): one item is already sorted (base case). a[4] = 5 is final.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7
+              ],
+              "dim": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                6,
+                7
+              ],
+              "ptrs": {
+                "low": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "caption": "quicksort(6, 6): one item is already sorted (base case). a[6] = 7 is final.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "dim": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7
+              ],
+              "ptrs": {
+                "low": 6
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              "caption": "Sorted: [1, 2, 3, 4, 5, 6, 7, 8], in place. No merge step was ever needed: once both sides of every pivot are sorted, everything is.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ]
             }
           ],
           "slide": true,
-          "id": "quicksort.e9b48d9d"
+          "id": "quicksort.31f0c367"
+        },
+        {
+          "type": "prose",
+          "md": "Notice what is **not** there: no merge step. Once the pivot is in place and both sides are sorted, the whole range is sorted, because every left item ≤ pivot < every right item. And the pivot is **left out** of both recursive calls (p − 1 and p + 1): it's already done.",
+          "id": "quicksort.893bf478"
         },
         {
           "type": "table",
@@ -363,12 +1273,288 @@
           "id": "analysis.1be5a5d9"
         },
         {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Good pivots",
+                "badge": "about half / half",
+                "tone": "green",
+                "viz": [
+                  1,
+                  2,
+                  4,
+                  8
+                ],
+                "lines": [
+                  "log n levels, n work per level",
+                  "T(n) = 2T(n/2) + n → **Θ(n log n)**"
+                ]
+              },
+              {
+                "title": "Bad pivots",
+                "badge": "n − 1 and 0",
+                "tone": "red",
+                "viz": [
+                  6,
+                  5,
+                  4,
+                  3,
+                  2,
+                  1
+                ],
+                "lines": [
+                  "n levels, each one item shorter",
+                  "T(n) = T(n − 1) + n → **Θ(n²)**"
+                ]
+              }
+            ],
+            "note": "Each bar is one level of the recursion: how many pieces (good) or how big the one piece is (bad). Lomuto on **already sorted** input always picks the max as pivot, so it's always the bad shape."
+          },
+          "caption": "The pivot decides the shape of the recursion, and the shape decides the running time.",
+          "slide": "Two shapes",
+          "id": "analysis.4ead9337"
+        },
+        {
           "type": "example",
           "title": "Worst case: the input is already sorted",
           "body": "a = [1, 2, 3, 4, 5]. The pivot (last) is always the biggest.\nLeft side gets n − 1 elements, right side gets 0.\n\nT(n) = T(n − 1) + T(0) + Θ(n) = T(n − 1) + Θ(n)\n     = n + (n − 1) + … + 2 + 1\n     = n(n + 1)/2 = Θ(n²)",
           "answer": "Θ(n²)",
           "slide": "Worst case: sorted input",
           "id": "analysis.8538e9d4"
+        },
+        {
+          "type": "stepper",
+          "title": "The worst case: quicksort on already sorted [1, 2, 3, 4, 5]",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(a, 0, 4) on [1, 2, 3, 4, 5]. Each call partitions its range, which puts ONE pivot in its final spot, then recurses on the two sides.",
+              "ptrs": {
+                "low": 0,
+                "high": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(0, 4): work only on a[0..4]. Pivot = a[4] = 5.",
+              "hl": [
+                4
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "After partition: 5 lands at index 4, final. Left of it ≤ 5, right of it > 5. Now recurse on each side.",
+              "hl": [
+                4
+              ],
+              "ptrs": {
+                "p": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(0, 3): work only on a[0..3]. Pivot = a[3] = 4.",
+              "hl": [
+                3
+              ],
+              "done": [
+                4
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 3
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "After partition: 4 lands at index 3, final. Left of it ≤ 4, right of it > 4. Now recurse on each side.",
+              "hl": [
+                3
+              ],
+              "done": [
+                4
+              ],
+              "ptrs": {
+                "p": 3
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(0, 2): work only on a[0..2]. Pivot = a[2] = 3.",
+              "hl": [
+                2
+              ],
+              "done": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "After partition: 3 lands at index 2, final. Left of it ≤ 3, right of it > 3. Now recurse on each side.",
+              "hl": [
+                2
+              ],
+              "done": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "p": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(0, 1): work only on a[0..1]. Pivot = a[1] = 2.",
+              "hl": [
+                1
+              ],
+              "done": [
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "After partition: 2 lands at index 1, final. Left of it ≤ 2, right of it > 2. Now recurse on each side.",
+              "hl": [
+                1
+              ],
+              "done": [
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "p": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "quicksort(0, 0): one item is already sorted (base case). a[0] = 1 is final.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "dim": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "low": 0
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "Sorted: [1, 2, 3, 4, 5], in place. No merge step was ever needed: once both sides of every pivot are sorted, everything is.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          ],
+          "slide": true,
+          "id": "analysis.7f820c62"
         },
         {
           "type": "example",
@@ -489,8 +1675,22 @@
         },
         {
           "type": "prose",
-          "md": "**Where you will meet this** Java's `Arrays.sort(int[])` is a dual-pivot quicksort; C's `qsort` and C++'s `std::sort` are quicksort hybrids that switch to insertion sort on small pieces (the same trick as your Project 1 hybrid) and to heap sort if the recursion gets too deep. Interviewers ask for `partition` constantly because it tests loops, indexes and invariants in ten lines.",
-          "id": "practice.57479a9d"
+          "md": "**Where you'll meet it.** Java's `Arrays.sort` on primitive arrays is a dual-pivot quicksort. C++'s `std::sort` is **introsort**: quicksort that switches to heap sort if the recursion gets too deep (so the worst case is n log n) and to insertion sort on tiny pieces, the same trick as Project 1's hybrid. Database engines use quicksort-style partitioning for in-memory sorts, and 'quickselect' (partition, then recurse on ONE side) finds a median or the top-k in O(n) on average.",
+          "label": "world",
+          "id": "practice.a587b213"
+        },
+        {
+          "type": "prose",
+          "md": "**Use quicksort** (your library's sort) for general in-memory sorting where average speed matters most. **Use merge sort / Timsort** when you need stability or a guaranteed n log n on adversarial input. **Use heap sort** when memory is tight and you need a guarantee. **Use partition alone** (quickselect) when you only need the k-th smallest, not a full sort.",
+          "label": "when",
+          "id": "practice.196b39a3"
+        },
+        {
+          "type": "code",
+          "title": "See it: sorted input vs random input",
+          "task": "This counts quicksort's comparisons on a random list and on an already sorted list of the same size, with a last-element pivot and with a random pivot. Run it and compare the last two columns.",
+          "starter": "import random, sys\nsys.setrecursionlimit(10000)\n\ndef quicksort(a, lo, hi, pick, count):\n    if lo < hi:\n        k = pick(lo, hi)\n        a[k], a[hi] = a[hi], a[k]           # move the chosen pivot to the end\n        pivot, i = a[hi], lo - 1\n        for j in range(lo, hi):\n            count[0] += 1\n            if a[j] <= pivot:\n                i += 1\n                a[i], a[j] = a[j], a[i]\n        a[i + 1], a[hi] = a[hi], a[i + 1]\n        quicksort(a, lo, i, pick, count)\n        quicksort(a, i + 2, hi, pick, count)\n\nlast = lambda lo, hi: hi\nrand = lambda lo, hi: random.randint(lo, hi)\n\nfor n in [200, 800, 1600]:\n    row = []\n    for data in (random.sample(range(n), n), list(range(n))):\n        for pick in (last, rand):\n            c = [0]\n            quicksort(list(data), 0, n - 1, pick, c)\n            row.append(c[0])\n    print(f\"n = {n:5}: random+last {row[0]:8,}  random+rand {row[1]:8,}  SORTED+last {row[2]:9,}  sorted+rand {row[3]:8,}\")\n",
+          "id": "practice.3a5a0705"
         },
         {
           "type": "check",
@@ -500,9 +1700,255 @@
           "id": "practice.44c64b08"
         }
       ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Pivot",
+              "the item partition puts in its final place; Lomuto uses the last item"
+            ],
+            [
+              "partition",
+              "one pass that puts ≤ pivot left, > pivot right, pivot between: Θ(n)"
+            ],
+            [
+              "i (boundary) / j (scout)",
+              "end of the ≤ pivot zone / the next item to check"
+            ],
+            [
+              "In place",
+              "sorts inside the input array; quicksort's only extra space is the call stack"
+            ],
+            [
+              "Worst case",
+              "Θ(n²): every pivot is the max or min (Lomuto on sorted input)"
+            ],
+            [
+              "Randomized pivot",
+              "pick the pivot at random so no particular input is bad"
+            ],
+            [
+              "Introsort",
+              "quicksort with a heap sort fallback; what C++'s std::sort does"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
+        }
+      ]
     }
   ],
   "exercises": [
+    {
+      "id": "qs-return",
+      "title": "What does partition return?",
+      "prompt": "partition([4, 8, 2, 6, 5], 0, 4) with the last element as pivot. What index does it return?",
+      "hints": [
+        "Pivot = 5. Which items are ≤ 5?",
+        "4 and 2: two items, so the green zone is a[0..1].",
+        "The pivot goes right after it: index 2."
+      ],
+      "solution": [
+        "≤ 5: 4, 2 → i ends at 1.",
+        "Swap a[2] with the pivot.",
+        "Return i + 1 = 2. Array: [4, 2, 5, 6, 8]."
+      ],
+      "why": "The return value is the pivot's final index, which is where quicksort splits its recursion.",
+      "accept": [
+        "2"
+      ],
+      "sectionRef": "partition"
+    },
+    {
+      "id": "qs-scout",
+      "title": "i and j",
+      "prompt": "In Lomuto partition, what are i and j?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "What does i + 1 mean after the loop?",
+        "It's the first slot after the ≤ pivot zone.",
+        "j walks low..high − 1."
+      ],
+      "why": "Keeping the two roles straight is what the midterm's partition trace tests.",
+      "choices": [
+        {
+          "text": "i = the pivot, j = the last index",
+          "feedback": "The pivot is a[high]; i is an index into the green zone."
+        },
+        {
+          "text": "i = end of the ≤ pivot zone (boundary), j = the next item to check (scout)",
+          "feedback": "Right: j scouts every item; i grows the green zone when j finds a small one."
+        },
+        {
+          "text": "i and j both walk from the two ends toward the middle",
+          "feedback": "That's Hoare's partition, not Lomuto's."
+        },
+        {
+          "text": "i counts swaps, j counts comparisons",
+          "feedback": "They're positions in the array, not counters."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "partition"
+    },
+    {
+      "id": "qs-worst",
+      "title": "The surprising worst case",
+      "prompt": "Lomuto quicksort (pivot = last item) takes Θ(n²) on which input?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Where does the pivot land if it's the largest item?",
+        "At the end: left side n − 1, right side 0.",
+        "T(n) = T(n − 1) + n."
+      ],
+      "why": "Sorted data is common in real systems (appended in time order), which is why no library ships plain Lomuto.",
+      "choices": [
+        {
+          "text": "Random input",
+          "feedback": "Random input is Θ(n log n) on average."
+        },
+        {
+          "text": "Already sorted input",
+          "feedback": "Right: the pivot is always the max, so each call only removes one item."
+        },
+        {
+          "text": "Input with all distinct values",
+          "feedback": "Distinctness alone doesn't matter."
+        },
+        {
+          "text": "Input of odd length",
+          "feedback": "Length parity doesn't matter."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "analysis"
+    },
+    {
+      "id": "qs-recurrence",
+      "title": "Best-case recurrence",
+      "prompt": "When every pivot lands in the middle, quicksort's recurrence is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "How many recursive calls, how big?",
+        "Two, each n/2.",
+        "Plus partition's n."
+      ],
+      "why": "Same recurrence as merge sort, but the work happens on the way down (partition) instead of up (merge).",
+      "choices": [
+        {
+          "text": "T(n) = T(n − 1) + n",
+          "feedback": "That's the worst case."
+        },
+        {
+          "text": "T(n) = 2T(n/2) + n",
+          "feedback": "Right: two halves plus Θ(n) partition work. Merge sort's recurrence: Θ(n log n)."
+        },
+        {
+          "text": "T(n) = T(n/2) + 1",
+          "feedback": "That's binary search."
+        },
+        {
+          "text": "T(n) = 4T(n/2) + n",
+          "feedback": "That's the master method's case 1 example."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "analysis"
+    },
+    {
+      "id": "qs-space",
+      "title": "Quicksort's extra space",
+      "prompt": "Quicksort sorts in place. What extra space does it still use?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "What does each pending call cost?",
+        "One stack frame.",
+        "How deep does the recursion go when splits are balanced?"
+      ],
+      "why": "This is why production quicksorts recurse on the smaller side first: it keeps the stack at O(log n) even in bad cases.",
+      "choices": [
+        {
+          "text": "None at all",
+          "feedback": "The recursion needs somewhere to remember what's left to do."
+        },
+        {
+          "text": "O(log n) on average: the call stack of pending recursive calls",
+          "feedback": "Right: about log n deep with balanced splits (n deep in the worst case)."
+        },
+        {
+          "text": "O(n): a temp array",
+          "feedback": "That's merge sort."
+        },
+        {
+          "text": "O(n²)",
+          "feedback": "Far too much."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "analysis"
+    },
+    {
+      "id": "qs-fix",
+      "title": "Dodging the worst case",
+      "prompt": "Which change makes sorted input no longer a problem for quicksort?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Why is sorted input bad?",
+        "The last item is always the max.",
+        "Pick a pivot the input can't predict."
+      ],
+      "why": "Randomization turns 'some inputs are always slow' into 'every input is fast with overwhelming probability'.",
+      "choices": [
+        {
+          "text": "Use a bigger array",
+          "feedback": "Size doesn't change the shape."
+        },
+        {
+          "text": "Choose the pivot at random (or median of three)",
+          "feedback": "Right: no particular input consistently gives bad pivots any more."
+        },
+        {
+          "text": "Always pick the first item as pivot",
+          "feedback": "On sorted input the first item is the min: just as bad."
+        },
+        {
+          "text": "Recurse on the right side first",
+          "feedback": "Order of recursion affects stack depth, not total work."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "practice"
+    },
     {
       "id": "trace-partition",
       "title": "Trace partition yourself",

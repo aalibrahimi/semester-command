@@ -25,13 +25,53 @@
  * moment and starts over. Reduced-motion users start paused. The
  * segmented bar is the whole animation; the current segment fills.
  */
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Frame } from "@/study/types";
 import { Inline } from "./Blocks";
 
-const EASE = "duration-500 ease-[cubic-bezier(.4,.1,.2,1)] motion-reduce:transition-none";
+const EASE = "duration-700 ease-[cubic-bezier(.33,1,.68,1)] motion-reduce:transition-none";
+
+/**
+ * FLIP motion for everything in `root` marked data-flip="<key>": after each
+ * render, any item whose position changed is animated from where it was to
+ * where it is, along a gentle arc (items moving right rise, items moving
+ * left dip), so two items trading places pass each other instead of
+ * overlapping. Positions are measured, so it works for any layout.
+ */
+function useFlip(root: RefObject<HTMLElement | null>, lift: number) {
+  const prev = useRef(new Map<string, { left: number; top: number }>());
+  useLayoutEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const next = new Map<string, { left: number; top: number }>();
+    // Positions relative to the stage, so scrolling the page isn't "motion".
+    const base = el.getBoundingClientRect();
+    el.querySelectorAll<HTMLElement>("[data-flip]").forEach((node) => {
+      const key = node.dataset.flip as string;
+      const b = node.getBoundingClientRect();
+      const r = { left: b.left - base.left, top: b.top - base.top };
+      next.set(key, r);
+      const old = prev.current.get(key);
+      if (!old || reduce || typeof node.animate !== "function") return;
+      const dx = old.left - r.left;
+      const dy = old.top - r.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      const arc = Math.abs(dy) < 4 ? Math.min(lift, Math.abs(dx) * 0.35) * (dx < 0 ? -1 : 1) : 0;
+      node.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: `translate(${dx / 2}px, ${dy / 2 + arc}px)`, offset: 0.5 },
+          { transform: "translate(0, 0)" },
+        ],
+        { duration: 750, easing: "cubic-bezier(.45,0,.2,1)" },
+      );
+    });
+    prev.current = next;
+  });
+}
 
 /* ── The speech bubble ──────────────────────────────────────────────────── */
 
@@ -50,7 +90,7 @@ function Bubble({ text, x, minH }: { text: string; x: string; minH: number }) {
       >
         <div
           key={text}
-          className="rounded-xl border border-brand/30 bg-popover px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground shadow-elevated duration-300 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none"
+          className="rounded-xl border border-brand/30 bg-popover px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground shadow-elevated duration-500 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-1 motion-reduce:animate-none"
         >
           <Inline text={text} />
         </div>
@@ -74,13 +114,14 @@ interface GridRow {
   cells: (number | string | null)[];
   hl?: number[];
   done?: number[];
+  warn?: number[];
   dim?: number[];
 }
 
 function toRows(frame: Extract<Frame, { kind: "array" | "rows" }>): { rows: GridRow[]; ptrs: [string, number, number][] } {
   if (frame.kind === "array") {
     return {
-      rows: [{ cells: frame.cells, hl: frame.hl, done: frame.done, dim: frame.dim }],
+      rows: [{ cells: frame.cells, hl: frame.hl, done: frame.done, warn: frame.warn, dim: frame.dim }],
       ptrs: Object.entries(frame.ptrs ?? {}).map(([k, i]) => [k, 0, i]),
     };
   }
@@ -99,11 +140,12 @@ function slidable(rows: GridRow[]): boolean {
   return rows.every((r) => r.cells.length <= 24 && r.cells.every((c) => c === null || String(c).length <= 5));
 }
 
-type CellState = "hl" | "done" | "dim" | "plain";
+type CellState = "hl" | "done" | "warn" | "dim" | "plain";
 
 const CELL: Record<CellState, string> = {
   hl: "scale-[1.06] border-transparent bg-brand-solid text-white shadow-elevated ring-4 ring-brand/20",
   done: "border-on-track/40 bg-on-track/15 text-on-track-fg",
+  warn: "border-at-risk/40 bg-at-risk/15 text-at-risk-fg",
   dim: "scale-95 border-dashed border-border/70 bg-transparent text-muted-foreground/40",
   plain: "border-border/80 bg-card text-foreground shadow-card",
 };
@@ -130,7 +172,7 @@ function Grid({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "
       const base = String(v);
       const n = (seen.get(base) ?? 0) + 1;
       seen.set(base, n);
-      const state: CellState = row.hl?.includes(c) ? "hl" : row.done?.includes(c) ? "done" : row.dim?.includes(c) ? "dim" : "plain";
+      const state: CellState = row.hl?.includes(c) ? "hl" : row.done?.includes(c) ? "done" : row.warn?.includes(c) ? "warn" : row.dim?.includes(c) ? "dim" : "plain";
       items.push({ key: `${base}~${n}`, label: base, r, c: row.at?.[c] ?? c + (row.offset ?? 0), state });
     }),
   );
@@ -155,11 +197,13 @@ function Grid({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "
   const focusCols = focus.length ? focus : ptrPos.length ? ptrPos.map((p) => p.c) : items.filter((i) => i.state === "done").map((i) => i.c);
   const fc = focusCols.length ? (Math.min(...focusCols) + Math.max(...focusCols)) / 2 : (cols - 1) / 2;
   const bubbleX = `calc(${labelW}px + (100% - ${labelW}px) * ${fc + 0.5} / ${cols} - 3px)`;
+  const stage = useRef<HTMLDivElement>(null);
+  useFlip(stage, 26);
 
   return (
     <div className="mx-auto flex w-full flex-col" style={{ maxWidth: maxW }}>
       {caption !== undefined && <Bubble text={caption} x={bubbleX} minH={minH} />}
-      <div className="relative w-full" style={{ height }}>
+      <div ref={stage} className="relative w-full transition-[height] duration-500" style={{ height }}>
         {rows.map((row, r) =>
           row.label ? (
             <div key={`l${r}`} className="absolute left-0 flex items-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground" style={{ top: tops[r], height: cellH, width: labelW - 8 }}>
@@ -171,19 +215,19 @@ function Grid({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "
           <div key={`s${r}:${c}`} className="absolute rounded-xl border border-dashed border-border/80 bg-fill-ghost/40" style={{ top: tops[r], left: left(c), width, height: cellH }} />
         ))}
         {items.map((it) => (
-          <div
-            key={it.key}
-            data-numeric
-            className={cn(
-              "absolute flex items-center justify-center rounded-xl border font-mono font-semibold tabular-nums",
-              "transition-[top,left,background-color,border-color,color,opacity,transform,box-shadow]",
-              EASE,
-              large ? "text-lg" : "text-[15px]",
-              CELL[it.state],
-            )}
-            style={{ top: tops[it.r], left: left(it.c), width, height: cellH }}
-          >
-            {it.label}
+          <div key={it.key} data-flip={it.key} className="absolute" style={{ top: tops[it.r], left: left(it.c), width, height: cellH }}>
+            <div
+              data-numeric
+              className={cn(
+                "flex h-full w-full items-center justify-center rounded-xl border font-mono font-semibold tabular-nums",
+                "transition-[background-color,border-color,color,opacity,transform,box-shadow]",
+                EASE,
+                large ? "text-lg" : "text-[15px]",
+                CELL[it.state],
+              )}
+            >
+              {it.label}
+            </div>
           </div>
         ))}
         {ptrPos.map((p) => (
@@ -228,9 +272,11 @@ function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kin
   const cellW = large ? 52 : 42;
   const focus = [...hl].filter((i) => i < size);
   const fx = focus.length ? (Math.min(...focus.map((i) => pos(i).x)) + Math.max(...focus.map((i) => pos(i).x))) / 2 : 50;
+  const stage = useRef<HTMLDivElement>(null);
+  useFlip(stage, 22);
 
   return (
-    <div className="flex w-full flex-col items-center gap-5">
+    <div ref={stage} className="flex w-full flex-col items-center gap-5">
       <div className="flex w-full max-w-[560px] flex-col">
         {caption !== undefined && <Bubble text={caption} x={`${fx}%`} minH={minH} />}
         <div className="relative w-full" style={{ height: treeH }}>
@@ -246,20 +292,20 @@ function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kin
           {a.map((v, i) => {
             const p = pos(i);
             return (
-              <div
-                key={ids[i]}
-                data-numeric
-                className={cn(
-                  "absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border font-mono font-semibold",
-                  "transition-[left,top,opacity,background-color,border-color,box-shadow]",
-                  EASE,
-                  large ? "text-base" : "text-sm",
-                  CELL[hl.has(i) ? "hl" : "plain"],
-                  i >= size && "opacity-0",
-                )}
-                style={{ left: `${p.x}%`, top: p.y, width: r * 2, height: r * 2 }}
-              >
-                {v}
+              <div key={ids[i]} data-flip={`t:${ids[i]}`} className="absolute" style={{ left: `calc(${p.x}% - ${r}px)`, top: p.y - r, width: r * 2, height: r * 2 }}>
+                <div
+                  data-numeric
+                  className={cn(
+                    "flex h-full w-full items-center justify-center rounded-full border font-mono font-semibold",
+                    "transition-[opacity,background-color,border-color,box-shadow,transform]",
+                    EASE,
+                    large ? "text-base" : "text-sm",
+                    CELL[hl.has(i) ? "hl" : "plain"],
+                    i >= size && "opacity-0",
+                  )}
+                >
+                  {v}
+                </div>
               </div>
             );
           })}
@@ -267,7 +313,7 @@ function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kin
       </div>
       <div className="relative" style={{ width: n * (cellW + 5), height: cellW + 14 }}>
         {a.map((v, i) => (
-          <div key={ids[i]} className={cn("absolute transition-[left]", EASE)} style={{ left: i * (cellW + 5), top: 0 }}>
+          <div key={ids[i]} data-flip={`a:${ids[i]}`} className="absolute" style={{ left: i * (cellW + 5), top: 0 }}>
             <div
               data-numeric
               className={cn("flex items-center justify-center rounded-lg border font-mono font-semibold tabular-nums transition-colors duration-500", large ? "text-base" : "text-sm", CELL[hl.has(i) ? "hl" : done.has(i) ? "done" : "plain"])}

@@ -9,12 +9,13 @@ import type { GuideBlock, GuideResource } from "./guide";
 
 export type Frame =
   /** An array being transformed. `hl` = indices to highlight, `done` = indices
-   *  shown as settled, `dim` = indices out of play (grayed, dashed). `ptrs`
+   *  shown as settled, `warn` = a second group (amber, e.g. "> pivot"),
+   *  `dim` = indices out of play (grayed, dashed). `ptrs`
    *  names indexes with a labeled arrow under the cell ({ low: 0, mid: 4 });
    *  the arrows slide between frames. `note` renders under the array.
    *  Items with the same value keep their identity across frames, so a
    *  swap or a shift is animated as the items actually moving. */
-  | { kind: "array"; cells: (number | string)[]; hl?: number[]; done?: number[]; dim?: number[]; ptrs?: Record<string, number>; note?: string; caption: string }
+  | { kind: "array"; cells: (number | string)[]; hl?: number[]; done?: number[]; warn?: number[]; dim?: number[]; ptrs?: Record<string, number>; note?: string; caption: string }
   /** Several labeled arrays at once (two piles and an output, a heap and its
    *  sorted tail). An item that moves from one row to another flies there.
    *  `null` cells are empty slots (dashed); "" cells are nothing at all
