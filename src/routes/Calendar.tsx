@@ -15,7 +15,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { save as saveFileDialog } from "@tauri-apps/plugin-dialog";
-import { CalendarDays, ChevronLeft, ChevronRight, Download, Plus, Sparkles, Trash2 } from "lucide-react";
+import { AlertCircle, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock, Download, Plus, Sparkles, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   calendarItems,
   deletePlannerBlock,
@@ -48,7 +49,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCourses } from "@/hooks/useCourses";
-import { useNicknames } from "@/lib/localPrefs";
+import { useDoneSet, useNicknames } from "@/lib/localPrefs";
 import { courseHsla, tickStyle } from "@/lib/courseColor";
 import { parseCourseLabel } from "@/lib/courseLabel";
 import { academicOn, noClassSpan, upcomingAcademic } from "@/lib/academicCalendar";
@@ -57,8 +58,8 @@ import {
   markAutoDetectAttempted,
   newCandidates,
 } from "@/lib/classDetect";
-import { relativeDue } from "@/lib/format";
-import { courseShort } from "@/lib/courseLabel";
+import { dateTime, relativeDue } from "@/lib/format";
+import { courseFull, courseShort } from "@/lib/courseLabel";
 import { cn } from "@/lib/utils";
 import type { CalendarItem, ClassSlotCandidate, PlannerBlock } from "@/types";
 
@@ -262,126 +263,268 @@ function UpcomingBreaks() {
   );
 }
 
+/** Hidden-course filter for the month grid, per viewer. */
+const MONTH_HIDDEN_KEY = "calendar-month-hidden";
+function readHidden(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(MONTH_HIDDEN_KEY) ?? "[]") as string[]);
+  } catch {
+    return new Set();
+  }
+}
+
+type DueState = "done" | "overdue" | "past" | "soon" | "upcoming";
+
+/** One word for where an item stands, from the viewer's point of view. */
+function dueState(item: CalendarItem, done: boolean, now: number): DueState {
+  if (done) return "done";
+  const t = new Date(item.dueAt).getTime();
+  // Zero-point items (checklists, "review the assignment list") can't be
+  // missed in any way that matters, so they fade instead of turning red.
+  if (t < now) return item.pointsPossible ? "overdue" : "past";
+  if (t - now < 48 * 3_600_000) return "soon";
+  return "upcoming";
+}
+
+const STATE_LABEL: Record<DueState, string> = {
+  done: "Done",
+  overdue: "Missing",
+  past: "Past, no points",
+  soon: "Due soon",
+  upcoming: "Upcoming",
+};
+const STATE_CHIP: Record<DueState, string> = {
+  done: "bg-on-track/15 text-on-track-fg",
+  overdue: "bg-critical/15 text-critical-fg",
+  past: "bg-foreground/[0.07] text-muted-foreground",
+  soon: "bg-at-risk/15 text-at-risk-fg",
+  upcoming: "bg-brand/12 text-brand-fg",
+};
+
+/**
+ * The month grid. Fills the window; every chip carries its course's color
+ * (a left bar and a faint wash) so a week reads by class at a glance.
+ * Finished work fades with a check instead of shouting with a strikethrough;
+ * missed work turns red. Hover any chip for the full details; a crowded day
+ * opens its whole list from "+N more". The legend doubles as a filter.
+ */
 function MonthView({ items }: { items: CalendarItem[] }) {
   const [anchor, setAnchor] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
   const [today] = useState(() => new Date());
+  const now = today.getTime();
+  const nicknames = useNicknames();
+  const doneSet = useDoneSet();
+  const [hidden, setHidden] = useState<Set<string>>(readHidden);
+
+  const toggleCourse = (id: string) => {
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      try {
+        localStorage.setItem(MONTH_HIDDEN_KEY, JSON.stringify([...next]));
+      } catch {
+        /* per-viewer convenience only */
+      }
+      return next;
+    });
+  };
 
   const year = anchor.getFullYear();
   const month = anchor.getMonth();
-  const monthLabel = new Intl.DateTimeFormat(undefined, {
-    month: "long",
-    year: "numeric",
-  }).format(anchor);
+  const monthName = new Intl.DateTimeFormat(undefined, { month: "long" }).format(anchor);
 
-  // Weeks start Sunday, matching Canvas's own calendar.
+  // Weeks start Sunday, matching Canvas's own calendar. Only as many weeks
+  // as the month needs (4 to 6), so the rows can be tall.
   const firstCell = new Date(year, month, 1 - new Date(year, month, 1).getDay());
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const weeks = Math.ceil((new Date(year, month, 1).getDay() + daysInMonth) / 7);
   const cells: Date[] = Array.from(
-    { length: 42 },
+    { length: weeks * 7 },
     (_, i) => new Date(firstCell.getFullYear(), firstCell.getMonth(), firstCell.getDate() + i),
   );
 
+  const isDone = (i: CalendarItem) => i.submitted || i.graded || doneSet.has(i.assignmentId);
+  const labelOf = (i: CalendarItem) => nicknames[i.courseId] ?? courseShort(i.courseCode);
+
+  // Courses present in the data, for the legend.
+  const courses = useMemo(() => {
+    const m = new Map<string, CalendarItem>();
+    for (const i of items) if (!m.has(i.courseId)) m.set(i.courseId, i);
+    return [...m.values()].sort((a, b) => courseShort(a.courseCode).localeCompare(courseShort(b.courseCode)));
+  }, [items]);
+
+  const visible = items.filter((i) => !hidden.has(i.courseId));
   const byDate = new Map<string, CalendarItem[]>();
-  for (const item of items) {
+  for (const item of visible) {
     const key = dateKey(new Date(item.dueAt));
     byDate.set(key, [...(byDate.get(key) ?? []), item]);
   }
+  for (const list of byDate.values()) list.sort((a, b) => Number(isDone(a)) - Number(isDone(b)) || a.dueAt.localeCompare(b.dueAt));
+
+  const inThisMonth = visible.filter((i) => {
+    const d = new Date(i.dueAt);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const left = inThisMonth.filter((i) => !isDone(i) && new Date(i.dueAt).getTime() >= now).length;
+  const missing = inThisMonth.filter((i) => dueState(i, isDone(i), now) === "overdue").length;
+  const doneCount = inThisMonth.filter(isDone).length;
+  const perCourse = (id: string) => inThisMonth.filter((i) => i.courseId === id).length;
+
+  const MAX = 4;
 
   return (
-    <div className="mx-8 mb-10">
-      <div className="mb-2 flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={() => setAnchor(new Date(year, month - 1, 1))}>
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="w-44 text-center font-display text-sm font-semibold">{monthLabel}</span>
-        <Button variant="ghost" size="sm" onClick={() => setAnchor(new Date(year, month + 1, 1))}>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground"
-          onClick={() => setAnchor(new Date(today.getFullYear(), today.getMonth(), 1))}
-        >
-          Today
-        </Button>
+    <div className="mx-6 mb-8 flex flex-col gap-4" style={{ minHeight: "max(720px, calc(100dvh - 11.5rem))" }}>
+      {/* Month bar: title and navigation on the left, the month in numbers on the right. */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Previous month" onClick={() => setAnchor(new Date(year, month - 1, 1))}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <h2 className="min-w-[12.5rem] text-center font-display text-2xl font-semibold tracking-tight">
+            {monthName} <span className="font-normal text-muted-foreground">{year}</span>
+          </h2>
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Next month" onClick={() => setAnchor(new Date(year, month + 1, 1))}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm" className="ml-2 h-8 rounded-full px-3.5 text-xs" onClick={() => setAnchor(new Date(today.getFullYear(), today.getMonth(), 1))}>
+            Today
+          </Button>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full bg-brand/10 px-3 py-1 font-medium text-brand-fg">
+            <span data-numeric className="font-mono font-semibold tabular-nums">{left}</span> still to do
+          </span>
+          {missing > 0 && (
+            <span className="flex items-center gap-1 rounded-full bg-critical/12 px-3 py-1 font-medium text-critical-fg">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span data-numeric className="font-mono font-semibold tabular-nums">{missing}</span> missing
+            </span>
+          )}
+          <span className="rounded-full bg-on-track/12 px-3 py-1 font-medium text-on-track-fg">
+            <span data-numeric className="font-mono font-semibold tabular-nums">{doneCount}</span> done
+          </span>
+        </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border/60">
-        <div className="grid grid-cols-7 border-b border-border/60 bg-fill-ghost/60">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-            <div key={d} className="px-2 py-1.5 text-2xs font-medium uppercase tracking-wide text-muted-foreground">
+      {/* Legend and filter: one chip per course, in its color. */}
+      {courses.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {courses.map((c) => {
+            const off = hidden.has(c.courseId);
+            return (
+              <button
+                key={c.courseId}
+                type="button"
+                onClick={() => toggleCourse(c.courseId)}
+                aria-pressed={!off}
+                title={off ? "Show this course" : "Hide this course"}
+                className={cn(
+                  "flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium transition-all duration-micro",
+                  off ? "border-dashed border-border text-muted-foreground/60" : "border-transparent text-foreground shadow-card",
+                )}
+                style={off ? undefined : { backgroundColor: courseHsla(c.courseId, 0.14) }}
+              >
+                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: courseHsla(c.courseId, off ? 0.3 : 0.95) }} />
+                {labelOf(c)}
+                <span data-numeric className="font-mono text-2xs tabular-nums text-muted-foreground">{perCourse(c.courseId)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card">
+        <div className="grid grid-cols-7 border-b border-border/60">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, k) => (
+            <div
+              key={d}
+              className={cn(
+                "px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider",
+                k === today.getDay() && month === today.getMonth() && year === today.getFullYear() ? "text-brand-fg" : "text-muted-foreground",
+              )}
+            >
               {d}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
-          {cells.map((day) => {
+        <div className="grid flex-1 grid-cols-7" style={{ gridTemplateRows: `repeat(${weeks}, minmax(132px, 1fr))` }}>
+          {cells.map((day, idx) => {
             const inMonth = day.getMonth() === month;
             const isToday = dateKey(day) === dateKey(today);
+            const isPast = day.getTime() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+            const weekend = day.getDay() === 0 || day.getDay() === 6;
             const dayItems = byDate.get(dateKey(day)) ?? [];
+            const open = dayItems.filter((i) => { const st = dueState(i, isDone(i), now); return st !== "done" && st !== "past"; }).length;
+            const special = academicOn(day).slice(0, 1);
+            const shown = dayItems.slice(0, special.length ? MAX - 1 : MAX);
+            const extra = dayItems.length - shown.length;
             return (
               <div
                 key={day.toISOString()}
                 className={cn(
-                  "min-h-24 border-b border-r border-border/40 p-1.5 last:border-r-0",
-                  !inMonth && "bg-fill-ghost/30",
+                  "relative flex min-w-0 flex-col gap-1 border-border/50 p-2",
+                  idx % 7 !== 6 && "border-r",
+                  idx < cells.length - 7 && "border-b",
+                  weekend && inMonth && "bg-fill-ghost/35",
+                  !inMonth && "bg-fill-ghost/50",
+                  isToday && "bg-brand/[0.05]",
                 )}
               >
-                <span
-                  data-numeric
-                  className={cn(
-                    "inline-flex h-5 w-5 items-center justify-center rounded-full font-mono text-2xs tabular-nums",
-                    isToday
-                      ? "bg-brand font-semibold text-white"
-                      : inMonth
-                        ? "text-foreground"
-                        : "text-muted-foreground/50",
-                  )}
-                >
-                  {day.getDate()}
-                </span>
-                {academicOn(day).slice(0, 1).map((s) => (
-                  <div
-                    key={s.label}
+                {isToday && <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[3px] ring-2 ring-inset ring-brand/60" />}
+                <div className="flex items-center justify-between gap-1">
+                  <span
+                    data-numeric
                     className={cn(
-                      "mt-0.5 truncate rounded px-1 py-0.5 text-2xs leading-tight",
-                      s.kind === "holiday" || s.kind === "break"
-                        ? "bg-at-risk/10 text-at-risk-fg"
-                        : "bg-fill-ghost text-muted-foreground",
+                      "inline-flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 font-mono text-[13px] font-semibold tabular-nums",
+                      isToday ? "bg-brand-solid text-white shadow-card" : !inMonth ? "text-muted-foreground/40" : isPast ? "text-muted-foreground" : "text-foreground",
                     )}
-                    title={s.label}
                   >
-                    {s.label}
-                  </div>
-                ))}
-                <div className="mt-0.5 flex flex-col gap-0.5">
-                  {dayItems.slice(0, 3).map((item) => (
-                    <Tooltip key={item.assignmentId}>
-                      <TooltipTrigger asChild>
-                        <Link
-                          to={`/courses/${item.courseId}`}
-                          className={cn(
-                            "truncate rounded px-1 py-0.5 text-2xs leading-tight transition-colors duration-micro",
-                            item.submitted || item.graded
-                              ? "bg-fill-ghost text-muted-foreground line-through"
-                              : "bg-brand/10 text-brand-fg hover:bg-brand/20",
-                          )}
-                        >
-                          {item.name ?? "Untitled"}
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
-                        {courseShort(item.courseCode)} · {item.name ?? "Untitled"}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                  {dayItems.length > 3 && (
-                    <span className="px-1 text-2xs text-muted-foreground">
-                      +{dayItems.length - 3} more
+                    {day.getDate()}
+                  </span>
+                  {open > 0 && inMonth && (
+                    <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-semibold", isPast ? "bg-critical/12 text-critical-fg" : "bg-foreground/[0.06] text-muted-foreground")}>
+                      {open} due
                     </span>
+                  )}
+                </div>
+                <div className={cn("flex min-w-0 flex-col gap-1", !inMonth && "opacity-55")}>
+                  {special.map((s) => (
+                    <div
+                      key={s.label}
+                      title={s.label}
+                      className={cn(
+                        "truncate rounded-md px-2 py-1 text-[11.5px] font-medium",
+                        s.kind === "holiday" || s.kind === "break" ? "bg-at-risk/15 text-at-risk-fg" : "bg-foreground/[0.06] text-muted-foreground",
+                      )}
+                    >
+                      {s.label}
+                    </div>
+                  ))}
+                  {shown.map((item) => (
+                    <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} />
+                  ))}
+                  {extra > 0 && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button type="button" className="w-fit rounded-md px-2 py-0.5 text-left text-[11.5px] font-semibold text-muted-foreground hover:bg-fill-ghost hover:text-foreground">
+                          +{extra} more
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-80 rounded-xl p-3 shadow-elevated">
+                        <div className="mb-2 text-xs font-semibold text-muted-foreground">
+                          {new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(day)}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {dayItems.map((item) => (
+                            <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} roomy />
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
               </div>
@@ -390,6 +533,65 @@ function MonthView({ items }: { items: CalendarItem[] }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/** One due date inside a day cell: course color bar, course code, title.
+ *  Hover for the whole story. */
+function DueChip({ item, label, state, roomy }: { item: CalendarItem; label: string; state: DueState; roomy?: boolean }) {
+  const done = state === "done" || state === "past";
+  const overdue = state === "overdue";
+  return (
+    <Tooltip delayDuration={120}>
+      <TooltipTrigger asChild>
+        <Link
+          to={`/courses/${item.courseId}`}
+          className={cn(
+            "group relative flex min-w-0 items-center gap-1.5 overflow-hidden rounded-md py-1 pl-2.5 pr-1.5 transition-[background-color,box-shadow,opacity] duration-micro hover:shadow-card",
+            roomy ? "text-[13px]" : "text-[12px]",
+            done && "opacity-70 hover:opacity-100",
+            overdue && "ring-1 ring-inset ring-critical/45",
+          )}
+          style={{ backgroundColor: overdue ? undefined : courseHsla(item.courseId, done ? 0.06 : 0.13) }}
+        >
+          <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ backgroundColor: overdue ? "rgb(var(--critical))" : courseHsla(item.courseId, done ? 0.4 : 0.95) }} />
+          {overdue && <span aria-hidden className="absolute inset-0 bg-critical/[0.09]" />}
+          {state === "done" ? (
+            <CheckCircle2 className="relative h-3.5 w-3.5 shrink-0 text-on-track-fg" />
+          ) : overdue ? (
+            <AlertCircle className="relative h-3.5 w-3.5 shrink-0 text-critical-fg" />
+          ) : null}
+          <span className="relative shrink-0 font-mono text-[10.5px] font-semibold tracking-tight text-muted-foreground">{label}</span>
+          <span className={cn("relative min-w-0 truncate font-medium", done ? "text-muted-foreground" : "text-foreground")}>{item.name ?? "Untitled"}</span>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="top" align="start" className="max-w-sm rounded-xl border border-border/70 bg-popover p-0 text-popover-foreground shadow-elevated">
+        <div className="flex">
+          <span className="w-1 shrink-0" style={{ backgroundColor: courseHsla(item.courseId, 0.95) }} />
+          <div className="flex min-w-0 flex-col gap-1.5 px-3.5 py-3">
+            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="truncate">{courseFull(item.courseCode) || label}</span>
+            </div>
+            <div className="text-sm font-semibold leading-snug">{item.name ?? "Untitled"}</div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />
+                {dateTime(item.dueAt)}
+              </span>
+              <span data-numeric className="font-mono tabular-nums">{relativeDue(item.dueAt)}</span>
+              {item.pointsPossible != null && <span data-numeric className="font-mono tabular-nums">{item.pointsPossible} pts</span>}
+            </div>
+            <div className="flex items-center gap-2 pt-0.5">
+              <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATE_CHIP[state])}>
+                {state === "done" ? (item.graded ? "Graded" : item.submitted ? "Submitted" : "Marked done") : STATE_LABEL[state]}
+              </span>
+              {item.source !== "api" && <span className="text-[11px] text-muted-foreground">from {item.source}</span>}
+              <span className="ml-auto text-[11px] text-muted-foreground">Click to open the course</span>
+            </div>
+          </div>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
