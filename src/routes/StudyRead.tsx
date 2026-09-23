@@ -257,7 +257,7 @@ export default function StudyRead() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1280px] flex-col px-6 pb-16 pt-4">
+    <div className="mx-auto flex w-full max-w-[1680px] flex-col px-6 pb-20 pt-4 2xl:px-10">
       {focus && drills.length > 0 && (
         <DrillFocus guide={guide} sectionHeading={section.heading} sectionId={section.id} drills={drills} mastery={mastery} onExit={() => setFocus(false)} />
       )}
@@ -294,9 +294,9 @@ export default function StudyRead() {
         </div>
       </header>
 
-      <div className="flex gap-8">
+      <div className="flex gap-8 2xl:gap-12">
         {/* ── Left rail ───────────────────────────────────────────────── */}
-        <nav aria-label="Sections" className="hidden w-[260px] shrink-0 lg:block">
+        <nav aria-label="Sections" className="hidden w-[240px] shrink-0 lg:block">
           <div className="sticky top-4">
             {(() => {
               const m = sections.filter((s) => sectionStatus(mastery, s.id) === "mastered").length;
@@ -353,7 +353,7 @@ export default function StudyRead() {
 
         {/* ── Centre ──────────────────────────────────────────────────── */}
         <article className="min-w-0 flex-1">
-          <h2 className="mb-5 flex items-baseline gap-3 font-display text-xl font-semibold tracking-tight">
+          <h2 className="mb-8 flex items-baseline gap-3 font-display text-2xl font-semibold tracking-tight">
             <span className="font-mono text-sm font-normal text-muted-foreground">{idx + 1}</span>
             {section.heading}
             {status !== "unread" && (
@@ -404,7 +404,7 @@ export default function StudyRead() {
         </article>
 
         {/* ── Right rail ──────────────────────────────────────────────── */}
-        <aside className="hidden w-[320px] shrink-0 xl:block">
+        <aside className="hidden w-[300px] shrink-0 xl:block">
           <div className="sticky top-4 flex flex-col gap-5">
             <TestMe guide={guide} section={section} mastery={mastery} />
             <Scratchpad guide={guide} section={section} mastery={mastery} />

@@ -3,52 +3,100 @@
   "course": "cs146",
   "lessons": "Lectures 2–3",
   "title": "ADTs, loop invariants, and insertion sort",
-  "summary": "Say what an ADT is and pick stack vs queue for a scenario; write an array stack and a circular queue; draw a singly linked list node-by-node and splice into it without losing the tail; prove a loop correct with a three-part invariant; trace insertion sort the way Poon grades it and explain its best and worst case.",
-  "estimatedMinutes": 75,
-  "sourceNote": "Lecture 2 (Aug 24) and Lecture 3 (Aug 26) slides, HW 2, HW 3, Project 1 Part 1.",
+  "summary": "Say what an ADT is and pick stack vs queue for a real situation; build an array stack and a circular queue; draw a linked list and splice into it without losing anything; prove a loop correct with a three-part invariant; trace insertion sort and explain its best and worst case.",
+  "estimatedMinutes": 90,
+  "sourceNote": "Lecture 2 'Review: Lists, Stacks, Queues' (Aug 24) and Lecture 3 'Loop Invariants, Insertion Sort' (Aug 26) slides, HW 2, HW 3, Project 1 Part 1. Real-world notes are general industry practice.",
   "requires": [],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why this course starts with 'what does it do', not 'how'",
+      "id": "map",
+      "heading": "The big picture: two lectures, six ideas",
       "blocks": [
         {
           "type": "prose",
-          "label": "why",
-          "md": "**The whole lecture in one idea** You can drive a car without knowing whether the engine is gas or electric. The pedals are a **contract**: press this, the car goes. An **Abstract Data Type** is a contract like that for data: it lists the operations you can do (push, pop, peek…) and what they promise, and says nothing about how they're built inside. The 'how' is the **implementation** — and the same contract can have several implementations with very different speeds. Almost every exam question in this course is, underneath, 'which contract does this problem need, and which implementation makes those operations cheap?'",
-          "slide": "The car-pedal idea",
-          "slideNotes": "You already live this idea in Java: `List<String> names = new ArrayList<>()` declares the **contract** on the left (List — what you can do) and the **engine** on the right (ArrayList — how it's done). Swap the right side to `new LinkedList<>()` and every caller compiles unchanged, but insert-at-front goes from O(n) to O(1). That swap-without-breaking is the entire point of ADTs, and it's why exam questions ask 'which implementation would you pick' — the contract never changes, only the costs do.",
-          "id": "why.30f9d804"
+          "md": "Lecture 2 is about **containers**: ways to hold data so the operations you need are fast. Lecture 3 is about **being sure**: proving a loop does what you think, then using that on your first real sort. Each idea below builds on the one before it.",
+          "slide": "What these lectures cover",
+          "id": "map.a6fb9be3"
         },
         {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Every language ships these contracts as libraries, and picking the right one IS the job. In Java: `ArrayDeque` when you need a stack or queue, `ArrayList` when you need a list, and `Stack` exists but is legacy — knowing *why* (it locks on every call) is exactly the ADT-vs-implementation distinction. In interviews, half the medium questions are a story like the tunnel problem below: the interviewer never says the word 'stack'; they describe a behavior and watch whether you hear LIFO or FIFO in it. And in real systems: your editor's undo, the browser's back button, a printer's job list, and the task queue behind every web server are these four contracts, deployed billions of times.",
-          "id": "why.7c3e91a2"
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec1' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='20' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This chapter, in order:</text><text x='10' y='40' font-size='17.2' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >What does it do, and is it right?</text><g><title>1. ADT: a contract: what, not how.</title><circle cx='22' cy='77' r='11' fill='rgb(var(--accent))'/><text x='22' y='81' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><rect x='42' y='58' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='75' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >ADT</text><text x='56' y='89' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >a contract: what, not how</text><text x='470' y='82' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >push / pop …</text><line x1='22' y1='89' x2='22' y2='115' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>2. Stack: last in, first out.</title><circle cx='22' cy='127' r='11' fill='rgb(var(--accent))'/><text x='22' y='131' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><rect x='42' y='108' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='125' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Stack</text><text x='56' y='139' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >last in, first out</text><text x='470' y='132' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(1)</text><line x1='22' y1='139' x2='22' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>3. Queue: first in, first out.</title><circle cx='22' cy='177' r='11' fill='rgb(var(--accent))'/><text x='22' y='181' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><rect x='42' y='158' width='290' height='38' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='175' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Queue</text><text x='56' y='189' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >first in, first out</text><text x='470' y='182' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(1) with %</text><line x1='22' y1='189' x2='22' y2='215' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>4. Linked list: boxes and arrows.</title><circle cx='22' cy='227' r='11' fill='rgb(var(--accent))'/><text x='22' y='231' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><rect x='42' y='208' width='290' height='38' rx='9' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='56' y='225' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Linked list</text><text x='56' y='239' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >boxes and arrows</text><text x='470' y='232' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(1) splice</text><line x1='22' y1='239' x2='22' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>5. Loop invariant: prove a loop is right.</title><circle cx='22' cy='277' r='11' fill='rgb(var(--accent))'/><text x='22' y='281' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><rect x='42' y='258' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='275' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Loop invariant</text><text x='56' y='289' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >prove a loop is right</text><text x='470' y='282' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3 steps</text><line x1='22' y1='289' x2='22' y2='315' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>6. Insertion sort: the first real sort.</title><circle cx='22' cy='327' r='11' fill='rgb(var(--accent))'/><text x='22' y='331' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >6</text><rect x='42' y='308' width='290' height='38' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='325' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Insertion sort</text><text x='56' y='339' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the first real sort</text><text x='470' y='332' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >Ω(n) … O(n²)</text></g><rect x='10' y='362' width='460' height='40' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='240' y='387' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Project 1 uses #6. The midterm uses all six.</text></g>",
+          "viewBox": "0 0 480 414",
+          "caption": "The chapter in six steps. Hover a step to see it in one line.",
+          "slide": "Six ideas",
+          "id": "map.c44cb236"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "heading": "ADT: what it does, not how",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Abstract Data Type (ADT)",
+          "body": "A data type defined by its **behavior** (what operations you can do and what they promise), not its **implementation** (how those operations are built inside).",
+          "id": "why.9ba3affc"
         },
         {
           "type": "trap",
-          "body": "**Poon's definition (reproduce it)** 'An abstract data type is a data type defined by its behavior — what it does — not its implementation — how it does it.' He wants that sentence, then an example. The pedal analogy is his.",
+          "body": "**Poon's definition (reproduce it)** 'An abstract data type is a data type defined by its behavior: what it does: not its implementation: how it does it.' He wants that sentence, then an example. The pedal analogy is his.",
           "source": "Exam",
           "points": null,
-          "id": "why.42b4062a"
+          "id": "why.89aa9eb8"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec2' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >One contract, many ways to build it.</text><g><title>Your code only talks to the contract: the four operations and what they promise.</title><rect x='90' y='34' width='300' height='64' rx='12' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='58' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Stack ADT (the contract)</text><text x='240' y='82' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >push(x) · pop() · peek() · isEmpty()</text></g><g><title>Your program on top: it uses push and pop and never looks inside.</title><rect x='160' y='118' width='160' height='32' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='240' y='139' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >your code</text></g><line x1='240' y1='98' x2='240' y2='118' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><g><title>Implementation 1: an array plus a 'top' index.</title><line x1='170' y1='160' x2='110' y2='196' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc2)'/><rect x='20' y='198' width='190' height='70' rx='10' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='115' y='220' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >array + top</text><rect x='40' y='230' width='36' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='58' y='248.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='76' y='230' width='36' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='94' y='248.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><rect x='112' y='230' width='36' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='130' y='248.8' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='148' y='230' width='36' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/></g><g><title>Implementation 2: a linked list, top = head node.</title><line x1='310' y1='160' x2='370' y2='196' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc2)'/><rect x='270' y='198' width='190' height='70' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='365' y='220' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >linked list + head</text><rect x='284' y='234' width='36' height='24' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='302' y='250.8' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><line x1='322' y1='246' x2='344' y2='246' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc2)'/><rect x='346' y='234' width='36' height='24' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='364' y='250.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><line x1='384' y1='246' x2='406' y2='246' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc2)'/><rect x='408' y='234' width='36' height='24' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='426' y='250.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text></g><text x='240' y='292' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Swap one for the other: your code doesn't change.</text><text x='240' y='310' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Like a car's pedals: gas or electric, same pedals.</text></g>",
+          "viewBox": "0 0 480 318",
+          "caption": "The same Stack contract built two different ways. Your code only ever calls push, pop, peek and isEmpty, so the inside can be swapped without changing a line of your code.",
+          "slide": "Contract vs implementation",
+          "id": "why.09cdfc4b"
+        },
+        {
+          "type": "prose",
+          "md": "**Why separate 'what' from 'how'?** So you can change your mind later. If your code only uses push and pop, you can switch from an array to a linked list (or to something faster that doesn't exist yet) and nothing else breaks. Big programs survive for years because of this separation.",
+          "label": "why",
+          "id": "why.4eae6b31"
         },
         {
           "type": "definition",
           "term": "ADT · List · Stack · Queue",
           "body": "**List**: a sequence you access by position (index). Operations: add, remove, get, size. **Stack**: last in, first out (LIFO). push, pop, peek, isEmpty. Plates in a cafeteria. **Queue**: first in, first out (FIFO). enqueue, dequeue, peek, isEmpty. A checkout line.",
-          "id": "why.14b9fb81"
+          "id": "why.c7eecbc1"
+        },
+        {
+          "type": "prose",
+          "md": "**Every language ships these contracts.** Java's `Deque` interface is the contract; `ArrayDeque` and `LinkedList` are two implementations of it. Python's `list` works as a stack, and `collections.deque` as a queue. When you pick one in real code, you're picking an implementation of an ADT.",
+          "label": "world",
+          "id": "why.730042f0"
+        },
+        {
+          "type": "check",
+          "prompt": "In one sentence, what's the difference between an ADT and a data structure?",
+          "answer": "The ADT is the contract (which operations, what they do); the data structure is how it's built (an array, a linked list). One ADT can have several implementations.",
+          "sectionRef": "why",
+          "id": "why.dd34594b"
         }
       ]
     },
     {
       "id": "stack",
-      "heading": "Stacks: LIFO, and what push/pop actually do",
+      "heading": "Stack: last in, first out",
       "blocks": [
         {
-          "type": "prose",
-          "md": "Your browser's back button is a stack: every page you visit is pushed; Back pops. Undo is a stack. And the big one: **the call stack** — every time a function calls another, the new call is pushed on top; when it returns, it's popped. That's why recursion works at all, and why infinite recursion gives a 'stack overflow' error: the stack literally ran out of room.",
-          "slide": "Where stacks show up",
-          "id": "stack.778c1ffc"
+          "type": "definition",
+          "term": "Stack",
+          "body": "A container where you add and remove at the **same end**, the top. The last item pushed is the first popped: **LIFO** (last in, first out). Operations: **push**, **pop**, **peek**, **isEmpty**.",
+          "id": "stack.cccd1bd8"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec3' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >A stack: you can only touch the TOP.</text><g><title>Plate A: pushed first.</title><ellipse cx='130' cy='230' rx='92' ry='14' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='130' y='235' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >A</text></g><g><title>Plate B: pushed second.</title><ellipse cx='130' cy='194' rx='92' ry='14' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='130' y='199' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >B</text></g><g><title>Plate C: pushed third.</title><ellipse cx='130' cy='158' rx='92' ry='14' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='130' y='163' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >C</text></g><g><title>Plate D: pushed last. It's on top, so it's the only one you can reach.</title><ellipse cx='130' cy='122' rx='92' ry='14' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.4'/><text x='130' y='127' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >D</text></g><line x1='30' y1='254' x2='230' y2='254' stroke='rgb(var(--foreground) / 0.4)' stroke-width='2'/><g><title>push(E): E goes on the top. One step, no matter how many plates.</title><path d='M270 80 Q230 48 190 96' fill='none' stroke='rgb(var(--accent))' stroke-width='1.5' marker-end='url(#arrowBc3)'/><text x='276' y='76' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >push(E)</text><text x='276' y='94' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >goes on top: O(1)</text></g><g><title>pop(): takes the top plate off. The last one pushed comes out first: LIFO.</title><path d='M200 120 Q245 105 290 150' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.5' marker-end='url(#arrowSc3)'/><text x='296' y='150' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >pop() → D</text><text x='296' y='168' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >last in, first out</text></g><g><title>In memory: an array and one index, top. top = −1 means empty.</title><text x='10' y='290' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >in memory:</text><rect x='90' y='274' width='40' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='110' y='294' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >A</text><text x='110' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='130' y='274' width='40' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='150' y='294' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B</text><text x='150' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='170' y='274' width='40' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='190' y='294' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >C</text><text x='190' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='210' y='274' width='40' height='30' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='230' y='294' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >D</text><text x='230' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='250' y='274' width='40' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><text x='270' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='290' y='274' width='40' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><text x='310' y='317' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><line x1='230' y1='344' x2='230' y2='322' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.6' marker-end='url(#arrowSc3)'/><text x='230' y='358' font-size='12.6' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >top = 3</text></g></g>",
+          "viewBox": "0 0 480 372",
+          "caption": "Poon's stack of plates. You can only reach the top plate. In memory it's just an array and one number, top, the index of the newest item (−1 when empty).",
+          "slide": "A stack of plates",
+          "id": "stack.7aa20cc2"
         },
         {
           "type": "stepper",
@@ -77,7 +125,7 @@
                 0
               ],
               "note": "push(5): top = 0",
-              "caption": "push(5): move `top` up by one, then write 5 there. Two steps, no loops, no matter how full the stack is — that's O(1)."
+              "caption": "push(5): move `top` up by one, then write 5 there. Two steps, no loops, no matter how full the stack is: that's O(1)."
             },
             {
               "kind": "array",
@@ -136,7 +184,7 @@
                 1
               ],
               "note": "pop() → 2, top = 1",
-              "caption": "pop(): read `a[top]` (2), then move `top` down. The 2 is still physically in the array, but nothing points at it — it's gone as far as the stack is concerned. The next push will overwrite it."
+              "caption": "pop(): read `a[top]` (2), then move `top` down. The 2 is still physically in the array, but nothing points at it: it's gone as far as the stack is concerned. The next push will overwrite it."
             },
             {
               "kind": "array",
@@ -158,14 +206,25 @@
             }
           ],
           "slide": true,
-          "id": "stack.acaab828"
+          "id": "stack.c80526bb"
+        },
+        {
+          "type": "sim",
+          "sim": "stackqueue",
+          "caption": "Press push a few times, then pop. Try popping when it's empty (underflow) and pushing when it's full (overflow). The log says exactly what changed, in Poon's words.",
+          "params": {
+            "mode": "stack",
+            "capacity": 6
+          },
+          "slide": "Try it: a stack",
+          "id": "stack.dee8daa5"
         },
         {
           "type": "example",
           "title": "Java, because that's what Poon's slides and Project 1 use. If you know JS/TS: `int[]` is a fixed-size array of ints, `public` is just visibility, and the semicolons are mandatory.",
           "body": "public class ArrayStack {\n  private int[] a;\n  private int top = -1;              // index of the top item; -1 = empty\n\n  public ArrayStack(int capacity) { a = new int[capacity]; }\n\n  public void push(int x) {\n    if (top == a.length - 1) throw new RuntimeException(\"overflow\");\n    top++;\n    a[top] = x;\n  }\n  public int pop() {\n    if (top == -1) throw new RuntimeException(\"underflow\");\n    int x = a[top];\n    top--;\n    return x;\n  }\n  public int peek()      { return a[top]; }   // same check as pop\n  public boolean isEmpty() { return top == -1; }\n}",
           "slide": "Array stack in Java (write it cold)",
-          "slideNotes": "'Write it cold' means: close the guide, open a blank file, and type push/pop/peek from memory until it compiles in your head. The three failure points graders look for: forgetting the **full check** in push, forgetting the **empty check** in pop, and mixing up `top++` vs `++top` (does top point AT the last element or one PAST it? Pick one story and keep it). The USFCA visualizer below animates both the array and linked versions one operation at a time — race it: predict the picture before each click.",
+          "slideNotes": "'Write it cold' means: close the guide, open a blank file, and type push/pop/peek from memory until it compiles in your head. The three failure points graders look for: forgetting the **full check** in push, forgetting the **empty check** in pop, and mixing up `top++` vs `++top` (does top point AT the last element or one PAST it? Pick one story and keep it). The USFCA visualizer below animates both the array and linked versions one operation at a time: race it: predict the picture before each click.",
           "resources": [
             {
               "label": "Stack visualizer (USFCA)",
@@ -173,39 +232,75 @@
               "kind": "site"
             }
           ],
-          "id": "stack.c81ce0de"
+          "id": "stack.b80fc2e4"
         },
         {
           "type": "prose",
-          "md": "A **linked list** version keeps the top as the head node (the full node-and-arrow picture gets its own section below). push: make a new node, point its next at the old head, make it the new head — that's the two-write splice at the head position. pop: save the head's value, move head to head.next. Same four operations, same O(1) cost. Differences: no overflow (it grows as needed), no fixed capacity, but every node costs an extra pointer of memory and the nodes are scattered around memory instead of side by side. Underflow check becomes `head == null`.",
-          "slide": "Linked stack: same contract, different insides",
-          "id": "stack.a3187b1b"
+          "md": "**Stacks run your computer.** Every time a function calls another function, the computer pushes a 'frame' onto the **call stack**; when it returns, the frame is popped. That's why too much recursion gives a 'stack overflow'. Undo in any editor is a stack of your actions. Your browser's Back button is a stack of pages. Code editors check that brackets match with a stack.",
+          "label": "world",
+          "id": "stack.592cb3ff"
+        },
+        {
+          "type": "prose",
+          "md": "**When you see 'most recent first', think stack.** Undo, back, 'return to where I was', nested things that must close in reverse order (brackets, HTML tags, function calls).",
+          "label": "think",
+          "id": "stack.ffd0badf"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: do the brackets match?",
+          "task": "Code editors use a stack to check brackets. Finish `balanced(s)`: push every opening bracket; on a closing bracket, the top of the stack must be its partner, so pop it. At the end the stack must be empty. A Python list is a stack: `append` is push, `pop()` is pop, `stack[-1]` is peek.",
+          "starter": "PAIRS = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n\ndef balanced(s):\n    stack = []\n    for ch in s:\n        if ch in \"([{\":\n            pass   # push it\n        elif ch in \")]}\":\n            pass   # the stack must not be empty, and its top must be PAIRS[ch]; then pop\n    return True    # balanced only if nothing is left open\n\nfor s in [\"(a[b]{c})\", \"(]\", \"((\", \"{[()()]}\", \")(\"]:\n    print(f\"{s:10} -> {balanced(s)}\")\n",
+          "check": "assert balanced(\"(a[b]{c})\") is True, \"'(a[b]{c})' is balanced.\"\nassert balanced(\"(]\") is False, \"'(]' is not balanced: ] closes something that was opened with (.\"\nassert balanced(\"((\") is False, \"'((' is not balanced: two brackets are still open at the end. Is the stack empty?\"\nassert balanced(\")(\") is False, \"')(' is not balanced: the ) arrives when nothing is open. Check for an empty stack before popping.\"\nassert balanced(\"{[()()]}\") is True, \"'{[()()]}' is balanced.\"\nassert balanced(\"\") is True, \"An empty string is balanced.\"",
+          "solution": "PAIRS = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n\ndef balanced(s):\n    stack = []\n    for ch in s:\n        if ch in \"([{\":\n            stack.append(ch)\n        elif ch in \")]}\":\n            if not stack or stack[-1] != PAIRS[ch]:\n                return False\n            stack.pop()\n    return len(stack) == 0\n\nfor s in [\"(a[b]{c})\", \"(]\", \"((\", \"{[()()]}\", \")(\"]:\n    print(f\"{s:10} -> {balanced(s)}\")\n",
+          "hints": [
+            "Push: `stack.append(ch)`.",
+            "On a closer: `if not stack or stack[-1] != PAIRS[ch]: return False`, then `stack.pop()`.",
+            "At the end: `return len(stack) == 0`."
+          ],
+          "success": "This is exactly how an editor underlines a missing bracket, and how a compiler matches { with }. The most recent opener must close first: LIFO.",
+          "id": "stack.47c5088f"
         },
         {
           "type": "check",
           "prompt": "You push 1, 2, 3, then pop once, then push 4. What does peek return, and what's the order the remaining items come out in?",
           "answer": "peek → 4. Pops give 4, 2, 1. (3 was popped and is gone.)",
           "sectionRef": "stack",
-          "id": "stack.1f743ec1"
+          "id": "stack.e1e7827b"
         }
       ]
     },
     {
       "id": "queue",
-      "heading": "Queues: FIFO, and why the circular buffer exists",
+      "heading": "Queue: first in, first out",
       "blocks": [
         {
-          "type": "prose",
-          "md": "Anything that must be served in arrival order: print jobs, the operating system deciding which program runs next, messages between servers, breadth-first search later in this course. The contract: **enqueue** at the back, **dequeue** from the front.",
-          "slide": "Where queues show up",
-          "id": "queue.74e0af0a"
+          "type": "definition",
+          "term": "Queue",
+          "body": "A container where you add at the **back** and remove from the **front**. The first item in is the first out: **FIFO**. Operations: **enqueue**, **dequeue**, **peek**, **isEmpty**.",
+          "id": "queue.095628af"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec4' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >A queue: join at the back, leave from the front.</text><g><title>A: arrived first. At the front, so served next.</title><circle cx='134' cy='58' r='13' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><rect x='116' y='74' width='36' height='42' rx='12' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='134' y='101' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >A</text></g><g><title>B: arrived second.</title><circle cx='204' cy='58' r='13' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><rect x='186' y='74' width='36' height='42' rx='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='204' y='101' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >B</text></g><g><title>C: arrived third.</title><circle cx='274' cy='58' r='13' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><rect x='256' y='74' width='36' height='42' rx='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='274' y='101' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >C</text></g><g><title>D: arrived last. At the back.</title><circle cx='344' cy='58' r='13' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><rect x='326' y='74' width='36' height='42' rx='12' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><text x='344' y='101' font-size='16.1' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >D</text></g><g><title>The register: dequeue() serves whoever is at the front.</title><rect x='10' y='60' width='70' height='56' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='45' y='92.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >register</text><line x1='108' y1='96' x2='84' y2='96' stroke='rgb(var(--accent))' stroke-width='1.6' marker-end='url(#arrowBc4)'/><text x='8' y='136' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >dequeue() → A</text></g><g><title>enqueue(E): the new person joins at the back.</title><line x1='440' y1='96' x2='410' y2='96' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc4)'/><text x='470' y='136' font-size='13.8' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >enqueue(E)</text></g><text x='240' y='162' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >first in, first out (FIFO)</text><g><title>The naive array queue keeps the front at index 0, so every dequeue shifts everyone left: n moves.</title><rect x='10' y='180' width='460' height='88' rx='10' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.3'/><text x='22' y='200' font-size='14.4' fill='rgb(var(--critical-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Naive array: front stays at index 0</text><rect x='22' y='212' width='44' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='44' y='230.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B</text><rect x='66' y='212' width='44' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='88' y='230.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >C</text><rect x='110' y='212' width='44' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='132' y='230.8' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >D</text><rect x='154' y='212' width='44' height='28' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><path d='M96 244 Q74 258 52 244' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2' marker-end='url(#arrowSc4)'/><path d='M140 244 Q118 258 96 244' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2' marker-end='url(#arrowSc4)'/><text x='210' y='232' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >every dequeue: shift all</text><text x='210' y='250' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >left = O(n). Too slow.</text></g></g>",
+          "viewBox": "0 0 480 276",
+          "caption": "Poon's checkout line. People join at the back and leave from the front. The red box is the slow way to build it: keeping the front at index 0 means every dequeue shifts the whole line.",
+          "slide": "A checkout line",
+          "id": "queue.9369dcc5"
         },
         {
           "type": "prose",
+          "md": "**Why the naive array is too slow.** If the front must stay at index 0, removing it leaves a hole, and every other item shifts left to fill it: n moves for one dequeue, O(n). A queue holding a million waiting requests would move a million items for every single dequeue.",
           "label": "why",
-          "md": "**Why 'just use an array' is O(n)** Put the front at index 0. Dequeue removes index 0 — and now everything has to shift one slot left to keep the front at 0. For a queue of n items that's n copies for one removal: O(n). Poon calls this the naive array queue. The fix keeps two indexes, `head` and `tail`, and lets the data **wrap around** the end of the array.",
-          "slide": "The naive array queue's problem",
-          "id": "queue.2e046e32"
+          "id": "queue.657dc302"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec5' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The fix: let the queue wrap around.</text><g><title>Slot 0: holds G. tail: the newest item.</title><circle cx='150' cy='60' r='22' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='150' y='65' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >G</text><text x='150' y='30' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text></g><g><title>Slot 1: free.</title><circle cx='213.6' cy='86.4' r='22' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.4' stroke-dasharray='4 3'/><text x='213.6' y='91.4' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' ></text><text x='237.7' y='66.3' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text></g><g><title>Slot 2: free.</title><circle cx='240' cy='150' r='22' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.4' stroke-dasharray='4 3'/><text x='240' y='155' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' ></text><text x='274' y='154' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text></g><g><title>Slot 3: free.</title><circle cx='213.6' cy='213.6' r='22' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.4' stroke-dasharray='4 3'/><text x='213.6' y='218.6' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' ></text><text x='237.7' y='241.7' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text></g><g><title>Slot 4: holds C. head: the next dequeue reads here.</title><circle cx='150' cy='240' r='22' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.4'/><text x='150' y='245' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >C</text><text x='150' y='278' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text></g><g><title>Slot 5: holds D.</title><circle cx='86.4' cy='213.6' r='22' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='86.4' y='218.6' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >D</text><text x='62.3' y='241.7' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text></g><g><title>Slot 6: holds E.</title><circle cx='60' cy='150' r='22' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='60' y='155' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >E</text><text x='26' y='154' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text></g><g><title>Slot 7: holds F.</title><circle cx='86.4' cy='86.4' r='22' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='86.4' y='91.4' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >F</text><text x='62.3' y='66.3' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text></g><path d='M190 120 Q190 180 190 180' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.3' marker-end='url(#arrowSc5)'/><text x='150' y='154' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >wraps</text><text x='150' y='170' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >around</text><g><title>head = 4 (C is the oldest), tail = 0 (G was just added, and it wrapped past the end).</title><text x='290' y='70' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >head = 4</text><text x='290' y='88' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >next dequeue: C</text><text x='290' y='124' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >tail = 0</text><text x='290' y='142' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >G wrapped to slot 0:</text><text x='290' y='158' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >(7 + 1) % 8 = 0</text></g><g><title>Both operations just move an index with % capacity: O(1), nothing ever shifts.</title><rect x='282' y='170' width='188' height='112' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='294' y='190' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >enqueue moves tail:</text><text x='294' y='207' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >(tail + 1) % 8</text><text x='294' y='229' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >dequeue moves head:</text><text x='294' y='246' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >(head + 1) % 8</text><text x='294' y='270' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >both O(1)</text></g><text x='240' y='308' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Logical order: C, D, E, F, G (start at head, go around).</text></g>",
+          "viewBox": "0 0 480 318",
+          "caption": "The circular buffer. Keep two indexes, head and tail, and let them wrap around the end of the array with % capacity. Nothing ever shifts, so enqueue and dequeue are both O(1).",
+          "slide": "The circular buffer",
+          "id": "queue.e3886a67"
         },
         {
           "type": "stepper",
@@ -255,7 +350,7 @@
                 2
               ],
               "note": "dequeue() → A, head = 1",
-              "caption": "dequeue(): read `a[head]` (A) and move `head` right. Nothing shifts. The naive version would copy B and C one slot left — O(n) work for one removal. We just moved an index: O(1)."
+              "caption": "dequeue(): read `a[head]` (A) and move `head` right. Nothing shifts. The naive version would copy B and C one slot left: O(n) work for one removal. We just moved an index: O(1)."
             },
             {
               "kind": "array",
@@ -273,7 +368,7 @@
                 3
               ],
               "note": "enqueue D → tail = 3",
-              "caption": "enqueue(D) fills the last slot. The array now looks full — but slot 0 is free. Without a trick, the next enqueue fails even though there's room."
+              "caption": "enqueue(D) fills the last slot. The array now looks full: but slot 0 is free. Without a trick, the next enqueue fails even though there's room."
             },
             {
               "kind": "array",
@@ -292,41 +387,119 @@
                 0
               ],
               "note": "enqueue E → tail = (3+1) % 4 = 0",
-              "caption": "The trick: `tail = (tail + 1) % capacity`. 4 % 4 = 0, so `tail` wraps around to slot 0 and E goes there. The queue order is still B, C, D, E — it just bends around the end of the array. That's why Poon's efficient queue uses modulo."
+              "caption": "The trick: `tail = (tail + 1) % capacity`. 4 % 4 = 0, so `tail` wraps around to slot 0 and E goes there. The queue order is still B, C, D, E: it just bends around the end of the array. That's why Poon's efficient queue uses modulo."
             }
           ],
           "slide": true,
-          "id": "queue.834809ff"
+          "id": "queue.31199ab1"
         },
         {
-          "type": "figure",
-          "viewBox": "0 0 640 240",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='cqA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='cqG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><g><title>The array itself: 8 fixed slots that never move and never shift. Green = currently holding queue data (C, D, E and the wrapped F). The faded slots 1–4 aren't empty in memory — they hold stale values from old dequeues, waiting to be overwritten. The queue is just the region between head and tail, read with wraparound.</title><rect x='32' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='104' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='176' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='248' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='320' y='70' width='64' height='48' rx='8' fill='none' stroke='currentColor' opacity='0.35'/><rect x='392' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='464' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='536' y='70' width='64' height='48' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='64' y='101' text-anchor='middle' font-size='17' font-weight='700'>F</text><text x='424' y='101' text-anchor='middle' font-size='17' font-weight='700'>C</text><text x='496' y='101' text-anchor='middle' font-size='17' font-weight='700'>D</text><text x='568' y='101' text-anchor='middle' font-size='17' font-weight='700'>E</text><text x='64' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>0</text><text x='136' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>1</text><text x='208' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>2</text><text x='280' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>3</text><text x='352' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>4</text><text x='424' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>5</text><text x='496' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>6</text><text x='568' y='138' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' opacity='0.55'>7</text></g><g><title>head = 5: where the NEXT dequeue reads. It only ever moves right (with wraparound) — dequeue never shifts data, it just abandons a slot. That's the whole O(n)-to-O(1) win over the naive queue.</title><text x='424' y='34' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>head = 5</text><path d='M424 40 L424 64' stroke='rgb(var(--on-track))' stroke-width='1.6' fill='none' marker-end='url(#cqG)'/></g><g><title>tail = 0: where the LAST enqueue wrote. Yes, zero — the newest item F sits at the array's start even though it's logically last. Position in the array means nothing; only head, tail and the modulo arithmetic define the queue.</title><text x='64' y='34' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>tail = 0</text><path d='M64 40 L64 64' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cqA)'/></g><g><title>The wrap: E went into slot 7, so the next enqueue computed (7 + 1) % 8 = 0 and F landed in slot 0. One modulo replaces all shifting — this is the single line of code the whole circular design exists for.</title><path d='M568 126 C 520 192, 112 192, 68 128' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cqA)'/><text x='318' y='188' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>(7 + 1) % 8 = 0 — tail wrapped</text></g><g><title>What a consumer actually sees when it drains the queue: start at head and follow the arithmetic — C, D, E, then wrap to F. The physical layout (F first!) never leaks out through the ADT's operations.</title><text x='318' y='222' text-anchor='middle' font-size='11' opacity='0.7'>logical queue order, starting at head: C → D → E → F</text></g></g>",
-          "caption": "The stepper's queue, grown to capacity 8 and one wrap later. Green cells are occupied; F physically sits at index 0 even though it's the LAST item, because (7 + 1) % 8 = 0. The queue's logical order starts at head and follows the arithmetic, not the picture: C, D, E, F. Slots 1–4 hold garbage from old dequeues, waiting to be overwritten. Real systems call this exact structure a ring buffer — your keyboard driver, sound card, and network card each run one right now.",
-          "slide": "Why it's called circular",
-          "slideNotes": "The one thing this picture hides is the classic gotcha: with only `front` and `rear` pointers, a **completely full** ring and a **completely empty** ring look identical (front == rear). That's why real implementations either keep a separate `size` counter or sacrifice one slot ('full' = rear is one behind front). If an exam asks 'how do you tell full from empty in a circular queue,' that's the expected answer — and it's worth trying both cases by hand on VisuAlgo's queue mode below.",
-          "resources": [
-            {
-              "label": "Play with lists, stacks & queues (VisuAlgo)",
-              "url": "https://visualgo.net/en/list",
-              "kind": "site"
-            }
-          ],
-          "id": "queue.b1c2d3e4"
+          "type": "sim",
+          "sim": "stackqueue",
+          "caption": "Switch between 'Queue (naive, shifts)' and 'Queue (circular buffer)'. Fill each, dequeue three, enqueue three more. The naive one's move counter climbs; the circular one's tail wraps to index 0 and nothing moves.",
+          "params": {
+            "mode": "queue",
+            "capacity": 6
+          },
+          "slide": "Try it: two queues",
+          "id": "queue.f1a1308c"
         },
         {
           "type": "example",
           "title": "The `%` keeps head and tail inside 0..capacity−1. `size` tells full from empty (both have head == tail otherwise).",
           "body": "public class ArrayQueue {\n  private int[] a; private int head = 0, tail = -1, size = 0;\n  public ArrayQueue(int capacity) { a = new int[capacity]; }\n\n  public void enqueue(int x) {\n    if (size == a.length) throw new RuntimeException(\"overflow\");\n    tail = (tail + 1) % a.length;    // wrap around\n    a[tail] = x; size++;\n  }\n  public int dequeue() {\n    if (size == 0) throw new RuntimeException(\"underflow\");\n    int x = a[head];\n    head = (head + 1) % a.length;    // wrap around\n    size--; return x;\n  }\n}",
           "slide": "Circular queue in Java",
-          "id": "queue.0488b2d9"
+          "id": "queue.f9593260"
         },
         {
           "type": "trap",
-          "body": "**The linked-queue bug he calls out** A linked queue keeps `head` (front) and `tail` (back). When you dequeue the **last** item, head becomes null — and you must also set `tail = null`. Forget that and `tail` points at a node that no longer belongs to the queue; the next enqueue attaches to a ghost. He shows this on the slides; it's a likely 'what's wrong with this code' question.",
+          "body": "**The linked-queue bug he calls out** A linked queue keeps `head` (front) and `tail` (back). When you dequeue the **last** item, head becomes null: and you must also set `tail = null`. Forget that and `tail` points at a node that no longer belongs to the queue; the next enqueue attaches to a ghost. He shows this on the slides; it's a likely 'what's wrong with this code' question.",
           "source": "Exam material",
           "points": null,
-          "id": "queue.abd2d827"
+          "id": "queue.e2e77b55"
+        },
+        {
+          "type": "prose",
+          "md": "**Queues are how computers take turns.** The print queue on a shared printer. Your operating system's list of programs waiting for the CPU. Every web server's line of incoming requests. Messaging systems (like the ones that deliver your notifications) are queues between programs. Audio and video players use a circular buffer so sound keeps flowing while the next chunk downloads.",
+          "label": "world",
+          "id": "queue.8417ef9d"
+        },
+        {
+          "type": "prose",
+          "md": "**When you see 'in the order they arrived' or 'fair turns', think queue.** When you see 'most recent first', think stack. That one question decides most 'which ADT?' exam questions.",
+          "label": "think",
+          "id": "queue.c522438d"
+        },
+        {
+          "type": "example",
+          "title": "Picking the ADT from a story",
+          "body": "A single-lane tunnel. Scenario 1: cars leave in the order they entered. Scenario 2: the tunnel is blocked, so the last car in must back out first. Which ADT models each, and which operations are entering and leaving?\n\n1. Ask one question: does the *first* thing in leave first, or the *last*?\n2. Scenario 1: first in, first out → **Queue**. Entering = enqueue at the back. Leaving = dequeue from the front.\n3. Scenario 2: last in, first out → **Stack**. Entering = push. Backing out = pop: the most recently pushed car is the first one popped.",
+          "answer": "1: queue (enqueue/dequeue). 2: stack (push/pop).",
+          "slide": "HW 2: the single-lane tunnel",
+          "id": "queue.b497f96a"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: a circular queue",
+          "task": "Finish `enqueue` and `dequeue` for a circular buffer. Keep `head` (where the next dequeue reads), `size`, and compute the write position as `(head + size) % cap`. Both methods move an index with `%`, and nothing ever shifts.",
+          "starter": "class CircularQueue:\n    def __init__(self, cap):\n        self.a = [None] * cap\n        self.cap = cap\n        self.head = 0\n        self.size = 0\n\n    def enqueue(self, x):\n        if self.size == self.cap:\n            raise OverflowError(\"queue is full\")\n        pass   # write x at (head + size) % cap, then size += 1\n\n    def dequeue(self):\n        if self.size == 0:\n            raise IndexError(\"queue is empty\")\n        pass   # read a[head], move head forward with %, size -= 1, return the value\n\nq = CircularQueue(4)\nfor x in [10, 20, 30]:\n    q.enqueue(x)\nprint(q.dequeue(), q.dequeue())   # should print 10 20\nq.enqueue(40); q.enqueue(50)      # 50 wraps around to index 0\nprint(q.a, \"head =\", q.head)\n",
+          "check": "q = CircularQueue(4)\nfor x in [10, 20, 30]:\n    q.enqueue(x)\nv1 = q.dequeue(); v2 = q.dequeue()\nassert (v1, v2) == (10, 20), f\"After enqueue 10, 20, 30, two dequeues should give 10 then 20 (first in, first out). Got {v1}, {v2}.\"\nq.enqueue(40); q.enqueue(50); q.enqueue(60)\nassert q.a[0] == 50, f\"50 should wrap around to index 0. The array is {q.a}. Did you use % cap?\"\ngot = [q.dequeue() for _ in range(4)]\nassert got == [30, 40, 50, 60], f\"The remaining items should come out 30, 40, 50, 60. Got {got}.\"\nassert q.size == 0, \"After taking everything out, size should be 0.\"",
+          "solution": "class CircularQueue:\n    def __init__(self, cap):\n        self.a = [None] * cap\n        self.cap = cap\n        self.head = 0\n        self.size = 0\n\n    def enqueue(self, x):\n        if self.size == self.cap:\n            raise OverflowError(\"queue is full\")\n        self.a[(self.head + self.size) % self.cap] = x\n        self.size += 1\n\n    def dequeue(self):\n        if self.size == 0:\n            raise IndexError(\"queue is empty\")\n        x = self.a[self.head]\n        self.head = (self.head + 1) % self.cap\n        self.size -= 1\n        return x\n\nq = CircularQueue(4)\nfor x in [10, 20, 30]:\n    q.enqueue(x)\nprint(q.dequeue(), q.dequeue())\nq.enqueue(40); q.enqueue(50)\nprint(q.a, \"head =\", q.head)\n",
+          "hints": [
+            "enqueue: `self.a[(self.head + self.size) % self.cap] = x` then `self.size += 1`.",
+            "dequeue: save `x = self.a[self.head]` first.",
+            "Then `self.head = (self.head + 1) % self.cap`, `self.size -= 1`, `return x`."
+          ],
+          "success": "Both operations are a couple of assignments, no matter how full the queue is: O(1). This is the buffer inside audio players and network cards.",
+          "id": "queue.9b52b39b"
+        },
+        {
+          "type": "check",
+          "prompt": "Why does the efficient array queue use `% capacity`?",
+          "answer": "So head and tail wrap around to reuse the slots freed at the front. Without it, either the queue walks off the end of the array while empty slots sit unused at the front, or dequeue has to shift every element (O(n)). With it, both operations stay O(1).",
+          "sectionRef": "queue",
+          "id": "queue.dde65915"
+        }
+      ]
+    },
+    {
+      "id": "linked",
+      "heading": "Linked list: boxes and arrows",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Linked list",
+          "body": "A chain of **nodes**. Each node holds a **value** and the **address of the next node**. The list is reached through one variable, **head**; the last node's next is **null**.",
+          "id": "linked.a15cf8cb"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc6' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc6' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec6' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Array = numbered lockers. Linked list = a train.</text><text x='10' y='74' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >array</text><g><title>An array: every item sits right next to the one before it, so item k's spot can be computed. get(k) is one jump.</title><rect x='60' y='52' width='58' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='89' y='74.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><text x='89' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='118' y='52' width='58' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='147' y='74.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><text x='147' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='176' y='52' width='58' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='205' y='74.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><text x='205' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='234' y='52' width='58' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='263' y='74.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><text x='263' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='292' y='52' width='58' height='34' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='321' y='74.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >18</text><text x='321' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='350' y='52' width='58' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='379' y='74.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='379' y='99' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><path d='M90 50 Q205.5 28 321 50' fill='none' stroke='rgb(var(--accent))' stroke-width='1.5' marker-end='url(#arrowBc6)'/><text x='329' y='14' font-size='1.1' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' ></text><text x='470' y='118' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >get(4): one jump, O(1)</text></g><text x='10' y='160' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >linked</text><g><title>A linked list: each node holds a value and the address of the next node. To reach node 4 you must follow 4 arrows from head.</title><text x='60' y='132' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >head</text><rect x='60' y='142' width='38' height='32' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='79' y='163.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><rect x='98' y='142' width='20' height='32' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='108' cy='158' r='3' fill='currentColor'/><line x1='110' y1='158' x2='138' y2='158' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='140' y='142' width='38' height='32' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='159' y='163.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><rect x='178' y='142' width='20' height='32' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='188' cy='158' r='3' fill='currentColor'/><line x1='190' y1='158' x2='218' y2='158' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='220' y='142' width='38' height='32' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='239' y='163.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='258' y='142' width='20' height='32' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='268' cy='158' r='3' fill='currentColor'/><line x1='270' y1='158' x2='298' y2='158' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='300' y='142' width='38' height='32' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='319' y='163.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='338' y='142' width='20' height='32' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='348' cy='158' r='3' fill='currentColor'/><line x1='350' y1='158' x2='378' y2='158' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='380' y='142' width='38' height='32' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='399' y='163.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >18</text><rect x='418' y='142' width='20' height='32' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='428' cy='158' r='3' fill='currentColor'/><text x='444' y='163' font-size='1.1' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' ></text><text x='169' y='196' font-size='12.1' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >hop 1</text><text x='249' y='196' font-size='12.1' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >hop 2</text><text x='329' y='196' font-size='12.1' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >hop 3</text><text x='409' y='196' font-size='12.1' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >hop 4</text><text x='470' y='222' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >get(4): walk 4 hops, O(n)</text></g><g><title>But inserting in the middle: the array must shift everything after; the list rewires two arrows.</title><rect x='10' y='236' width='460' height='52' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='22' y='256' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >insert in the middle:</text><text x='22' y='276' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >array shifts everything after: O(n)</text><text x='458' y='256' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >list: rewire 2 arrows</text><text x='458' y='276' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >O(1) once you're there</text></g></g>",
+          "viewBox": "0 0 480 296",
+          "caption": "Poon's two pictures: an array is a row of numbered lockers (jump straight to locker k), a linked list is a train (walk car by car). The bottom box is the trade: the list is slow to index but cheap to change in the middle.",
+          "slide": "Lockers vs a train",
+          "id": "linked.7178eae5"
+        },
+        {
+          "type": "definition",
+          "term": "Node · head · null",
+          "body": "**Node**: one box holding `data` and `next` (the address of the following node). **head**: the variable holding the first node's address: lose it and the entire list is unreachable. **null** in a `next` field means 'the chain ends here'; the last node always carries it. An empty list is simply `head == null`.",
+          "id": "linked.97cff461"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc7' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc7' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec7' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Insert X after B: two writes, in THIS order.</text><g><title>Before: A → B → C → D. X is a new node, not linked yet.</title><text x='10' y='42' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >before</text><rect x='20' y='50' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='38' y='70.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >A</text><rect x='56' y='50' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='65' cy='65' r='3' fill='currentColor'/><rect x='130' y='50' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='148' y='70.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B</text><rect x='166' y='50' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='175' cy='65' r='3' fill='currentColor'/><rect x='260' y='50' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='278' y='70.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >C</text><rect x='296' y='50' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='305' cy='65' r='3' fill='currentColor'/><rect x='370' y='50' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='388' y='70.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >D</text><rect x='406' y='50' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='415' cy='65' r='3' fill='currentColor'/><line x1='67' y1='65' x2='128' y2='65' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><line x1='417' y1='65' x2='450' y2='65' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><text x='454' y='70' font-size='14.9' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >∅</text><line x1='177' y1='65' x2='258' y2='65' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><line x1='307' y1='65' x2='368' y2='65' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><rect x='195' y='98' width='36' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='213' y='118.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >X</text><rect x='231' y='98' width='18' height='30' rx='4' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/></g><g><title>① X.next = B.next: X now points at C too. Nothing is lost yet.</title><text x='10' y='142' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >① X.next = B.next</text><rect x='20' y='150' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='38' y='170.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >A</text><rect x='56' y='150' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='65' cy='165' r='3' fill='currentColor'/><rect x='130' y='150' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='148' y='170.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B</text><rect x='166' y='150' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='175' cy='165' r='3' fill='currentColor'/><rect x='260' y='150' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='278' y='170.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >C</text><rect x='296' y='150' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='305' cy='165' r='3' fill='currentColor'/><rect x='370' y='150' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='388' y='170.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >D</text><rect x='406' y='150' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='415' cy='165' r='3' fill='currentColor'/><line x1='67' y1='165' x2='128' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><line x1='417' y1='165' x2='450' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><text x='454' y='170' font-size='14.9' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >∅</text><line x1='177' y1='165' x2='258' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><line x1='307' y1='165' x2='368' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><rect x='195' y='194' width='36' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='213' y='214.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >X</text><rect x='231' y='194' width='18' height='30' rx='4' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><circle cx='240' cy='209' r='3' fill='rgb(var(--accent))'/><line x1='244' y1='202' x2='272' y2='182' stroke='rgb(var(--accent))' stroke-width='1.6' marker-end='url(#arrowBc7)'/></g><g><title>② B.next = X: B skips to X, and X leads on to C. Done: A → B → X → C → D, in O(1).</title><text x='10' y='242' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >② B.next = X</text><rect x='20' y='250' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='38' y='270.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >A</text><rect x='56' y='250' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='65' cy='265' r='3' fill='currentColor'/><rect x='130' y='250' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='148' y='270.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B</text><rect x='166' y='250' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='175' cy='265' r='3' fill='currentColor'/><rect x='260' y='250' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='278' y='270.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >C</text><rect x='296' y='250' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='305' cy='265' r='3' fill='currentColor'/><rect x='370' y='250' width='36' height='30' rx='6' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='388' y='270.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >D</text><rect x='406' y='250' width='18' height='30' rx='4' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><circle cx='415' cy='265' r='3' fill='currentColor'/><line x1='67' y1='265' x2='128' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><line x1='417' y1='265' x2='450' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><text x='454' y='270' font-size='14.9' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >∅</text><line x1='307' y1='265' x2='368' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><rect x='195' y='294' width='36' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='213' y='314.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >X</text><rect x='231' y='294' width='18' height='30' rx='4' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><circle cx='240' cy='309' r='3' fill='rgb(var(--on-track))'/><line x1='177' y1='270' x2='200' y2='292' stroke='rgb(var(--on-track))' stroke-width='2' marker-end='url(#arrowSc7)'/><line x1='244' y1='302' x2='272' y2='282' stroke='rgb(var(--on-track))' stroke-width='2' marker-end='url(#arrowSc7)'/></g><g><title>Do ② first and C's address is overwritten before anything else holds it: C and D are lost.</title><rect x='10' y='334' width='460' height='36' rx='8' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.3'/><text x='240' y='357' font-size='14.4' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Swap the order and C, D are lost forever.</text></g></g>",
+          "viewBox": "0 0 480 378",
+          "caption": "Inserting X after B is two pointer writes, and the order matters: first point X at C, then point B at X. Hover each row.",
+          "slide": "Splicing in two writes",
+          "id": "linked.9f7670a0"
+        },
+        {
+          "type": "trap",
+          "body": "**Rewire in the wrong order, lose the list** When inserting after node B, `X.next = B.next` MUST come before `B.next = X`. Write B's next first and the old address is destroyed with nothing else pointing at the rest of the chain: in Java it silently becomes garbage; in a 'what does this code do' exam question it's the intended wrong answer. Same discipline when deleting: save `node.next` before you cut the node out.",
+          "source": "Exam material",
+          "points": null,
+          "id": "linked.7a0e8eb5"
         },
         {
           "type": "table",
@@ -338,12 +511,12 @@
           "rows": [
             [
               "Get item at index k",
-              "O(1) — like numbered lockers",
-              "O(n) — walk the train car by car"
+              "O(1): like numbered lockers",
+              "O(n): walk the train car by car"
             ],
             [
               "Insert / delete in the middle",
-              "O(n) — shift everything after",
+              "O(n): shift everything after",
               "O(1) if you're already holding the node"
             ],
             [
@@ -357,99 +530,49 @@
               "Grows one node at a time, no overflow"
             ]
           ],
-          "slide": "Array vs linked list — the trade-off in one table",
-          "id": "queue.fc3d685a"
+          "slide": "Array vs linked list: the trade-off in one table",
+          "id": "linked.64ad988b"
         },
-        {
-          "type": "example",
-          "title": "Picking the ADT from a story",
-          "body": "A single-lane tunnel. Scenario 1: cars leave in the order they entered. Scenario 2: the tunnel is blocked, so the last car in must back out first. Which ADT models each, and which operations are entering and leaving?\n\n1. Ask one question: does the *first* thing in leave first, or the *last*?\n2. Scenario 1: first in, first out → **Queue**. Entering = enqueue at the back. Leaving = dequeue from the front.\n3. Scenario 2: last in, first out → **Stack**. Entering = push. Backing out = pop — the most recently pushed car is the first one popped.",
-          "answer": "1: queue (enqueue/dequeue). 2: stack (push/pop).",
-          "slide": "HW 2: the single-lane tunnel",
-          "id": "queue.1f7a6a6e"
-        },
-        {
-          "type": "check",
-          "prompt": "Why does the efficient array queue use `% capacity`?",
-          "answer": "So head and tail wrap around to reuse the slots freed at the front. Without it, either the queue walks off the end of the array while empty slots sit unused at the front, or dequeue has to shift every element (O(n)). With it, both operations stay O(1).",
-          "sectionRef": "queue",
-          "id": "queue.4c9ffc5f"
-        }
-      ]
-    },
-    {
-      "id": "linked",
-      "heading": "Linked lists: boxes, arrows, and addresses",
-      "blocks": [
         {
           "type": "prose",
-          "label": "why",
-          "md": "**The mental model, before any code** An array is a row of numbered lockers: locker 7 is always right next to locker 6, so 'go to locker k' is instant. A **linked list** throws the lockers anywhere in memory and instead gives each box a forwarding address. Every **node** is a little struct with two fields: the **data** it holds, and **next** — the memory address of the following node. The only thing you keep is **head**, the address of the first node. To reach anything else you *follow the arrows*, one hop at a time. That one design choice explains every cost in the comparison table you saw earlier: no jumping to position k (you must walk k hops), but splicing a node in or out is just rewriting two addresses — no shifting, ever.",
-          "slide": "Boxes with forwarding addresses",
-          "id": "linked.a17e40b3"
+          "md": "**Linked structures are everywhere, often in disguise.** Git: each commit stores the id of its parent, so your history is a linked list walked from the newest commit. A music app's 'next song' in a playlist, a browser's history, and the free-memory lists inside your operating system are linked. Most of the time you'll use a library's list, but knowing that 'get item k' costs a walk explains why some code is mysteriously slow.",
+          "label": "world",
+          "id": "linked.cbf94dc1"
         },
         {
-          "type": "definition",
-          "term": "Node · head · null",
-          "body": "**Node**: one box holding `data` and `next` (the address of the following node). **head**: the variable holding the first node's address — lose it and the entire list is unreachable. **null** in a `next` field means 'the chain ends here'; the last node always carries it. An empty list is simply `head == null`.",
-          "id": "linked.d41a7b22"
+          "type": "prose",
+          "md": "**Use an array (ArrayList, Python list)** when you read by position a lot, or mostly add at the end. That's most of the time. **Use a linked list** when you insert and remove in the middle constantly and already hold a reference to the spot, or need a queue/stack that never has to resize.",
+          "label": "when",
+          "id": "linked.25f31482"
         },
         {
-          "type": "figure",
-          "viewBox": "0 0 690 320",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='llA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='llH' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>head is not a node — it's one ordinary variable holding one address (0x1A4). Lose this variable and the entire list still exists in memory but nothing can ever reach it again.</title><text x='24' y='34' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>Node&lt;E&gt; head = 0x1A4;</text><path d='M62 42 C 56 60, 50 74, 46 92' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llH)'/></g><g><title>Node A, living at address 0x1A4 (the tag underneath). Its data cell holds the value 'A'; its next cell holds 0x2B8 — which is exactly B's address. The arrow is just this number, drawn.</title><text x='55' y='88' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='120' y='88' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='28' y='96' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='82' y='96' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='55' y='130' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>A</text><text x='120' y='128' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x2B8</text><text x='93' y='170' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x1A4</text><path d='M158 123 C 182 123, 186 208, 196 216' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/></g><g><title>Node B at 0x2B8 — drawn lower on purpose: in real memory nodes sit wherever the allocator dropped them, not in a tidy row. Only the addresses connect them. B's next (0x47C) points at C.</title><text x='227' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='292' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='200' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='254' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='227' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>B</text><text x='292' y='222' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x47C</text><text x='265' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x2B8</text><path d='M330 217 C 354 217, 356 132, 366 124' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/></g><g><title>Node C at 0x47C. To reach it from head you MUST hop A → B → C: three pointer follows. That walk is why get(k) costs O(n) — there is no arithmetic shortcut to the k-th node.</title><text x='397' y='88' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='462' y='88' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='370' y='96' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='424' y='96' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='397' y='130' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>C</text><text x='462' y='128' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9D0</text><text x='435' y='170' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x47C</text><path d='M500 123 C 524 123, 526 208, 534 216' stroke='currentColor' stroke-width='1.5' fill='none' marker-end='url(#llA)'/></g><g><title>Node D, the tail: its next holds null — the agreed 'chain ends here' value. Every walk of the list stops when it reads null. Forgetting to check for it is the classic NullPointerException.</title><text x='565' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='630' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='538' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='592' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='565' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>D</text><text x='630' y='222' text-anchor='middle' font-size='12' font-style='italic' opacity='0.8'>null</text><text x='603' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x9D0</text></g><text x='345' y='302' text-anchor='middle' font-size='11' opacity='0.7'>each next field literally CONTAINS the address written under the node it points to</text></g>",
-          "caption": "A singly linked list of A → B → C → D, drawn the way memory actually holds it. Under each node is its own address (@ 0x1A4, @ 0x2B8, …); inside each next cell is the address of the following node — match them and you can see the arrows are just numbers. head is a single variable holding 0x1A4. D's next is null: end of the chain. Note the nodes are deliberately NOT in a straight line — in real memory they're scattered wherever the allocator put them, and only the addresses connect them.",
-          "slide": "A singly linked list, drawn honestly",
-          "slideNotes": "On any linked-list exam question, **draw this picture first** — boxes, arrows, the head pointer, and the slash for null. Almost every wrong answer in this topic comes from doing pointer surgery in your head instead of on paper. The Bro Code video below builds exactly this picture step by step in 13 minutes (it's the same visual style as this figure), and VisuAlgo lets you click insert/remove and watch the arrows rewire themselves — do five random operations there and predict each redraw before it happens.",
-          "resources": [
-            {
-              "label": "Linked lists in 13 minutes (Bro Code)",
-              "url": "https://www.youtube.com/watch?v=N6dOwBde7-M",
-              "kind": "video"
-            },
-            {
-              "label": "Linked list visualizer (VisuAlgo)",
-              "url": "https://visualgo.net/en/list",
-              "kind": "site"
-            }
+          "type": "code",
+          "title": "Your turn: splice without losing the list",
+          "task": "`insert_after(node, value)` should put a new node right after `node`. The starter does the two writes in the WRONG order: run it and see what's lost. Then fix the order.",
+          "starter": "class Node:\n    def __init__(self, value, next=None):\n        self.value = value\n        self.next = next\n\ndef to_list(head, limit=10):\n    \"\"\"The values from head onward (stops after `limit` in case of a loop).\"\"\"\n    out = []\n    while head is not None and len(out) < limit:\n        out.append(head.value)\n        head = head.next\n    return out\n\ndef insert_after(node, value):\n    x = Node(value)\n    node.next = x          # write 2 ...\n    x.next = node.next     # ... before write 1: C's address is already gone\n\n# A -> B -> C -> D\nd = Node(\"D\"); c = Node(\"C\", d); b = Node(\"B\", c); a = Node(\"A\", b)\ninsert_after(b, \"X\")\nprint(to_list(a))\n",
+          "check": "d = Node(\"D\"); c = Node(\"C\", d); b = Node(\"B\", c); a = Node(\"A\", b)\ninsert_after(b, \"X\")\nseen, n = [], a\nwhile n is not None and len(seen) < 10:\n    seen.append(n.value); n = n.next\nassert seen == [\"A\", \"B\", \"X\", \"C\", \"D\"], f\"The list should be A, B, X, C, D. Walking it gave {seen}. Point X at C before you point B at X.\"",
+          "solution": "class Node:\n    def __init__(self, value, next=None):\n        self.value = value\n        self.next = next\n\ndef to_list(head, limit=10):\n    \"\"\"The values from head onward (stops after `limit` in case of a loop).\"\"\"\n    out = []\n    while head is not None and len(out) < limit:\n        out.append(head.value)\n        head = head.next\n    return out\n\ndef insert_after(node, value):\n    x = Node(value)\n    x.next = node.next     # 1: X points at C (nothing lost yet)\n    node.next = x          # 2: B points at X\n\nd = Node(\"D\"); c = Node(\"C\", d); b = Node(\"B\", c); a = Node(\"A\", b)\ninsert_after(b, \"X\")\nprint(to_list(a))\n",
+          "hints": [
+            "Run the starter: X points at itself, and C and D are gone.",
+            "Swap the two lines.",
+            "`x.next = node.next` first, then `node.next = x`."
           ],
-          "id": "linked.f1a2b3c4"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** More places than any other structure in this course, usually wearing a costume. **Git**: every commit stores the hash of its parent commit — `git log` is literally walking a linked list from head. **Blockchains**: same trick, where 'next' is a cryptographic hash, which is why you can't quietly edit a block in the middle. **Your OS's memory allocator** keeps free chunks of RAM as a linked list threaded through the free memory itself. **LRU caches** (the thing that decides what stays in Redis or your CPU cache) are a linked list plus a hash map — move-to-front is O(1) precisely because splicing is two pointer writes. And **the trap**: in interviews, 'reverse a linked list' and 'detect a cycle' are rites of passage because they test whether you can rewire next pointers without dropping the chain — exactly the skill the next figure drills.",
-          "slide": "Git, blockchains, allocators, LRU",
-          "id": "linked.3e8b91c7"
-        },
-        {
-          "type": "figure",
-          "viewBox": "0 0 640 310",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='llS' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='llR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>Node B: after the splice its next cell holds 0x9E0 — X's address. This is the ONLY field of B that changes; B never moves, nothing shifts.</title><text x='57' y='52' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='122' y='52' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='30' y='60' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='84' y='60' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='57' y='94' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>B</text><text x='122' y='92' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9E0</text><text x='95' y='134' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x2B8</text></g><g><title>Node C at 0x47C — completely untouched by the whole operation. It doesn't know or care that a new node now points at it; C still carries the rest of the chain behind it.</title><text x='503' y='52' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='568' y='52' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='476' y='60' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><rect x='530' y='60' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='503' y='94' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--on-track))'>C</text><text x='568' y='92' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x9D0</text><text x='541' y='134' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x47C</text></g><g><title>The old B→C link. It isn't 'deleted' — step ② simply writes a new address over it. The danger: if ② runs BEFORE ① copies this address somewhere, 0x47C is destroyed while nothing else holds it, and C plus everything after it is unreachable forever.</title><path d='M160 87 C 264 87, 372 87, 474 87' stroke='rgb(var(--critical))' stroke-width='1.5' fill='none' stroke-dasharray='6 5' opacity='0.85' marker-end='url(#llR)'/><text x='318' y='78' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>✕</text><text x='318' y='106' text-anchor='middle' font-size='10' fill='rgb(var(--critical))'>old link 0x47C — overwritten by ②</text></g><g><title>The new node X at 0x9E0, freshly allocated. Its next already holds 0x47C (C's address) because step ① ran first — X is fully wired into the world before the world is wired to X. That order is the entire safety argument.</title><text x='267' y='182' text-anchor='middle' font-size='10' opacity='0.6'>data</text><text x='332' y='182' text-anchor='middle' font-size='10' opacity='0.6'>next</text><rect x='240' y='190' width='54' height='54' rx='8' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><rect x='294' y='190' width='76' height='54' rx='8' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='267' y='224' text-anchor='middle' font-size='20' font-weight='700' fill='rgb(var(--accent-fg))'>X</text><text x='332' y='222' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace'>0x47C</text><text x='305' y='264' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace' opacity='0.55'>@ 0x9E0 · the new node</text></g><g><title>Step ①: X.next = B.next — copy C's address into X while B still remembers it. Nothing observable changes for anyone walking the list; this step is free of risk.</title><path d='M370 217 C 430 217, 478 168, 500 120' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llS)'/><circle cx='452' cy='196' r='10' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='452' y='200' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--accent-fg))'>1</text></g><g><title>Step ②: B.next = X — the single write that makes X visible. Before it, walkers see B→C; after it, B→X→C. There is no in-between broken state, which is why the order matters so much.</title><path d='M160 92 C 196 106, 204 190, 236 214' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#llS)'/><circle cx='192' cy='156' r='10' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='192' y='160' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--accent-fg))'>2</text></g><text x='318' y='298' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>① X.next = B.next;   ② B.next = X;   — in that order</text></g>",
-          "caption": "Splicing X between B and C is exactly two address writes, and the ORDER is everything. Step ①: point X.next at C (copy B's next, 0x47C, into X). Step ②: point B.next at X (write 0x9E0). Nothing shifted, nothing copied — O(1) however long the list is. Do it backwards and step ② overwrites 0x47C before anything else holds it: C, D, and the whole rest of the chain become unreachable garbage. That's not a slow bug; it's data gone.",
-          "slide": "The splice: two writes, one order",
-          "slideNotes": "The discipline generalizes: **never overwrite a pointer you still need**. Deletion is the same two-step dance in reverse (save `prev.next.next` before you skip over the node), and 'reverse a linked list' — the single most common interview question on this topic — is just three pointers (prev, curr, next) obeying the same rule in a loop. If you can narrate WHY the order matters ('writing node.next second would orphan the rest of the chain'), you can answer any variant they throw at you.",
-          "id": "linked.f2c4d5e6"
-        },
-        {
-          "type": "trap",
-          "body": "**Rewire in the wrong order, lose the list** When inserting after node B, `X.next = B.next` MUST come before `B.next = X`. Write B's next first and the old address is destroyed with nothing else pointing at the rest of the chain — in Java it silently becomes garbage; in a 'what does this code do' exam question it's the intended wrong answer. Same discipline when deleting: save `node.next` before you cut the node out.",
-          "source": "Exam material",
-          "points": null,
-          "id": "linked.aa11bb22"
+          "success": "Two writes, O(1), and the order is the whole trick. This is the classic 'what's wrong with this code' exam question.",
+          "id": "linked.bb07028b"
         },
         {
           "type": "check",
           "prompt": "Why is get(k) O(n) on a linked list when it's O(1) on an array?",
-          "answer": "An array's elements sit side by side, so element k lives at a computable address (start + k × size) — one multiplication, one jump. A linked list's nodes are scattered; the ONLY way to find node k is to start at head and follow next k times. The addresses are inside the nodes, so you can't skip ahead.",
+          "answer": "An array's elements sit side by side, so element k lives at a computable address (start + k × size): one multiplication, one jump. A linked list's nodes are scattered; the ONLY way to find node k is to start at head and follow next k times. The addresses are inside the nodes, so you can't skip ahead.",
           "sectionRef": "linked",
-          "id": "linked.c0ffee12"
+          "id": "linked.1a01d2f2"
         },
         {
           "type": "check",
           "prompt": "You're holding a reference to node B in a long singly linked list. What does it cost to insert a node AFTER B? To insert one BEFORE B?",
-          "answer": "After B: O(1) — the two-write splice from the figure. Before B: O(n) — you need the node whose next points at B, and in a SINGLY linked list the only way to find that predecessor is to walk from head. (This exact pain is why doubly linked lists exist: a prev pointer makes 'before' O(1) too, at the cost of a third field per node.)",
+          "answer": "After B: O(1): the two-write splice from the figure. Before B: O(n): you need the node whose next points at B, and in a SINGLY linked list the only way to find that predecessor is to walk from head. (This exact pain is why doubly linked lists exist: a prev pointer makes 'before' O(1) too, at the cost of a third field per node.)",
           "sectionRef": "linked",
-          "id": "linked.e5d7a2f0"
+          "id": "linked.7d227402"
         }
       ]
     },
@@ -458,28 +581,59 @@
       "heading": "Loop invariants: proving a loop is right",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Correct algorithm",
+          "body": "It **stops**, and it gives the right output for **every** valid input. Not just the ones you tested.",
+          "id": "invariants.0082c9c7"
+        },
+        {
           "type": "prose",
           "label": "why",
           "md": "**Why anyone bothers** You can run a sort on a thousand arrays and it works every time. Does it work on the thousand-and-first? Testing can only show that bugs *are* there, never that they *aren't*. Poon's definition of **correct**: the algorithm terminates and produces the desired output for *every* valid input. To claim that, you need an argument, not a test. The argument for loops is the **loop invariant**.",
           "slide": "Why testing isn't enough",
-          "id": "invariants.38aadffe"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Invariants are the one proof technique that escapes the classroom. When a reviewer asks 'why does this loop terminate?' or 'can `balance` ever go negative here?', the professional answer is an invariant, stated in one sentence. `assert` statements in production code are invariants the machine re-checks on every run. Database constraints ('total debits equal total credits') are invariants the engine enforces. And when you debug a loop at 2am, the fastest question is: 'what should be true here every single iteration?' — then print exactly that and find the first iteration where it lies to you.",
-          "id": "invariants.5b8d02e1"
+          "id": "invariants.18bdd516"
         },
         {
           "type": "definition",
           "term": "Loop invariant",
-          "body": "A sentence about the loop's variables that is true every time the loop is about to check its condition — before the first iteration, between every pair of iterations, and after the last. It describes the *progress so far*, usually as a fact about the prefix the loop has already handled.",
-          "id": "invariants.a8982306"
+          "body": "A sentence about the loop's variables that is true every time the loop is about to check its condition: before the first iteration, between every pair of iterations, and after the last. It describes the *progress so far*, usually as a fact about the prefix the loop has already handled.",
+          "id": "invariants.0c1f2946"
         },
         {
-          "type": "prose",
-          "md": "If you did the induction section of Chapter 0, you already know this proof shape. **Initialization** = base case: true before the first iteration. **Maintenance** = inductive step: if it's true before one iteration, the body keeps it true for the next. **Termination** = the conclusion: when the loop stops, the invariant plus the stopping condition give you the thing you wanted. Poon's analogy: a Lego tower where every layer built so far is stable and aligned — so the finished tower is too.",
-          "slide": "It's induction (Chapter 0) with new names",
-          "id": "invariants.a20e63e1"
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc8' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc8' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec8' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The invariant: the LEFT part is always sorted.</text><g><title>Initialization (base case): j = 1: a[0..0] is one item, and one item is sorted.</title><circle cx='20' cy='48' r='11' fill='rgb(var(--accent))'/><text x='20' y='52' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><text x='38' y='53' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Initialization (base case)</text><rect x='38' y='66' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='60' y='87.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='82' y='66' width='44' height='32' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='104' y='87.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='126' y='66' width='44' height='32' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='148' y='87.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='170' y='66' width='44' height='32' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='192' y='87.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='214' y='66' width='44' height='32' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='236' y='87.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='104' y='114' font-size='12.6' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >key</text><text x='272' y='78' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted part: a[0..0]</text><text x='272' y='96' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >j = 1: a[0..0] is one item,</text><text x='272' y='110' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >and one item is sorted.</text></g><g><title>Maintenance (inductive step): sorted before the round, key slides in, still sorted after.</title><circle cx='20' cy='144' r='11' fill='rgb(var(--accent))'/><text x='20' y='148' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><text x='38' y='149' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Maintenance (inductive step)</text><rect x='38' y='162' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='60' y='183.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='82' y='162' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='104' y='183.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='126' y='162' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='148' y='183.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='170' y='162' width='44' height='32' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='192' y='183.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='214' y='162' width='44' height='32' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='236' y='183.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='192' y='210' font-size='12.6' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >key</text><text x='272' y='174' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted part: a[0..2]</text><text x='272' y='192' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted before the round, key</text><text x='272' y='206' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >slides in, still sorted after.</text></g><g><title>Termination (conclusion): stops at j = n: a[0..n−1], the WHOLE array, is sorted.</title><circle cx='20' cy='240' r='11' fill='rgb(var(--accent))'/><text x='20' y='244' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><text x='38' y='245' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Termination (conclusion)</text><rect x='38' y='258' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='60' y='279.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='82' y='258' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='104' y='279.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='126' y='258' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='148' y='279.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='170' y='258' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='192' y='279.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='214' y='258' width='44' height='32' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='236' y='279.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='272' y='270' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted part: a[0..4]</text><text x='272' y='288' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >stops at j = n: a[0..n−1],</text><text x='272' y='302' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the WHOLE array, is sorted.</text></g><text x='240' y='336' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Like a Lego tower: solid at the start, still solid after each brick.</text></g>",
+          "viewBox": "0 0 480 344",
+          "caption": "Insertion sort's invariant, checked at three moments. Like Poon's Lego tower: it's solid before you start (initialization), each brick keeps it solid (maintenance), so the finished tower is solid (termination).",
+          "slide": "Three moments",
+          "id": "invariants.738b1c23"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Invariant step",
+            "Induction step (Chapter 0)",
+            "What you show"
+          ],
+          "rows": [
+            [
+              "Initialization",
+              "base case",
+              "true before the first iteration"
+            ],
+            [
+              "Maintenance",
+              "inductive step",
+              "if true before an iteration, still true after it"
+            ],
+            [
+              "Termination",
+              "conclusion",
+              "when the loop stops, invariant + stop condition = the goal"
+            ]
+          ],
+          "title": "The three parts (Lecture 3)",
+          "slide": "Three parts = induction",
+          "id": "invariants.2818d022"
         },
         {
           "type": "stepper",
@@ -537,25 +691,44 @@
                 "= the whole array  ✓"
               ],
               "active": 1,
-              "caption": "Termination: the loop stops when i = A.length. Plug that into the invariant: sum is the sum of the first A.length elements — all of them. That's exactly what we wanted to prove. (Conclusion.)"
+              "caption": "Termination: the loop stops when i = A.length. Plug that into the invariant: sum is the sum of the first A.length elements: all of them. That's exactly what we wanted to prove. (Conclusion.)"
             }
           ],
           "slide": true,
-          "id": "invariants.d1d138d9"
+          "id": "invariants.df04c60d"
         },
         {
           "type": "example",
           "title": "Four sentences, always the same shape",
           "body": "How do you write a loop-invariant answer so Poon gives full marks?\n\n1. **Invariant:** 'At the start of each iteration with index j, ⟨a property of the part already processed, a[0..j−1]⟩ holds.'\n2. **Initialization:** plug in the first value of j; the property is trivially true (empty or one-element prefix).\n3. **Maintenance:** assume it holds for j; show the loop body extends the property to j+1.\n4. **Termination:** plug in the final value of j; the property now covers the whole array, which is what you wanted.",
           "slide": "The template answer for the exam",
-          "id": "invariants.56e4bf15"
+          "id": "invariants.b3a00ec0"
+        },
+        {
+          "type": "prose",
+          "md": "**How to find an invariant.** Ask: 'halfway through, what is already true about the part I've finished?' Write that about the **prefix** a[0..j−1], not the whole array. Then check it in the three moments. If it's true in all three, the termination step hands you the proof.",
+          "label": "think",
+          "id": "invariants.d7092b14"
         },
         {
           "type": "trap",
           "body": "**The most common lost point** Writing the invariant about the *whole* array ('the array is sorted') instead of the *prefix handled so far* ('a[0..j−1] is sorted'). An invariant has to be true in the middle of the loop, when the job is only partly done.",
           "source": "Exam material",
           "points": null,
-          "id": "invariants.992c17d7"
+          "id": "invariants.d7550e13"
+        },
+        {
+          "type": "prose",
+          "md": "**Invariants are how engineers talk about correctness.** An `assert` in real code is an invariant the computer re-checks every run. A bank's database rule 'total debits = total credits' is an invariant that every transaction must maintain. When a code reviewer asks 'can this index ever go out of bounds?', the answer is an invariant in one sentence.",
+          "label": "world",
+          "id": "invariants.3f971d55"
+        },
+        {
+          "type": "check",
+          "prompt": "For a loop that finds the max of a[0..n−1] with `m = a[0]; for j = 1..n−1: if a[j] > m: m = a[j]`, state the invariant.",
+          "answer": "At the start of each iteration j, m is the largest value in a[0..j−1]. Initialization: j = 1, m = a[0] is the max of a[0..0]. Maintenance: comparing with a[j] keeps m the max of a[0..j]. Termination: j = n, so m is the max of the whole array.",
+          "sectionRef": "invariants",
+          "id": "invariants.9519e4be"
         }
       ]
     },
@@ -564,19 +737,18 @@
       "heading": "Insertion sort",
       "blocks": [
         {
-          "type": "prose",
-          "label": "why",
-          "md": "**The idea before the code** You're dealt cards one at a time. You hold the ones you have in sorted order. Each new card, you slide left past every bigger card until it fits, and drop it in. The cards in your hand are always sorted; the deck is the unsorted part. That's insertion sort: a **sorted prefix** that grows by one each round, and a **key** that walks left into its place.",
-          "slide": "Sorting a hand of cards",
-          "slideNotes": "Keep the card image and you get insertion sort's whole behavior for free: cards that arrive **already in order** slide right in (best case O(n) — this is why insertion sort is the fastest choice on nearly-sorted data), and cards that arrive in reverse order each shove past your entire hand (worst case O(n²)). VisuAlgo below lets you feed it a sorted, reversed, or random array and watch exactly those two extremes play out — try all three and count the shifts.",
-          "resources": [
-            {
-              "label": "Sorting visualizer (VisuAlgo)",
-              "url": "https://visualgo.net/en/sorting",
-              "kind": "site"
-            }
-          ],
-          "id": "insertion.914a621c"
+          "type": "definition",
+          "term": "Insertion sort",
+          "body": "Keep a **sorted left part**. Take the next item (the **key**), slide it left past every bigger item, and drop it in. Repeat until the left part is the whole array.",
+          "id": "insertion.05708aff"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc9' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc9' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec9' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Insertion sort = sorting cards in your hand.</text><g><title>Your hand so far is sorted: 2, 5, 8. The next card from the deck is 6: that's the key.</title><rect x='40' y='90' width='56' height='44' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='68' y='118' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='96' y='90' width='56' height='44' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='124' y='118' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='152' y='90' width='56' height='44' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='180' y='118' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='208' y='90' width='56' height='44' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='264' y='90' width='56' height='44' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='292' y='118' font-size='17.2' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='40' y='80' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted hand</text><text x='264' y='80' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >deck</text></g><g><title>Lift the key out, leaving a hole.</title><rect x='214' y='34' width='44' height='40' rx='8' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='236' y='60' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><text x='208' y='60' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >key →</text></g><g><title>8 > 6: shift 8 one slot right, into the hole.</title><path d='M180 138 Q208 160 236 138' fill='none' stroke='rgb(var(--accent))' stroke-width='1.5' marker-end='url(#arrowBc9)'/><text x='208' y='172' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >shift 8 →</text></g><g><title>5 ≤ 6: stop. Drop 6 into the hole at index 2.</title><text x='124' y='172' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5 ≤ 6: stop</text></g><g><title>After: 2, 5, 6, 8 is sorted, and the hand grew by one.</title><text x='40' y='208' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >after this round</text><rect x='40' y='216' width='56' height='40' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='68' y='242' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='96' y='216' width='56' height='40' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='124' y='242' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='152' y='216' width='56' height='40' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='180' y='242' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='208' y='216' width='56' height='40' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='236' y='242' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='264' y='216' width='56' height='40' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='292' y='242' font-size='17.2' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text></g><text x='240' y='280' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Each round, the key walks left past bigger cards.</text></g>",
+          "viewBox": "0 0 480 290",
+          "caption": "Exactly how you sort cards in your hand: lift the new card, slide bigger cards right one slot, drop the card in the hole.",
+          "slide": "Sorting cards",
+          "id": "insertion.deae73ca"
         },
         {
           "type": "stepper",
@@ -738,19 +910,12 @@
             }
           ],
           "slide": true,
-          "id": "insertion.319e9cca"
+          "id": "insertion.d47d0aa6"
         },
         {
-          "type": "example",
-          "title": "Line by line: `j` is the key's starting index; `i` walks left; the while loop shifts bigger elements right; the last line drops the key into the hole. Project 1 wants this exact algorithm with null / empty guards added.",
-          "body": "public static void insertionSort(int[] a) {\n  if (a == null || a.length < 2) return;      // Project 1 guard\n  for (int j = 1; j < a.length; j++) {\n    int key = a[j];\n    int i = j - 1;\n    while (i >= 0 && a[i] > key) {\n      a[i + 1] = a[i];      // shift the bigger element right\n      i = i - 1;\n    }\n    a[i + 1] = key;         // drop key into the hole\n  }\n}",
-          "slide": "The code from the slides (Project 1 Part 1)",
-          "id": "insertion.12ab85a2"
-        },
-        {
-          "id": "insertion.95ae341f",
           "type": "sim",
           "sim": "sort",
+          "caption": "Insertion sort on your own array, one shift at a time, with the comparison and shift counts live. Type a reversed array (9, 8, 7, 6, 5) and confirm n(n−1)/2 shifts; type a sorted one and confirm zero.",
           "params": {
             "algorithm": "insertion",
             "array": [
@@ -763,78 +928,428 @@
               2
             ]
           },
-          "caption": "Insertion sort on your own array, one shift at a time, with the comparison and shift counts live. Type a reversed array (9, 8, 7, 6, 5) and confirm n(n−1)/2 shifts; type a sorted one and confirm zero.",
-          "slide": "Try it"
+          "slide": "Try it",
+          "id": "insertion.95ae341f"
         },
         {
-          "type": "prose",
-          "md": "Same algorithm you'd write in TypeScript with `let key = a[j]` — the differences are cosmetic: `int` instead of `let`, `a.length` is the same, `&&` is the same, and there's no `const`. One real difference: Java arrays are fixed size and `int[]` holds only ints, so there's no `.push()`; you index.",
-          "slide": "If you're coming from JS/TS",
-          "id": "insertion.f8a2c5b5"
+          "type": "example",
+          "title": "Line by line: `j` is the key's starting index; `i` walks left; the while loop shifts bigger elements right; the last line drops the key into the hole. Project 1 wants this exact algorithm with null / empty guards added.",
+          "body": "public static void insertionSort(int[] a) {\n  if (a == null || a.length < 2) return;      // Project 1 guard\n  for (int j = 1; j < a.length; j++) {\n    int key = a[j];\n    int i = j - 1;\n    while (i >= 0 && a[i] > key) {\n      a[i + 1] = a[i];      // shift the bigger element right\n      i = i - 1;\n    }\n    a[i + 1] = key;         // drop key into the hole\n  }\n}",
+          "slide": "The code from the slides (Project 1 Part 1)",
+          "id": "insertion.aa0e8701"
         },
         {
           "type": "example",
           "title": "The proof Poon shows",
-          "body": "Prove insertionSort is correct.\n\n1. Invariant: at the start of each iteration of the for loop, a[0..j−1] holds the elements that were originally in a[0..j−1], in sorted order.\n2. Initialization: j = 1, so a[0..0] is one element — trivially sorted.\n3. Maintenance: assume a[0..j−1] is sorted. The while loop shifts every element bigger than key one slot right and drops key just before them, so a[0..j] is the original elements of a[0..j], sorted. The invariant now holds for j+1.\n4. Termination: the loop ends when j = a.length. The invariant says a[0..a.length−1] — the whole array — is sorted. Done.",
+          "body": "Prove insertionSort is correct.\n\n1. Invariant: at the start of each iteration of the for loop, a[0..j−1] holds the elements that were originally in a[0..j−1], in sorted order.\n2. Initialization: j = 1, so a[0..0] is one element: trivially sorted.\n3. Maintenance: assume a[0..j−1] is sorted. The while loop shifts every element bigger than key one slot right and drops key just before them, so a[0..j] is the original elements of a[0..j], sorted. The invariant now holds for j+1.\n4. Termination: the loop ends when j = a.length. The invariant says a[0..a.length−1]: the whole array: is sorted. Done.",
           "slide": "Insertion sort's own invariant (from the slides)",
-          "id": "insertion.f8e4daf8"
+          "id": "insertion.335174f4"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc10' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc10' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec10' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Shifts per key, n = 8</text><g><title>Already sorted: every key is already in place. 0 shifts each, 1 comparison each: about n steps, Ω(n).</title><text x='40' y='38' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >already sorted input</text><rect x='40' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='62' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='92' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='114' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='144' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='166' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='196' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='218' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='248' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='270' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='300' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='322' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='352' y='50' width='44' height='18' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='374' y='63' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><text x='40' y='88' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >total shifts: 0  →  about n steps: Ω(n)</text></g><g><title>Reversed: key number k must walk past all k earlier items: 1 + 2 + … + 7 = 28 = n(n−1)/2. That's O(n²).</title><text x='40' y='112' font-size='14.4' fill='rgb(var(--critical-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >reversed input</text><rect x='40' y='230' width='44' height='20' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='62' y='225' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='92' y='210' width='44' height='40' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='114' y='205' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='144' y='190' width='44' height='60' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='166' y='185' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='196' y='170' width='44' height='80' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='218' y='165' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='248' y='150' width='44' height='100' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='270' y='145' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='300' y='130' width='44' height='120' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='322' y='125' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='352' y='110' width='44' height='140' rx='3' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)'/><text x='374' y='105' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><line x1='36' y1='250' x2='404' y2='250' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><text x='40' y='274' font-size='13.8' fill='rgb(var(--critical-fg))' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >total shifts: 1 + 2 + … + 7 = 28 = n(n−1)/2  →  O(n²)</text></g><text x='40' y='296' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The triangle is half a square: that's where n²/2 comes from.</text></g>",
+          "viewBox": "0 0 480 304",
+          "caption": "Best case vs worst case, in shifts per key. Sorted input: nothing moves. Reversed input: key k walks past all k items before it, and the bars form a triangle, half of an n × n square.",
+          "slide": "Best vs worst",
+          "id": "insertion.0e9257cd"
         },
         {
           "type": "definition",
-          "term": "Best case — already sorted",
+          "term": "Best case: already sorted",
           "body": "the while condition `a[i] > key` is false immediately every time, so the inner loop never runs. One comparison per key: **Ω(n)**.",
-          "id": "insertion.f9800247"
+          "id": "insertion.6cb14b85"
         },
         {
           "type": "definition",
-          "term": "Worst case — sorted backwards",
+          "term": "Worst case: sorted backwards",
           "body": "every key must walk past every earlier element. Shifts: 1 + 2 + 3 + … + (n−1) = n(n−1)/2 (Chapter 0's sum). That's about n²/2: **O(n²)**.",
-          "id": "insertion.3caf2360"
+          "id": "insertion.29cb1ef4"
         },
         {
           "type": "definition",
           "term": "Duplicates",
-          "body": "(HW 3 Problem 3): the worst case stays O(n²). Because the test is strict (`>`), equal elements don't shift past each other — which is also why insertion sort is **stable**: equal items keep their original order.",
-          "id": "insertion.3e2f4196"
+          "body": "(HW 3 Problem 3): the worst case stays O(n²). Because the test is strict (`>`), equal elements don't shift past each other: which is also why insertion sort is **stable**: equal items keep their original order.",
+          "id": "insertion.2d88d056"
         },
         {
           "type": "prose",
-          "md": "**'Why would anyone use an O(n²) sort?' (slide 29 — a likely short answer)** Three reasons. (1) **Small arrays** (under ~20): tiny constant factors and cache-friendly memory beat merge sort. Real libraries switch to insertion sort for small pieces — that is exactly Project 1's hybrid sort. (2) **Nearly-sorted data**: close to O(n) because the inner loop stops early. (3) **Simple and stable.**",
-          "id": "insertion.ddb02912"
+          "md": "**Use insertion sort** for small lists (a few dozen items) and lists that are already nearly sorted, like adding a new score to a sorted leaderboard, or keeping a hand of cards sorted as you draw. **Don't use it** on big, jumbled data: 100,000 random items means about 2.5 billion shifts.",
+          "label": "when",
+          "id": "insertion.ca17670d"
+        },
+        {
+          "type": "prose",
+          "md": "**It's inside the fast sorts.** Python's and Java's built-in sorts (Timsort) use insertion sort on short runs, and many quicksort implementations switch to it for tiny pieces, because on small inputs its simplicity beats the fancy algorithms. That's Project 1's hybrid sort.",
+          "label": "world",
+          "id": "insertion.b96a5137"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: count the shifts",
+          "task": "Write `shifts(a)`: run insertion sort on a copy of `a` and return how many times an item was shifted right. Then check the two extreme cases: sorted input and reversed input.",
+          "starter": "def shifts(a):\n    a = list(a)\n    count = 0\n    for j in range(1, len(a)):\n        key = a[j]\n        i = j - 1\n        # while i >= 0 and a[i] > key: shift a[i] right, count it, move i left\n        a[i + 1] = key\n    return count\n\nprint(shifts([8, 5, 2, 6, 9]))        # HW 3 array\nprint(shifts([1, 2, 3, 4, 5, 6]))     # sorted: best case\nprint(shifts([6, 5, 4, 3, 2, 1]))     # reversed: worst case\n",
+          "check": "assert shifts([1, 2, 3, 4, 5, 6]) == 0, \"Sorted input should need 0 shifts: every key is already in place.\"\nassert shifts([8, 5, 2, 6, 9]) == 4, f\"[8, 5, 2, 6, 9] needs 4 shifts (5 moves past 8; 2 past 8 and 5; 6 past 8). Got {shifts([8, 5, 2, 6, 9])}.\"\nassert shifts([6, 5, 4, 3, 2, 1]) == 15, f\"Reversed input of 6 needs 1 + 2 + 3 + 4 + 5 = 15 shifts. Got {shifts([6, 5, 4, 3, 2, 1])}.\"\nassert shifts(list(range(100, 0, -1))) == 4950, \"Reversed input of 100 should need 100·99/2 = 4950 shifts.\"",
+          "solution": "def shifts(a):\n    a = list(a)\n    count = 0\n    for j in range(1, len(a)):\n        key = a[j]\n        i = j - 1\n        while i >= 0 and a[i] > key:\n            a[i + 1] = a[i]\n            count += 1\n            i -= 1\n        a[i + 1] = key\n    return count\n\nprint(shifts([8, 5, 2, 6, 9]))\nprint(shifts([1, 2, 3, 4, 5, 6]))\nprint(shifts([6, 5, 4, 3, 2, 1]))\n",
+          "hints": [
+            "Use `while i >= 0 and a[i] > key:`.",
+            "Inside: `a[i + 1] = a[i]`, `count += 1`, `i -= 1`.",
+            "The line after the loop already drops the key in."
+          ],
+          "success": "0 for sorted, n(n−1)/2 for reversed: the best and worst case you'll be asked to state, now measured.",
+          "id": "insertion.34ddfe39"
+        },
+        {
+          "type": "prose",
+          "md": "**'Why would anyone use an O(n²) sort?' (slide 29: a likely short answer)** Three reasons. (1) **Small arrays** (under ~20): tiny constant factors and cache-friendly memory beat merge sort. Real libraries switch to insertion sort for small pieces: that is exactly Project 1's hybrid sort. (2) **Nearly-sorted data**: close to O(n) because the inner loop stops early. (3) **Simple and stable.**",
+          "id": "insertion.fbc5fe2c"
         },
         {
           "type": "check",
           "prompt": "Trace insertion sort on [4, 3, 2, 1]. How many shifts total, and what does that number tell you?",
           "answer": "j=1 key 3: 1 shift → [3,4,2,1]. j=2 key 2: 2 shifts → [2,3,4,1]. j=3 key 1: 3 shifts → [1,2,3,4]. Total 1+2+3 = 6 = 4·3/2 = n(n−1)/2. Reverse order is the worst case: every key shifts past everything.",
           "sectionRef": "insertion",
-          "id": "insertion.12903415"
+          "id": "insertion.633ca197"
         },
         {
           "type": "check",
           "prompt": "What input makes insertion sort fastest, and what makes it slowest? Give the growth for each.",
-          "answer": "Fastest: already sorted, Ω(n) — the inner loop condition fails at once. Slowest: sorted largest-to-smallest, O(n²) — every element shifts past all earlier ones.",
+          "answer": "Fastest: already sorted, Ω(n): the inner loop condition fails at once. Slowest: sorted largest-to-smallest, O(n²): every element shifts past all earlier ones.",
           "sectionRef": "insertion",
-          "id": "insertion.7fe2e577"
+          "id": "insertion.fd6f59b1"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "ADT",
+              "a type defined by what it does (its operations), not how it's built"
+            ],
+            [
+              "Stack · LIFO",
+              "last in, first out: push, pop, peek at the top"
+            ],
+            [
+              "Queue · FIFO",
+              "first in, first out: enqueue at the back, dequeue from the front"
+            ],
+            [
+              "Circular buffer",
+              "an array queue whose head and tail wrap with % capacity: O(1) both ways"
+            ],
+            [
+              "Overflow / underflow",
+              "pushing onto a full structure / popping from an empty one"
+            ],
+            [
+              "Node · head · null",
+              "a box with a value and a next-address; the first node; 'no next'"
+            ],
+            [
+              "Loop invariant",
+              "a fact about the finished part that's true every time the loop checks its condition"
+            ],
+            [
+              "Initialization · maintenance · termination",
+              "the three things you show about an invariant (base case, step, conclusion)"
+            ],
+            [
+              "Key",
+              "in insertion sort, the item currently being slid into place"
+            ],
+            [
+              "Stable",
+              "equal items keep their original order"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
   ],
   "exercises": [
     {
+      "id": "adt-undo",
+      "title": "Which ADT: undo",
+      "prompt": "A drawing app lets you undo your last action, then the one before it, and so on. Which ADT fits?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Which action does undo reverse first?",
+        "The most recent one.",
+        "Most recent first = LIFO = stack."
+      ],
+      "why": "Undo, back buttons and the call stack are all 'most recent first'.",
+      "choices": [
+        {
+          "text": "Queue",
+          "feedback": "A queue would undo your FIRST action first."
+        },
+        {
+          "text": "Stack",
+          "feedback": "Right: the most recent action comes off first. LIFO."
+        },
+        {
+          "text": "Array sorted by time",
+          "feedback": "Sorting adds work and doesn't match the access pattern."
+        },
+        {
+          "text": "Linked list with random access",
+          "feedback": "Undo only ever needs the newest item."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "stack"
+    },
+    {
+      "id": "adt-print",
+      "title": "Which ADT: printing",
+      "prompt": "A shared office printer must print jobs in the order people sent them. Which ADT fits?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Who should be served first?",
+        "The person who sent first.",
+        "First in, first out = queue."
+      ],
+      "why": "Fairness in arrival order is the signature of a queue: printers, web servers, CPU scheduling.",
+      "choices": [
+        {
+          "text": "Stack",
+          "feedback": "A stack would print the newest job first, and the oldest could wait forever."
+        },
+        {
+          "text": "Queue",
+          "feedback": "Right: first sent, first printed. FIFO."
+        },
+        {
+          "text": "Either works the same",
+          "feedback": "They give opposite orders."
+        },
+        {
+          "text": "A set",
+          "feedback": "A set has no order at all."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "queue"
+    },
+    {
+      "id": "circ-wrap",
+      "title": "Where does it wrap?",
+      "prompt": "A circular queue has capacity 5, head = 2 and size = 3 (items at indexes 2, 3, 4). At which index does the next enqueue write? (write index = (head + size) % capacity)",
+      "hints": [
+        "Compute head + size first.",
+        "2 + 3 = 5.",
+        "5 % 5 = 0: it wraps to the front."
+      ],
+      "solution": [
+        "head + size = 2 + 3 = 5.",
+        "5 % 5 = 0.",
+        "The new item goes in slot 0, which is free."
+      ],
+      "why": "This wrap is the entire point of the circular buffer: reuse freed slots, never shift.",
+      "accept": [
+        "0"
+      ],
+      "sectionRef": "queue"
+    },
+    {
+      "id": "ll-get",
+      "title": "Cost of get(k)",
+      "prompt": "Why does `get(k)` take O(n) on a singly linked list but O(1) on an array?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Where is item k in an array?",
+        "At start + k × (size of one item): one computation.",
+        "In a list, the address of node k is stored inside node k − 1."
+      ],
+      "why": "This is why 'ArrayList vs LinkedList' matters in real code: indexing into a linked list in a loop quietly makes it O(n²).",
+      "choices": [
+        {
+          "text": "Linked lists store values in sorted order",
+          "feedback": "Nothing about linked lists requires sorting."
+        },
+        {
+          "text": "An array's item k is at a computable address; a list must follow k arrows from head",
+          "feedback": "Right: start + k × size is one jump; nodes are scattered, so you walk."
+        },
+        {
+          "text": "Linked lists are always longer",
+          "feedback": "Length isn't the issue; the access method is."
+        },
+        {
+          "text": "Arrays are cached, lists are not",
+          "feedback": "Caching affects constants, not the Big-O."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "linked"
+    },
+    {
+      "id": "ll-order",
+      "title": "Splice order",
+      "prompt": "To insert X after B, which order is safe?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "What does B.next hold before you start?",
+        "C's address, and nothing else holds it.",
+        "Copy it into X.next BEFORE overwriting B.next."
+      ],
+      "why": "Every linked structure (trees, graphs, memory allocators) has this 'save it before you overwrite it' discipline.",
+      "choices": [
+        {
+          "text": "B.next = X, then X.next = B.next",
+          "feedback": "After the first write, B.next is X, so X.next = B.next makes X point at itself. C is lost."
+        },
+        {
+          "text": "X.next = B.next, then B.next = X",
+          "feedback": "Right: X grabs C's address before B's pointer is overwritten."
+        },
+        {
+          "text": "Either order is fine",
+          "feedback": "One order loses the rest of the list."
+        },
+        {
+          "text": "X.next = null, then B.next = X",
+          "feedback": "That cuts off C and everything after it."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "linked"
+    },
+    {
+      "id": "inv-which",
+      "title": "Pick the invariant",
+      "prompt": "Which is a correct loop invariant for insertion sort's outer loop (index j)?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "An invariant must be true in the MIDDLE of the loop.",
+        "What's true about the part already handled?",
+        "The prefix a[0..j−1] is sorted."
+      ],
+      "why": "Writing it about the prefix, not the whole array, is the most common lost point on this question.",
+      "choices": [
+        {
+          "text": "The whole array is sorted",
+          "feedback": "That's only true at the end, so it can't be true at the start of every iteration."
+        },
+        {
+          "text": "a[0..j−1] holds the original first j items, in sorted order",
+          "feedback": "Right: a statement about the finished prefix that's true every time the loop checks."
+        },
+        {
+          "text": "a[j] is the smallest item",
+          "feedback": "Insertion sort never guarantees that."
+        },
+        {
+          "text": "a[j..n−1] is sorted",
+          "feedback": "The right side is untouched and can be in any order."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "invariants"
+    },
+    {
+      "id": "ins-worst",
+      "title": "Worst-case shifts",
+      "prompt": "How many shifts does insertion sort do on [6, 5, 4, 3, 2, 1]?",
+      "hints": [
+        "Key 5 shifts past 1 item, key 4 past 2, …",
+        "1 + 2 + 3 + 4 + 5.",
+        "n(n−1)/2 with n = 6."
+      ],
+      "solution": [
+        "Keys shift 1, 2, 3, 4, 5 times.",
+        "1 + 2 + 3 + 4 + 5 = 15.",
+        "= 6·5/2 = n(n−1)/2."
+      ],
+      "why": "That triangle of shifts is the n²/2 behind insertion sort's O(n²).",
+      "accept": [
+        "15"
+      ],
+      "sectionRef": "insertion"
+    },
+    {
+      "id": "ins-best",
+      "title": "Best case",
+      "prompt": "On which input does insertion sort do the least work, and how much?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "When does the inner while loop stop immediately?",
+        "When the item to the left is already ≤ key.",
+        "That's every key when the input is sorted."
+      ],
+      "why": "This is why insertion sort is the go-to for nearly sorted data.",
+      "choices": [
+        {
+          "text": "Reversed input, O(n)",
+          "feedback": "Reversed is the worst case."
+        },
+        {
+          "text": "Random input, O(n log n)",
+          "feedback": "Insertion sort is never n log n on random input; it's about n²/4."
+        },
+        {
+          "text": "Already sorted input, about n comparisons: Ω(n)",
+          "feedback": "Right: every key's first comparison says 'stop', so each key costs one step."
+        },
+        {
+          "text": "It always does n²/2",
+          "feedback": "Its inner loop stops early whenever it can."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "insertion"
+    },
+    {
       "id": "stack-queue-story",
       "title": "Which ADT?",
       "prompt": "A text editor's undo feature. Every edit is recorded; pressing Undo reverses the most recent edit that hasn't been undone yet. Which ADT, which operations map to 'make an edit' and 'press Undo', and why not the other one?",
       "choices": [
         {
-          "text": "Queue — enqueue on edit, dequeue on undo",
+          "text": "Queue: enqueue on edit, dequeue on undo",
           "feedback": "A queue would undo the *oldest* edit first. Try it: edits A, B, C; dequeue gives A. That's not what Undo does."
         },
         {
-          "text": "Stack — push on edit, pop on undo",
+          "text": "Stack: push on edit, pop on undo",
           "feedback": "Right. The most recent edit is the first one reversed: last in, first out."
         },
         {
-          "text": "List — add at index 0 on edit, get(size−1) on undo",
+          "text": "List: add at index 0 on edit, get(size−1) on undo",
           "feedback": "A list can be made to work, but you'd be reimplementing a stack with extra steps and an O(n) shift on every edit. Poon's point about ADTs: pick the contract that matches the behaviour."
         }
       ],
@@ -847,7 +1362,7 @@
       "solution": [
         "Undo reverses the most recent edit: last in, first out. That's a stack.",
         "Make an edit = push(edit). Press Undo = pop() and reverse what it returns. Redo is a second stack: each undone edit is pushed there.",
-        "A queue would reverse the oldest edit first — wrong behaviour, not just slower."
+        "A queue would reverse the oldest edit first: wrong behaviour, not just slower."
       ],
       "why": "Undo/redo, the browser's back button, the call stack that runs every function you write, and matching brackets in a compiler are all stacks. Recognizing 'this is LIFO' in a story is a skill interviewers test directly."
     },
@@ -857,17 +1372,17 @@
       "prompt": "Capacity 4, head = 0, tail = −1, size = 0. Run: enqueue(A), enqueue(B), enqueue(C), dequeue(), dequeue(), enqueue(D), enqueue(E), enqueue(F). After each operation write head, tail, size, and the array. Which enqueue wraps around, and what is `tail` right after it?",
       "hints": [
         "Keep a table with columns: op · array · head · tail · size. Fill one row per operation. Enqueue moves tail; dequeue moves head; both use `(x + 1) % 4`.",
-        "The usual slip is forgetting that dequeue does NOT clear or shift anything — it only moves `head`. The old value stays in the slot until something overwrites it.",
+        "The usual slip is forgetting that dequeue does NOT clear or shift anything: it only moves `head`. The old value stays in the slot until something overwrites it.",
         "Wraparound happens when tail is at index 3 and you enqueue: (3 + 1) % 4 = 0. Watch for the moment tail hits 3."
       ],
       "solution": [
         "enqueue A: [A · · ·], head 0, tail 0, size 1. enqueue B: [A B · ·], tail 1, size 2. enqueue C: [A B C ·], tail 2, size 3.",
         "dequeue → A: head 1, size 2. dequeue → B: head 2, size 1. (Slots 0 and 1 still hold A and B physically, but they're free.)",
-        "enqueue D: tail (2+1)%4 = 3, [A B C D], size 2. enqueue E: tail (3+1)%4 = **0** — wraps — [E B C D], size 3.",
-        "enqueue F: tail 1, [E F C D], size 4 — full. Queue order (from head): C, D, E, F.",
+        "enqueue D: tail (2+1)%4 = 3, [A B C D], size 2. enqueue E: tail (3+1)%4 = **0**: wraps: [E B C D], size 3.",
+        "enqueue F: tail 1, [E F C D], size 4: full. Queue order (from head): C, D, E, F.",
         "The enqueue of E wraps; tail = 0 right after it."
       ],
-      "why": "This exact structure is the ring buffer inside every keyboard driver, audio pipeline, and network card — a fixed block of memory reused forever with two indexes. If you ever write anything real-time, you'll write this."
+      "why": "This exact structure is the ring buffer inside every keyboard driver, audio pipeline, and network card: a fixed block of memory reused forever with two indexes. If you ever write anything real-time, you'll write this."
     },
     {
       "id": "invariant-max",
@@ -875,7 +1390,7 @@
       "prompt": "Write the loop invariant for this code and give Initialization, Maintenance, and Termination in Poon's four-sentence format.",
       "code": "int best = a[0];\nfor (int i = 1; i < a.length; i++)\n  if (a[i] > best) best = a[i];",
       "hints": [
-        "The invariant is a sentence about `best` and `i` that's true every time the loop is about to test `i < a.length`. What does `best` hold at that moment — in terms of i?",
+        "The invariant is a sentence about `best` and `i` that's true every time the loop is about to test `i < a.length`. What does `best` hold at that moment: in terms of i?",
         "The classic mistake: 'best is the maximum of the array'. That's only true at the END. Mid-loop, best is the maximum of the part you've *seen*. Name that part using i.",
         "Template: 'At the start of each iteration with index i, best = the maximum of a[0..i−1].' Now plug in i = 1 for initialization and i = a.length for termination."
       ],
@@ -883,9 +1398,9 @@
         "Invariant: at the start of each iteration with index i, `best` equals the maximum of a[0..i−1].",
         "Initialization: i = 1, so a[0..0] is just a[0], and best was set to a[0]. ✓",
         "Maintenance: assume best = max of a[0..i−1]. The body compares a[i] to best and keeps the larger, so best = max of a[0..i]. Then i increments, so the invariant reads 'max of a[0..i−1]' again for the new i. ✓",
-        "Termination: the loop ends when i = a.length. The invariant says best = max of a[0..a.length−1] — the whole array. ✓"
+        "Termination: the loop ends when i = a.length. The invariant says best = max of a[0..a.length−1]: the whole array. ✓"
       ],
-      "why": "Every time you write a loop that accumulates something (a max, a sum, a running average, 'the best candidate so far'), the invariant is the sentence that tells you the loop is right — and it's the sentence you'll write in a code review comment when someone asks 'why does this work?'",
+      "why": "Every time you write a loop that accumulates something (a max, a sum, a running average, 'the best candidate so far'), the invariant is the sentence that tells you the loop is right: and it's the sentence you'll write in a code review comment when someone asks 'why does this work?'",
       "sectionRef": "invariants"
     },
     {

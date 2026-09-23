@@ -13,6 +13,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Frame } from "@/study/types";
+import { Inline } from "./Blocks";
 
 export function FrameView({ frame, large }: { frame: Frame; large?: boolean }) {
   switch (frame.kind) {
@@ -122,7 +123,9 @@ export function Stepper({ title, frames }: { title: string; frames: Frame[] }) {
         <FrameView frame={frame} />
       </div>
       <div className="border-t border-border/60 px-4 py-3">
-        <p className="min-h-[2.5rem] text-sm leading-relaxed text-foreground/90">{frame.caption}</p>
+        <p className="min-h-[2.5rem] text-[15px] leading-relaxed text-foreground/90">
+          <Inline text={frame.caption} />
+        </p>
         <div className="mt-3 flex items-center gap-2">
           <button
             type="button"

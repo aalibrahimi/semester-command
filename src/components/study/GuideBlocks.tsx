@@ -37,7 +37,7 @@ const CALLOUT: Record<ProseLabel, { title: string; icon: typeof HelpCircle; box:
   when: { title: "When to use it", icon: Compass, box: "border-brand/35 bg-brand/[0.06]", head: "text-brand-fg" },
 };
 
-const BODY = "text-[15px] leading-[1.75] text-foreground/90";
+const BODY = "text-base leading-[1.8] text-foreground/90";
 
 /** Minimal markdown: paragraphs, "- " bullets, "1. " numbered lines, inline marks. */
 export function Markdown({ md, className }: { md: string; className?: string }) {
@@ -106,7 +106,7 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
       const c = CALLOUT[block.label];
       const Icon = c.icon;
       return (
-        <aside id={block.id} className={cn("scroll-mt-6 rounded-xl border px-4 py-3.5", c.box)}>
+        <aside id={block.id} className={cn("scroll-mt-6 rounded-xl border px-5 py-4", c.box)}>
           <div className={cn("mb-1 flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider", c.head)}>
             <Icon className="h-3.5 w-3.5" /> {c.title}
           </div>
@@ -120,7 +120,7 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
         <div id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-3.5 shadow-card">
           <div className="mb-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Definition</div>
           <div className="font-display text-base font-semibold tracking-tight">{block.term}</div>
-          <p className={cn(BODY, "mt-1.5 text-sm leading-relaxed")}>
+          <p className={cn(BODY, "mt-1.5 text-[15px] leading-relaxed")}>
             <Inline text={block.body} />
           </p>
         </div>
@@ -198,11 +198,12 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
 
     case "sim":
       return (
-        <figure id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
-          <Sim name={block.sim} params={block.params ?? {}} />
-          <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">
+        <figure id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-6 py-6">
+          <figcaption className="mb-5 border-b border-border/60 pb-4 text-sm leading-relaxed text-foreground/85">
+            <span className="mr-2 text-2xs font-semibold uppercase tracking-wider text-brand-fg">Try it</span>
             <Inline text={block.caption} />
           </figcaption>
+          <Sim name={block.sim} params={block.params ?? {}} />
         </figure>
       );
 
@@ -234,7 +235,7 @@ export function GuideBlocks({ blocks }: { blocks: GuideBlock[] }) {
     else groups.push([b]);
   }
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {groups.map((g, i) =>
         g.length > 1 ? (
           <div key={i} className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -267,7 +268,7 @@ function FigureView({ id, svg, viewBox, caption }: { id: string; svg: string; vi
     return () => window.removeEventListener("keydown", onKey);
   }, [big]);
   return (
-    <figure id={id} className="group/fig relative scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
+    <figure id={id} className="group/fig relative scroll-mt-6 rounded-xl border border-border/70 bg-card px-6 py-6">
       <button
         type="button"
         onClick={() => setBig(true)}
@@ -277,8 +278,8 @@ function FigureView({ id, svg, viewBox, caption }: { id: string; svg: string; vi
       >
         <Maximize2 className="h-3.5 w-3.5" />
       </button>
-      <svg viewBox={viewBox} className="mx-auto h-auto w-full max-w-[560px] cursor-zoom-in" onClick={() => setBig(true)} dangerouslySetInnerHTML={{ __html: svg }} />
-      <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">{caption}</figcaption>
+      <svg viewBox={viewBox} className="mx-auto h-auto w-full max-w-[640px] cursor-zoom-in" onClick={() => setBig(true)} dangerouslySetInnerHTML={{ __html: svg }} />
+      <figcaption className="mx-auto mt-4 max-w-[680px] text-sm leading-relaxed text-muted-foreground">{caption}</figcaption>
       {big && (
         <div role="dialog" aria-modal="true" aria-label="Figure, enlarged" className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-background/90 p-6 backdrop-blur-sm" onClick={() => setBig(false)}>
           <div className="flex max-h-full w-full max-w-[1100px] flex-col gap-3 overflow-auto rounded-2xl border border-border bg-card p-6 shadow-elevated">
