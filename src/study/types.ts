@@ -28,6 +28,11 @@ export type Frame =
       note?: string;
       caption: string;
     }
+  /** A binary heap drawn as a tree AND as its array at once. `size` is the
+   *  heap part (a[0..size−1]); anything after it is the sorted tail, shown
+   *  in the array only. Items keep their identity, so a swap is drawn as
+   *  the two values trading places along the edge, in both views. */
+  | { kind: "heap"; a: number[]; size?: number; hl?: number[]; done?: number[]; note?: string; caption: string }
   /** A recursion tree drawn level by level. `levels[i].nodes` are the labels
    *  inside the boxes; `work` is the per-level total shown on the right.
    *  Frames add levels cumulatively — pass the full list each time. */

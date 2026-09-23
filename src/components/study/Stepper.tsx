@@ -150,6 +150,91 @@ function Grid({ frame, large }: { frame: Extract<Frame, { kind: "array" | "rows"
   );
 }
 
+/* ── Heap frames: the tree and the array, moving together ─────────────────── */
+
+function HeapView({ frame, large }: { frame: Extract<Frame, { kind: "heap" }>; large?: boolean }) {
+  const a = frame.a;
+  const n = a.length;
+  const size = frame.size ?? n;
+  const depth = Math.floor(Math.log2(Math.max(1, n))) + 1;
+  const rowH = large ? 64 : 54;
+  const r = large ? 22 : 18;
+  const treeH = depth * rowH;
+  const pos = (i: number) => {
+    const lvl = Math.floor(Math.log2(i + 1));
+    const k = i - (2 ** lvl - 1);
+    return { x: ((k + 0.5) / 2 ** lvl) * 100, y: r + 4 + lvl * rowH };
+  };
+  const seen = new Map<number, number>();
+  const ids = a.map((v) => {
+    const c = (seen.get(v) ?? 0) + 1;
+    seen.set(v, c);
+    return `${v}~${c}`;
+  });
+  const hl = new Set(frame.hl ?? []);
+  const done = new Set(frame.done ?? []);
+  for (let i = size; i < n; i++) done.add(i);
+  const cellW = large ? 52 : 40;
+
+  return (
+    <div className="flex w-full flex-col items-center gap-4">
+      <div className="relative w-full max-w-[560px]" style={{ height: treeH }}>
+        <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox={`0 0 100 ${treeH}`} preserveAspectRatio="none" aria-hidden>
+          {a.map((_, i) => {
+            if (i === 0 || i >= size) return null;
+            const p = pos(Math.floor((i - 1) / 2));
+            const c = pos(i);
+            const on = hl.has(i) && hl.has(Math.floor((i - 1) / 2));
+            return <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} vectorEffect="non-scaling-stroke" stroke={on ? "rgb(var(--accent))" : "rgb(var(--foreground) / 0.3)"} strokeWidth={on ? 2.5 : 1.2} />;
+          })}
+        </svg>
+        {a.map((v, i) => {
+          const p = pos(i);
+          const inHeap = i < size;
+          return (
+            <div
+              key={ids[i]}
+              data-numeric
+              className={cn(
+                "absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 font-mono font-semibold",
+                "transition-[left,top,opacity,background-color,border-color] duration-500 ease-in-out motion-reduce:transition-none",
+                large ? "text-base" : "text-sm",
+                hl.has(i) ? "border-brand bg-brand/20 text-foreground" : "border-foreground/30 bg-card text-foreground/90",
+                !inHeap && "opacity-0",
+              )}
+              style={{ left: `${p.x}%`, top: p.y, width: r * 2, height: r * 2 }}
+            >
+              {v}
+            </div>
+          );
+        })}
+      </div>
+      <div className="relative" style={{ width: n * (cellW + 4), height: cellW + 16 }}>
+        {a.map((v, i) => (
+          <div key={ids[i]} className="absolute transition-[left] duration-500 ease-in-out motion-reduce:transition-none" style={{ left: i * (cellW + 4), top: 0 }}>
+            <div
+              data-numeric
+              className={cn(
+                "flex items-center justify-center rounded-md border font-mono tabular-nums transition-colors duration-500",
+                large ? "text-base" : "text-sm",
+                hl.has(i) ? "border-brand bg-brand/15 font-semibold" : done.has(i) ? "border-on-track/50 bg-on-track/10" : "border-border bg-card text-foreground/85",
+              )}
+              style={{ width: cellW, height: cellW - 6 }}
+            >
+              {v}
+            </div>
+          </div>
+        ))}
+        {a.map((_, i) => (
+          <span key={`i${i}`} className="absolute text-center font-mono text-[10px] text-muted-foreground" style={{ left: i * (cellW + 4), top: cellW - 2, width: cellW }}>
+            {i}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** The old flow layout, for cells too long to slide. */
 function FlowArray({ frame, large }: { frame: Extract<Frame, { kind: "array" }>; large?: boolean }) {
   return (
@@ -187,6 +272,14 @@ export function FrameView({ frame, large }: { frame: Frame; large?: boolean }) {
         </div>
       );
     }
+
+    case "heap":
+      return (
+        <div className="flex flex-col items-center gap-3">
+          <HeapView frame={frame} large={large} />
+          {frame.note && <div className="font-mono text-xs text-muted-foreground">{frame.note}</div>}
+        </div>
+      );
 
     case "tree":
       return (

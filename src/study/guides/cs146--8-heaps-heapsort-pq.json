@@ -3,36 +3,69 @@
   "course": "cs146",
   "lessons": "Lecture 8",
   "title": "Heaps, heapify, buildHeap, heap sort, priority queues",
-  "summary": "Read an array as a tree with the index formulas; trace heapify, buildHeap, heapSort, insert and extract on paper; say the runtime of each and why buildHeap is O(n); explain priority queue as the ADT and heap as the implementation.",
-  "estimatedMinutes": 60,
-  "sourceNote": "Lecture 8 slides (Sep 16), HW 8 (due Mon Sep 21), CLRS ch. 6.",
+  "summary": "Say why a priority queue needs a heap; read a heap as a tree and as an array with the index formulas; trace heapify, buildHeap and heapSort; explain why buildHeap is O(n) and heap sort is O(n log n) with O(1) space; and run insert and extract on a priority queue.",
+  "estimatedMinutes": 75,
+  "sourceNote": "Lecture 8 'Heaps, Heap Sort, Priority Queues' (Sep 16) slides, HW 8, CLRS ch. 6. Real-world notes are general industry practice.",
   "requires": [
     "cs146/2-adts-invariants-insertion",
     "cs146/4-big-o-merge-sort"
   ],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why heaps exist",
+      "id": "map",
+      "heading": "The big picture: always hand over the most urgent thing",
       "blocks": [
         {
           "type": "prose",
+          "md": "Stacks hand you the newest item, queues the oldest. Lots of real problems want neither: they want the **most important** item, while new items keep arriving. That's a **priority queue**, and a **heap** is the clever structure that makes it fast. Along the way you get a third n log n sort that needs no extra memory.",
+          "slide": "What this chapter answers",
+          "id": "map.2c4326eb"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec1' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='20' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This chapter, in order:</text><text x='10' y='40' font-size='17.2' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Always hand over the most urgent thing.</text><g><title>1. Priority queue: the contract: take the max.</title><circle cx='22' cy='77' r='11' fill='rgb(var(--accent))'/><text x='22' y='81' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><rect x='42' y='58' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='75' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Priority queue</text><text x='56' y='89' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the contract: take the max</text><text x='470' y='82' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >take the max</text><line x1='22' y1='89' x2='22' y2='115' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>2. Heap: a tree stored in an array.</title><circle cx='22' cy='127' r='11' fill='rgb(var(--accent))'/><text x='22' y='131' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><rect x='42' y='108' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='125' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Heap</text><text x='56' y='139' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >a tree stored in an array</text><text x='470' y='132' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >parent ≥ kids</text><line x1='22' y1='139' x2='22' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>3. heapify: let one value sink.</title><circle cx='22' cy='177' r='11' fill='rgb(var(--accent))'/><text x='22' y='181' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><rect x='42' y='158' width='290' height='38' rx='9' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='56' y='175' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >heapify</text><text x='56' y='189' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >let one value sink</text><text x='470' y='182' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(log n)</text><line x1='22' y1='189' x2='22' y2='215' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>4. buildHeap: heapify from the bottom up.</title><circle cx='22' cy='227' r='11' fill='rgb(var(--accent))'/><text x='22' y='231' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><rect x='42' y='208' width='290' height='38' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='225' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >buildHeap</text><text x='56' y='239' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >heapify from the bottom up</text><text x='470' y='232' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(n)</text><line x1='22' y1='239' x2='22' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>5. heapSort: pull the max out n times.</title><circle cx='22' cy='277' r='11' fill='rgb(var(--accent))'/><text x='22' y='281' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><rect x='42' y='258' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='275' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >heapSort</text><text x='56' y='289' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >pull the max out n times</text><text x='470' y='282' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(n log n)</text></g><rect x='10' y='312' width='460' height='40' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='240' y='337' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Heap sort: n log n with no extra memory.</text></g>",
+          "viewBox": "0 0 480 364",
+          "caption": "The chapter in five steps.",
+          "slide": "Five steps",
+          "id": "map.dd210fe3"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "heading": "Why heaps exist: the emergency room",
+      "blocks": [
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec2' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Emergency room: who goes next?</text><text x='10' y='44' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >arrived in this order →</text><g><title>Patient A, urgency 2.</title><circle cx='60' cy='74' r='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><rect x='42' y='88' width='36' height='38' rx='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='60' y='113' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >A</text><text x='60' y='146' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >urgency 2</text></g><g><title>Patient B, urgency 9.</title><circle cx='170' cy='74' r='12' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.4'/><rect x='152' y='88' width='36' height='38' rx='12' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.4'/><text x='170' y='113' font-size='14.9' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >B</text><text x='170' y='146' font-size='13.2' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >urgency 9</text></g><g><title>Patient C, urgency 4.</title><circle cx='280' cy='74' r='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><rect x='262' y='88' width='36' height='38' rx='12' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.4'/><text x='280' y='113' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >C</text><text x='280' y='146' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >urgency 4</text></g><g><title>Patient D, urgency 7.</title><circle cx='390' cy='74' r='12' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><rect x='372' y='88' width='36' height='38' rx='12' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><text x='390' y='113' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >D</text><text x='390' y='146' font-size='13.2' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >urgency 7</text></g><g><title>A plain queue serves by arrival: A first, even though B is critical.</title><rect x='10' y='164' width='460' height='44' rx='10' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.3'/><text x='22' y='184' font-size='14.4' fill='rgb(var(--critical-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Queue (FIFO):</text><text x='22' y='200' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >A, B, C, D  → the critical patient waits</text></g><g><title>A priority queue serves by urgency: B, then D, then C, then A. That's what a heap does fast.</title><rect x='10' y='216' width='460' height='44' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='22' y='236' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Priority queue:</text><text x='22' y='252' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >B (9), D (7), C (4), A (2)  → most urgent first</text></g><text x='10' y='282' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Patients keep arriving, so re-sorting everyone each time is too slow.</text></g>",
+          "viewBox": "0 0 480 290",
+          "caption": "Poon's emergency room. A queue serves by arrival, so the critical patient waits. A priority queue serves the most urgent first, and it has to stay fast while patients keep arriving.",
+          "slide": "Who goes next?",
+          "id": "why.eb1d3117"
+        },
+        {
+          "type": "definition",
+          "term": "Priority queue (the ADT)",
+          "body": "A container where each item has a priority. Operations: **insert(x)**, **extract()** (remove and return the highest priority), **peek()**, **isEmpty()**.",
+          "id": "why.2dd33ff4"
+        },
+        {
+          "type": "prose",
+          "md": "**Why not just keep a sorted list?** Inserting into a sorted array costs O(n) shifts. Keeping it unsorted makes extract cost O(n) to find the max. A heap makes **both** O(log n) by keeping only a partial order: just enough to know where the max is.",
           "label": "why",
-          "md": "**The problem a heap solves** An emergency room doesn't serve patients in arrival order (a queue) or most-recent-first (a stack). It serves the **most urgent** next, and new patients keep arriving with their own urgency. You need two operations, over and over: *add a thing with a priority* and *take out the most important thing*. A sorted list makes 'take the max' O(1) but 'add' O(n) (shift everything). An unsorted list makes 'add' O(1) but 'take the max' O(n) (scan everything). A **heap** gets both down to O(log n) by keeping things only *partly* sorted: just enough to know the max instantly.",
-          "slide": "The ER triage problem",
-          "id": "why.2eea517f"
+          "id": "why.2b4416ed"
         },
         {
           "type": "definition",
           "term": "Binary max-heap",
           "body": "A **complete** binary tree (every level full except possibly the last, which fills left to right) where **every parent ≥ its children**. Consequence: the maximum is always at the root. A **min-heap** flips the inequality; the minimum is at the root. Lecture 8 uses max-heaps throughout.",
-          "id": "why.ab815064"
+          "id": "why.01708024"
         },
         {
           "type": "prose",
           "md": "A heap does not say the left child is smaller than the right. It does not say the array is sorted. It does not let you find the second-largest quickly without extracting the first. The only promise is the one line: parent ≥ children, on every edge. Everything else follows from that plus the complete shape.",
-          "slide": "'Partly sorted' — what a heap does NOT promise",
-          "id": "why.10745185"
+          "slide": "'Partly sorted': what a heap does NOT promise",
+          "id": "why.8f6ea29d"
         }
       ]
     },
@@ -41,12 +74,152 @@
       "heading": "The array IS the tree",
       "blocks": [
         {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec3' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >One heap, two views. Only the array exists.</text><g><title>The tree you draw: level by level, left to right. Hover the colored nodes.</title><line x1='240' y1='50' x2='130' y2='100' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='240' y1='50' x2='350' y2='100' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='130' y1='100' x2='75' y2='150' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='130' y1='100' x2='185' y2='150' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='350' y1='100' x2='295' y2='150' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='350' y1='100' x2='405' y2='150' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='75' y1='150' x2='47.5' y2='200' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='75' y1='150' x2='102.5' y2='200' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><line x1='185' y1='150' x2='157.5' y2='200' stroke='rgb(var(--foreground) / 0.35)' stroke-width='1.2'/><circle cx='240' cy='50' r='16' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.4'/><text x='240' y='54.9' font-size='14.9' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >16</text><text x='258' y='38' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >0</text><circle cx='130' cy='100' r='16' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.4'/><text x='130' y='104.9' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >14</text><text x='148' y='88' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><circle cx='350' cy='100' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='350' y='104.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >10</text><text x='368' y='88' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><circle cx='75' cy='150' r='16' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><text x='75' y='154.9' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >8</text><text x='93' y='138' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><circle cx='185' cy='150' r='16' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.4'/><text x='185' y='154.9' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >7</text><text x='203' y='138' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><circle cx='295' cy='150' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='295' y='154.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >9</text><text x='313' y='138' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><circle cx='405' cy='150' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='405' y='154.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><text x='423' y='138' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >6</text><circle cx='47.5' cy='200' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='47.5' y='204.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><text x='65.5' y='188' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >7</text><circle cx='102.5' cy='200' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='102.5' y='204.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><text x='120.5' y='188' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >8</text><circle cx='157.5' cy='200' r='16' fill='rgb(var(--card))' stroke='rgb(var(--foreground) / 0.45)' stroke-width='1.4'/><text x='157.5' y='204.9' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><text x='175.5' y='188' font-size='10.3' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >9</text></g><g><title>The array that actually sits in memory: the same values read level by level.</title><rect x='20' y='236' width='44' height='34' rx='5' fill='rgb(var(--critical) / 0.14)' stroke='rgb(var(--critical) / 0.75)' stroke-width='1.3'/><text x='42' y='258.2' font-size='14.9' fill='rgb(var(--critical-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >16</text><text x='42' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='64' y='236' width='44' height='34' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='86' y='258.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >14</text><text x='86' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='108' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='130' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text><text x='130' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='152' y='236' width='44' height='34' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='174' y='258.2' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><text x='174' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='196' y='236' width='44' height='34' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='218' y='258.2' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><text x='218' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='240' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='262' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><text x='262' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='284' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='306' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='306' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='328' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='350' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='350' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><rect x='372' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='394' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><text x='394' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='416' y='236' width='44' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='438' y='258.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><text x='438' y='283' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text></g><g><title>Children of index 1: 2·1 + 1 = 3 and 2·1 + 2 = 4. No pointers needed, just arithmetic.</title><path d='M86 234 Q130 210 174 234' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc3)'/><path d='M86 234 Q152 198 218 234' fill='none' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc3)'/></g><g><title>The formulas (0-based).</title><rect x='10' y='300' width='460' height='60' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='24' y='322' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >left child = 2i + 1</text><text x='260' y='322' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >right child = 2i + 2</text><text x='24' y='344' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >parent = ⌊(i − 1) / 2⌋</text><text x='260' y='344' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >first leaf = ⌊n / 2⌋</text></g></g>",
+          "viewBox": "0 0 480 368",
+          "caption": "The same ten numbers drawn two ways. The tree is how you think; the array is what the computer stores. Read the tree level by level, left to right, and you get the array.",
+          "slide": "Tree and array",
+          "id": "array.4a2f93ea"
+        },
+        {
+          "type": "trap",
+          "body": "**Index formulas: 0-based, memorize** Left child of i: **2i + 1**. Right child: **2i + 2**. Parent: **⌊(i − 1) / 2⌋**. First leaf: **⌊n / 2⌋** (every index from there on has no children). He uses 0-based indexing; CLRS uses 1-based (2i, 2i+1, ⌊i/2⌋): don't mix them on the exam.",
+          "source": "Exam",
+          "points": "−1",
+          "id": "array.1701f5d5"
+        },
+        {
+          "type": "prose",
+          "label": "why",
+          "md": "**Why there are no pointers** Because the tree is complete, reading it level by level, left to right, gives one unbroken run of nodes with no holes. So position-in-that-reading *is* the array index, and the arithmetic above recovers the shape. No pointers means no extra memory per node and no chasing references around memory: the heap is one contiguous block.",
+          "slide": "Why a complete tree fits in an array",
+          "id": "array.c59c0b13"
+        },
+        {
+          "type": "prose",
+          "md": "**When you see an index, draw the family.** For index i, say out loud: 'my kids are 2i + 1 and 2i + 2, my parent is (i − 1) / 2 rounded down.' For i = 3: kids 7 and 8, parent 1. Two seconds, and every heap question gets easier.",
+          "label": "think",
+          "id": "array.3cd537fe"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: the index formulas",
+          "task": "Write `left(i)`, `right(i)` and `parent(i)` (0-based), then `is_max_heap(a)`: True when every item is ≤ its parent.",
+          "starter": "def left(i):\n    return 0\n\ndef right(i):\n    return 0\n\ndef parent(i):\n    return 0\n\ndef is_max_heap(a):\n    # check every index i >= 1 against its parent\n    return True\n\nprint(left(1), right(1), parent(4))                 # expect 3 4 1\nprint(is_max_heap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1]))   # a heap\nprint(is_max_heap([16, 4, 10, 14, 7, 9, 3, 2, 8, 1]))   # 4 has a bigger child\n",
+          "check": "assert (left(0), right(0)) == (1, 2), \"The root's children are at 1 and 2.\"\nassert (left(3), right(3)) == (7, 8), \"Index 3's children: 2·3 + 1 = 7 and 2·3 + 2 = 8.\"\nassert parent(7) == 3 and parent(8) == 3, \"7 and 8 are both children of 3: (7 − 1) // 2 = 3 and (8 − 1) // 2 = 3.\"\nassert parent(1) == 0 and parent(2) == 0, \"1 and 2 are the root's children.\"\nassert is_max_heap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1]) is True, \"[16, 14, 10, 8, 7, 9, 3, 2, 4, 1] is a max-heap.\"\nassert is_max_heap([16, 4, 10, 14, 7, 9, 3, 2, 8, 1]) is False, \"In [16, 4, 10, 14, …], index 1 (4) has a child 14 that's bigger: not a heap.\"\nassert is_max_heap([]) is True and is_max_heap([5]) is True, \"Empty and one-item arrays are heaps.\"",
+          "solution": "def left(i):\n    return 2 * i + 1\n\ndef right(i):\n    return 2 * i + 2\n\ndef parent(i):\n    return (i - 1) // 2\n\ndef is_max_heap(a):\n    return all(a[parent(i)] >= a[i] for i in range(1, len(a)))\n\nprint(left(1), right(1), parent(4))\nprint(is_max_heap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1]))\nprint(is_max_heap([16, 4, 10, 14, 7, 9, 3, 2, 8, 1]))\n",
+          "hints": [
+            "left = 2i + 1, right = 2i + 2.",
+            "parent = (i − 1) // 2 (integer division rounds down).",
+            "is_max_heap: `all(a[parent(i)] >= a[i] for i in range(1, len(a)))`."
+          ],
+          "success": "Those three one-line formulas are the whole reason a heap needs no pointers.",
+          "id": "array.95e07922"
+        },
+        {
+          "type": "check",
+          "prompt": "In an array of 12 elements, what are the children of index 4, the parent of index 11, and which indexes are leaves?",
+          "answer": "Children of 4: 9 and 10. Parent of 11: ⌊10/2⌋ = 5. Leaves: ⌊12/2⌋ = 6 onward, i.e. indexes 6–11.",
+          "sectionRef": "array",
+          "id": "array.cfb2fd13"
+        }
+      ]
+    },
+    {
+      "id": "heapify",
+      "heading": "heapify: let one value sink",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "heapify(a, i)",
+          "body": "Fix **one** node: if a[i] is smaller than a child, swap it with its **larger** child and repeat from there, until it's bigger than both children or reaches a leaf. It assumes both subtrees under i are already heaps.",
+          "id": "heapify.50e67349"
+        },
+        {
           "type": "stepper",
-          "title": "Reading [16, 14, 10, 8, 7, 9, 3, 2, 4, 1] as a tree",
+          "title": "heapify(a, 1): the 4 sinks to where it belongs (Lecture 8)",
           "frames": [
             {
-              "kind": "array",
-              "cells": [
+              "kind": "heap",
+              "a": [
+                16,
+                4,
+                10,
+                14,
+                7,
+                9,
+                3,
+                2,
+                8,
+                1
+              ],
+              "caption": "heapify(a, 1): a[1] = 4 is smaller than a child, but both subtrees below it are already heaps. Let it sink.",
+              "hl": [
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                16,
+                4,
+                10,
+                14,
+                7,
+                9,
+                3,
+                2,
+                8,
+                1
+              ],
+              "caption": "heapify(1): 4 vs its children (14, 7). The largest is 14 at index 3, and it's bigger than 4.",
+              "hl": [
+                1,
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                16,
+                14,
+                10,
+                4,
+                7,
+                9,
+                3,
+                2,
+                8,
+                1
+              ],
+              "caption": "Swap: 14 moves up, 4 sinks to index 3. Keep going from there.",
+              "hl": [
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                16,
+                14,
+                10,
+                4,
+                7,
+                9,
+                3,
+                2,
+                8,
+                1
+              ],
+              "caption": "heapify(3): 4 vs its children (2, 8). The largest is 8 at index 8, and it's bigger than 4.",
+              "hl": [
+                3,
+                8
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
                 16,
                 14,
                 10,
@@ -58,364 +231,72 @@
                 4,
                 1
               ],
+              "caption": "Swap: 8 moves up, 4 sinks to index 8. Keep going from there.",
               "hl": [
-                0
-              ],
-              "note": "index 0 = the root",
-              "caption": "A heap is stored as a plain array. Index 0 is the top of the tree (the **root**). There are no pointers — the tree shape is implied by the indexes."
+                8
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                16,
+                14,
+                10,
+                8,
+                7,
+                9,
+                3,
+                2,
+                4,
+                1
               ],
-              "caption": "Index 0's children are indexes 1 and 2. In general, **left child of i = 2i + 1**, **right child = 2i + 2**. Check: 2·0+1 = 1, 2·0+2 = 2."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7",
-                    "9",
-                    "3"
-                  ]
-                }
-              ],
-              "caption": "Index 1 (14) has children 2·1+1 = 3 and 2·1+2 = 4: that's 8 and 7. Index 2 (10) has children 5 and 6: 9 and 3. Poon's slide uses exactly this example."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7",
-                    "9",
-                    "3"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "4",
-                    "1"
-                  ]
-                }
-              ],
-              "caption": "Index 3 (8) has children 7 and 8: 2 and 4. Index 4 (7) has child 9: just 1 (its right child would be index 10, past the end). The last row fills left to right with no gaps — that's what **complete** means."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7",
-                    "9",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "4",
-                    "1"
-                  ],
-                  "hl": true
-                }
-              ],
-              "caption": "Going the other way: **parent of i = ⌊(i − 1) / 2⌋**. Parent of index 9 is ⌊8/2⌋ = 4 (the 7). Parent of index 6 is ⌊5/2⌋ = 2 (the 10). And look at the values: every parent is ≥ both its children. That's the **max-heap property**."
+              "caption": "4 reached a leaf (index 8 has no children). Stop.",
+              "hl": [
+                8
+              ]
             }
           ],
           "slide": true,
-          "id": "array.ba542557"
-        },
-        {
-          "type": "trap",
-          "body": "**Index formulas — 0-based, memorize** Left child of i: **2i + 1**. Right child: **2i + 2**. Parent: **⌊(i − 1) / 2⌋**. First leaf: **⌊n / 2⌋** (every index from there on has no children). He uses 0-based indexing; CLRS uses 1-based (2i, 2i+1, ⌊i/2⌋) — don't mix them on the exam.",
-          "source": "Exam",
-          "points": "−1",
-          "id": "array.21d9fd73"
-        },
-        {
-          "type": "figure",
-          "viewBox": "0 0 620 335",
-          "svg": "<g font-family='ui-monospace, monospace' font-size='12' fill='currentColor'><text x='24' y='26' font-size='11' fill='rgb(var(--accent-fg))'>left(i)  = 2i + 1</text><text x='24' y='44' font-size='11' fill='rgb(var(--accent-fg))'>right(i) = 2i + 2</text><text x='24' y='62' font-size='11' fill='rgb(var(--accent-fg))'>parent(i) = (i − 1) / 2</text><line x1='310' y1='70' x2='170' y2='112' stroke='currentColor' opacity='0.5'/><line x1='310' y1='70' x2='450' y2='112' stroke='currentColor' opacity='0.5'/><line x1='170' y1='150' x2='100' y2='192' stroke='currentColor' opacity='0.5'/><line x1='170' y1='150' x2='240' y2='192' stroke='currentColor' opacity='0.5'/><line x1='450' y1='150' x2='380' y2='192' stroke='currentColor' opacity='0.5'/><line x1='450' y1='150' x2='520' y2='192' stroke='currentColor' opacity='0.5'/><g><title>The root, index 0: in a max-heap the largest value ALWAYS lives here. That is the entire product a heap sells — peek at the max in O(1), extract it in O(log n).</title><circle cx='310' cy='50' r='20' fill='rgb(var(--critical) / 0.10)' stroke='rgb(var(--critical))' stroke-width='1.8'/><text x='310' y='55' text-anchor='middle' font-weight='700'>16</text><text x='310' y='88' text-anchor='middle' font-size='10' opacity='0.55'>i=0</text></g><g><title>Node i=1 (value 14) with its children: left = 2·1+1 = index 3, right = 2·1+2 = index 4. No pointers exist anywhere — the arithmetic IS the tree structure. Compare the same three cells highlighted in the array below.</title><circle cx='170' cy='130' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='170' y='135' text-anchor='middle' font-weight='700'>14</text><text x='170' y='168' text-anchor='middle' font-size='10' opacity='0.55'>i=1</text><circle cx='100' cy='210' r='20' fill='rgb(var(--accent-fg) / 0.10)' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='100' y='215' text-anchor='middle' font-weight='700'>8</text><text x='100' y='248' text-anchor='middle' font-size='10' opacity='0.55'>i=3</text><circle cx='240' cy='210' r='20' fill='rgb(var(--accent-fg) / 0.10)' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='240' y='215' text-anchor='middle' font-weight='700'>7</text><text x='240' y='248' text-anchor='middle' font-size='10' opacity='0.55'>i=4</text></g><g><title>The rest of the tree: every parent is at least as big as both children (the heap property), but siblings are in NO particular order — 9 sits right of 7 happily. A heap is much lazier than sorted, which is exactly why it is cheaper to maintain.</title><circle cx='450' cy='130' r='20' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='450' y='135' text-anchor='middle' font-weight='700'>10</text><text x='450' y='168' text-anchor='middle' font-size='10' opacity='0.55'>i=2</text><circle cx='380' cy='210' r='20' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='380' y='215' text-anchor='middle' font-weight='700'>9</text><text x='380' y='248' text-anchor='middle' font-size='10' opacity='0.55'>i=5</text><circle cx='520' cy='210' r='20' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='520' y='215' text-anchor='middle' font-weight='700'>3</text><text x='520' y='248' text-anchor='middle' font-size='10' opacity='0.55'>i=6</text></g><g><title>The SAME heap as it actually exists in memory: one flat array, no pointers, read level by level, left to right. The highlighted cells are node i=1 and its two children — same colors as above. The tree is a way of READING the array, not a second structure.</title><rect x='96' y='272' width='56' height='34' rx='6' fill='rgb(var(--critical) / 0.10)' stroke='rgb(var(--critical))' stroke-width='1.4'/><rect x='158' y='272' width='56' height='34' rx='6' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><rect x='220' y='272' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.4'/><rect x='282' y='272' width='56' height='34' rx='6' fill='rgb(var(--accent-fg) / 0.10)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><rect x='344' y='272' width='56' height='34' rx='6' fill='rgb(var(--accent-fg) / 0.10)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><rect x='406' y='272' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.4'/><rect x='468' y='272' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='124' y='294' text-anchor='middle' font-weight='700'>16</text><text x='186' y='294' text-anchor='middle' font-weight='700'>14</text><text x='248' y='294' text-anchor='middle' font-weight='700'>10</text><text x='310' y='294' text-anchor='middle' font-weight='700'>8</text><text x='372' y='294' text-anchor='middle' font-weight='700'>7</text><text x='434' y='294' text-anchor='middle' font-weight='700'>9</text><text x='496' y='294' text-anchor='middle' font-weight='700'>3</text><text x='124' y='326' text-anchor='middle' font-size='10' opacity='0.55'>0</text><text x='186' y='326' text-anchor='middle' font-size='10' opacity='0.55'>1</text><text x='248' y='326' text-anchor='middle' font-size='10' opacity='0.55'>2</text><text x='310' y='326' text-anchor='middle' font-size='10' opacity='0.55'>3</text><text x='372' y='326' text-anchor='middle' font-size='10' opacity='0.55'>4</text><text x='434' y='326' text-anchor='middle' font-size='10' opacity='0.55'>5</text><text x='496' y='326' text-anchor='middle' font-size='10' opacity='0.55'>6</text></g></g>",
-          "caption": "One heap, two views — hover any part. Top: the tree you draw on paper. Bottom: the flat array that ACTUALLY exists, read level by level. Red = the root/max at index 0. Green node i=1 has its children at 2i+1 = 3 and 2i+2 = 4 (blue) — the same three cells glow in the array. Three formulas replace every pointer, which is why a heap costs zero extra memory on top of its data.",
-          "slide": "The array IS the tree",
-          "slideNotes": "Exam translation drill: given an array, you should be able to sketch the tree in under 30 seconds, and given a tree, write the array. The three formulas (parent (i−1)/2, children 2i+1 and 2i+2) are all you need — no pointers exist anywhere. This is also why heaps are so fast in practice: the whole 'tree' is one contiguous block of memory the CPU cache loves. Abdul Bari's video below covers this chapter end to end (heap, heapify, heapsort, PQ) with the same array-first view; VisuAlgo lets you insert and extract while watching the array and tree update side by side — which is exactly the skill the exam tests.",
-          "resources": [
-            {
-              "label": "Heaps & heapsort, full walkthrough (Abdul Bari)",
-              "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U",
-              "kind": "video"
-            },
-            {
-              "label": "Heap visualizer, array + tree (VisuAlgo)",
-              "url": "https://visualgo.net/en/heap",
-              "kind": "site"
-            }
-          ],
-          "id": "array.7b9e2c48"
+          "id": "heapify.cf05fbce"
         },
         {
           "type": "prose",
-          "label": "why",
-          "md": "**Why there are no pointers** Because the tree is complete, reading it level by level, left to right, gives one unbroken run of nodes with no holes. So position-in-that-reading *is* the array index, and the arithmetic above recovers the shape. No pointers means no extra memory per node and no chasing references around memory — the heap is one contiguous block.",
-          "slide": "Why a complete tree fits in an array",
-          "id": "array.8dc69dc7"
-        },
-        {
-          "type": "check",
-          "prompt": "In an array of 12 elements, what are the children of index 4, the parent of index 11, and which indexes are leaves?",
-          "answer": "Children of 4: 9 and 10. Parent of 11: ⌊10/2⌋ = 5. Leaves: ⌊12/2⌋ = 6 onward, i.e. indexes 6–11.",
-          "sectionRef": "array",
-          "id": "array.ac7097a9"
-        }
-      ]
-    },
-    {
-      "id": "heapify",
-      "heading": "heapify: fix one node by letting it sink",
-      "blocks": [
-        {
-          "type": "stepper",
-          "title": "heapify(a, 1): the 4 sinks to where it belongs",
-          "frames": [
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "10"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "7",
-                    "9",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "8",
-                    "1"
-                  ]
-                }
-              ],
-              "caption": "One thing is wrong here: the 4 at index 1 is smaller than its children 14 and 7. Everything below it is fine. heapify(a, 1) fixes exactly this one violation by letting the 4 sink."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "10"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "7",
-                    "9",
-                    "3"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "8",
-                    "1"
-                  ]
-                }
-              ],
-              "caption": "Step 1: find the largest of the node and its two children. 4 vs 14 vs 7 → 14 (index 3). It's not the node itself, so we swap."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "7",
-                    "9",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "8",
-                    "1"
-                  ]
-                }
-              ],
-              "caption": "After the swap, 14 is up where it belongs. But the 4 is now at index 3, and it might be smaller than *its* children. So heapify calls itself on index 3."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "7",
-                    "9",
-                    "3"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "8",
-                    "1"
-                  ]
-                }
-              ],
-              "caption": "heapify(a, 3): 4 vs children 2 (index 7) and 8 (index 8). Largest is 8. Swap."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "16"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "14",
-                    "10"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7",
-                    "9",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "4",
-                    "1"
-                  ],
-                  "hl": true
-                }
-              ],
-              "caption": "heapify(a, 8): index 8 has no children (2·8+1 = 17 is past the end). Nothing to compare — stop. The 4 sank two levels and the tree is a heap again. Array: [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]."
-            }
-          ],
-          "slide": true,
-          "id": "heapify.19183fb7"
+          "md": "**Always swap with the LARGER child.** If you swapped with the smaller one, the bigger child would end up under a smaller parent and you'd break the heap you were fixing. Bigger child goes up; the sinking value goes down.",
+          "label": "think",
+          "id": "heapify.feac65db"
         },
         {
           "type": "example",
-          "title": "`n` is the heap size — which may be smaller than a.length during heapSort. The recursion follows the sinking element down.",
+          "title": "`n` is the heap size: which may be smaller than a.length during heapSort. The recursion follows the sinking element down.",
           "body": "static void heapify(int[] a, int i, int n) {\n  int l = 2 * i + 1, r = 2 * i + 2, largest = i;\n  if (l < n && a[l] > a[largest]) largest = l;\n  if (r < n && a[r] > a[largest]) largest = r;\n  if (largest != i) {\n    int t = a[i]; a[i] = a[largest]; a[largest] = t;   // swap\n    heapify(a, largest, n);                            // keep sinking\n  }\n}",
           "slide": "heapify in Java",
-          "id": "heapify.dd46ea30"
+          "id": "heapify.4fca386e"
         },
         {
           "type": "prose",
           "md": "heapify assumes the two subtrees *below* i are already valid heaps; it only fixes i itself. Each call does a constant amount of work and moves one level down, so it makes at most (height of the tree) calls. A complete tree with n nodes has height ⌊log₂ n⌋ (Chapter 0: halving). **heapify is O(log n).**",
           "slide": "Precondition and cost",
-          "id": "heapify.8ed46de0"
+          "id": "heapify.51c49fc8"
         },
         {
           "type": "prose",
           "md": "**Slide 21, 'Common misconception'** heapify does NOT sort the array, and it does NOT build a heap from scratch. It repairs a *single* out-of-place value at node i, trusting that everything below is already a heap. Poon put this on its own slide; expect a true/false or short answer on it.",
-          "id": "heapify.0836576b"
+          "id": "heapify.2e1c6fa3"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: write heapify",
+          "task": "Write `heapify(a, i, n)` for a max-heap of size n (the part a[0..n−1]). Loop: find the largest of a[i] and its children that exist (index < n); if that's i, stop; otherwise swap and continue from the child.",
+          "starter": "def heapify(a, i, n):\n    while True:\n        l, r = 2 * i + 1, 2 * i + 2\n        largest = i\n        # if l < n and a[l] > a[largest]: largest = l   (same for r)\n        # if largest == i: stop; else swap a[i], a[largest] and set i = largest\n        return\n\na = [16, 4, 10, 14, 7, 9, 3, 2, 8, 1]\nheapify(a, 1, len(a))\nprint(a)    # expect [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]\n",
+          "check": "a = [16, 4, 10, 14, 7, 9, 3, 2, 8, 1]\nheapify(a, 1, len(a))\nassert a == [16, 14, 10, 8, 7, 9, 3, 2, 4, 1], f\"heapify(a, 1) on the slide's array should give [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]. Got {a}.\"\nb = [1, 5, 9]\nheapify(b, 0, 3)\nassert b == [9, 5, 1], f\"The root must swap with its LARGER child: [1, 5, 9] → [9, 5, 1]. Got {b}.\"\nc = [3, 9, 8, 100]\nheapify(c, 0, 3)\nassert c == [9, 3, 8, 100], f\"Only the first n items are the heap: with n = 3, index 3 (100) must be ignored. Got {c}.\"",
+          "solution": "def heapify(a, i, n):\n    while True:\n        l, r = 2 * i + 1, 2 * i + 2\n        largest = i\n        if l < n and a[l] > a[largest]:\n            largest = l\n        if r < n and a[r] > a[largest]:\n            largest = r\n        if largest == i:\n            return\n        a[i], a[largest] = a[largest], a[i]\n        i = largest\n\na = [16, 4, 10, 14, 7, 9, 3, 2, 8, 1]\nheapify(a, 1, len(a))\nprint(a)\n",
+          "hints": [
+            "Two ifs pick the largest: compare a[l] and a[r] with a[largest], only when l < n / r < n.",
+            "`if largest == i: return`.",
+            "Otherwise swap `a[i], a[largest] = a[largest], a[i]` and set `i = largest`."
+          ],
+          "success": "One path down the tree, at most log n swaps: heapify is O(log n). Everything else in this chapter is built from it.",
+          "id": "heapify.e5d6180f"
         }
       ]
     },
@@ -424,177 +305,186 @@
       "heading": "buildHeap: any array → a heap, in O(n)",
       "blocks": [
         {
+          "type": "definition",
+          "term": "buildHeap(a)",
+          "body": "Turn any array into a max-heap by calling heapify on every non-leaf, **from the last one (index ⌊n/2⌋ − 1) back to the root**.",
+          "id": "build.0f375788"
+        },
+        {
           "type": "stepper",
           "title": "HW 8 Problem 1: buildHeap on [1, 2, 3, 4, 5, 6, 7]",
           "frames": [
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "1"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "5",
-                    "6",
-                    "7"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
               ],
-              "caption": "[1, 2, 3, 4, 5, 6, 7] drawn as a tree. Is it a max-heap? No — the root 1 is smaller than its children (and so is every other parent). HW 8 Problem 1 asks you to fix it with buildHeap."
+              "caption": "buildHeap on [1, 2, 3, 4, 5, 6, 7]. Leaves (index 3 and up) are already tiny heaps. Start at the last non-leaf, index 2, and walk back to the root."
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "1"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "5",
-                    "6",
-                    "7"
-                  ],
-                  "hl": true
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
               ],
-              "caption": "n = 7. The first leaf is at index ⌊7/2⌋ = 3. Indexes 3, 4, 5, 6 (values 4, 5, 6, 7) are leaves — one-node heaps, already fine. So we only call heapify on indexes 2, 1, 0, in that order: **bottom-up**."
+              "caption": "heapify(2): fix the subtree rooted at index 2 (value 3).",
+              "hl": [
+                2
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "1"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "7"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "5",
-                    "6",
-                    "3"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                7,
+                4,
+                5,
+                6,
+                3
               ],
-              "caption": "heapify(2): 3 vs children 6, 7 → largest is 7. Swap. Array: [1, 2, 7, 4, 5, 6, 3]."
+              "caption": "3 is smaller than its bigger child 7: swap. 3 sinks to index 6.",
+              "hl": [
+                2,
+                6
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "1"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "7"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "2",
-                    "6",
-                    "3"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                7,
+                4,
+                5,
+                6,
+                3
               ],
-              "caption": "heapify(1): 2 vs children 4, 5 → largest is 5. Swap. Array: [1, 5, 7, 4, 2, 6, 3]."
+              "caption": "heapify(1): fix the subtree rooted at index 1 (value 2).",
+              "hl": [
+                1
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "7"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "1"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "2",
-                    "6",
-                    "3"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                5,
+                7,
+                4,
+                2,
+                6,
+                3
               ],
-              "caption": "heapify(0): 1 vs children 5, 7 → largest is 7. Swap. Now the 1 is at index 2 — and its children are 6 and 3. Not done: heapify recurses on index 2."
+              "caption": "2 is smaller than its bigger child 5: swap. 2 sinks to index 4.",
+              "hl": [
+                1,
+                4
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "7"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "6"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "4",
-                    "2",
-                    "1",
-                    "3"
-                  ],
-                  "hl": true
-                }
+              "kind": "heap",
+              "a": [
+                1,
+                5,
+                7,
+                4,
+                2,
+                6,
+                3
               ],
-              "caption": "heapify(2): 1 vs 6, 3 → swap with 6. The 1 is now a leaf. Every parent ≥ its children: a max-heap. **Answer: [7, 5, 6, 4, 2, 1, 3].**"
+              "caption": "heapify(0): fix the subtree rooted at index 0 (value 1).",
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                7,
+                5,
+                1,
+                4,
+                2,
+                6,
+                3
+              ],
+              "caption": "1 is smaller than its bigger child 7: swap. 1 sinks to index 2.",
+              "hl": [
+                0,
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                7,
+                5,
+                6,
+                4,
+                2,
+                1,
+                3
+              ],
+              "caption": "1 is smaller than its bigger child 6: swap. 1 sinks to index 5.",
+              "hl": [
+                2,
+                5
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                7,
+                5,
+                6,
+                4,
+                2,
+                1,
+                3
+              ],
+              "caption": "Done: [7, 5, 6, 4, 2, 1, 3] is a max-heap. Every parent ≥ its children, and the max, 7, is at the root.",
+              "hl": [
+                0
+              ]
             }
           ],
           "slide": true,
-          "id": "build.05ecee39"
+          "id": "build.c4cc2b98"
+        },
+        {
+          "type": "prose",
+          "md": "**Why bottom-up?** heapify(i) only works if both subtrees under i are already heaps. Going from the bottom up guarantees that: by the time you reach a node, everything below it has been fixed. Leaves are one-item heaps, so they need nothing.",
+          "label": "why",
+          "id": "build.bc8995bf"
         },
         {
           "type": "example",
           "title": "Start at the last non-leaf and walk toward the root, heapifying each. Going bottom-up is what guarantees heapify's precondition: by the time we reach i, both of its subtrees have already been fixed.",
           "body": "static void buildHeap(int[] a) {\n  int n = a.length;\n  for (int i = n / 2 - 1; i >= 0; i--)   // last non-leaf down to root\n    heapify(a, i, n);\n}",
           "slide": "buildHeap in Java",
-          "id": "build.65254e16"
+          "id": "build.bbe14c84"
         },
         {
-          "id": "build.81dc7e1a",
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec4' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Why buildHeap is O(n), not O(n log n)</text><text x='10' y='38' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >n = 15. Most nodes sit near the bottom and can barely sink.</text><g><title>1 nodes at this level, each can sink at most 3 levels: 3 swaps at most.</title><text x='10' y='80' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1 node</text><rect x='92' y='64' width='20' height='24' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='270' y='80' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >× sink ≤ 3</text><text x='470' y='80' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= 3</text></g><g><title>2 nodes at this level, each can sink at most 2 levels: 4 swaps at most.</title><text x='10' y='126' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2 nodes</text><rect x='92' y='110' width='40' height='24' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='270' y='126' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >× sink ≤ 2</text><text x='470' y='126' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= 4</text></g><g><title>4 nodes at this level, each can sink at most 1 levels: 4 swaps at most.</title><text x='10' y='172' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4 nodes</text><rect x='92' y='156' width='80' height='24' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='270' y='172' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >× sink ≤ 1</text><text x='470' y='172' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= 4</text></g><g><title>8 nodes at this level, each can sink at most 0 levels: 0 swaps at most.</title><text x='10' y='218' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >8 nodes</text><rect x='92' y='202' width='160' height='24' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='270' y='218' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >× sink ≤ 0</text><text x='470' y='218' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= 0</text></g><g><title>Total at most 11 swaps for 15 nodes: about n, not n log n.</title><rect x='10' y='250' width='460' height='50' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='240' y='272' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >total ≤ 0 + 4 + 4 + 3 = 11 swaps for n = 15</text><text x='240' y='291' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >half the nodes are leaves and never move: O(n)</text></g></g>",
+          "viewBox": "0 0 480 308",
+          "caption": "The surprising runtime. It looks like n/2 heapify calls × log n = n log n, but half the nodes are leaves (0 work), a quarter can sink only 1 level, an eighth 2 levels… The total stays under n.",
+          "slide": "Why O(n)",
+          "id": "build.c55ce2d7"
+        },
+        {
           "type": "sim",
           "sim": "sort",
           "params": {
@@ -609,44 +499,51 @@
             ]
           },
           "caption": "buildHeap, bottom-up, on your array: it starts at the last non-leaf and each heapify is shown as the array and as the tree. Try the check's [3, 9, 2, 1, 4, 5] and confirm heapify runs on 2, 1, 0.",
-          "slide": "Try it"
+          "slide": "Try it",
+          "id": "build.81dc7e1a"
         },
         {
           "type": "prose",
           "label": "why",
-          "md": "**The non-obvious runtime** There are about n/2 calls to heapify, each 'O(log n)', so the lazy answer is O(n log n). But most of those calls are cheap. Half the nodes are leaves (cost 0 — we skip them). A quarter sit one level up and can sink at most 1 step. An eighth can sink at most 2. Add it up: n/4·1 + n/8·2 + n/16·3 + … — a series whose sum is about n, not n log n. Poon states O(n) on slide 25; the sentence to say is **'most nodes are near the bottom, so most heapify calls are short.'**",
+          "md": "**The non-obvious runtime** There are about n/2 calls to heapify, each 'O(log n)', so the lazy answer is O(n log n). But most of those calls are cheap. Half the nodes are leaves (cost 0: we skip them). A quarter sit one level up and can sink at most 1 step. An eighth can sink at most 2. Add it up: n/4·1 + n/8·2 + n/16·3 + …: a series whose sum is about n, not n log n. Poon states O(n) on slide 25; the sentence to say is **'most nodes are near the bottom, so most heapify calls are short.'**",
           "slide": "Why O(n), not O(n log n)",
-          "slideNotes": "The intuition without the algebra: half of all nodes are **leaves** and cost zero sifts. A quarter sit one level up and sift at most once. Only ONE node — the root — can ever pay the full log n. So the expensive nodes are vanishingly rare, and the total collapses to plain n. Compare to inserting n items one at a time, where EVERY item can pay log n on its way up. This 'most nodes are near the bottom' argument is a favorite short-answer question, and it's the same geometric-series-converges idea as Chapter 0's ##sum of halves → 2n## trick.",
-          "id": "build.b46411c6"
+          "slideNotes": "The intuition without the algebra: half of all nodes are **leaves** and cost zero sifts. A quarter sit one level up and sift at most once. Only ONE node: the root: can ever pay the full log n. So the expensive nodes are vanishingly rare, and the total collapses to plain n. Compare to inserting n items one at a time, where EVERY item can pay log n on its way up. This 'most nodes are near the bottom' argument is a favorite short-answer question, and it's the same geometric-series-converges idea as Chapter 0's ##sum of halves → 2n## trick.",
+          "id": "build.f28ac658"
         },
         {
           "type": "check",
           "prompt": "buildHeap on [3, 9, 2, 1, 4, 5]. Which indexes get heapified, in what order, and what's the result?",
           "answer": "n = 6, so i = 2, 1, 0. heapify(2): 2 vs child 5 → [3,9,5,1,4,2]. heapify(1): 9 vs 1, 4 → fine. heapify(0): 3 vs 9, 5 → swap with 9 → [9,3,5,1,4,2]; then 3 vs 1, 4 → swap with 4 → [9,4,5,1,3,2].",
           "sectionRef": "build",
-          "id": "build.f145741f"
+          "id": "build.e1404449"
         }
       ]
     },
     {
       "id": "sort",
-      "heading": "heapSort",
+      "heading": "heapSort: pull the max out, n times",
       "blocks": [
         {
-          "type": "prose",
-          "label": "why",
-          "md": "**Max at the root, so pull it out repeatedly** If the max is always at index 0, sorting is: swap the max to the end of the array, pretend the array is one shorter, fix the root, repeat. Each round places one element in its final spot from the right. After n rounds the array is sorted ascending — and it never needed a second array.",
-          "slide": "The idea",
-          "slideNotes": "The move to internalize: swap the max to the back, **shrink the heap boundary by one**, and sift the new root down. The array develops two zones — a shrinking heap on the left, a growing sorted suffix on the right — and nothing else is ever allocated. That in-place property is heapsort's whole selling point over merge sort (which needs a second array), and 'no extra space, but not stable' is the two-line comparison answer exams fish for.",
-          "id": "sort.6731c5df"
+          "type": "definition",
+          "term": "heapSort(a)",
+          "body": "buildHeap once. Then repeat: swap the root (the max) with the last item of the heap, shrink the heap by one, heapify the root.",
+          "id": "sort.5e97ed28"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec5' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >heapSort keeps one array in two parts.</text><g><title>Left: still a max-heap (blue). Right: already sorted, in final position (green).</title><rect x='40' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='68' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><text x='68' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='96' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='124' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><text x='124' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='152' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='180' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='180' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='208' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='236' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><text x='236' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='264' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='292' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='292' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='320' y='44' width='56' height='40' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='348' y='70' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><text x='348' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='376' y='44' width='56' height='40' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='404' y='70' font-size='17.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><text x='404' y='97' font-size='10.9' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text></g><line x1='375' y1='36' x2='375' y2='100' stroke='rgb(var(--accent))' stroke-width='2' stroke-dasharray='4 3'/><text x='208' y='112' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >heap (size 6)</text><text x='404' y='112' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sorted</text><g><title>Each round: swap the root (the max of the heap) with the heap's last item, move the wall left by one, heapify the root.</title><rect x='10' y='128' width='460' height='76' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='150' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >each round:</text><text x='24' y='170' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1. swap a[0] ↔ a[end]</text><text x='260' y='170' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >max to its final spot</text><text x='24' y='190' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2. end − 1; heapify(a, 0)</text><text x='260' y='190' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >fix the new root: log n</text></g><text x='240' y='226' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >No second array anywhere: O(1) extra space.</text></g>",
+          "viewBox": "0 0 480 236",
+          "caption": "One array, two parts: a shrinking heap on the left and a growing sorted tail on the right.",
+          "slide": "Heap | sorted",
+          "id": "sort.2f7e517d"
         },
         {
           "type": "stepper",
           "title": "heapSort on [7, 5, 6, 4, 2, 1, 3]",
           "frames": [
             {
-              "kind": "array",
-              "cells": [
+              "kind": "heap",
+              "a": [
                 7,
                 5,
                 6,
@@ -655,154 +552,354 @@
                 1,
                 3
               ],
+              "caption": "heapSort starts from a max-heap: [7, 5, 6, 4, 2, 1, 3]. The biggest item, 7, is at the root.",
               "hl": [
                 0
-              ],
-              "note": "a max-heap; the max is at index 0",
-              "caption": "heapSort starts from a max-heap (buildHeap gave us this). The biggest element is at the root, index 0. We know where it belongs: the very end."
+              ]
             },
             {
-              "kind": "array",
-              "cells": [
-                3,
+              "kind": "heap",
+              "a": [
+                7,
                 5,
                 6,
                 4,
                 2,
                 1,
-                7
+                3
               ],
+              "caption": "Swap the root (7) with the last item of the heap (3, index 6).",
               "hl": [
-                0
-              ],
-              "done": [
-                6
-              ],
-              "note": "swap a[0] ↔ a[6]; heap is now a[0..5]",
-              "caption": "Swap the root with the last element. 7 is now in its final position (green) and is no longer part of the heap. But the 3 at the root breaks the heap property — so heapify(0) on the smaller heap a[0..5]."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                6,
-                5,
-                3,
-                4,
-                2,
-                1,
-                7
-              ],
-              "hl": [
-                0
-              ],
-              "done": [
-                6
-              ],
-              "note": "heapify(0) on 6 elements",
-              "caption": "heapify: 3 vs 5, 6 → swap with 6; then 3 vs child 1 → fine. Root is the max of what's left. Repeat."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                5,
-                4,
-                3,
-                1,
-                2,
-                6,
-                7
-              ],
-              "hl": [
-                0
-              ],
-              "done": [
-                5,
-                6
-              ],
-              "note": "swap a[0] ↔ a[5], heapify(0) on 5",
-              "caption": "Swap 6 to index 5; heapify the 1: 1 vs 5, 3 → swap with 5; 1 vs 4, 2 → swap with 4. Two sorted at the end."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                4,
-                2,
-                3,
-                1,
-                5,
-                6,
-                7
-              ],
-              "hl": [
-                0
-              ],
-              "done": [
-                4,
-                5,
-                6
-              ],
-              "note": "swap, heapify(0) on 4",
-              "caption": "Swap 5 to index 4; heapify the 2: 2 vs 4, 3 → swap with 4; 2 vs 1 → fine."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                3,
-                2,
-                1,
-                4,
-                5,
-                6,
-                7
-              ],
-              "hl": [
-                0
-              ],
-              "done": [
-                3,
-                4,
-                5,
-                6
-              ],
-              "note": "swap, heapify(0) on 3",
-              "caption": "Swap 4 to index 3; heapify the 1: 1 vs 2, 3 → swap with 3."
-            },
-            {
-              "kind": "array",
-              "cells": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7
-              ],
-              "done": [
                 0,
+                6
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                3,
+                5,
+                6,
+                4,
+                2,
+                1,
+                7
+              ],
+              "caption": "7 is now in its final place at the end (green). The heap shrinks to 6 items; the new root 3 sinks to where it belongs.",
+              "size": 6,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                6,
+                5,
+                3,
+                4,
+                2,
+                1,
+                7
+              ],
+              "caption": "3 is smaller than its bigger child 6: swap. 3 sinks to index 2.",
+              "size": 6,
+              "hl": [
+                0,
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                6,
+                5,
+                3,
+                4,
+                2,
+                1,
+                7
+              ],
+              "caption": "Swap the root (6) with the last item of the heap (1, index 5).",
+              "size": 6,
+              "hl": [
+                0,
+                5
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                1,
+                5,
+                3,
+                4,
+                2,
+                6,
+                7
+              ],
+              "caption": "6 is now in its final place at the end (green). The heap shrinks to 5 items; the new root 1 sinks to where it belongs.",
+              "size": 5,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                5,
+                1,
+                3,
+                4,
+                2,
+                6,
+                7
+              ],
+              "caption": "1 is smaller than its bigger child 5: swap. 1 sinks to index 1.",
+              "size": 5,
+              "hl": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                5,
+                4,
+                3,
+                1,
+                2,
+                6,
+                7
+              ],
+              "caption": "1 is smaller than its bigger child 4: swap. 1 sinks to index 3.",
+              "size": 5,
+              "hl": [
+                1,
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                5,
+                4,
+                3,
+                1,
+                2,
+                6,
+                7
+              ],
+              "caption": "Swap the root (5) with the last item of the heap (2, index 4).",
+              "size": 5,
+              "hl": [
+                0,
+                4
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                2,
+                4,
+                3,
+                1,
+                5,
+                6,
+                7
+              ],
+              "caption": "5 is now in its final place at the end (green). The heap shrinks to 4 items; the new root 2 sinks to where it belongs.",
+              "size": 4,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                4,
+                2,
+                3,
+                1,
+                5,
+                6,
+                7
+              ],
+              "caption": "2 is smaller than its bigger child 4: swap. 2 sinks to index 1.",
+              "size": 4,
+              "hl": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                4,
+                2,
+                3,
+                1,
+                5,
+                6,
+                7
+              ],
+              "caption": "Swap the root (4) with the last item of the heap (1, index 3).",
+              "size": 4,
+              "hl": [
+                0,
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
                 1,
                 2,
                 3,
                 4,
                 5,
-                6
+                6,
+                7
               ],
-              "note": "two more rounds",
-              "caption": "Swap 3 out, heapify (2 vs 1 → swap); swap 2 out; one element left is trivially sorted. **[1, 2, 3, 4, 5, 6, 7]**. Everything happened inside the one array — no temp array. That's why heap sort is O(1) extra space."
+              "caption": "4 is now in its final place at the end (green). The heap shrinks to 3 items; the new root 1 sinks to where it belongs.",
+              "size": 3,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                3,
+                2,
+                1,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "1 is smaller than its bigger child 3: swap. 1 sinks to index 2.",
+              "size": 3,
+              "hl": [
+                0,
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                3,
+                2,
+                1,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "Swap the root (3) with the last item of the heap (1, index 2).",
+              "size": 3,
+              "hl": [
+                0,
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "3 is now in its final place at the end (green). The heap shrinks to 2 items; the new root 1 sinks to where it belongs.",
+              "size": 2,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                2,
+                1,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "1 is smaller than its bigger child 2: swap. 1 sinks to index 1.",
+              "size": 2,
+              "hl": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                2,
+                1,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "Swap the root (2) with the last item of the heap (1, index 1).",
+              "size": 2,
+              "hl": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "2 is now in its final place at the end (green). The heap shrinks to 1 items; the new root 1 sinks to where it belongs.",
+              "size": 1,
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "caption": "Sorted: [1, 2, 3, 4, 5, 6, 7]. n rounds of swap + heapify, each O(log n): O(n log n), all inside one array.",
+              "size": 0
             }
           ],
           "slide": true,
-          "id": "sort.6df53f6f"
+          "id": "sort.23a74e97"
         },
         {
           "type": "example",
           "title": "buildHeap once, then n rounds of swap + heapify with a shrinking heap size.",
           "body": "static void heapSort(int[] a) {\n  buildHeap(a);                              // O(n)\n  for (int end = a.length - 1; end > 0; end--) {\n    int t = a[0]; a[0] = a[end]; a[end] = t; // max → its final slot\n    heapify(a, 0, end);                      // heap is now a[0..end-1]; O(log n)\n  }\n}",
           "slide": "heapSort in Java",
-          "id": "sort.cf39e00d"
+          "id": "sort.1129b0a2"
         },
         {
-          "id": "sort.25e5c26e",
           "type": "sim",
           "sim": "sort",
           "params": {
@@ -817,7 +914,8 @@
             ]
           },
           "caption": "heapSort: swap the max to the end, shrink the heap, heapify the root, repeat. The settled tail turns green; the tree shows only what is still in the heap.",
-          "slide": "Try it"
+          "slide": "Try it",
+          "id": "sort.25e5c26e"
         },
         {
           "type": "table",
@@ -828,15 +926,15 @@
           "rows": [
             [
               "Time",
-              "O(n) build + n × O(log n) heapify = **O(n log n)** — always, no bad input"
+              "O(n) build + n × O(log n) heapify = **O(n log n)**: always, no bad input"
             ],
             [
               "Extra space",
-              "**O(1)** — everything happens inside the input array"
+              "**O(1)**: everything happens inside the input array"
             ],
             [
               "Stable?",
-              "**No** — the swaps can reorder equal elements"
+              "**No**: the swaps can reorder equal elements"
             ],
             [
               "When to prefer it",
@@ -844,7 +942,7 @@
             ]
           ],
           "slide": "heapSort facts (slides 32–35)",
-          "id": "sort.f73ecf5a"
+          "id": "sort.f74c3dbf"
         },
         {
           "type": "table",
@@ -881,250 +979,331 @@
             ]
           ],
           "slide": "The three sorts so far",
-          "id": "sort.edbcfdeb"
+          "id": "sort.2bac9b38"
+        },
+        {
+          "type": "prose",
+          "md": "**Use heap sort** when you need a guaranteed n log n **and** can't afford extra memory: embedded devices, kernels, systems with a hard memory budget. **Prefer merge sort** when you need stability (equal items keep their order). **Prefer quicksort** (next chapter) when average speed matters most. Real libraries often use heap sort as a safety net inside quicksort (introsort).",
+          "label": "when",
+          "id": "sort.9f06105a"
+        },
+        {
+          "type": "trap",
+          "body": "Calling heap sort stable. It isn't: the swap of the root to the end can jump an item over equal items.",
+          "source": "Lecture 8 slide 35",
+          "points": null,
+          "id": "sort.d5dfc0f2"
         },
         {
           "type": "check",
           "prompt": "Why is merge sort O(n) space while heap sort is O(1)?",
           "answer": "Merge needs a temporary array so it doesn't overwrite unread elements while merging. Heap sort only ever swaps two positions inside the input array.",
           "sectionRef": "sort",
-          "id": "sort.5522be6a"
+          "id": "sort.ac04f400"
         }
       ]
     },
     {
       "id": "pq",
-      "heading": "Priority queue: the ADT a heap implements",
+      "heading": "Priority queue: insert and extract, O(log n) each",
       "blocks": [
         {
           "type": "prose",
           "md": "Lectures 2–3: an ADT is the contract, the implementation is the machinery. **Priority queue** is the contract: insert(x with a priority), extract the highest priority, peek, isEmpty. **Heap** is the machinery that makes each of those O(log n) or better. On an exam, 'priority queue' is the answer to *which ADT*, 'heap' is the answer to *how*.",
           "slide": "ADT vs implementation, again",
-          "id": "pq.9f932aa8"
+          "id": "pq.46feb290"
+        },
+        {
+          "type": "stepper",
+          "title": "insert(9) into [8, 5, 7, 2, 3]: trickle up",
+          "frames": [
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                7,
+                2,
+                3,
+                9
+              ],
+              "caption": "insert(9): put it at the end, index 5, so the tree stays complete. But 9 may be bigger than its parent.",
+              "hl": [
+                5
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                7,
+                2,
+                3,
+                9
+              ],
+              "caption": "Parent 7 (index 2 = ⌊(5 − 1) / 2⌋) is smaller than 9.",
+              "hl": [
+                5,
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                9,
+                2,
+                3,
+                7
+              ],
+              "caption": "Swap: 9 trickles up to index 2.",
+              "hl": [
+                2
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                9,
+                2,
+                3,
+                7
+              ],
+              "caption": "Parent 8 (index 0 = ⌊(2 − 1) / 2⌋) is smaller than 9.",
+              "hl": [
+                2,
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                9,
+                5,
+                8,
+                2,
+                3,
+                7
+              ],
+              "caption": "Swap: 9 trickles up to index 0.",
+              "hl": [
+                0
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                9,
+                5,
+                8,
+                2,
+                3,
+                7
+              ],
+              "caption": "9 reached the root: it's the new maximum. At most log n swaps.",
+              "hl": [
+                0
+              ]
+            }
+          ],
+          "slide": true,
+          "id": "pq.31409dff"
         },
         {
           "type": "stepper",
           "title": "extract() on [9, 8, 7, 5, 3, 2] (slides 41–42)",
           "frames": [
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "9"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "3",
-                    "2"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                9,
+                8,
+                7,
+                5,
+                3,
+                2
               ],
-              "caption": "extract(): return the max, which is always the root — 9. Now there's a hole at the top."
+              "caption": "extract() on [9, 8, 7, 5, 3, 2]: the answer is the root, 9.",
+              "hl": [
+                0
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "2"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "8",
-                    "7"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "3"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                2,
+                8,
+                7,
+                5,
+                3,
+                9
               ],
-              "caption": "Fill the hole with the **last** element (2) and shrink the size by one. This keeps the tree complete. But 2 is almost certainly too small for the root — so heapify(0)."
+              "caption": "Move the LAST item (2) to the root so the tree stays complete, and take 9 out.",
+              "size": 5,
+              "hl": [
+                0
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "8"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "7"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "3"
-                  ]
-                }
+              "kind": "heap",
+              "a": [
+                2,
+                8,
+                7,
+                5,
+                3,
+                9
               ],
-              "caption": "heapify(0): 2 vs 8, 7 → swap with 8. Recurse on index 1."
+              "caption": "heapify(0): 2 vs its children (8, 7). The largest is 8 at index 1, and it's bigger than 2.",
+              "size": 5,
+              "hl": [
+                0,
+                1
+              ]
             },
             {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "8"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "7"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3"
-                  ],
-                  "hl": true
-                }
+              "kind": "heap",
+              "a": [
+                8,
+                2,
+                7,
+                5,
+                3,
+                9
               ],
-              "caption": "heapify(1): 2 vs 5, 3 → swap with 5. The 2 is a leaf now. Heap restored: [8, 5, 7, 2, 3]. Cost: one path down the tree, O(log n)."
+              "caption": "Swap: 8 moves up, 2 sinks to index 1. Keep going from there.",
+              "size": 5,
+              "hl": [
+                1
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                2,
+                7,
+                5,
+                3,
+                9
+              ],
+              "caption": "heapify(1): 2 vs its children (5, 3). The largest is 5 at index 3, and it's bigger than 2.",
+              "size": 5,
+              "hl": [
+                1,
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                7,
+                2,
+                3,
+                9
+              ],
+              "caption": "Swap: 5 moves up, 2 sinks to index 3. Keep going from there.",
+              "size": 5,
+              "hl": [
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                7,
+                2,
+                3,
+                9
+              ],
+              "caption": "2 reached a leaf (index 3 has no children). Stop.",
+              "size": 5,
+              "hl": [
+                3
+              ]
+            },
+            {
+              "kind": "heap",
+              "a": [
+                8,
+                5,
+                7,
+                2,
+                3
+              ],
+              "caption": "extract() returned 9. The heap [8, 5, 7, 2, 3] is valid again after at most log n swaps."
             }
           ],
           "slide": true,
-          "id": "pq.5c99bf5c"
+          "id": "pq.931f4902"
         },
         {
-          "type": "stepper",
-          "title": "insert(): trickle up",
-          "frames": [
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "8"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "7"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3",
-                    "9"
-                  ],
-                  "hl": true
-                }
-              ],
-              "caption": "insert(9) into [8, 5, 7, 2, 3]: put the new element in the first empty slot — index 5, the end of the array — so the tree stays complete. Then compare it with its parent."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "8"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "9"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3",
-                    "7"
-                  ]
-                }
-              ],
-              "caption": "Parent of index 5 is ⌊4/2⌋ = 2, value 7. 7 < 9, so swap them. Now compare 9 with its new parent, the root 8. 8 < 9 → swap again."
-            },
-            {
-              "kind": "tree",
-              "levels": [
-                {
-                  "nodes": [
-                    "9"
-                  ],
-                  "hl": true
-                },
-                {
-                  "nodes": [
-                    "5",
-                    "8"
-                  ]
-                },
-                {
-                  "nodes": [
-                    "2",
-                    "3",
-                    "7"
-                  ]
-                }
-              ],
-              "caption": "9 is the new root. This is **trickle up** (heapify is trickle *down*). At most one swap per level, so insert is O(log n)."
-            }
-          ],
-          "slide": true,
-          "id": "pq.8a6187f5"
+          "type": "sim",
+          "sim": "heap",
+          "caption": "Now you drive: insert a big number and watch it climb, then extractMax and watch the replacement sink. The counter compares the swaps with the tree's height.",
+          "params": {
+            "array": [
+              9,
+              8,
+              7,
+              5,
+              3,
+              2
+            ]
+          },
+          "slide": "Try it",
+          "id": "pq.30125546"
         },
         {
           "type": "definition",
           "term": "insert(x)",
-          "body": "append at the end (keeps the tree complete), then swap upward with the parent while parent < x. **O(log n)** — one path up.",
-          "id": "pq.103c5a1c"
+          "body": "append at the end (keeps the tree complete), then swap upward with the parent while parent < x. **O(log n)**: one path up.",
+          "id": "pq.1d48d5dc"
         },
         {
           "type": "definition",
           "term": "extract()",
-          "body": "save a[0]; move the last element to a[0]; shrink; heapify(0). **O(log n)** — one path down.",
-          "id": "pq.65330476"
+          "body": "save a[0]; move the last element to a[0]; shrink; heapify(0). **O(log n)**: one path down.",
+          "id": "pq.f38a6f36"
         },
         {
           "type": "definition",
           "term": "peek()",
           "body": "return a[0]. **O(1)**.",
-          "id": "pq.6e4f2044"
-        },
-        {
-          "type": "definition",
-          "term": "isEmpty()",
-          "body": "size == 0. **O(1)**.",
-          "id": "pq.09b9242e"
+          "id": "pq.34594504"
         },
         {
           "type": "definition",
           "term": "buildHeap",
-          "body": "from a batch of n items: **O(n)** — cheaper than n inserts (n log n).",
-          "id": "pq.a7767966"
+          "body": "from a batch of n items: **O(n)**: cheaper than n inserts (n log n).",
+          "id": "pq.a51b8d26"
         },
         {
           "type": "definition",
           "term": "update / decreaseKey",
-          "body": "'future lecture' — it's what Dijkstra's algorithm needs.",
-          "id": "pq.de86babf"
+          "body": "'future lecture': it's what Dijkstra's algorithm needs.",
+          "id": "pq.f07b7eff"
+        },
+        {
+          "type": "prose",
+          "md": "**Priority queues quietly run a lot of software.** Your operating system picks the next program to run from a priority queue. Game engines and web servers keep a queue of timed events ordered by 'when'. Google Maps-style shortest routes use Dijkstra's algorithm, which is a priority queue of 'closest unvisited place'. Python ships one as `heapq`; Java as `PriorityQueue`.",
+          "label": "world",
+          "id": "pq.c571c9c2"
+        },
+        {
+          "type": "code",
+          "title": "See it: an ER with Python's heapq",
+          "task": "Python's `heapq` is a **min**-heap on a plain list. To pop the most urgent first, push `(-urgency, name)`. Run it, then add a patient with urgency 10 midway.",
+          "starter": "import heapq\n\ner = []\nfor name, urgency in [(\"A\", 2), (\"B\", 9), (\"C\", 4)]:\n    heapq.heappush(er, (-urgency, name))      # negate: min-heap acts as max-heap\n    print(\"arrived:\", name, \"urgency\", urgency, \"| next up:\", er[0][1])\n\nheapq.heappush(er, (-7, \"D\"))\nprint(\"D arrives (7). Treating in order:\")\nwhile er:\n    neg, name = heapq.heappop(er)\n    print(\"  treat\", name, \"urgency\", -neg)\n",
+          "id": "pq.d44cb7bd"
         },
         {
           "type": "example",
@@ -1132,46 +1311,314 @@
           "body": "Tasks with priorities arrive continuously; the system must always work on the highest-priority task next. Which structure, which operations, what cost?\n\n1. 'Arrive continuously' → we need cheap insert. 'Highest priority next' → we need cheap take-the-max. That pair is the priority queue ADT.\n2. Implement it as a **max-heap**: insert is O(log n), extract-max is O(log n).\n3. If a batch of tasks exists at startup, buildHeap them in O(n) instead of inserting one at a time.",
           "answer": "Priority queue via max-heap; insert + extract, both O(log n)",
           "slide": "HW 8 Problem 3: the task scheduler",
-          "slideNotes": "This homework problem is a miniature of how priority queues run the real world: OS process schedulers pick the highest-priority ready thread from a PQ, Dijkstra's shortest-path (coming in the graphs unit) pops the closest unvisited city from a PQ, and every ER triage board is one. The pattern to recognize: whenever a problem says 'always take the most-X item next' and items keep arriving, the answer is a heap — O(log n) per event instead of re-sorting everything, O(n log n), on every arrival.",
-          "id": "pq.de946a7f"
+          "slideNotes": "This homework problem is a miniature of how priority queues run the real world: OS process schedulers pick the highest-priority ready thread from a PQ, Dijkstra's shortest-path (coming in the graphs unit) pops the closest unvisited city from a PQ, and every ER triage board is one. The pattern to recognize: whenever a problem says 'always take the most-X item next' and items keep arriving, the answer is a heap: O(log n) per event instead of re-sorting everything, O(n log n), on every arrival.",
+          "id": "pq.6d0aef78"
         },
         {
           "type": "check",
-          "prompt": "Max-heap vs min-heap — and give a real use for a min-heap.",
+          "prompt": "Max-heap vs min-heap: and give a real use for a min-heap.",
           "answer": "Max-heap: parent ≥ children, root is the max. Min-heap: parent ≤ children, root is the min. Min-heap uses: Dijkstra's shortest path (always take the closest unvisited vertex), event simulation ordered by earliest time, merging k sorted lists.",
           "sectionRef": "pq",
-          "id": "pq.12f48a27"
+          "id": "pq.eb03c97f"
         },
         {
           "type": "prose",
           "md": "**Heap in one paragraph.** A complete binary tree in an array (children 2i+1, 2i+2; parent ⌊(i−1)/2⌋) with parent ≥ children. heapify(i) sinks one node, O(log n). buildHeap runs heapify from ⌊n/2⌋−1 down to 0, O(n). heapSort = buildHeap + n rounds of swap-to-end + heapify(0), O(n log n) time, O(1) space, unstable. A heap implements the priority-queue ADT with insert and extract in O(log n).",
-          "id": "pq.eac2b35e"
-        },
+          "id": "pq.3717e246"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
         {
-          "type": "prose",
-          "md": "**Where you'll meet heaps after the exam** Anywhere something must repeatedly hand over 'the most urgent thing'. ==Your OS's scheduler== picks the next process from a priority queue. **Event loops and timers** (Node's `setTimeout`, game engines) keep pending timers in a min-heap keyed by fire-time — peek tells the loop exactly how long it may sleep. **Dijkstra's shortest path** (later in this course, and inside every mapping app) is a min-heap of 'closest unvisited node'. **Top-K problems** — trending posts, biggest log offenders — keep a heap of size K instead of sorting everything: O(n log K) beats O(n log n). It's in your standard library as Java's `PriorityQueue` and Python's `heapq`, and it's an interview staple precisely because the array-is-the-tree trick separates people who memorized 'heap' from people who can compute `2i + 1`.",
-          "id": "pq.9c4d1e83"
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Priority queue",
+              "the ADT: insert, extract the highest priority, peek, isEmpty"
+            ],
+            [
+              "Binary max-heap",
+              "a complete binary tree where every parent ≥ its children"
+            ],
+            [
+              "Complete",
+              "every level full except the last, which fills left to right"
+            ],
+            [
+              "heapify(i)",
+              "let a[i] sink by swapping with its larger child: O(log n)"
+            ],
+            [
+              "buildHeap",
+              "heapify every non-leaf from ⌊n/2⌋ − 1 down to 0: O(n)"
+            ],
+            [
+              "heapSort",
+              "buildHeap, then n × (swap root to end, heapify): O(n log n), O(1) space, not stable"
+            ],
+            [
+              "Trickle up",
+              "insert's move: swap with the parent while bigger"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
   ],
   "exercises": [
     {
+      "id": "hp-kids",
+      "title": "Children of 5",
+      "prompt": "In a 0-based heap array, what are the indexes of the children of index 5? Answer like 11, 12.",
+      "hints": [
+        "left = 2i + 1.",
+        "right = 2i + 2.",
+        "i = 5."
+      ],
+      "solution": [
+        "2·5 + 1 = 11.",
+        "2·5 + 2 = 12.",
+        "Children: 11, 12."
+      ],
+      "why": "Index arithmetic replaces pointers; getting it right is the first line of every heap trace.",
+      "accept": [
+        "11, 12",
+        "11,12",
+        "11 and 12",
+        "11 12"
+      ],
+      "sectionRef": "array"
+    },
+    {
+      "id": "hp-parent",
+      "title": "Parent of 9",
+      "prompt": "What is the parent index of index 9?",
+      "hints": [
+        "parent = ⌊(i − 1) / 2⌋.",
+        "(9 − 1) / 2 = 4.",
+        "Check: 2·4 + 2 = 10, 2·4 + 1 = 9. ✓"
+      ],
+      "solution": [
+        "(9 − 1) / 2 = 4."
+      ],
+      "why": "Trickle-up in insert uses this formula at every step.",
+      "accept": [
+        "4"
+      ],
+      "sectionRef": "array"
+    },
+    {
+      "id": "hp-larger",
+      "title": "Which child?",
+      "prompt": "heapify finds a[i] smaller than both children. Which child does it swap with, and why?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "After the swap, the child you picked becomes the parent.",
+        "It must be ≥ the other child.",
+        "So pick the larger."
+      ],
+      "why": "This is the most common heapify mistake on a hand trace.",
+      "choices": [
+        {
+          "text": "The left one, always",
+          "feedback": "Left isn't special."
+        },
+        {
+          "text": "The smaller one, to move less",
+          "feedback": "Then the bigger child would sit under a smaller parent: broken heap."
+        },
+        {
+          "text": "The larger one, so the new parent is ≥ both children",
+          "feedback": "Right: the larger child becomes the parent of the other child, so the property holds there."
+        },
+        {
+          "text": "Either; it doesn't matter",
+          "feedback": "It matters: the wrong choice breaks the heap one level down."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "heapify"
+    },
+    {
+      "id": "hp-first",
+      "title": "Where buildHeap starts",
+      "prompt": "buildHeap on an array of n = 10. Which index is heapified first?",
+      "hints": [
+        "First leaf = ⌊n/2⌋ = 5.",
+        "Start one before the first leaf.",
+        "⌊10/2⌋ − 1."
+      ],
+      "solution": [
+        "Leaves: 5 to 9.",
+        "Last non-leaf: 4.",
+        "Order: 4, 3, 2, 1, 0."
+      ],
+      "why": "Starting at the last non-leaf skips half the array: the leaves are already one-item heaps.",
+      "accept": [
+        "4"
+      ],
+      "sectionRef": "build"
+    },
+    {
+      "id": "hp-buildcost",
+      "title": "buildHeap's cost",
+      "prompt": "Why is buildHeap O(n) even though it calls heapify (O(log n)) about n/2 times?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "How far can a node near the bottom sink?",
+        "Count nodes per level times their max sink distance.",
+        "n/4·1 + n/8·2 + n/16·3 + … < n."
+      ],
+      "why": "A classic example of a loose Big-O bound vs a tight one.",
+      "choices": [
+        {
+          "text": "It isn't; it's O(n log n)",
+          "feedback": "The loose bound is n log n, but the tight one is n."
+        },
+        {
+          "text": "Most nodes are near the bottom and can only sink a level or two",
+          "feedback": "Right: half the nodes are leaves (0 work), a quarter sink ≤ 1, an eighth ≤ 2… The sum stays under n."
+        },
+        {
+          "text": "heapify is O(1) during buildHeap",
+          "feedback": "Each call can still be log n for the nodes near the top."
+        },
+        {
+          "text": "It only heapifies the root",
+          "feedback": "It heapifies every non-leaf."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "build"
+    },
+    {
+      "id": "hp-space",
+      "title": "Heap sort's space",
+      "prompt": "How much extra memory does heap sort use, and is it stable?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Does heap sort allocate a second array?",
+        "No: it swaps within a.",
+        "Can equal items change order? Yes."
+      ],
+      "why": "In-place + guaranteed n log n is heap sort's selling point for memory-tight systems.",
+      "choices": [
+        {
+          "text": "O(n), stable",
+          "feedback": "That's merge sort."
+        },
+        {
+          "text": "O(1), stable",
+          "feedback": "It's in place, but the long-distance swaps break stability."
+        },
+        {
+          "text": "O(1), not stable",
+          "feedback": "Right: everything happens inside the input array, and swapping the root to the end can jump equal items."
+        },
+        {
+          "text": "O(log n), not stable",
+          "feedback": "That's quicksort's call stack."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "sort"
+    },
+    {
+      "id": "hp-insert",
+      "title": "insert's cost",
+      "prompt": "What does insert(x) cost on a heap of n items, and why?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Where does x go first?",
+        "At the end: index n.",
+        "Then it swaps upward, at most log n times."
+      ],
+      "why": "Both PQ operations follow one root-to-leaf path: that's why heaps beat sorted arrays for this job.",
+      "choices": [
+        {
+          "text": "O(1): append to the end",
+          "feedback": "Appending is O(1), but x may be bigger than its parent."
+        },
+        {
+          "text": "O(log n): append, then trickle up at most the tree's height",
+          "feedback": "Right: one path from a leaf to the root, height log n."
+        },
+        {
+          "text": "O(n): shift items to make room",
+          "feedback": "Nothing shifts; it swaps along one path."
+        },
+        {
+          "text": "O(n log n)",
+          "feedback": "Too much."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "pq"
+    },
+    {
+      "id": "hp-extract",
+      "title": "Extract by hand",
+      "prompt": "extract() on the max-heap [9, 8, 7, 5, 3, 2]. What is the array after the operation? Answer like [a, b, c, d, e].",
+      "hints": [
+        "Return 9; move the last item (2) to the root.",
+        "2 vs children 8 and 7: swap with 8.",
+        "2 (now at index 1) vs children 5 and 3: swap with 5."
+      ],
+      "solution": [
+        "Take 9. Root ← 2: [2, 8, 7, 5, 3].",
+        "Swap with 8: [8, 2, 7, 5, 3].",
+        "Swap with 5: [8, 5, 7, 2, 3]."
+      ],
+      "why": "Poon's slide 41–42 example: exactly what the midterm will ask you to trace.",
+      "accept": [
+        "[8, 5, 7, 2, 3]",
+        "8, 5, 7, 2, 3",
+        "[8,5,7,2,3]"
+      ],
+      "sectionRef": "pq"
+    },
+    {
       "id": "index-math",
       "title": "Index arithmetic without the picture",
       "prompt": "A max-heap is stored in an array of 15 elements. Without drawing it: (a) what are the children of index 6? (b) the parent of index 13? (c) which indexes are leaves? (d) if a[6] = 40, what can you say about a[13] and a[14]?",
       "hints": [
         "Three formulas: left 2i+1, right 2i+2, parent ⌊(i−1)/2⌋. Just apply them. Leaves start at ⌊n/2⌋.",
-        "Two frequent slips: using the 1-based CLRS formulas (2i, 2i+1, ⌊i/2⌋) in a 0-based array, and thinking 'leaves are the last row' — with n = 15 the last row happens to be full, but in general leaves are everything from ⌊n/2⌋ on.",
+        "Two frequent slips: using the 1-based CLRS formulas (2i, 2i+1, ⌊i/2⌋) in a 0-based array, and thinking 'leaves are the last row': with n = 15 the last row happens to be full, but in general leaves are everything from ⌊n/2⌋ on.",
         "For (d): the heap property is only between a node and its own children. Which indexes are 6's children? Then the inequality follows."
       ],
       "solution": [
         "(a) Children of 6: 2·6+1 = 13 and 2·6+2 = 14.",
         "(b) Parent of 13: ⌊12/2⌋ = 6.",
-        "(c) Leaves: ⌊15/2⌋ = 7 through 14 — eight leaves, exactly half of 15 rounded up.",
+        "(c) Leaves: ⌊15/2⌋ = 7 through 14: eight leaves, exactly half of 15 rounded up.",
         "(d) a[13] ≤ 40 and a[14] ≤ 40, because 13 and 14 are 6's children and a parent is ≥ its children. Nothing is implied about a[13] vs a[14]."
       ],
-      "why": "Heaps are stored this way because array arithmetic is the fastest thing a CPU does — no pointers to follow, everything in one cache-friendly block. Priority queues in operating systems, Dijkstra's algorithm, and every 'top-k' query run on this arithmetic."
+      "why": "Heaps are stored this way because array arithmetic is the fastest thing a CPU does: no pointers to follow, everything in one cache-friendly block. Priority queues in operating systems, Dijkstra's algorithm, and every 'top-k' query run on this arithmetic."
     },
     {
       "id": "buildheap-trace",
@@ -1180,7 +1627,7 @@
       "hints": [
         "n = 7 → first leaf is index 3, so heapify runs for i = 2, 1, 0 in that order. For each, compare the node with its two children and swap with the larger if the larger beats the node.",
         "The mistake that costs the most is stopping heapify after one swap. If the sunk value still has children, compare again. In heapify(0) here, the value sinks twice.",
-        "For extract: take a[0], move the LAST element to a[0], shrink to 6 elements, then heapify(0) on the 6-element heap — ignore the old last slot."
+        "For extract: take a[0], move the LAST element to a[0], shrink to 6 elements, then heapify(0) on the 6-element heap: ignore the old last slot."
       ],
       "solution": [
         "heapify(2): 3 vs children 8, 9 → swap with 9: [4, 10, 9, 5, 1, 8, 3].",
@@ -1199,15 +1646,15 @@
       "choices": [
         {
           "text": "(A) sorted array of everything",
-          "feedback": "Inserting into a sorted array is O(n) — shifting up to a million elements per event. And you're storing everything when you only need 100."
+          "feedback": "Inserting into a sorted array is O(n): shifting up to a million elements per event. And you're storing everything when you only need 100."
         },
         {
           "text": "(B) a min-heap holding only the top 100",
-          "feedback": "Right. The root is the *least severe of the top 100*. New event: if it beats the root, replace the root and heapify — O(log 100), constant in practice. Memory: 100 items."
+          "feedback": "Right. The root is the *least severe of the top 100*. New event: if it beats the root, replace the root and heapify: O(log 100), constant in practice. Memory: 100 items."
         },
         {
           "text": "(C) a max-heap of all events",
-          "feedback": "Insert is O(log n) — fine — but 'the top 100' would need 100 extracts (then re-inserts) every time you report, and you store every event forever. A max-heap gives you the max, not the top k."
+          "feedback": "Insert is O(log n): fine: but 'the top 100' would need 100 extracts (then re-inserts) every time you report, and you store every event forever. A max-heap gives you the max, not the top k."
         }
       ],
       "answer": 1,
@@ -1222,7 +1669,7 @@
         "Reporting the top 100 is just reading the heap (or sorting 100 items). Memory stays at 100 no matter how many events arrive.",
         "Sorted array: O(n) per insert. Max-heap of everything: O(log n) insert but O(k log n) to report the top k, plus unbounded memory."
       ],
-      "why": "'Top k of a stream' is one of the most common real problems there is — trending topics, most-viewed pages, hottest CPUs in a fleet — and the min-heap-of-size-k trick is the standard answer. It's also a classic interview question precisely because the reflex answer (max-heap) is wrong."
+      "why": "'Top k of a stream' is one of the most common real problems there is: trending topics, most-viewed pages, hottest CPUs in a fleet: and the min-heap-of-size-k trick is the standard answer. It's also a classic interview question precisely because the reflex answer (max-heap) is wrong."
     }
   ]
 }

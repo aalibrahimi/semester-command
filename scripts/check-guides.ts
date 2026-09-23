@@ -68,7 +68,7 @@ for (const f of readdirSync(dir)) {
         case "check": if (!isStr(b.prompt) || !isStr(b.answer)) at(`${id}: check prompt/answer`); if (!sectionIds.has(b.sectionRef as string) && b.sectionRef !== s.id) at(`${id}: check.sectionRef ${String(b.sectionRef)}`); break;
         case "stepper":
           if (!isStr(b.title) || !isArr(b.frames) || !b.frames.length) at(`${id}: stepper title/frames`);
-          else for (const fr of b.frames as Record<string, unknown>[]) if (!["array", "rows", "tree", "lines"].includes(fr.kind as string) || !isStr(fr.caption)) at(`${id}: bad frame`);
+          else for (const fr of b.frames as Record<string, unknown>[]) if (!["array", "rows", "heap", "tree", "lines"].includes(fr.kind as string) || !isStr(fr.caption)) at(`${id}: bad frame`);
           break;
         case "figure": if (!isStr(b.svg) || !isStr(b.viewBox) || !isStr(b.caption)) at(`${id}: figure`); break;
         case "sim":
