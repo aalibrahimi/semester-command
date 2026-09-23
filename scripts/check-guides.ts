@@ -15,7 +15,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { courses } from "../src/study/courses";
 import { SIM_NAMES } from "../src/study/sims";
-import { PROSE_LABELS } from "../src/study/guide";
+import { DIAGRAM_KINDS, PROSE_LABELS } from "../src/study/guide";
 
 const dir = join(process.cwd(), "src/study/guides");
 const problems: string[] = [];
@@ -69,6 +69,9 @@ for (const f of readdirSync(dir)) {
         case "stepper":
           if (!isStr(b.title) || !isArr(b.frames) || !b.frames.length) at(`${id}: stepper title/frames`);
           else for (const fr of b.frames as Record<string, unknown>[]) if (!["array", "rows", "heap", "tree", "lines"].includes(fr.kind as string) || !isStr(fr.caption)) at(`${id}: bad frame`);
+          break;
+        case "diagram":
+          if (!(DIAGRAM_KINDS as readonly unknown[]).includes(b.kind) || !isStr(b.caption) || typeof b.data !== "object" || b.data === null) at(`${id}: diagram kind/data/caption`);
           break;
         case "figure": if (!isStr(b.svg) || !isStr(b.viewBox) || !isStr(b.caption)) at(`${id}: figure`); break;
         case "sim":

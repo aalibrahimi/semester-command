@@ -23,6 +23,7 @@ import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2 } from 
 import { cn } from "@/lib/utils";
 import type { GuideBlock, ProseLabel } from "@/study/guide";
 import { Inline } from "./Blocks";
+import { Diagram } from "./Diagram";
 import { ExampleBody } from "./ExampleBody";
 import { ResourceChips } from "./ResourceChips";
 import { PyCell } from "./PyCell";
@@ -195,6 +196,16 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
 
     case "figure":
       return <FigureView id={block.id} svg={block.svg} viewBox={block.viewBox} caption={block.caption} />;
+
+    case "diagram":
+      return (
+        <figure id={block.id} className="scroll-mt-6 rounded-2xl border border-border/70 bg-card px-5 py-5 shadow-card sm:px-6">
+          <Diagram kind={block.kind} data={block.data} />
+          <figcaption className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            <Inline text={block.caption} />
+          </figcaption>
+        </figure>
+      );
 
     case "sim":
       return (

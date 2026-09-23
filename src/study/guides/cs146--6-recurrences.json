@@ -22,12 +22,45 @@
           "id": "map.fa0ebe2e"
         },
         {
-          "type": "figure",
-          "svg": "<defs><marker id='arrowSc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec1' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='20' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This chapter, in order:</text><text x='10' y='40' font-size='17.2' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >How long does a recursive function take?</text><g><title>1. Read T(n): a sentence about ONE call.</title><circle cx='22' cy='77' r='11' fill='rgb(var(--accent))'/><text x='22' y='81' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><rect x='42' y='58' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='75' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Read T(n)</text><text x='56' y='89' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >a sentence about ONE call</text><text x='470' y='82' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/2) + kn</text><line x1='22' y1='89' x2='22' y2='115' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>2. Unroll it: plug in n = 8 by hand.</title><circle cx='22' cy='127' r='11' fill='rgb(var(--accent))'/><text x='22' y='131' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><rect x='42' y='108' width='290' height='38' rx='9' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='56' y='125' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Unroll it</text><text x='56' y='139' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >plug in n = 8 by hand</text><text x='470' y='132' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(8) = 24k + 8</text><line x1='22' y1='139' x2='22' y2='165' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>3. Recursion tree: add up the work row by row.</title><circle cx='22' cy='177' r='11' fill='rgb(var(--accent))'/><text x='22' y='181' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><rect x='42' y='158' width='290' height='38' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='175' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Recursion tree</text><text x='56' y='189' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >add up the work row by row</text><text x='470' y='182' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn × log n</text><line x1='22' y1='189' x2='22' y2='215' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>4. Substitution: prove the guess by induction.</title><circle cx='22' cy='227' r='11' fill='rgb(var(--accent))'/><text x='22' y='231' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><rect x='42' y='208' width='290' height='38' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='225' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Substitution</text><text x='56' y='239' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >prove the guess by induction</text><text x='470' y='232' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >c ≥ k</text><line x1='22' y1='239' x2='22' y2='265' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>5. Next chapter: the master method shortcut.</title><circle cx='22' cy='277' r='11' fill='rgb(var(--accent))'/><text x='22' y='281' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><rect x='42' y='258' width='290' height='38' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='275' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Next chapter</text><text x='56' y='289' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the master method shortcut</text><text x='470' y='282' font-size='14.4' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3 cases</text></g></g>",
-          "viewBox": "0 0 480 314",
-          "caption": "The chapter in five steps. The last step, the master method, is the next chapter.",
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The question",
+            "question": "How long does a **recursive** function take?",
+            "steps": [
+              {
+                "title": "Read T(n)",
+                "sub": "a sentence about ONE call",
+                "result": "2T(n/2) + kn"
+              },
+              {
+                "title": "Unroll it",
+                "sub": "plug in n = 8 by hand",
+                "result": "T(8) = 32",
+                "tone": "amber"
+              },
+              {
+                "title": "Recursion tree",
+                "sub": "add up the work row by row",
+                "result": "kn × log n",
+                "tone": "brand"
+              },
+              {
+                "title": "Substitution",
+                "sub": "prove the guess by induction",
+                "result": "c ≥ k",
+                "tone": "green"
+              },
+              {
+                "title": "Next chapter",
+                "sub": "the master method shortcut",
+                "result": "3 cases"
+              }
+            ]
+          },
+          "caption": "The chapter in five steps. The last one, the master method, is the next chapter.",
           "slide": "Five steps",
-          "id": "map.39b3adb3"
+          "id": "map.fd930de6"
         },
         {
           "type": "prose",
@@ -56,12 +89,64 @@
           "id": "read.d6d64efe"
         },
         {
-          "type": "figure",
-          "svg": "<defs><marker id='arrowSc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec2' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='30' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) = </text><text x='136.3' y='50' font-size='25.3' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='151.4' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/</text><text x='212.2' y='50' font-size='25.3' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='227.3' y='50' font-size='25.3' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >) + </text><text x='288.1' y='50' font-size='25.3' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text><g><title>2: how many calls.</title><line x1='143.8' y1='58' x2='143.8' y2='79' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><circle cx='143.8' cy='58' r='3' fill='rgb(var(--at-risk))'/><text x='143.8' y='92' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >how many calls</text></g><g><title>n/2: size of each call.</title><line x1='219.8' y1='58' x2='219.8' y2='109' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='219.8' cy='58' r='3' fill='rgb(var(--on-track))'/><text x='219.8' y='122' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >size of each call</text></g><g><title>kn: work in THIS call.</title><line x1='303.2' y1='58' x2='303.2' y2='139' stroke='rgb(var(--accent))' stroke-width='1.6'/><circle cx='303.2' cy='58' r='3' fill='rgb(var(--accent))'/><text x='303.2' y='152' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >work in THIS call</text></g><rect x='10' y='184' width='460' height='148' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='210' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >mergeSort(a):</text><text x='24' y='235' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  if n == 1: return      </text><g><title>This line costs T(1) = 1.</title><text x='456' y='235' font-size='14.4' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(1) = 1</text></g><text x='24' y='260' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  mergeSort(left half)   </text><g><title>This line costs T(n/2).</title><text x='456' y='260' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2)</text></g><text x='24' y='285' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  mergeSort(right half)  </text><g><title>This line costs T(n/2).</title><text x='456' y='285' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2)</text></g><text x='24' y='310' font-size='14.4' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >  merge(left, right)     </text><g><title>This line costs kn.</title><text x='456' y='310' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text></g><text x='240' y='352' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Two half-size calls plus the merge: the whole recurrence.</text></g>",
-          "viewBox": "0 0 480 362",
-          "caption": "Merge sort's recurrence, piece by piece, next to the code each piece comes from. Hover a label.",
+          "type": "diagram",
+          "kind": "formula",
+          "data": {
+            "parts": [
+              {
+                "text": "T(n) ="
+              },
+              {
+                "text": "2",
+                "tone": "amber",
+                "label": "how many calls"
+              },
+              {
+                "text": "T("
+              },
+              {
+                "text": "n/2",
+                "tone": "green",
+                "label": "size of each call"
+              },
+              {
+                "text": ") +"
+              },
+              {
+                "text": "kn",
+                "tone": "brand",
+                "label": "work in THIS call"
+              }
+            ],
+            "code": [
+              {
+                "code": "mergeSort(a):"
+              },
+              {
+                "code": "  if n == 1: return",
+                "tag": "T(1) = 1"
+              },
+              {
+                "code": "  mergeSort(left half)",
+                "tag": "T(n/2)",
+                "tone": "green"
+              },
+              {
+                "code": "  mergeSort(right half)",
+                "tag": "T(n/2)",
+                "tone": "green"
+              },
+              {
+                "code": "  merge(left, right)",
+                "tag": "kn",
+                "tone": "brand"
+              }
+            ],
+            "note": "Two half-size calls plus the merge: that's the whole recurrence."
+          },
+          "caption": "Merge sort's recurrence, piece by piece, next to the line of code each piece comes from.",
           "slide": "Reading T(n) = 2T(n/2) + kn",
-          "id": "read.f5fc792f"
+          "id": "read.91f09258"
         },
         {
           "type": "prose",
@@ -241,12 +326,61 @@
           "id": "tree.075db02d"
         },
         {
-          "type": "figure",
-          "svg": "<defs><marker id='arrowSc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec3' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Write each call's own work, then add each ROW.</text><g><title>Level 0: 1 call × kn = kn.</title><text x='10' y='60' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 0</text><rect x='183' y='40' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='225' y='59.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn</text><text x='470' y='60' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='76' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1 call × kn</text></g><g><title>Level 1: 2 calls × kn/2 = kn.</title><text x='10' y='122' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 1</text><line x1='225' y1='72' x2='147.5' y2='102' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='105.5' y='102' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='147.5' y='121.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/2</text><line x1='225' y1='72' x2='302.5' y2='102' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='260.5' y='102' width='84' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='302.5' y='121.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/2</text><text x='470' y='122' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='138' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2 calls × kn/2</text></g><g><title>Level 2: 4 calls × kn/4 = kn.</title><text x='10' y='184' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 2</text><line x1='147.5' y1='134' x2='108.8' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='73' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='108.8' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='147.5' y1='134' x2='186.2' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='150.5' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='186.2' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='302.5' y1='134' x2='263.8' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='228' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='263.8' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><line x1='302.5' y1='134' x2='341.2' y2='164' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='305.5' y='164' width='71.5' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='341.2' y='183.2' font-size='12.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >kn/4</text><text x='470' y='184' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='200' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4 calls × kn/4</text></g><g><title>Level 3: 8 calls × kn/8 = kn.</title><text x='10' y='246' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 3</text><line x1='108.8' y1='196' x2='89.4' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='73' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='108.8' y1='196' x2='128.1' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='111.8' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='186.2' y1='196' x2='166.9' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='150.5' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='186.2' y1='196' x2='205.6' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='189.2' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='263.8' y1='196' x2='244.4' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='228' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='263.8' y1='196' x2='283.1' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='266.8' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='341.2' y1='196' x2='321.9' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='305.5' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><line x1='341.2' y1='196' x2='360.6' y2='226' stroke='rgb(var(--foreground) / 0.3)' stroke-width='1'/><rect x='344.2' y='226' width='32.8' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='470' y='246' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn</text><text x='470' y='262' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >8 calls × kn/8</text></g><g><title>The number of calls doubles while each call's work halves, so every row costs kn.</title><text x='10' y='300' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >calls double, work per call halves → every row costs kn</text></g><g><title>Rows: sizes n, n/2, …, 1 → log₂ n + 1 rows. Total = kn(log n + 1) = O(n log n).</title><rect x='10' y='312' width='460' height='50' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='334' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >log₂ n + 1 rows × kn per row</text><text x='240' y='353' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >= kn log n + kn = O(n log n)</text></g></g>",
-          "viewBox": "0 0 480 370",
-          "caption": "Merge sort's tree. Going down a row, the number of calls doubles but each one's work halves, so every row costs exactly kn. Count the rows, multiply, done.",
+          "type": "diagram",
+          "kind": "levels",
+          "data": {
+            "rows": [
+              {
+                "label": "level 0",
+                "parts": [
+                  8
+                ],
+                "partLabel": "kn",
+                "total": "kn"
+              },
+              {
+                "label": "level 1",
+                "parts": [
+                  4,
+                  4
+                ],
+                "partLabel": "kn/2",
+                "total": "kn"
+              },
+              {
+                "label": "level 2",
+                "parts": [
+                  2,
+                  2,
+                  2,
+                  2
+                ],
+                "partLabel": "kn/4",
+                "total": "kn"
+              },
+              {
+                "label": "level 3",
+                "parts": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "partLabel": "",
+                "total": "kn",
+                "tone": "green"
+              }
+            ],
+            "summary": "(log₂ n + 1) rows × kn per row",
+            "detail": "= kn log n + kn = O(n log n)"
+          },
+          "caption": "Merge sort's tree, row by row. Going down, the number of calls doubles but each call's own work halves, so every row costs exactly kn.",
           "slide": "Row by row",
-          "id": "tree.12c03957"
+          "id": "tree.5bf017e7"
         },
         {
           "type": "stepper",
@@ -502,12 +636,58 @@
           "id": "tree.7623b3e2"
         },
         {
-          "type": "figure",
-          "svg": "<defs><marker id='arrowSc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec4' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><g><title>3T(n/2) + kn: rows GROW ×3/2, so the leaves win.</title><rect x='6' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='81' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3T(n/2) + kn</text><rect x='63.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='54.5' y='78' width='52.9' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='41.3' y='108' width='79.4' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='21' y='138' width='120' height='22' rx='3' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)'/><text x='16' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='81' y='186' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows GROW ×3/2</text><text x='81' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the leaves win</text></g><g><title>2T(n/2) + kn: rows EQUAL, so every row counts.</title><rect x='164' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='239' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/2) + kn</text><rect x='221.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='221.4' y='78' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='221.4' y='108' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='221.4' y='138' width='35.3' height='22' rx='3' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)'/><text x='174' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='239' y='186' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows EQUAL</text><text x='239' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >every row counts</text></g><g><title>2T(n/3) + kn: rows SHRINK ×2/3, so the root wins.</title><rect x='322' y='6' width='150' height='222' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='397' y='30' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2T(n/3) + kn</text><rect x='379.4' y='48' width='35.3' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='64' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><rect x='385.2' y='78' width='23.6' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='94' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='389.2' y='108' width='15.5' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='124' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='391.7' y='138' width='10.6' height='22' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='332' y='154' font-size='11.5' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><text x='397' y='186' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >rows SHRINK ×2/3</text><text x='397' y='206' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >the root wins</text></g><text x='10' y='250' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Each bar is one row's total work (top = root, bottom = deeper).</text><text x='10' y='268' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >This picture is the whole idea behind the master method.</text></g>",
-          "viewBox": "0 0 480 276",
-          "caption": "Row totals for three recurrences. Rows that grow: the bottom (the leaves) dominates. Rows that stay equal: multiply by the number of rows. Rows that shrink: the top (the root) dominates. Remember this picture; it's the next chapter.",
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "3T(n/2) + kn",
+                "badge": "rows grow ×3/2",
+                "tone": "amber",
+                "viz": [
+                  1,
+                  1.5,
+                  2.25,
+                  3.4
+                ],
+                "lines": [
+                  "the **leaves** win"
+                ]
+              },
+              {
+                "title": "2T(n/2) + kn",
+                "badge": "rows equal",
+                "tone": "green",
+                "viz": [
+                  2,
+                  2,
+                  2,
+                  2
+                ],
+                "lines": [
+                  "**every row** counts"
+                ]
+              },
+              {
+                "title": "2T(n/3) + kn",
+                "badge": "rows shrink ×2/3",
+                "tone": "brand",
+                "viz": [
+                  3.4,
+                  2.27,
+                  1.5,
+                  1
+                ],
+                "lines": [
+                  "the **root** wins"
+                ]
+              }
+            ],
+            "note": "Each bar is one row's total work, root at the top. This picture is the whole idea behind the master method."
+          },
+          "caption": "Row totals for three recurrences.",
           "slide": "Three shapes",
-          "id": "tree.71355c4a"
+          "id": "tree.09b0baf1"
         },
         {
           "type": "sim",
@@ -550,12 +730,39 @@
           "id": "substitution.66f7779a"
         },
         {
-          "type": "figure",
-          "svg": "<defs><marker id='arrowSc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec5' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Substitution = induction, in four boxes.</text><g><title>Step 1 Guess: T(n) ≤ c · n log n (from the tree).</title><rect x='10' y='34' width='460' height='54' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='56' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1 Guess</text><text x='24' y='76' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >from the tree</text><text x='456' y='66' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) ≤ c · n log n</text><line x1='240' y1='89' x2='240' y2='102' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 2 Assume: T(n/2) ≤ c · (n/2) log(n/2) (true for smaller inputs).</title><rect x='10' y='104' width='460' height='54' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='126' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2 Assume</text><text x='24' y='146' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >true for smaller inputs</text><text x='456' y='136' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n/2) ≤ c · (n/2) log(n/2)</text><line x1='240' y1='159' x2='240' y2='172' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 3 Substitute: T(n) ≤ c·n log n − cn + kn (plug in, simplify).</title><rect x='10' y='174' width='460' height='54' rx='10' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='24' y='196' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3 Substitute</text><text x='24' y='216' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >plug in, simplify</text><text x='456' y='206' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) ≤ c·n log n − cn + kn</text><line x1='240' y1='229' x2='240' y2='242' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc5)'/></g><g><title>Step 4 Prove: −cn + kn ≤ 0  ⟺  c ≥ k (pick c = k: done).</title><rect x='10' y='244' width='460' height='54' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='24' y='266' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4 Prove</text><text x='24' y='286' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >pick c = k: done</text><text x='456' y='276' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >−cn + kn ≤ 0  ⟺  c ≥ k</text></g><text x='240' y='330' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The leftover −cn + kn is the only thing between you and the guess.</text></g>",
-          "viewBox": "0 0 480 340",
-          "caption": "The whole method on merge sort. It's induction from Chapter 0: assume the formula for the smaller input, plug it in, and show what's left over is never positive.",
-          "slide": "Four boxes",
-          "id": "substitution.28f6c83b"
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "Substitution = induction",
+            "question": "Prove T(n) = 2T(n/2) + kn is O(n log n)",
+            "steps": [
+              {
+                "title": "Guess",
+                "sub": "from the tree",
+                "result": "T(n) ≤ c·n log n"
+              },
+              {
+                "title": "Assume",
+                "sub": "true for the smaller input",
+                "result": "T(n/2) ≤ c(n/2) log(n/2)"
+              },
+              {
+                "title": "Substitute",
+                "sub": "plug in, simplify",
+                "result": "≤ c·n log n − cn + kn",
+                "tone": "amber"
+              },
+              {
+                "title": "Prove",
+                "sub": "the leftover must be ≤ 0",
+                "result": "c ≥ k ✓",
+                "tone": "green"
+              }
+            ]
+          },
+          "caption": "The whole method on merge sort. The leftover −cn + kn is the only thing between you and the guess.",
+          "slide": "Four steps",
+          "id": "substitution.11afa82a"
         },
         {
           "type": "definition",

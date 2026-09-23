@@ -57,6 +57,7 @@ export type GuideBlock =
   | CheckBlock
   | StepperBlock
   | FigureBlock
+  | DiagramBlock
   | SimBlock
   | CodeBlock;
 
@@ -117,6 +118,22 @@ export interface FigureBlock extends BlockBase {
   type: "figure";
   svg: string;
   viewBox: string;
+  caption: string;
+}
+
+/** The kinds components/study/Diagram.tsx can draw. */
+export const DIAGRAM_KINDS = ["roadmap", "codecount", "cards", "levels", "bigo", "formula"] as const;
+
+/**
+ * A picture built from the app's own UI (cards, chips, bars) rather than a
+ * drawn SVG: a chapter roadmap, code with per-line counts, comparison
+ * cards, per-level cost bars, the Big-O definition plot. `data`'s shape
+ * depends on `kind` (see Diagram.tsx).
+ */
+export interface DiagramBlock extends BlockBase {
+  type: "diagram";
+  kind: (typeof DIAGRAM_KINDS)[number];
+  data: Record<string, unknown>;
   caption: string;
 }
 

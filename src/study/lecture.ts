@@ -39,6 +39,7 @@ function blockText(b: GuideBlock): string {
     case "table":
       return `${b.title ?? "A table"}: ${b.columns.filter(Boolean).join(", ")}. ${b.rows.map((r) => r.join(", ")).join(". ")}`;
     case "figure":
+    case "diagram":
       return plain(b.caption);
     case "sim":
       return `Try it yourself. ${plain(b.caption)}`;
@@ -109,7 +110,7 @@ export function isEssential(slide: Slide): boolean {
   if (c.kind !== "block") return true;
   const b = c.block;
   if (slide.title) return true;
-  if (b.type === "figure" || b.type === "sim" || b.type === "trap" || b.type === "definition" || b.type === "table") return true;
+  if (b.type === "figure" || b.type === "diagram" || b.type === "sim" || b.type === "trap" || b.type === "definition" || b.type === "table") return true;
   if (b.type === "prose" && b.label) return true;
   return false;
 }

@@ -7,24 +7,63 @@
  * frame per slide, via FrameView, with the controls hidden).
  * Calls: nothing.
  *
- * How it moves: array and rows frames give every item an identity (its
- * value plus which occurrence of that value it is), and each item is
+ * How it moves: array, rows and heap frames give every item an identity
+ * (its value plus which occurrence of that value it is), and each item is
  * positioned absolutely. Between frames an item keeps its identity, so a
  * swap, a shift, or a copy from one pile into the output is drawn as the
- * item sliding there, not as a jump cut. Pointer arrows (low, mid, i, j…)
+ * item sliding there, not as a jump cut. Pointer chips (low, mid, i, j…)
  * slide too. Tree levels fade in as they appear.
+ *
+ * Where to look: the frame's caption is a speech bubble that sits just
+ * above the picture and slides sideways to whatever is happening (the
+ * highlighted items, else the pointers), so your eyes stay in one place
+ * instead of jumping between the picture and a caption underneath.
  *
  * Playback: it plays while at least 40% of it is on screen and pauses
  * itself when scrolled away. Each frame stays up long enough to read its
- * caption (longer captions stay longer), then the next one plays; after
- * the last frame it holds a moment and starts over. Reduced-motion users
- * start paused. The thin bar under the picture is the current frame's time.
+ * caption, then the next one plays; after the last frame it holds a
+ * moment and starts over. Reduced-motion users start paused. The
+ * segmented bar is the whole animation; the current segment fills.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Frame } from "@/study/types";
 import { Inline } from "./Blocks";
+
+const EASE = "duration-500 ease-[cubic-bezier(.4,.1,.2,1)] motion-reduce:transition-none";
+
+/* ── The speech bubble ──────────────────────────────────────────────────── */
+
+/**
+ * The caption, placed above the picture at horizontal position `x` (a CSS
+ * length within the stage). The bubble itself is clamped inside the stage;
+ * its little tail points at x exactly.
+ */
+function Bubble({ text, x, minH }: { text: string; x: string; minH: number }) {
+  const W = 400;
+  return (
+    <div className="relative flex w-full flex-col justify-end" style={{ minHeight: minH }}>
+      <div
+        className={cn("w-fit max-w-full transition-[margin-left]", EASE)}
+        style={{ marginLeft: `clamp(0px, calc(${x} - ${W / 2}px), calc(100% - min(${W}px, 100%)))`, maxWidth: W }}
+      >
+        <div
+          key={text}
+          className="rounded-xl border border-brand/30 bg-popover px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground shadow-elevated duration-300 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none"
+        >
+          <Inline text={text} />
+        </div>
+      </div>
+      <div className="relative h-3">
+        <span
+          className={cn("absolute top-[-6px] h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-brand/30 bg-popover transition-[left]", EASE)}
+          style={{ left: x }}
+        />
+      </div>
+    </div>
+  );
+}
 
 /* ── Grid frames (array, rows): items that slide ─────────────────────────── */
 
@@ -60,41 +99,44 @@ function slidable(rows: GridRow[]): boolean {
   return rows.every((r) => r.cells.length <= 24 && r.cells.every((c) => c === null || String(c).length <= 5));
 }
 
-function Grid({ frame, large }: { frame: Extract<Frame, { kind: "array" | "rows" }>; large?: boolean }) {
+type CellState = "hl" | "done" | "dim" | "plain";
+
+const CELL: Record<CellState, string> = {
+  hl: "scale-[1.06] border-transparent bg-brand-solid text-white shadow-elevated ring-4 ring-brand/20",
+  done: "border-on-track/40 bg-on-track/15 text-on-track-fg",
+  dim: "scale-95 border-dashed border-border/70 bg-transparent text-muted-foreground/40",
+  plain: "border-border/80 bg-card text-foreground shadow-card",
+};
+
+function Grid({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "array" | "rows" }>; large?: boolean; caption?: string; minH: number }) {
   const { rows, ptrs } = toRows(frame);
   const cols = Math.max(1, ...rows.map((r) => (r.at?.length ? Math.max(...r.at) + 1 : r.cells.length + (r.offset ?? 0))));
-  const cellH = large ? 56 : 42;
-  const labelW = rows.some((r) => r.label) ? (large ? 72 : 56) : 0;
+  const cellH = large ? 56 : 44;
+  const labelW = rows.some((r) => r.label) ? (large ? 72 : 52) : 0;
   const ptrRows = new Set(ptrs.map(([, r]) => r));
-  // Vertical layout: each row, then room for its pointers if it has any.
   const tops: number[] = [];
   let y = 0;
   for (let r = 0; r < rows.length; r++) {
     tops.push(y);
-    y += cellH + (ptrRows.has(r) ? (large ? 40 : 34) + Math.max(0, maxStackRef(ptrs, r) - 1) * 14 : 10);
+    y += cellH + (ptrRows.has(r) ? (large ? 40 : 34) + Math.max(0, maxStackRef(ptrs, r) - 1) * 22 : 12);
   }
   const height = y;
 
-  // Identity: value + occurrence, counted row-major, so items keep their key
-  // when they move.
   const seen = new Map<string, number>();
-  const items: { key: string; label: string; r: number; c: number; state: "hl" | "done" | "dim" | "plain" }[] = [];
+  const items: { key: string; label: string; r: number; c: number; state: CellState }[] = [];
   rows.forEach((row, r) =>
     row.cells.forEach((v, c) => {
       if (v === null || v === "") return;
       const base = String(v);
       const n = (seen.get(base) ?? 0) + 1;
       seen.set(base, n);
-      const state = row.hl?.includes(c) ? "hl" : row.done?.includes(c) ? "done" : row.dim?.includes(c) ? "dim" : "plain";
+      const state: CellState = row.hl?.includes(c) ? "hl" : row.done?.includes(c) ? "done" : row.dim?.includes(c) ? "dim" : "plain";
       items.push({ key: `${base}~${n}`, label: base, r, c: row.at?.[c] ?? c + (row.offset ?? 0), state });
     }),
   );
-  // Empty slots (null) are drawn as dashed outlines, fixed in place.
   const slots: { r: number; c: number }[] = [];
   rows.forEach((row, r) => row.cells.forEach((v, c) => v === null && slots.push({ r, c: row.at?.[c] ?? c + (row.offset ?? 0) })));
 
-  // Pointers at the same cell stack under each other; each keeps its own
-  // key (its label) so it slides on its own.
   const stackAt = new Map<string, number>();
   const ptrPos = ptrs.map(([label, r, c]) => {
     const k = `${r}:${c}`;
@@ -102,63 +144,72 @@ function Grid({ frame, large }: { frame: Extract<Frame, { kind: "array" | "rows"
     stackAt.set(k, n + 1);
     return { label, r, c: c + (rows[r]?.offset ?? 0), n };
   });
+
   const left = (c: number) => `calc(${labelW}px + (100% - ${labelW}px) * ${c} / ${cols})`;
   const width = `calc((100% - ${labelW}px) / ${cols} - 6px)`;
-  const maxW = labelW + cols * (large ? 64 : 50);
+  const maxW = labelW + cols * (large ? 66 : 54);
+
+  // Where the bubble points: the highlighted items, else the pointers,
+  // else the settled items, else the middle.
+  const focus = items.filter((i) => i.state === "hl").map((i) => i.c);
+  const focusCols = focus.length ? focus : ptrPos.length ? ptrPos.map((p) => p.c) : items.filter((i) => i.state === "done").map((i) => i.c);
+  const fc = focusCols.length ? (Math.min(...focusCols) + Math.max(...focusCols)) / 2 : (cols - 1) / 2;
+  const bubbleX = `calc(${labelW}px + (100% - ${labelW}px) * ${fc + 0.5} / ${cols} - 3px)`;
 
   return (
-    <div className="relative mx-auto w-full" style={{ height, maxWidth: maxW }}>
-      {rows.map((row, r) =>
-        row.label ? (
-          <div key={`l${r}`} className="absolute left-0 flex items-center font-mono text-2xs font-semibold uppercase tracking-wider text-muted-foreground" style={{ top: tops[r], height: cellH, width: labelW - 8 }}>
-            {row.label}
+    <div className="mx-auto flex w-full flex-col" style={{ maxWidth: maxW }}>
+      {caption !== undefined && <Bubble text={caption} x={bubbleX} minH={minH} />}
+      <div className="relative w-full" style={{ height }}>
+        {rows.map((row, r) =>
+          row.label ? (
+            <div key={`l${r}`} className="absolute left-0 flex items-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground" style={{ top: tops[r], height: cellH, width: labelW - 8 }}>
+              {row.label}
+            </div>
+          ) : null,
+        )}
+        {slots.map(({ r, c }) => (
+          <div key={`s${r}:${c}`} className="absolute rounded-xl border border-dashed border-border/80 bg-fill-ghost/40" style={{ top: tops[r], left: left(c), width, height: cellH }} />
+        ))}
+        {items.map((it) => (
+          <div
+            key={it.key}
+            data-numeric
+            className={cn(
+              "absolute flex items-center justify-center rounded-xl border font-mono font-semibold tabular-nums",
+              "transition-[top,left,background-color,border-color,color,opacity,transform,box-shadow]",
+              EASE,
+              large ? "text-lg" : "text-[15px]",
+              CELL[it.state],
+            )}
+            style={{ top: tops[it.r], left: left(it.c), width, height: cellH }}
+          >
+            {it.label}
           </div>
-        ) : null,
-      )}
-      {slots.map(({ r, c }) => (
-        <div key={`s${r}:${c}`} className="absolute rounded-md border border-dashed border-border/70" style={{ top: tops[r], left: left(c), width, height: cellH }} />
-      ))}
-      {items.map((it) => (
-        <div
-          key={it.key}
-          data-numeric
-          className={cn(
-            "absolute flex items-center justify-center rounded-md border font-mono tabular-nums",
-            "transition-[top,left,background-color,border-color,color,opacity] duration-500 ease-in-out motion-reduce:transition-none",
-            large ? "text-lg" : "text-sm",
-            it.state === "hl" && "border-brand bg-brand/15 font-semibold text-foreground",
-            it.state === "done" && "border-on-track/50 bg-on-track/10 text-foreground",
-            it.state === "dim" && "border-dashed border-border/60 bg-transparent text-muted-foreground/35",
-            it.state === "plain" && "border-border bg-card text-foreground/85",
-          )}
-          style={{ top: tops[it.r], left: left(it.c), width, height: cellH }}
-        >
-          {it.label}
-        </div>
-      ))}
-      {ptrPos.map((p) => (
-        <div
-          key={`p:${p.label}`}
-          className="absolute flex flex-col items-center text-brand-fg transition-[top,left] duration-500 ease-in-out motion-reduce:transition-none"
-          style={{ top: tops[p.r] + cellH + 2 + (p.n > 0 ? 12 + p.n * 14 : 0), left: left(p.c), width }}
-        >
-          {p.n === 0 && <span className="text-[11px] leading-none">▲</span>}
-          <span className={cn("whitespace-nowrap font-mono font-semibold leading-tight", large ? "text-sm" : "text-2xs")}>{p.label}</span>
-        </div>
-      ))}
+        ))}
+        {ptrPos.map((p) => (
+          <div
+            key={`p:${p.label}`}
+            className={cn("absolute flex flex-col items-center transition-[top,left]", EASE)}
+            style={{ top: tops[p.r] + cellH + 4 + p.n * 22, left: left(p.c), width }}
+          >
+            {p.n === 0 && <span className="mb-0.5 h-0 w-0 border-x-[5px] border-b-[6px] border-x-transparent border-b-brand/70" />}
+            <span className={cn("whitespace-nowrap rounded-full bg-brand/15 px-2 py-px font-mono font-semibold text-brand-fg", large ? "text-sm" : "text-[11px]")}>{p.label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 /* ── Heap frames: the tree and the array, moving together ─────────────────── */
 
-function HeapView({ frame, large }: { frame: Extract<Frame, { kind: "heap" }>; large?: boolean }) {
+function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "heap" }>; large?: boolean; caption?: string; minH: number }) {
   const a = frame.a;
   const n = a.length;
   const size = frame.size ?? n;
   const depth = Math.floor(Math.log2(Math.max(1, n))) + 1;
-  const rowH = large ? 64 : 54;
-  const r = large ? 22 : 18;
+  const rowH = large ? 66 : 58;
+  const r = large ? 22 : 19;
   const treeH = depth * rowH;
   const pos = (i: number) => {
     const lvl = Math.floor(Math.log2(i + 1));
@@ -174,59 +225,60 @@ function HeapView({ frame, large }: { frame: Extract<Frame, { kind: "heap" }>; l
   const hl = new Set(frame.hl ?? []);
   const done = new Set(frame.done ?? []);
   for (let i = size; i < n; i++) done.add(i);
-  const cellW = large ? 52 : 40;
+  const cellW = large ? 52 : 42;
+  const focus = [...hl].filter((i) => i < size);
+  const fx = focus.length ? (Math.min(...focus.map((i) => pos(i).x)) + Math.max(...focus.map((i) => pos(i).x))) / 2 : 50;
 
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      <div className="relative w-full max-w-[560px]" style={{ height: treeH }}>
-        <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox={`0 0 100 ${treeH}`} preserveAspectRatio="none" aria-hidden>
-          {a.map((_, i) => {
-            if (i === 0 || i >= size) return null;
-            const p = pos(Math.floor((i - 1) / 2));
-            const c = pos(i);
-            const on = hl.has(i) && hl.has(Math.floor((i - 1) / 2));
-            return <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} vectorEffect="non-scaling-stroke" stroke={on ? "rgb(var(--accent))" : "rgb(var(--foreground) / 0.3)"} strokeWidth={on ? 2.5 : 1.2} />;
+    <div className="flex w-full flex-col items-center gap-5">
+      <div className="flex w-full max-w-[560px] flex-col">
+        {caption !== undefined && <Bubble text={caption} x={`${fx}%`} minH={minH} />}
+        <div className="relative w-full" style={{ height: treeH }}>
+          <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox={`0 0 100 ${treeH}`} preserveAspectRatio="none" aria-hidden>
+            {a.map((_, i) => {
+              if (i === 0 || i >= size) return null;
+              const p = pos(Math.floor((i - 1) / 2));
+              const c = pos(i);
+              const on = hl.has(i) && hl.has(Math.floor((i - 1) / 2));
+              return <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} vectorEffect="non-scaling-stroke" stroke={on ? "rgb(var(--accent))" : "rgb(var(--foreground) / 0.18)"} strokeWidth={on ? 3 : 1.5} strokeLinecap="round" />;
+            })}
+          </svg>
+          {a.map((v, i) => {
+            const p = pos(i);
+            return (
+              <div
+                key={ids[i]}
+                data-numeric
+                className={cn(
+                  "absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border font-mono font-semibold",
+                  "transition-[left,top,opacity,background-color,border-color,box-shadow]",
+                  EASE,
+                  large ? "text-base" : "text-sm",
+                  CELL[hl.has(i) ? "hl" : "plain"],
+                  i >= size && "opacity-0",
+                )}
+                style={{ left: `${p.x}%`, top: p.y, width: r * 2, height: r * 2 }}
+              >
+                {v}
+              </div>
+            );
           })}
-        </svg>
-        {a.map((v, i) => {
-          const p = pos(i);
-          const inHeap = i < size;
-          return (
-            <div
-              key={ids[i]}
-              data-numeric
-              className={cn(
-                "absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 font-mono font-semibold",
-                "transition-[left,top,opacity,background-color,border-color] duration-500 ease-in-out motion-reduce:transition-none",
-                large ? "text-base" : "text-sm",
-                hl.has(i) ? "border-brand bg-brand/20 text-foreground" : "border-foreground/30 bg-card text-foreground/90",
-                !inHeap && "opacity-0",
-              )}
-              style={{ left: `${p.x}%`, top: p.y, width: r * 2, height: r * 2 }}
-            >
-              {v}
-            </div>
-          );
-        })}
+        </div>
       </div>
-      <div className="relative" style={{ width: n * (cellW + 4), height: cellW + 16 }}>
+      <div className="relative" style={{ width: n * (cellW + 5), height: cellW + 14 }}>
         {a.map((v, i) => (
-          <div key={ids[i]} className="absolute transition-[left] duration-500 ease-in-out motion-reduce:transition-none" style={{ left: i * (cellW + 4), top: 0 }}>
+          <div key={ids[i]} className={cn("absolute transition-[left]", EASE)} style={{ left: i * (cellW + 5), top: 0 }}>
             <div
               data-numeric
-              className={cn(
-                "flex items-center justify-center rounded-md border font-mono tabular-nums transition-colors duration-500",
-                large ? "text-base" : "text-sm",
-                hl.has(i) ? "border-brand bg-brand/15 font-semibold" : done.has(i) ? "border-on-track/50 bg-on-track/10" : "border-border bg-card text-foreground/85",
-              )}
-              style={{ width: cellW, height: cellW - 6 }}
+              className={cn("flex items-center justify-center rounded-lg border font-mono font-semibold tabular-nums transition-colors duration-500", large ? "text-base" : "text-sm", CELL[hl.has(i) ? "hl" : done.has(i) ? "done" : "plain"])}
+              style={{ width: cellW, height: cellW - 8 }}
             >
               {v}
             </div>
           </div>
         ))}
         {a.map((_, i) => (
-          <span key={`i${i}`} className="absolute text-center font-mono text-[10px] text-muted-foreground" style={{ left: i * (cellW + 4), top: cellW - 2, width: cellW }}>
+          <span key={`i${i}`} className="absolute text-center font-mono text-[10px] text-muted-foreground" style={{ left: i * (cellW + 5), top: cellW - 4, width: cellW }}>
             {i}
           </span>
         ))}
@@ -247,9 +299,9 @@ function FlowArray({ frame, large }: { frame: Extract<Frame, { kind: "array" }>;
             key={i}
             data-numeric
             className={cn(
-              "flex items-center justify-center rounded-md border font-mono tabular-nums transition-colors duration-500",
-              large ? "h-14 min-w-14 px-3 text-lg" : "h-10 min-w-10 px-2 text-sm",
-              hl ? "border-brand bg-brand/15 text-foreground" : done ? "border-on-track/50 bg-on-track/10 text-foreground" : "border-border bg-card text-foreground/80",
+              "flex items-center justify-center rounded-xl border font-mono tabular-nums transition-colors duration-500",
+              large ? "h-14 min-w-14 px-3 text-lg" : "h-11 min-w-11 px-2.5 text-sm",
+              CELL[hl ? "hl" : done ? "done" : "plain"],
             )}
           >
             {c}
@@ -260,70 +312,88 @@ function FlowArray({ frame, large }: { frame: Extract<Frame, { kind: "array" }>;
   );
 }
 
-export function FrameView({ frame, large }: { frame: Frame; large?: boolean }) {
+/**
+ * One frame. With `caption`, the caption is drawn as a bubble pointing at
+ * the action (the Stepper does this); without it (slides), just the picture.
+ */
+export function FrameView({ frame, large, caption, minH = 0 }: { frame: Frame; large?: boolean; caption?: string; minH?: number }) {
+  const top = (node: ReactNode) => (
+    <div className="flex w-full flex-col gap-1">
+      {caption !== undefined && <Bubble text={caption} x="50%" minH={minH} />}
+      {node}
+    </div>
+  );
   switch (frame.kind) {
     case "array":
     case "rows": {
       const { rows } = toRows(frame);
+      const note = frame.note && <div className="text-center font-mono text-xs text-muted-foreground">{frame.note}</div>;
+      if (!slidable(rows) && frame.kind === "array") {
+        return top(
+          <div className="flex flex-col items-center gap-3">
+            <FlowArray frame={frame} large={large} />
+            {note}
+          </div>,
+        );
+      }
       return (
-        <div className="flex flex-col items-center gap-3">
-          {slidable(rows) ? <Grid frame={frame} large={large} /> : frame.kind === "array" ? <FlowArray frame={frame} large={large} /> : <Grid frame={frame} large={large} />}
-          {frame.note && <div className="font-mono text-xs text-muted-foreground">{frame.note}</div>}
+        <div className="flex w-full flex-col gap-3">
+          <Grid frame={frame} large={large} caption={caption} minH={minH} />
+          {note}
         </div>
       );
     }
 
     case "heap":
       return (
-        <div className="flex flex-col items-center gap-3">
-          <HeapView frame={frame} large={large} />
-          {frame.note && <div className="font-mono text-xs text-muted-foreground">{frame.note}</div>}
+        <div className="flex w-full flex-col gap-3">
+          <HeapView frame={frame} large={large} caption={caption} minH={minH} />
+          {frame.note && <div className="text-center font-mono text-xs text-muted-foreground">{frame.note}</div>}
         </div>
       );
 
     case "tree":
-      return (
+      return top(
         <div className="flex flex-col gap-2.5">
           {frame.levels.map((lvl, li) => (
             <div key={li} className="flex items-center gap-3 duration-500 animate-in fade-in-0 slide-in-from-top-2 motion-reduce:animate-none">
               <span className="w-12 shrink-0 font-mono text-2xs text-muted-foreground">lvl {li}</span>
-              <div className="flex min-w-0 flex-1 flex-wrap justify-center gap-1">
+              <div className="flex min-w-0 flex-1 flex-wrap justify-center gap-1.5">
                 {lvl.nodes.map((n, ni) => (
                   <span
                     key={ni}
                     className={cn(
-                      "rounded-md border px-1.5 py-0.5 font-mono text-2xs transition-colors duration-500",
-                      lvl.hl ? "border-brand bg-brand/15" : "border-border bg-card text-foreground/80",
-                      large ? "px-2 py-1 text-xs" : "text-xs",
+                      "rounded-lg border px-2 py-1 font-mono transition-colors duration-500",
+                      lvl.hl ? "border-transparent bg-brand-solid text-white shadow-card" : "border-border/80 bg-card text-foreground/85 shadow-card",
+                      large ? "text-sm" : "text-xs",
                     )}
                   >
                     {n}
                   </span>
                 ))}
               </div>
-              {lvl.work && <span className={cn("w-36 shrink-0 text-right font-mono text-2xs", lvl.hl ? "text-brand-fg" : "text-muted-foreground")}>{lvl.work}</span>}
+              {lvl.work && <span className={cn("w-36 shrink-0 text-right font-mono text-xs", lvl.hl ? "font-semibold text-brand-fg" : "text-muted-foreground")}>{lvl.work}</span>}
             </div>
           ))}
-        </div>
+        </div>,
       );
 
     case "lines":
-      return (
+      return top(
         <div className="flex flex-col gap-1">
           {frame.lines.map((line, i) => (
             <div
               key={i}
               className={cn(
-                "rounded-md px-3 py-1.5 font-mono transition-colors duration-500",
+                "rounded-lg px-3 py-2 font-mono transition-colors duration-500",
                 large ? "text-sm" : "text-[13px]",
-                i === frame.active ? "bg-brand/12 text-foreground ring-1 ring-brand/40" : i < frame.active ? "text-foreground/70" : "text-muted-foreground/40",
-                i === frame.active && "duration-500 animate-in fade-in-0 motion-reduce:animate-none",
+                i === frame.active ? "bg-brand/12 text-foreground ring-1 ring-brand/40 animate-in fade-in-0 motion-reduce:animate-none" : i < frame.active ? "text-foreground/70" : "text-muted-foreground/40",
               )}
             >
               {line}
             </div>
           ))}
-        </div>
+        </div>,
       );
   }
 }
@@ -356,8 +426,10 @@ export function Stepper({ title, frames }: { title: string; frames: Frame[] }) {
   const last = i === frames.length - 1;
   const running = playing && visible;
   const dwell = dwellMs(frame.caption, speed) + (last ? 1500 / speed : 0);
+  // Reserve room for the longest caption so the picture never jumps.
+  const longest = Math.max(...frames.map((f) => f.caption.length));
+  const minH = 26 + Math.ceil(longest / 52) * 23;
 
-  // Only play while on screen.
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
@@ -366,100 +438,91 @@ export function Stepper({ title, frames }: { title: string; frames: Frame[] }) {
     return () => io.disconnect();
   }, []);
 
-  // Advance, and loop back to the start after the last frame.
   useEffect(() => {
     if (!running) return;
     const t = setTimeout(() => setI((v) => (v + 1) % frames.length), dwell);
     return () => clearTimeout(t);
   }, [running, i, dwell, frames.length]);
 
-  const step = (d: number) => {
+  const go = (k: number) => {
     setPlaying(false);
-    setI((v) => (v + d + frames.length) % frames.length);
+    setI(((k % frames.length) + frames.length) % frames.length);
   };
 
   return (
-    <div ref={ref} className="rounded-xl border border-border/70 bg-card shadow-card">
-      <div className="flex items-center gap-3 border-b border-border/60 px-5 py-3">
-        <span className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-brand-fg">
+    <div ref={ref} className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card">
+      <div className="flex items-center gap-3 px-5 pb-1 pt-4">
+        <span className="flex items-center gap-1.5 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-fg">
           <span className={cn("h-1.5 w-1.5 rounded-full", running ? "animate-pulse bg-brand" : "bg-muted-foreground/50")} />
           Animation
         </span>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">{title}</span>
-        <span data-numeric className="font-mono text-2xs text-muted-foreground">
-          {i + 1} / {frames.length}
-        </span>
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold">{title}</span>
       </div>
 
-      <div className="px-5 py-6">
-        <FrameView frame={frame} />
+      {/* The stage: a faint dot grid, the bubble, the picture. */}
+      <div className="px-5 pb-6 pt-3" style={{ backgroundImage: "radial-gradient(rgb(var(--foreground) / 0.07) 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
+        <FrameView frame={frame} caption={frame.caption} minH={minH} />
       </div>
 
-      {/* This frame's time. */}
-      <div className="h-0.5 bg-fill-ghost">
-        <div
-          key={`${i}-${speed}`}
-          className="h-full origin-left animate-frame-progress bg-brand/70"
-          style={{ animationDuration: `${dwell}ms`, animationPlayState: running ? "running" : "paused" }}
-        />
-      </div>
+      {/* Controls */}
+      <div className="flex items-center gap-2 border-t border-border/60 bg-fill-ghost/30 px-4 py-3">
+        <button
+          type="button"
+          onClick={() => setPlaying((p) => !p)}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-solid text-white shadow-card transition-transform duration-micro hover:scale-105"
+          aria-label={playing ? "Pause" : "Play"}
+          title={playing ? "Pause" : "Play"}
+        >
+          {playing ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}
+        </button>
+        <button type="button" onClick={() => go(i - 1)} className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-fill-ghost hover:text-foreground" aria-label="Previous step" title="Previous step">
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button type="button" onClick={() => go(i + 1)} className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-fill-ghost hover:text-foreground" aria-label="Next step" title="Next step">
+          <ChevronRight className="h-4 w-4" />
+        </button>
 
-      <div className="px-5 py-4">
-        <p className="min-h-[3rem] text-[15px] leading-relaxed text-foreground/90">
-          <Inline text={frame.caption} />
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setPlaying((p) => !p)}
-            className="flex items-center gap-1.5 rounded-lg bg-brand-solid px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity duration-micro hover:opacity-90"
-            aria-label={playing ? "Pause" : "Play"}
-          >
-            {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            {playing ? "Pause" : "Play"}
-          </button>
-          <button type="button" onClick={() => step(-1)} className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-muted-foreground hover:bg-fill-ghost hover:text-foreground" aria-label="Previous step">
-            <ChevronLeft className="h-3.5 w-3.5" /> Back
-          </button>
-          <button type="button" onClick={() => step(1)} className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-muted-foreground hover:bg-fill-ghost hover:text-foreground" aria-label="Next step">
-            Next <ChevronRight className="h-3.5 w-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setI(0);
-              setPlaying(true);
-            }}
-            className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-muted-foreground hover:bg-fill-ghost hover:text-foreground"
-            aria-label="Restart"
-          >
-            <RotateCcw className="h-3.5 w-3.5" /> Restart
-          </button>
-          <div className="ml-auto flex items-center gap-2">
-            <div className="hidden items-center gap-1 sm:flex" aria-label="Jump to step">
-              {frames.map((_, k) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => {
-                    setPlaying(false);
-                    setI(k);
-                  }}
-                  aria-label={`Step ${k + 1}`}
-                  className={cn("h-1.5 rounded-full transition-all duration-300", k === i ? "w-4 bg-brand" : "w-1.5 bg-foreground/20 hover:bg-foreground/40")}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setSpeed((s) => SPEEDS[(SPEEDS.indexOf(s as (typeof SPEEDS)[number]) + 1) % SPEEDS.length])}
-              className="rounded-md border border-border px-1.5 py-0.5 font-mono text-2xs text-muted-foreground hover:text-foreground"
-              title="Playback speed"
-            >
-              {speed}×
+        {/* One segment per frame; the current one fills over its dwell time. */}
+        <div className="flex min-w-0 flex-1 items-center gap-1" aria-label="Steps">
+          {frames.map((_, k) => (
+            <button key={k} type="button" onClick={() => go(k)} aria-label={`Step ${k + 1}`} className="group relative h-4 min-w-[6px] flex-1">
+              <span className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-foreground/10 group-hover:bg-foreground/20">
+                {k < i && <span className="absolute inset-0 bg-brand/60" />}
+                {k === i && (
+                  <span
+                    key={`${i}-${speed}-${running}`}
+                    className={cn("absolute inset-0 origin-left bg-brand", running && "animate-frame-progress")}
+                    style={running ? { animationDuration: `${dwell}ms` } : undefined}
+                  />
+                )}
+              </span>
             </button>
-          </div>
+          ))}
         </div>
+
+        <span data-numeric className="shrink-0 font-mono text-2xs text-muted-foreground">
+          {i + 1}/{frames.length}
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setI(0);
+            setPlaying(true);
+          }}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-fill-ghost hover:text-foreground"
+          aria-label="Restart"
+          title="Restart"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setSpeed((s) => SPEEDS[(SPEEDS.indexOf(s as (typeof SPEEDS)[number]) + 1) % SPEEDS.length])}
+          className="shrink-0 rounded-full border border-border px-2 py-0.5 font-mono text-2xs text-muted-foreground hover:text-foreground"
+          title="Playback speed"
+        >
+          {speed}×
+        </button>
       </div>
     </div>
   );
