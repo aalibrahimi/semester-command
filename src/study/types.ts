@@ -39,7 +39,20 @@ export type Frame =
    *  Frames add levels cumulatively — pass the full list each time. */
   | { kind: "tree"; levels: { nodes: string[]; work?: string; hl?: boolean }[]; caption: string }
   /** Lines of math/text; `active` is highlighted, later lines are dimmed. */
-  | { kind: "lines"; lines: string[]; active: number; caption: string };
+  | { kind: "lines"; lines: string[]; active: number; caption: string }
+  /** A story told along a timeline. `events` is the whole timeline (pass the
+   *  same list in every frame); `at` is the event this frame is about. Events
+   *  before it are shown as passed, later ones faintly. The marker and the
+   *  caption bubble travel to `at`. `meter` is an optional bar under the
+   *  timeline that grows or shrinks between frames (value 0 to 100), for
+   *  "how much room was there to…" style ideas. */
+  | {
+      kind: "timeline";
+      events: { year: string | number; title: string; tone?: "brand" | "green" | "amber" | "red" }[];
+      at: number;
+      meter?: { label: string; value: number; tone?: "brand" | "green" | "amber" | "red"; low?: string; high?: string };
+      caption: string;
+    };
 
 export interface Deadline {
   date: string;

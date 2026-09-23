@@ -122,7 +122,7 @@ export interface FigureBlock extends BlockBase {
 }
 
 /** The kinds components/study/Diagram.tsx can draw. */
-export const DIAGRAM_KINDS = ["roadmap", "codecount", "cards", "levels", "bigo", "formula"] as const;
+export const DIAGRAM_KINDS = ["roadmap", "codecount", "cards", "levels", "bigo", "formula", "compare"] as const;
 
 /**
  * A picture built from the app's own UI (cards, chips, bars) rather than a

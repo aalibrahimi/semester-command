@@ -20,6 +20,9 @@ import { drills as cs154Sets } from "./cs154--1-sets-functions";
 import { drills as cs154Strings } from "./cs154--3-strings-languages";
 import { drills as cs154Dfa } from "./cs154--5-dfa";
 import { drills as cs154Nfa } from "./cs154--8-nfa-intro";
+import { drills as hist15Slavery } from "./hist15--1-slavery";
+import { drills as hist15Declaration } from "./hist15--3-declaration";
+import { drills as hist15Reform } from "./hist15--12-reform";
 import { drills as hist15Walker } from "./hist15--6-walker";
 import { drills as hist15Constitution } from "./hist15--8-confederation-to-constitution";
 import { drills as hist15Market } from "./hist15--11-market-revolution";
@@ -52,7 +55,10 @@ const ALL: Drill[][] = [
   cs154Strings,
   cs154Dfa,
   cs154Nfa,
+  hist15Slavery,
+  hist15Declaration,
   hist15Walker,
+  hist15Reform,
   hist15Constitution,
   hist15Market,
   ling112Syntax,

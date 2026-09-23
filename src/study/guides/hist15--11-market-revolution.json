@@ -5,7 +5,7 @@
   "title": "The Market Revolution, Lowell, and Cherokee Removal",
   "summary": "Explain what the market revolution was and name its parts; describe the Lowell system and why it ended; tell the Cherokee removal story with its four legal steps.",
   "estimatedMinutes": 50,
-  "sourceNote": "The American Promise ch. 11, 'What economic developments reshaped the American economy after 1815?' (pp. 302–317, 320–322); the Sep 14 Market Revolution lecture/exercise; the Sep 16 Cherokee Removal lecture. This is Quiz #2 (10 MC, 20 min, due Oct 5).",
+  "sourceNote": "The American Promise ch. 11, 'What economic developments reshaped the American economy after 1815?' (pp. 302–317, 320–322); the Sep 14 Market Revolution lecture/exercise; the Sep 16 Cherokee Removal lecture. This is Quiz #2 (10 MC, 20 min, due Oct 5). Checked against Dr. Jeffrey's 'Market Revolution' (15 slides) and 'Cherokee & Abolitionism' slides.",
   "requires": [],
   "sections": [
     {
@@ -15,16 +15,34 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why the textbook uses this phrase, not 'industrial revolution'** In 1800 most American families grew or made most of what they used and bartered for the rest with neighbors. By 1840 most families sold something — wheat, cotton, cloth, their labor — for cash and bought what they needed from strangers far away. ==That shift, from local household economies to a national economy of cash and long-distance trade, is the market revolution.== Factories are part of it but not the center; the center is that ordinary people started producing *for the market*. A quiz question asking for the best description wants that.",
+          "md": "**Why the textbook uses this phrase, not 'industrial revolution'** In 1800 most American families grew or made most of what they used and bartered for the rest with neighbors. By 1840 most families sold something: wheat, cotton, cloth, their labor: for cash and bought what they needed from strangers far away. ==That shift, from local household economies to a national economy of cash and long-distance trade, is the market revolution.== Factories are part of it but not the center; the center is that ordinary people started producing *for the market*. A quiz question asking for the best description wants that.",
           "slide": "The term",
-          "id": "why.d51b8b36"
+          "id": "why.3e8b589a"
+        },
+        {
+          "type": "definition",
+          "term": "Commercialization",
+          "body": "Producing goods to **sell** for cash rather than to use at home or trade with neighbors. **Example:** a farm family that once made its own cloth now grows wheat for market and buys cloth.",
+          "id": "why.75271e5a"
+        },
+        {
+          "type": "definition",
+          "term": "Industrialization",
+          "body": "Making goods in **factories** with machines and wage workers instead of by hand at home. **Example:** the Lowell mills turning raw cotton into finished cloth.",
+          "id": "why.70388791"
+        },
+        {
+          "type": "definition",
+          "term": "Transportation revolution",
+          "body": "Canals, steamboats and railroads that made moving goods fast and cheap. The lecture's point: it is what **made the market revolution possible**, by connecting farms to distant markets.",
+          "id": "why.0d7d42b9"
         },
         {
           "type": "trap",
-          "body": "**The exercise she gave on Sep 14** The in-class exercise asked you to work from the assigned section and the lecture. Quiz #2 says it 'pertains to lecture content of the Market Revolution, Lowell Mills, and Cherokee removal' plus ch. 11 — so the three sections below are the three things the ten questions will be about.",
+          "body": "**The exercise she gave on Sep 14** The in-class exercise asked you to work from the assigned section and the lecture. Quiz #2 says it 'pertains to lecture content of the Market Revolution, Lowell Mills, and Cherokee removal' plus ch. 11: so the three sections below are the three things the ten questions will be about.",
           "source": "Quiz #2",
           "points": null,
-          "id": "why.7f176013"
+          "id": "why.7b42f0e9"
         }
       ]
     },
@@ -34,43 +52,43 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "A farmer in Ohio in 1815 couldn't sell wheat in New York — hauling it over the mountains cost more than the wheat was worth, so he had no reason to grow more than his family ate. That's why transport is the *first* cause in this chapter: ==cut the cost of moving goods and every farm becomes a business==, every farmer a seller who now needs cash, credit, and manufactured goods. That is what happened between 1815 and 1840, in four waves — each wave below cut costs further and reached places the last one couldn't.",
+          "md": "A farmer in Ohio in 1815 couldn't sell wheat in New York: hauling it over the mountains cost more than the wheat was worth, so he had no reason to grow more than his family ate. That's why transport is the *first* cause in this chapter: ==cut the cost of moving goods and every farm becomes a business==, every farmer a seller who now needs cash, credit, and manufactured goods. That is what happened between 1815 and 1840, in four waves: each wave below cut costs further and reached places the last one couldn't.",
           "slide": "Why transport came first",
-          "id": "transport.5bc00b5f"
+          "id": "transport.a96ac80e"
         },
         {
           "type": "definition",
           "term": "Turnpikes and roads",
           "body": "(1790s–1820s): private toll roads; the federal **National Road** from Maryland west to Illinois, begun 1811.",
-          "id": "transport.dc4e7043"
+          "id": "transport.ec11f403"
         },
         {
           "type": "definition",
           "term": "Steamboats",
           "body": "Robert **Fulton**'s *Clermont* on the Hudson (1807). By the 1820s steamboats ran *up* the Mississippi and Ohio, making New Orleans the outlet for the whole interior. Upstream freight costs fell by 90%.",
-          "id": "transport.c3a04bef"
+          "id": "transport.c3b94baf"
         },
         {
           "type": "definition",
           "term": "Canals",
-          "body": "the **Erie Canal** (New York, finished **1825**, 363 miles from the Hudson to Lake Erie), built by the state under Governor DeWitt Clinton. It ==cut freight costs between Buffalo and New York City from $100 a ton to about $10== — a 90% drop that made New York the nation's commercial capital, because every bushel from the Great Lakes now exited through Manhattan. Other states rushed to copy it; many went broke.",
-          "id": "transport.15730d44"
+          "body": "the **Erie Canal** (New York, finished **1825**, 363 miles from the Hudson to Lake Erie), built by the state under Governor DeWitt Clinton. It ==cut freight costs between Buffalo and New York City from $100 a ton to about $10==: a 90% drop that made New York the nation's commercial capital, because every bushel from the Great Lakes now exited through Manhattan. Other states rushed to copy it; many went broke.",
+          "id": "transport.436e7b04"
         },
         {
           "type": "definition",
           "term": "Railroads",
           "body": "the Baltimore & Ohio (1830) was the first; by 1840 there were 3,000 miles of track, mostly in the Northeast. Railroads didn't freeze in winter and didn't need a river.",
-          "id": "transport.b63c263f"
+          "id": "transport.cf0eecff"
         },
         {
           "type": "prose",
-          "md": "The federal government's role was contested: Madison vetoed a federal canal bill (1817) as unconstitutional, so states and private companies built most of it — which is why the 'internal improvements' question becomes a party issue (Whigs for, Democrats against). The Supreme Court did help: ==Gibbons v. Ogden (1824) struck down a state steamboat monopoly and gave Congress control over interstate commerce== — no state could wall off the growing national market.",
-          "id": "transport.851342b1"
+          "md": "The federal government's role was contested: Madison vetoed a federal canal bill (1817) as unconstitutional, so states and private companies built most of it: which is why the 'internal improvements' question becomes a party issue (Whigs for, Democrats against). The Supreme Court did help: ==Gibbons v. Ogden (1824) struck down a state steamboat monopoly and gave Congress control over interstate commerce==: no state could wall off the growing national market.",
+          "id": "transport.e91a7bf5"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Every American infrastructure debate since is this section re-run. The Interstate Highway System (1956), rural broadband, and the 2021 Infrastructure Investment and Jobs Act all repeat the Erie Canal's logic — public money cuts the cost of connection, private fortunes follow — and every one of them refought Madison's 1817 veto question of whether building it is the federal government's job. The states that copied the Erie and went broke are the ancestors of every over-budget megaproject story you'll read (California's high-speed rail is the running example). *Gibbons v. Ogden* is still live law: it's the root of the commerce-clause power that modern Congress uses for everything from trucking rules to internet regulation. And notice the pattern historians reuse everywhere: ==transport costs decide what markets can exist== — it explains containerized shipping remaking the world economy after 1960 and broadband remaking work after 2020, and it's the causal move an essay on 'what made the market revolution possible' should open with.",
-          "id": "transport.7c2e94b5"
+          "md": "**Where you'll meet this after the exam** Every American infrastructure debate since is this section re-run. The Interstate Highway System (1956), rural broadband, and the 2021 Infrastructure Investment and Jobs Act all repeat the Erie Canal's logic: public money cuts the cost of connection, private fortunes follow: and every one of them refought Madison's 1817 veto question of whether building it is the federal government's job. The states that copied the Erie and went broke are the ancestors of every over-budget megaproject story you'll read (California's high-speed rail is the running example). *Gibbons v. Ogden* is still live law: it's the root of the commerce-clause power that modern Congress uses for everything from trucking rules to internet regulation. And notice the pattern historians reuse everywhere: ==transport costs decide what markets can exist==: it explains containerized shipping remaking the world economy after 1960 and broadband remaking work after 2020, and it's the causal move an essay on 'what made the market revolution possible' should open with.",
+          "id": "transport.1a88c059"
         }
       ]
     },
@@ -80,21 +98,389 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "**Samuel Slater**, an English mechanic who memorized the design of British spinning machines (exporting them was illegal), built the first American water-powered textile mill at Pawtucket, Rhode Island, in **1790**. Slater's mills spun thread and hired whole families, children included. The bigger step came from **Francis Cabot Lowell**, a Boston merchant who toured British mills in 1810, memorized the power loom, and in **1813** opened the Boston Manufacturing Company at Waltham — ==the first mill in the world to take raw cotton in one end and finished cloth out the other==. Integration is why it mattered: one roof, one water wheel, no middlemen between thread and cloth, so costs fell and the model scaled. After his death his partners built a whole planned city on the Merrimack River and named it **Lowell, Massachusetts** (1820s).",
+          "md": "**Samuel Slater**, an English mechanic who memorized the design of British spinning machines (exporting them was illegal), built the first American water-powered textile mill at Pawtucket, Rhode Island, in **1790**. Slater's mills spun thread and hired whole families, children included. The bigger step came from **Francis Cabot Lowell**, a Boston merchant who toured British mills in 1810, memorized the power loom, and in **1813** opened the Boston Manufacturing Company at Waltham: ==the first mill in the world to take raw cotton in one end and finished cloth out the other==. Integration is why it mattered: one roof, one water wheel, no middlemen between thread and cloth, so costs fell and the model scaled. After his death his partners built a whole planned city on the Merrimack River and named it **Lowell, Massachusetts** (1820s).",
           "slide": "From Slater to Lowell",
-          "id": "factories.c958b9fd"
+          "id": "factories.bf5e4f5d"
         },
         {
           "type": "prose",
-          "md": "Lowell's founders needed a workforce and didn't want an English-style permanent factory class. Their answer: recruit **young, unmarried women from New England farms** — daughters with nothing to do at home now that cloth was cheaper to buy than make. The mills offered wages (higher than domestic service), company **boardinghouses** with matrons, curfews, mandatory church, and a respectable reputation, so farm families would send their daughters. The women worked twelve to thirteen hours a day, six days a week, typically for a few years before marrying. Some published a literary magazine, the ***Lowell Offering***. To visitors like Charles Dickens (1842), Lowell looked like the humane alternative to Manchester. ==Every feature of the system — wages, matrons, curfews, church — existed to solve one recruiting problem: making factory work respectable enough for farm families to send their daughters.==",
+          "md": "Lowell's founders needed a workforce and didn't want an English-style permanent factory class. Their answer: recruit **young, unmarried women from New England farms**: daughters with nothing to do at home now that cloth was cheaper to buy than make. The mills offered wages (higher than domestic service), company **boardinghouses** with matrons, curfews, mandatory church, and a respectable reputation, so farm families would send their daughters. The women worked twelve to thirteen hours a day, six days a week, typically for a few years before marrying. Some published a literary magazine, the ***Lowell Offering***. To visitors like Charles Dickens (1842), Lowell looked like the humane alternative to Manchester. ==Every feature of the system: wages, matrons, curfews, church: existed to solve one recruiting problem: making factory work respectable enough for farm families to send their daughters.==",
           "slide": "The Lowell mill girls",
-          "id": "factories.5d2750a3"
+          "id": "factories.b1ebefec"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Who",
+                "lines": [
+                  "About **5,000 women** worked in Lowell's mills.",
+                  "Mostly single farm daughters, ages **16 to 23**."
+                ],
+                "badge": "1830s",
+                "tone": "brand"
+              },
+              {
+                "title": "Hours and pay",
+                "lines": [
+                  "**Six days** a week, about **12 hours** a day.",
+                  "About **$2 to $3 a week** after board."
+                ],
+                "badge": "6 × 12",
+                "tone": "amber"
+              },
+              {
+                "title": "Why they came",
+                "lines": [
+                  "Help their families, save for marriage, pay for schooling.",
+                  "Independence: money of their own, away from home."
+                ],
+                "badge": "choice",
+                "tone": "green"
+              }
+            ]
+          },
+          "caption": "Lowell by the lecture's numbers.",
+          "slide": "Lowell by the numbers",
+          "id": "factories.ca39d625"
+        },
+        {
+          "type": "stepper",
+          "title": "Lowell: rise, strikes, and replacement",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 0,
+              "caption": "**1813.** Francis Cabot Lowell's Boston Manufacturing Company opens the first mill that turns raw cotton into cloth under one roof.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 50
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 1,
+              "caption": "**1820s.** The company builds a whole mill town on the Merrimack River and names it **Lowell**.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 55
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 2,
+              "caption": "**1830s.** About 5,000 young women live in company boardinghouses and work 12-hour days for $2 to $3 a week.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 60
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 3,
+              "caption": "**1834.** Cloth prices fall and owners **cut wages about 15%**. The women walk out: a 'turnout'. It fails, but they have organized.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 45
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 4,
+              "caption": "**1836.** Owners raise the price of **board**, a wage cut in disguise. A bigger turnout follows.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 35
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 5,
+              "caption": "**1837.** A depression hits. With jobs scarce, workers lose leverage.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 20
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1813",
+                  "title": "Waltham mill"
+                },
+                {
+                  "year": "1823",
+                  "title": "Lowell mills open",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830s",
+                  "title": "5,000 women at work"
+                },
+                {
+                  "year": "1834",
+                  "title": "Wage cut → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Board raised → turnout",
+                  "tone": "red"
+                },
+                {
+                  "year": "1837",
+                  "title": "Depression",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840s–50s",
+                  "title": "Irish immigrants replace them"
+                }
+              ],
+              "at": 6,
+              "caption": "**1840s to 1850s.** Owners replace the Yankee women with **Irish immigrants** who had fewer choices and accepted lower pay.",
+              "meter": {
+                "label": "The women's bargaining power (a rough picture)",
+                "tone": "amber",
+                "low": "none",
+                "high": "strong",
+                "value": 10
+              }
+            }
+          ],
+          "slide": true,
+          "id": "factories.c28b79ec"
         },
         {
           "type": "prose",
-          "md": "The system ended in a two-step chain — get the mechanism, not just the fact. Step one: in the 1830s competition and falling cloth prices drove owners to cut wages and speed up the machines, and the women organized — 'turn-outs' (strikes) in **1834** and **1836**, then the Lowell Female Labor Reform Association's ten-hour-day petitions in the 1840s. Step two: rather than restore wages, the owners replaced the workforce. From the mid-1840s **Irish immigrant families**, fleeing the famine, took the jobs at lower pay — and unlike the mill girls, they could not go home to the farm. The boardinghouse experiment ended, and ==Lowell became the ordinary factory town its founders had tried to avoid==.",
+          "md": "The system ended in a two-step chain: get the mechanism, not just the fact. Step one: in the 1830s competition and falling cloth prices drove owners to cut wages and speed up the machines, and the women organized: 'turn-outs' (strikes) in **1834** and **1836**, then the Lowell Female Labor Reform Association's ten-hour-day petitions in the 1840s. Step two: rather than restore wages, the owners replaced the workforce. From the mid-1840s **Irish immigrant families**, fleeing the famine, took the jobs at lower pay: and unlike the mill girls, they could not go home to the farm. The boardinghouse experiment ended, and ==Lowell became the ordinary factory town its founders had tried to avoid==.",
           "slide": "Why the system ended",
-          "id": "factories.a546dced"
+          "id": "factories.d8d824c6"
         },
         {
           "type": "table",
@@ -126,19 +512,19 @@
             ]
           ],
           "slide": "Slater system vs Lowell (Waltham) system",
-          "id": "factories.9f53fa4f"
+          "id": "factories.9276e138"
         },
         {
           "type": "check",
           "prompt": "Why did Lowell's owners recruit farm daughters specifically, and what replaced them?",
-          "answer": "They were an available, inexpensive, temporary, 'respectable' workforce — the boardinghouse system reassured families — and they wouldn't form a permanent working class. Wage cuts led to strikes in 1834 and 1836; in the 1840s Irish immigrant labor replaced them.",
+          "answer": "They were an available, inexpensive, temporary, 'respectable' workforce: the boardinghouse system reassured families: and they wouldn't form a permanent working class. Wage cuts led to strikes in 1834 and 1836; in the 1840s Irish immigrant labor replaced them.",
           "sectionRef": "factories",
-          "id": "factories.6ec17792"
+          "id": "factories.1a115988"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The Lowell cycle — a workforce chosen because it seems temporary and compliant, organizing when squeezed, then being replaced by workers with fewer options — is the oldest recurring plot in American labor history, and you'll recognize it in this week's news: gig platforms built on drivers 'just doing it for a while', warehouse and meatpacking work shifting to immigrant labor when native-born workers organize, tech's contractor tiers. The ten-hour petitions are the direct ancestors of the eight-hour day, the FLSA, and today's scheduling-law fights; the company boardinghouse returns as the company town every time a big employer dominates housing (mining camps then, single-employer factory towns now). Even the *Lowell Offering* has a modern descendant: workers narrating their own conditions in public — the strike newsletter, the r/antiwork post, the viral warehouse TikTok. If Dr. Jeffrey sets an essay on labor and the market revolution, the strongest frame is the exercise below's mechanism: cause (price competition) → response (organization) → counter-move (replacement), with dates attached.",
-          "id": "factories.6d8f21a3"
+          "md": "**Where you'll meet this after the exam** The Lowell cycle: a workforce chosen because it seems temporary and compliant, organizing when squeezed, then being replaced by workers with fewer options: is the oldest recurring plot in American labor history, and you'll recognize it in this week's news: gig platforms built on drivers 'just doing it for a while', warehouse and meatpacking work shifting to immigrant labor when native-born workers organize, tech's contractor tiers. The ten-hour petitions are the direct ancestors of the eight-hour day, the FLSA, and today's scheduling-law fights; the company boardinghouse returns as the company town every time a big employer dominates housing (mining camps then, single-employer factory towns now). Even the *Lowell Offering* has a modern descendant: workers narrating their own conditions in public: the strike newsletter, the r/antiwork post, the viral warehouse TikTok. If Dr. Jeffrey sets an essay on labor and the market revolution, the strongest frame is the exercise below's mechanism: cause (price competition) → response (organization) → counter-move (replacement), with dates attached.",
+          "id": "factories.6a55fc3d"
         }
       ]
     },
@@ -148,52 +534,102 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "A market economy runs on credit. The **Second Bank of the United States** (chartered **1816**) tried to discipline the hundreds of state banks issuing their own paper money. When it tightened credit in 1819 after a land-speculation boom, the result was ==the Panic of 1819 — the first modern depression==, with foreclosures across the West and lasting hatred of the Bank (Andrew Jackson's). The chain to remember: easy credit → land speculation → the Bank tightens → prices collapse → foreclosures → political rage at banks. The **Panic of 1837** repeated the same chain on a larger scale, and a market economy has repeated it ever since.",
+          "md": "A market economy runs on credit. The **Second Bank of the United States** (chartered **1816**) tried to discipline the hundreds of state banks issuing their own paper money. When it tightened credit in 1819 after a land-speculation boom, the result was ==the Panic of 1819: the first modern depression==, with foreclosures across the West and lasting hatred of the Bank (Andrew Jackson's). The chain to remember: easy credit → land speculation → the Bank tightens → prices collapse → foreclosures → political rage at banks. The **Panic of 1837** repeated the same chain on a larger scale, and a market economy has repeated it ever since.",
           "slide": "Money and panics",
-          "id": "economy.31187a37"
+          "id": "economy.ed84a30c"
         },
         {
           "type": "prose",
-          "md": "The market revolution was not a Northern story — it was one connected machine, and the figure below draws it. Follow the chain: Eli Whitney's **cotton gin** (1793) made short-staple cotton profitable → cotton became the nation's biggest export → Northern mills spun Southern cotton grown by enslaved labor → Western farms fed the mills' workers → transport and New York credit tied the three regions into one economy. The textbook's point: ==the same economic transformation that built Lowell made slavery more entrenched and more valuable==, which is why the 1830s abolitionists (Walker, Garrison) faced a slavery that was expanding, not fading.",
-          "slide": "Cotton ties it all together — and to slavery",
-          "id": "economy.e169b28f"
+          "md": "The market revolution was not a Northern story: it was one connected machine, and the figure below draws it. Follow the chain: Eli Whitney's **cotton gin** (1793) made short-staple cotton profitable → cotton became the nation's biggest export → Northern mills spun Southern cotton grown by enslaved labor → Western farms fed the mills' workers → transport and New York credit tied the three regions into one economy. The textbook's point: ==the same economic transformation that built Lowell made slavery more entrenched and more valuable==, which is why the 1830s abolitionists (Walker, Garrison) faced a slavery that was expanding, not fading.",
+          "slide": "Cotton ties it all together: and to slavery",
+          "id": "economy.4d67c208"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 340",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='mr1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The textile North: Lowell's integrated mills take raw cotton in one end and ship finished cloth out the other. Its inputs come from the South (cotton) and the West (food for the workers); its outputs go back to both.</title><rect x='230' y='30' width='180' height='70' rx='10' fill='rgb(var(--accent-fg) / 0.1)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='320' y='56' text-anchor='middle' font-size='13' font-weight='700'>TEXTILE NORTH</text><text x='320' y='74' text-anchor='middle' font-size='10.5' opacity='0.7'>Lowell mills: spinning + weaving</text><text x='320' y='89' text-anchor='middle' font-size='10.5' opacity='0.7'>wage labor, corporations</text></g><g><title>The cotton South: enslaved labor grows short-staple cotton, profitable since the gin (1793). Cotton is the nation's biggest export — and the market revolution makes this labor system MORE valuable, not less.</title><rect x='40' y='210' width='180' height='70' rx='10' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='130' y='236' text-anchor='middle' font-size='13' font-weight='700'>COTTON SOUTH</text><text x='130' y='254' text-anchor='middle' font-size='10.5' opacity='0.7'>enslaved labor · gin (1793)</text><text x='130' y='269' text-anchor='middle' font-size='10.5' opacity='0.7'>biggest U.S. export</text></g><g><title>The western farms: wheat and pork move east on the Erie Canal to feed mill towns, and downriver by steamboat to feed plantations. The West sells food and buys manufactured goods — the farm becomes a business.</title><rect x='420' y='210' width='180' height='70' rx='10' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='236' text-anchor='middle' font-size='13' font-weight='700'>WESTERN FARMS</text><text x='510' y='254' text-anchor='middle' font-size='10.5' opacity='0.7'>wheat &amp; pork for sale</text><text x='510' y='269' text-anchor='middle' font-size='10.5' opacity='0.7'>Ohio, Kentucky, the Lakes</text></g><g><title>South to North: raw cotton moves up the coast to the mills. North to South: finished cloth, shoes, and credit flow back. Lowell's looms and the plantation are two ends of one supply chain.</title><path d='M200 205 L285 108' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><path d='M250 108 L160 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='142' y='142' font-size='10.5' fill='rgb(var(--accent-fg))'>raw cotton ↗</text><text x='218' y='176' font-size='10.5' fill='rgb(var(--accent-fg))'>↙ cloth, goods, credit</text></g><g><title>West to North: Erie Canal barges (after 1825) carry cheap food east to feed the mill workforce. North to West: manufactured goods travel the same canal back — the canal earns in both directions.</title><path d='M448 205 L360 108' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><path d='M392 108 L482 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='355' y='142' text-anchor='start' font-size='10.5' fill='rgb(var(--accent-fg))'>↖ food via Erie Canal (1825)</text><text x='428' y='176' font-size='10.5' fill='rgb(var(--accent-fg))'>manufactured goods ↘</text></g><g><title>West to South: steamboats (running upstream since the 1810s) let western food travel the Mississippi to New Orleans and the plantations — freeing plantation land and labor to grow still more cotton.</title><path d='M416 245 L228 245' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='322' y='237' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>food downriver — steamboats via New Orleans</text></g><g><title>None of the edges work without the transport revolution (canals, steamboats, then rails) or without New York's banks, insurers, and cotton brokers financing every shipment. That finance is why the Panics of 1819 and 1837 hit all three regions at once.</title><text x='320' y='312' text-anchor='middle' font-size='11' opacity='0.7'>every arrow rides the transport revolution — and is financed through New York banks,</text><text x='320' y='328' text-anchor='middle' font-size='11' opacity='0.7'>which is why a panic in credit (1819, 1837) hits all three regions at once</text></g></g>",
-          "caption": "The market revolution as one machine — hover any node or arrow. Cotton grown by enslaved labor feeds Northern mills; Western food feeds Northern workers and Southern plantations; cloth, goods, and credit flow back out. This is why the textbook insists it's a national story: pull any node and the other two move — and it's why the transformation that built Lowell also entrenched slavery.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='mr1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The textile North: Lowell's integrated mills take raw cotton in one end and ship finished cloth out the other. Its inputs come from the South (cotton) and the West (food for the workers); its outputs go back to both.</title><rect x='230' y='30' width='180' height='70' rx='10' fill='rgb(var(--accent-fg) / 0.1)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='320' y='56' text-anchor='middle' font-size='13' font-weight='700'>TEXTILE NORTH</text><text x='320' y='74' text-anchor='middle' font-size='10.5' opacity='0.7'>Lowell mills: spinning + weaving</text><text x='320' y='89' text-anchor='middle' font-size='10.5' opacity='0.7'>wage labor, corporations</text></g><g><title>The cotton South: enslaved labor grows short-staple cotton, profitable since the gin (1793). Cotton is the nation's biggest export: and the market revolution makes this labor system MORE valuable, not less.</title><rect x='40' y='210' width='180' height='70' rx='10' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='130' y='236' text-anchor='middle' font-size='13' font-weight='700'>COTTON SOUTH</text><text x='130' y='254' text-anchor='middle' font-size='10.5' opacity='0.7'>enslaved labor · gin (1793)</text><text x='130' y='269' text-anchor='middle' font-size='10.5' opacity='0.7'>biggest U.S. export</text></g><g><title>The western farms: wheat and pork move east on the Erie Canal to feed mill towns, and downriver by steamboat to feed plantations. The West sells food and buys manufactured goods: the farm becomes a business.</title><rect x='420' y='210' width='180' height='70' rx='10' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='236' text-anchor='middle' font-size='13' font-weight='700'>WESTERN FARMS</text><text x='510' y='254' text-anchor='middle' font-size='10.5' opacity='0.7'>wheat &amp; pork for sale</text><text x='510' y='269' text-anchor='middle' font-size='10.5' opacity='0.7'>Ohio, Kentucky, the Lakes</text></g><g><title>South to North: raw cotton moves up the coast to the mills. North to South: finished cloth, shoes, and credit flow back. Lowell's looms and the plantation are two ends of one supply chain.</title><path d='M200 205 L285 108' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><path d='M250 108 L160 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='142' y='142' font-size='10.5' fill='rgb(var(--accent-fg))'>raw cotton ↗</text><text x='218' y='176' font-size='10.5' fill='rgb(var(--accent-fg))'>↙ cloth, goods, credit</text></g><g><title>West to North: Erie Canal barges (after 1825) carry cheap food east to feed the mill workforce. North to West: manufactured goods travel the same canal back: the canal earns in both directions.</title><path d='M448 205 L360 108' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><path d='M392 108 L482 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='355' y='142' text-anchor='start' font-size='10.5' fill='rgb(var(--accent-fg))'>↖ food via Erie Canal (1825)</text><text x='428' y='176' font-size='10.5' fill='rgb(var(--accent-fg))'>manufactured goods ↘</text></g><g><title>West to South: steamboats (running upstream since the 1810s) let western food travel the Mississippi to New Orleans and the plantations: freeing plantation land and labor to grow still more cotton.</title><path d='M416 245 L228 245' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#mr1)'/><text x='322' y='237' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>food downriver: steamboats via New Orleans</text></g><g><title>None of the edges work without the transport revolution (canals, steamboats, then rails) or without New York's banks, insurers, and cotton brokers financing every shipment. That finance is why the Panics of 1819 and 1837 hit all three regions at once.</title><text x='320' y='312' text-anchor='middle' font-size='11' opacity='0.7'>every arrow rides the transport revolution: and is financed through New York banks,</text><text x='320' y='328' text-anchor='middle' font-size='11' opacity='0.7'>which is why a panic in credit (1819, 1837) hits all three regions at once</text></g></g>",
+          "caption": "The market revolution as one machine: hover any node or arrow. Cotton grown by enslaved labor feeds Northern mills; Western food feeds Northern workers and Southern plantations; cloth, goods, and credit flow back out. This is why the textbook insists it's a national story: pull any node and the other two move: and it's why the transformation that built Lowell also entrenched slavery.",
           "slide": "South, North, West: one economy",
-          "id": "economy.9c4e71b8"
+          "id": "economy.d3c81b14"
         },
         {
           "type": "definition",
           "term": "Wage labor",
-          "body": "for the first time large numbers of Americans worked for someone else for cash — the start of a working class.",
-          "id": "economy.4b7e97ca"
+          "body": "for the first time large numbers of Americans worked for someone else for cash: the start of a working class.",
+          "id": "economy.3cb6390a"
         },
         {
           "type": "definition",
           "term": "Separate spheres",
-          "body": "as work moved out of the home, the middle-class ideal split into men in the 'public' world of work and women in the 'private' home — the cult of domesticity.",
-          "id": "economy.d77d8fb3"
+          "body": "as work moved out of the home, the middle-class ideal split into men in the 'public' world of work and women in the 'private' home: the cult of domesticity.",
+          "id": "economy.66379ef3"
+        },
+        {
+          "type": "definition",
+          "term": "True Womanhood",
+          "body": "The middle-class ideal of the perfect woman: **pious, pure, submissive, and domestic**. Her job was to make the home a moral refuge from the market. **Example:** the image on the Market Revolution exercise.",
+          "id": "economy.39a04108"
+        },
+        {
+          "type": "definition",
+          "term": "Godey's Lady's Book",
+          "body": "The most popular women's magazine of the era (from 1830), with fashion plates, fiction and household advice. It **spread** the separate-spheres and True Womanhood ideals to middle-class homes. **Example:** the second image on the Sep 14 exercise.",
+          "id": "economy.408c9bbd"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Paid labor",
+                "lines": [
+                  "Factory hands, clerks, day laborers.",
+                  "Work set by the **clock** and the bell, not the sun."
+                ],
+                "badge": "wages",
+                "tone": "brand"
+              },
+              {
+                "title": "Unpaid labor",
+                "lines": [
+                  "Housework, childcare, farm work by wives and daughters.",
+                  "Essential, but no longer counted as 'work'."
+                ],
+                "badge": "the home",
+                "tone": "amber"
+              },
+              {
+                "title": "Enslaved labor",
+                "lines": [
+                  "Grew the cotton that fed the mills.",
+                  "The market revolution ran on it."
+                ],
+                "badge": "forced",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The lecture's three kinds of labor in the new economy.",
+          "slide": "Three kinds of labor",
+          "id": "economy.cef453bd"
         },
         {
           "type": "definition",
           "term": "A middle class",
-          "body": "clerks, shopkeepers, professionals — defined by respectability, education, and consumer goods.",
-          "id": "economy.0ad03614"
+          "body": "clerks, shopkeepers, professionals: defined by respectability, education, and consumer goods.",
+          "id": "economy.1f5e5ad4"
         },
         {
           "type": "definition",
           "term": "Reform and revival",
-          "body": "the **Second Great Awakening** (Charles Finney's revivals in the 'burned-over district' along the Erie Canal) preached that people could perfect themselves and society — feeding temperance, abolition, and women's rights, which are the next three lectures.",
-          "id": "economy.457b00f9"
+          "body": "the **Second Great Awakening** (Charles Finney's revivals in the 'burned-over district' along the Erie Canal) preached that people could perfect themselves and society: feeding temperance, abolition, and women's rights, which are the next three lectures.",
+          "id": "economy.375d58b9"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The Panic of 1819's chain — easy credit, speculation, tightening, collapse, rage at the banks — is the same chain as 1929 and 2008; financial journalists reach for 'the first American depression' every time a credit bubble pops, and the Second Bank's discipline-versus-democracy dilemma is the Federal Reserve's job description today (Jackson's Bank War, next unit, is the sequel). The cotton triangle in the figure is now a whole field of scholarship — the 'slavery and capitalism' debate over how much Northern and British wealth was built on enslaved labor — and it's the frame behind modern arguments about reparations and behind every supply-chain exposé that asks who profits upstream of a clean storefront. 'Separate spheres' is the historical baseline for every work-and-gender debate since, from the two-income family to remote work redistributing household labor. Essay-wise, this section is where Dr. Jeffrey's units connect: the market revolution explains *why* slavery was expanding, which explains *why* Walker sounds urgent and *why* the Cherokee land was wanted — a cross-unit chain that upper-level essay questions reward.",
-          "id": "economy.5b3d87c2"
+          "md": "**Where you'll meet this after the exam** The Panic of 1819's chain: easy credit, speculation, tightening, collapse, rage at the banks: is the same chain as 1929 and 2008; financial journalists reach for 'the first American depression' every time a credit bubble pops, and the Second Bank's discipline-versus-democracy dilemma is the Federal Reserve's job description today (Jackson's Bank War, next unit, is the sequel). The cotton triangle in the figure is now a whole field of scholarship: the 'slavery and capitalism' debate over how much Northern and British wealth was built on enslaved labor: and it's the frame behind modern arguments about reparations and behind every supply-chain exposé that asks who profits upstream of a clean storefront. 'Separate spheres' is the historical baseline for every work-and-gender debate since, from the two-income family to remote work redistributing household labor. Essay-wise, this section is where Dr. Jeffrey's units connect: the market revolution explains *why* slavery was expanding, which explains *why* Walker sounds urgent and *why* the Cherokee land was wanted: a cross-unit chain that upper-level essay questions reward.",
+          "id": "economy.3bb376cb"
         }
       ]
     },
@@ -206,69 +642,459 @@
           "label": "why",
           "md": "**Why the textbook puts Indian removal next to the market revolution** Because ==it's the same story from the other side: cotton land==. Run the chain from the last section one step further: the market revolution made cotton the biggest export → cotton made Georgia's and Alabama's land enormously valuable → the Cherokee were sitting on it. Removal isn't a separate tragedy that happened to share a decade with the boom; it is the boom, arriving at someone else's home.",
           "slide": "Why it's in this unit",
-          "id": "cherokee.32540427"
+          "id": "cherokee.38a7f72f"
         },
         {
           "type": "prose",
-          "md": "The **Cherokee** of north Georgia had done exactly what Jefferson's policy asked Native nations to do: they farmed, built roads and schools, some owned enslaved people, **Sequoyah** invented a written syllabary (1821), they published a bilingual newspaper (the ***Cherokee Phoenix***, 1828), and in **1827** they adopted a written constitution modeled on the U.S. one, declaring themselves a sovereign nation. Georgia's answer was to declare that constitution void and extend state law over Cherokee land — the more 'civilized' the Cherokee proved themselves, the more threatening their permanence looked. ==Then, in 1829, gold was found at Dahlonega==, and the pressure to take the land stopped pretending to be about anything else.",
+          "md": "The **Cherokee** of north Georgia had done exactly what Jefferson's policy asked Native nations to do: they farmed, built roads and schools, some owned enslaved people, **Sequoyah** invented a written syllabary (1821), they published a bilingual newspaper (the ***Cherokee Phoenix***, 1828), and in **1827** they adopted a written constitution modeled on the U.S. one, declaring themselves a sovereign nation. Georgia's answer was to declare that constitution void and extend state law over Cherokee land: the more 'civilized' the Cherokee proved themselves, the more threatening their permanence looked. ==Then, in 1829, gold was found at Dahlonega==, and the pressure to take the land stopped pretending to be about anything else.",
           "slide": "The 'civilized' tribe",
-          "id": "cherokee.bce53dfb"
+          "id": "cherokee.2d81b1a2"
         },
         {
           "type": "definition",
           "term": "Indian Removal Act (1830)",
           "body": "Andrew Jackson's signature policy, passed narrowly. It authorized the president to exchange lands west of the Mississippi for Native lands in the East and to pay for the move. 'Voluntary' on paper.",
-          "id": "cherokee.bfff39e8"
+          "id": "cherokee.0028cf28"
+        },
+        {
+          "type": "definition",
+          "term": "Cherokee Nation v. Georgia (1831)",
+          "body": "The Cherokee sued Georgia in the Supreme Court. Chief Justice Marshall called them a **'domestic dependent nation'**, not a foreign nation, so they **could not sue** there. The case was dismissed. **Example:** the loss that led to Worcester v. Georgia a year later.",
+          "id": "cherokee.72fc55eb"
         },
         {
           "type": "definition",
           "term": "Worcester v. Georgia (1832)",
-          "body": "Chief Justice **John Marshall** ruled that the Cherokee Nation was 'a distinct community' in which 'the laws of Georgia can have no force' — only the federal government could deal with Indian nations. Jackson refused to enforce it (the line 'John Marshall has made his decision; now let him enforce it' is probably apocryphal but captures his position).",
-          "id": "cherokee.d7e3ed53"
+          "body": "Chief Justice **John Marshall** ruled that the Cherokee Nation was 'a distinct community' in which 'the laws of Georgia can have no force': only the federal government could deal with Indian nations. Jackson refused to enforce it (the line 'John Marshall has made his decision; now let him enforce it' is probably apocryphal but captures his position).",
+          "id": "cherokee.83fe7e13"
         },
         {
           "type": "definition",
           "term": "Treaty of New Echota (1835)",
-          "body": "a small faction (the 'Treaty Party' — **Major Ridge**, John Ridge, **Elias Boudinot**) signed away all Cherokee land for $5 million and land in Indian Territory. The elected government under Principal Chief **John Ross** protested; nearly 16,000 Cherokee signed a petition against it. The Senate ratified it by one vote.",
-          "id": "cherokee.7d3b5828"
+          "body": "a small faction (the 'Treaty Party': **Major Ridge**, John Ridge, **Elias Boudinot**) signed away all Cherokee land for $5 million and land in Indian Territory. The elected government under Principal Chief **John Ross** protested; nearly 16,000 Cherokee signed a petition against it. The Senate ratified it by one vote.",
+          "id": "cherokee.89463ae8"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Andrew Jackson",
+                "lines": [
+                  "Signed the Indian Removal Act (1830).",
+                  "Would not enforce Worcester v. Georgia."
+                ],
+                "badge": "President",
+                "tone": "red"
+              },
+              {
+                "title": "John Ross",
+                "lines": [
+                  "Led the elected Cherokee government against removal.",
+                  "His 1836 petition to Congress was never reviewed."
+                ],
+                "badge": "Principal Chief",
+                "tone": "green"
+              },
+              {
+                "title": "Samuel Worcester",
+                "lines": [
+                  "Jailed by Georgia for living on Cherokee land without a state license.",
+                  "His case, Worcester v. Georgia (1832), won."
+                ],
+                "badge": "missionary",
+                "tone": "brand"
+              },
+              {
+                "title": "Major Ridge, John Ridge, Elias Boudinot",
+                "lines": [
+                  "Decided removal was unavoidable.",
+                  "Signed the Treaty of New Echota (1835) without authority."
+                ],
+                "badge": "Treaty Party",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "The lecture's key people.",
+          "slide": "Who's who",
+          "id": "cherokee.27bdc1f1"
+        },
+        {
+          "type": "stepper",
+          "title": "Cherokee removal, 1827 to 1839",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 0,
+              "caption": "**1827.** The Cherokee adopt a written constitution and declare themselves a nation inside Georgia's borders.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 100
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 1,
+              "caption": "**1830.** Jackson signs the **Indian Removal Act**: land in the West in exchange for Native land in the East.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 90
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 2,
+              "caption": "**1831.** The Cherokee sue Georgia. The Court calls them a 'domestic dependent nation' that cannot sue as a foreign one.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 85
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 3,
+              "caption": "**1832.** In **Worcester v. Georgia** the Cherokee **win**: Georgia's laws have no force on their land. Jackson won't enforce it.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 80
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 4,
+              "caption": "**1835.** A small unauthorized faction signs the **Treaty of New Echota**, giving up all Cherokee land.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 40
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 5,
+              "caption": "**1836.** John Ross petitions Congress against the treaty. The petition is **never reviewed**; the Senate ratifies the treaty.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 25
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1827",
+                  "title": "Cherokee constitution",
+                  "tone": "green"
+                },
+                {
+                  "year": "1830",
+                  "title": "Indian Removal Act",
+                  "tone": "red"
+                },
+                {
+                  "year": "1831",
+                  "title": "Cherokee Nation v. Georgia"
+                },
+                {
+                  "year": "1832",
+                  "title": "Worcester v. Georgia",
+                  "tone": "green"
+                },
+                {
+                  "year": "1835",
+                  "title": "Treaty of New Echota",
+                  "tone": "red"
+                },
+                {
+                  "year": "1836",
+                  "title": "Ross's petition ignored"
+                },
+                {
+                  "year": "1838–39",
+                  "title": "Trail of Tears",
+                  "tone": "red"
+                }
+              ],
+              "at": 6,
+              "caption": "**1838 to 1839.** The army forces the Cherokee west, about 1,200 miles. About **4,000** die on the **Trail of Tears**.",
+              "meter": {
+                "label": "Cherokee homeland still held in the East (a rough picture)",
+                "tone": "green",
+                "low": "none",
+                "high": "all",
+                "value": 0
+              }
+            }
+          ],
+          "slide": true,
+          "id": "cherokee.b0294416"
         },
         {
           "type": "definition",
           "term": "The Trail of Tears (1838–39)",
-          "body": "General **Winfield Scott** and 7,000 troops rounded the Cherokee into stockades and marched them roughly 1,000 miles to present-day Oklahoma. Of about 16,000, roughly **4,000 died** of disease, exposure, and starvation. The Treaty Party leaders were assassinated in 1839 by Ross supporters.",
-          "id": "cherokee.2c40629f"
+          "body": "General **Winfield Scott** and 7,000 troops rounded the Cherokee into stockades and marched them about 1,200 miles (the lecture's figure; routes varied) to present-day Oklahoma. Of about 16,000, roughly **4,000 died** of disease, exposure, and starvation. The Treaty Party leaders were assassinated in 1839 by Ross supporters.",
+          "id": "cherokee.40a6dbdf"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 428",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='chr1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='chr2' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>1827: the Cherokee adopt a written constitution modeled on the U.S. one — the peak of the 'civilization' strategy: farms, schools, the Phoenix newspaper, Sequoyah's syllabary. Georgia answers by declaring it void and extending state law over Cherokee land.</title><rect x='40' y='14' width='560' height='50' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='58' y='35' font-size='13' font-weight='700'>1827 · Cherokee constitution — sovereignty declared</text><text x='58' y='52' font-size='10.5' opacity='0.7'>Georgia declares it void and extends state law over Cherokee territory</text></g><path d='M320 64 L320 82' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='78' font-size='10' fill='rgb(var(--accent-fg))'>then the land gets a price</text><g><title>1829: gold is found at Dahlonega in north Georgia. Combined with cotton values, the land is now worth too much for the state to leave alone — the market revolution arrives on Cherokee ground.</title><rect x='40' y='86' width='560' height='50' rx='10' fill='rgb(var(--at-risk) / 0.15)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='58' y='107' font-size='13' font-weight='700'>1829 · Gold found at Dahlonega</text><text x='58' y='124' font-size='10.5' opacity='0.7'>cotton values + gold = irresistible pressure to seize the land</text></g><path d='M320 136 L320 154' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='150' font-size='10' fill='rgb(var(--accent-fg))'>Washington supplies the tool</text><g><title>1830: Congress passes the Indian Removal Act — Jackson's signature policy, passed narrowly. It authorizes exchanging western land for eastern homelands, 'voluntary' on paper. The Cherokee choose courts over signatures.</title><rect x='40' y='158' width='560' height='50' rx='10' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='58' y='179' font-size='13' font-weight='700'>1830 · Indian Removal Act (Jackson)</text><text x='58' y='196' font-size='10.5' opacity='0.7'>removal treaties authorized — the Cherokee respond by suing, not signing</text></g><path d='M320 208 L320 226' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='222' font-size='10' fill='rgb(var(--accent-fg))'>and the Cherokee WIN in court</text><g><title>1832: Worcester v. Georgia. Marshall rules the Cherokee Nation is 'a distinct community' where Georgia's laws have no force. A total legal victory — that changes nothing, because Jackson declines to enforce it. A ruling without enforcement is words.</title><rect x='40' y='230' width='560' height='50' rx='10' fill='rgb(var(--accent-fg) / 0.1)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='58' y='251' font-size='13' font-weight='700'>1832 · Worcester v. Georgia — the Cherokee win</text><text x='58' y='268' font-size='10.5' opacity='0.7'>Marshall: Georgia's laws 'can have no force' in Cherokee territory</text></g><path d='M320 280 L320 298' stroke='rgb(var(--critical))' stroke-width='1.8' stroke-dasharray='6 5' fill='none' marker-end='url(#chr2)'/><text x='334' y='294' font-size='10' font-weight='700' fill='rgb(var(--critical))'>Jackson declines to enforce it — the victory has no force</text><g><title>1835: with the court victory dead on the ground, a small unauthorized faction (the Treaty Party — Major Ridge, John Ridge, Elias Boudinot) signs the Treaty of New Echota, ceding everything for $5 million. John Ross's elected government protests with nearly 16,000 signatures; the Senate ratifies by ONE vote.</title><rect x='40' y='302' width='560' height='50' rx='10' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='58' y='323' font-size='13' font-weight='700'>1835 · Treaty of New Echota — signed by a faction</text><text x='58' y='340' font-size='10.5' opacity='0.7'>16,000-signature protest ignored; Senate ratifies by one vote</text></g><path d='M320 352 L320 370' stroke='rgb(var(--critical))' stroke-width='1.8' fill='none' marker-end='url(#chr2)'/><text x='334' y='366' font-size='10' fill='rgb(var(--critical))'>the army executes the paper</text><g><title>1838–39: General Winfield Scott and 7,000 troops force roughly 16,000 Cherokee into stockades and march them about 1,000 miles to present-day Oklahoma. Roughly 4,000 die of disease, exposure, and starvation. In 1839 Ross supporters assassinate the Treaty Party leaders.</title><rect x='40' y='374' width='560' height='50' rx='10' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='58' y='395' font-size='13' font-weight='700'>1838–39 · The Trail of Tears</text><text x='58' y='412' font-size='10.5' opacity='0.7'>~4,000 of ~16,000 die on the ~1,000-mile forced march</text></g></g>",
-          "caption": "The removal as a cause→effect chain — hover any step. The exam-bearing links are the two red arrows: a Supreme Court victory neutralized by a president who declined to enforce it, and a treaty signed by an unauthorized faction executed by the army anyway. Get the order cold (1827 → 1829 → 1830 → 1832 → 1835 → 1838): the sequencing question is a quiz favorite.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='chr1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='chr2' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>1827: the Cherokee adopt a written constitution modeled on the U.S. one: the peak of the 'civilization' strategy: farms, schools, the Phoenix newspaper, Sequoyah's syllabary. Georgia answers by declaring it void and extending state law over Cherokee land.</title><rect x='40' y='14' width='560' height='50' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='58' y='35' font-size='13' font-weight='700'>1827 · Cherokee constitution: sovereignty declared</text><text x='58' y='52' font-size='10.5' opacity='0.7'>Georgia declares it void and extends state law over Cherokee territory</text></g><path d='M320 64 L320 82' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='78' font-size='10' fill='rgb(var(--accent-fg))'>then the land gets a price</text><g><title>1829: gold is found at Dahlonega in north Georgia. Combined with cotton values, the land is now worth too much for the state to leave alone: the market revolution arrives on Cherokee ground.</title><rect x='40' y='86' width='560' height='50' rx='10' fill='rgb(var(--at-risk) / 0.15)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='58' y='107' font-size='13' font-weight='700'>1829 · Gold found at Dahlonega</text><text x='58' y='124' font-size='10.5' opacity='0.7'>cotton values + gold = irresistible pressure to seize the land</text></g><path d='M320 136 L320 154' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='150' font-size='10' fill='rgb(var(--accent-fg))'>Washington supplies the tool</text><g><title>1830: Congress passes the Indian Removal Act: Jackson's signature policy, passed narrowly. It authorizes exchanging western land for eastern homelands, 'voluntary' on paper. The Cherokee choose courts over signatures.</title><rect x='40' y='158' width='560' height='50' rx='10' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='58' y='179' font-size='13' font-weight='700'>1830 · Indian Removal Act (Jackson)</text><text x='58' y='196' font-size='10.5' opacity='0.7'>removal treaties authorized: the Cherokee respond by suing, not signing</text></g><path d='M320 208 L320 226' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#chr1)'/><text x='334' y='222' font-size='10' fill='rgb(var(--accent-fg))'>and the Cherokee WIN in court</text><g><title>1832: Worcester v. Georgia. Marshall rules the Cherokee Nation is 'a distinct community' where Georgia's laws have no force. A total legal victory: that changes nothing, because Jackson declines to enforce it. A ruling without enforcement is words.</title><rect x='40' y='230' width='560' height='50' rx='10' fill='rgb(var(--accent-fg) / 0.1)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='58' y='251' font-size='13' font-weight='700'>1832 · Worcester v. Georgia: the Cherokee win</text><text x='58' y='268' font-size='10.5' opacity='0.7'>Marshall: Georgia's laws 'can have no force' in Cherokee territory</text></g><path d='M320 280 L320 298' stroke='rgb(var(--critical))' stroke-width='1.8' stroke-dasharray='6 5' fill='none' marker-end='url(#chr2)'/><text x='334' y='294' font-size='10' font-weight='700' fill='rgb(var(--critical))'>Jackson declines to enforce it: the victory has no force</text><g><title>1835: with the court victory dead on the ground, a small unauthorized faction (the Treaty Party: Major Ridge, John Ridge, Elias Boudinot) signs the Treaty of New Echota, ceding everything for $5 million. John Ross's elected government protests with nearly 16,000 signatures; the Senate ratifies by ONE vote.</title><rect x='40' y='302' width='560' height='50' rx='10' fill='none' stroke='currentColor' stroke-width='1.4'/><text x='58' y='323' font-size='13' font-weight='700'>1835 · Treaty of New Echota: signed by a faction</text><text x='58' y='340' font-size='10.5' opacity='0.7'>16,000-signature protest ignored; Senate ratifies by one vote</text></g><path d='M320 352 L320 370' stroke='rgb(var(--critical))' stroke-width='1.8' fill='none' marker-end='url(#chr2)'/><text x='334' y='366' font-size='10' fill='rgb(var(--critical))'>the army executes the paper</text><g><title>1838–39: General Winfield Scott and 7,000 troops force roughly 16,000 Cherokee into stockades and march them about 1,000 miles to present-day Oklahoma. Roughly 4,000 die of disease, exposure, and starvation. In 1839 Ross supporters assassinate the Treaty Party leaders.</title><rect x='40' y='374' width='560' height='50' rx='10' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='58' y='395' font-size='13' font-weight='700'>1838–39 · The Trail of Tears</text><text x='58' y='412' font-size='10.5' opacity='0.7'>~4,000 of ~16,000 die on the ~1,000-mile forced march</text></g></g>",
+          "caption": "The removal as a cause→effect chain: hover any step. The exam-bearing links are the two red arrows: a Supreme Court victory neutralized by a president who declined to enforce it, and a treaty signed by an unauthorized faction executed by the army anyway. Get the order cold (1827 → 1829 → 1830 → 1832 → 1835 → 1838): the sequencing question is a quiz favorite.",
           "slide": "Five steps from constitution to Trail of Tears",
-          "id": "cherokee.9e4b72c8"
+          "id": "cherokee.ec74d240"
         },
         {
           "type": "prose",
-          "md": "The other 'Five Civilized Tribes' — Choctaw, Chickasaw, Creek, Seminole — were removed in the same decade; the Seminole fought a seven-year war in Florida rather than go. The lecture title is 'Cherokee Removal' because the Cherokee case is the one where ==every argument the United States made for civilizing Native people was met, and the removal happened anyway== — which is what proves the driver was land, not 'civilization'.",
-          "id": "cherokee.d4c8aa12"
+          "md": "The other 'Five Civilized Tribes': Choctaw, Chickasaw, Creek, Seminole: were removed in the same decade; the Seminole fought a seven-year war in Florida rather than go. The lecture title is 'Cherokee Removal' because the Cherokee case is the one where ==every argument the United States made for civilizing Native people was met, and the removal happened anyway==: which is what proves the driver was land, not 'civilization'.",
+          "id": "cherokee.31338113"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** *Worcester v. Georgia* is not a dead case — it is the foundation of federal Indian law, and the Supreme Court still builds on it: *McGirt v. Oklahoma* (2020) held that much of eastern Oklahoma remains Creek reservation land, citing the same principle that treaties and tribal sovereignty don't lapse just because states ignored them; *Haaland v. Brackeen* (2023) upheld the Indian Child Welfare Act on the same footing. The deeper lesson — ==a court ruling without executive enforcement is words== — is the analytical key to Reconstruction's collapse, to *Brown v. Board* (which moved only when Eisenhower sent troops to Little Rock in 1957), and to every present-day story about a ruling a government simply declines to carry out, at home or at the International Court of Justice. And the removal chain itself — declare sovereignty, win in court, lose to a manufactured agreement with a friendlier faction — is a pattern historians and journalists spot in land disputes worldwide. When Dr. Jeffrey's essay questions pair this unit with the market revolution, the expected thesis is the one this chapter has been building: the boom priced the land, the law failed to protect it, and 'who enforces it?' decided everything.",
-          "id": "cherokee.5f8d31a6"
+          "md": "**Where you'll meet this after the exam** *Worcester v. Georgia* is not a dead case: it is the foundation of federal Indian law, and the Supreme Court still builds on it: *McGirt v. Oklahoma* (2020) held that much of eastern Oklahoma remains Creek reservation land, citing the same principle that treaties and tribal sovereignty don't lapse just because states ignored them; *Haaland v. Brackeen* (2023) upheld the Indian Child Welfare Act on the same footing. The deeper lesson: ==a court ruling without executive enforcement is words==: is the analytical key to Reconstruction's collapse, to *Brown v. Board* (which moved only when Eisenhower sent troops to Little Rock in 1957), and to every present-day story about a ruling a government simply declines to carry out, at home or at the International Court of Justice. And the removal chain itself: declare sovereignty, win in court, lose to a manufactured agreement with a friendlier faction: is a pattern historians and journalists spot in land disputes worldwide. When Dr. Jeffrey's essay questions pair this unit with the market revolution, the expected thesis is the one this chapter has been building: the boom priced the land, the law failed to protect it, and 'who enforces it?' decided everything.",
+          "id": "cherokee.11f0fbb5"
         },
         {
           "type": "check",
           "prompt": "What did Worcester v. Georgia decide, and why didn't it save the Cherokee?",
-          "answer": "That the Cherokee Nation was a distinct political community where Georgia's laws had no force — only the federal government could deal with it. It didn't matter because President Jackson declined to enforce the ruling, and removal proceeded through the Treaty of New Echota (1835) and the Trail of Tears (1838–39).",
+          "answer": "That the Cherokee Nation was a distinct political community where Georgia's laws had no force: only the federal government could deal with it. It didn't matter because President Jackson declined to enforce the ruling, and removal proceeded through the Treaty of New Echota (1835) and the Trail of Tears (1838–39).",
           "sectionRef": "cherokee",
-          "id": "cherokee.c061e0ed"
+          "id": "cherokee.845be67b"
         },
         {
           "type": "check",
           "prompt": "Put these in order: Trail of Tears, Indian Removal Act, Worcester v. Georgia, Treaty of New Echota, Cherokee constitution.",
           "answer": "Cherokee constitution (1827) → Indian Removal Act (1830) → Worcester v. Georgia (1832) → Treaty of New Echota (1835) → Trail of Tears (1838–39).",
           "sectionRef": "cherokee",
-          "id": "cherokee.dca0ba36"
+          "id": "cherokee.417821a4"
         }
       ]
     },
@@ -281,42 +1107,42 @@
           "prompt": "Which project most reduced the cost of moving goods between the Great Lakes and New York City, and when was it finished?",
           "answer": "The Erie Canal, 1825.",
           "sectionRef": "quiz",
-          "id": "quiz.d44060a8"
+          "id": "quiz.fde5e002"
         },
         {
           "type": "check",
           "prompt": "The 'market revolution' is best described as…",
-          "answer": "The shift from local, household and barter economies to a national economy in which people produced for sale and bought what they needed with cash — enabled by transportation, credit, and factories.",
+          "answer": "The shift from local, household and barter economies to a national economy in which people produced for sale and bought what they needed with cash: enabled by transportation, credit, and factories.",
           "sectionRef": "quiz",
-          "id": "quiz.f1f95486"
+          "id": "quiz.ddea6dbc"
         },
         {
           "type": "check",
           "prompt": "Who built the first integrated cotton mill (raw cotton to finished cloth) in the United States?",
           "answer": "Francis Cabot Lowell's Boston Manufacturing Company at Waltham, 1813.",
           "sectionRef": "quiz",
-          "id": "quiz.411bad9b"
+          "id": "quiz.2d41b701"
         },
         {
           "type": "check",
           "prompt": "The Lowell Offering was…",
           "answer": "A literary magazine written and published by the women who worked in the Lowell mills.",
           "sectionRef": "quiz",
-          "id": "quiz.b0c722a6"
+          "id": "quiz.ebac8474"
         },
         {
           "type": "check",
           "prompt": "Which president signed the Indian Removal Act?",
           "answer": "Andrew Jackson, 1830.",
           "sectionRef": "quiz",
-          "id": "quiz.5591969d"
+          "id": "quiz.ec67c673"
         },
         {
           "type": "check",
           "prompt": "The Treaty of New Echota was controversial because…",
           "answer": "It was signed by a small unauthorized faction (the Treaty Party) rather than the elected Cherokee government under John Ross, which protested with a petition of nearly 16,000 signatures.",
           "sectionRef": "quiz",
-          "id": "quiz.06a6170a"
+          "id": "quiz.16b1c2c4"
         }
       ]
     }
@@ -325,20 +1151,20 @@
     {
       "id": "four-steps",
       "title": "Cherokee removal: the four legal steps, in your own words",
-      "prompt": "Write the removal story as four dated steps — each a sentence naming the actor, the action, and what it changed — then one sentence on why the Supreme Court's ruling didn't stop it.",
+      "prompt": "Write the removal story as four dated steps: each a sentence naming the actor, the action, and what it changed: then one sentence on why the Supreme Court's ruling didn't stop it.",
       "hints": [
         "The four steps are in the chapter: the Cherokee constitution, the Indian Removal Act, Worcester v. Georgia, and the Treaty of New Echota, then the Trail of Tears as the outcome. Put a year on each.",
-        "The common error is treating Worcester v. Georgia as a defeat for the Cherokee. They *won* the case. The point is that winning in court changed nothing on the ground — which is the sentence the question is really asking for.",
+        "The common error is treating Worcester v. Georgia as a defeat for the Cherokee. They *won* the case. The point is that winning in court changed nothing on the ground: which is the sentence the question is really asking for.",
         "Actor · action · change: 'In 1830, Congress passed the Indian Removal Act, which authorized the president to negotiate removal treaties.' Same shape for each."
       ],
       "solution": [
-        "1827: The Cherokee Nation adopted a written constitution modeled on the U.S. one, asserting itself as a sovereign nation within Georgia's borders — which Georgia refused to accept.",
+        "1827: The Cherokee Nation adopted a written constitution modeled on the U.S. one, asserting itself as a sovereign nation within Georgia's borders: which Georgia refused to accept.",
         "1830: Congress passed the Indian Removal Act, signed by Jackson, authorizing removal treaties that would exchange eastern lands for territory west of the Mississippi.",
-        "1832: In Worcester v. Georgia the Supreme Court (Marshall) ruled that Georgia's laws had no force in Cherokee territory — only the federal government could deal with the Nation.",
+        "1832: In Worcester v. Georgia the Supreme Court (Marshall) ruled that Georgia's laws had no force in Cherokee territory: only the federal government could deal with the Nation.",
         "1835: A small unauthorized faction (the Treaty Party) signed the Treaty of New Echota ceding all Cherokee land; the elected government under John Ross protested with nearly 16,000 signatures, and the Senate ratified it anyway.",
         "The ruling didn't stop removal because the president declined to enforce it: a court decision without executive enforcement is words. The result was the Trail of Tears, 1838–39."
       ],
-      "why": "'Who enforces it?' is the question behind every court ruling, treaty, and law — and this is the textbook case of the answer being 'no one'. It comes up again in Reconstruction, in civil rights, and in every present-day story where a ruling is ignored."
+      "why": "'Who enforces it?' is the question behind every court ruling, treaty, and law: and this is the textbook case of the answer being 'no one'. It comes up again in Reconstruction, in civil rights, and in every present-day story where a ruling is ignored."
     },
     {
       "id": "lowell-why",
@@ -350,10 +1176,44 @@
         "Second paragraph shape: cause (falling cloth prices → wage cuts) → response (the women organized) → owners' counter-move (replace them with families who needed the wages permanently)."
       ],
       "solution": [
-        "The Lowell system was the labor arrangement of the first integrated textile mills (Francis Cabot Lowell's Boston Manufacturing Company, Waltham 1813; Lowell, Mass. from the 1820s): young unmarried women from New England farms lived in company boardinghouses under matrons, curfews, and church attendance, working long shifts for wages. Owners chose them because they were available, cheap, temporary, and — with the boardinghouse system — 'respectable' enough that families would send them, and because they would not form a permanent working class.",
-        "It ended in two steps. First, competition and falling cloth prices led owners to cut wages and speed up work; the women struck in 1834 and 1836 and published their case (the Lowell Offering shows the culture that made organizing possible). Second, rather than restore wages, owners turned in the 1840s to Irish immigrant families who needed the jobs permanently and could not go home to the farm — ending the 'mill girl' era."
+        "The Lowell system was the labor arrangement of the first integrated textile mills (Francis Cabot Lowell's Boston Manufacturing Company, Waltham 1813; Lowell, Mass. from the 1820s): young unmarried women from New England farms lived in company boardinghouses under matrons, curfews, and church attendance, working long shifts for wages. Owners chose them because they were available, cheap, temporary, and: with the boardinghouse system: 'respectable' enough that families would send them, and because they would not form a permanent working class.",
+        "It ended in two steps. First, competition and falling cloth prices led owners to cut wages and speed up work; the women struck in 1834 and 1836 and published their case (the Lowell Offering shows the culture that made organizing possible). Second, rather than restore wages, owners turned in the 1840s to Irish immigrant families who needed the jobs permanently and could not go home to the farm: ending the 'mill girl' era."
       ],
       "why": "This is the first American version of a pattern that repeats in every industry: a workforce chosen because it seems temporary and compliant, organizing when squeezed, and being replaced. Recognizing the pattern is what lets you read today's labor news historically."
+    },
+    {
+      "id": "cnvg-mc",
+      "title": "Which case?",
+      "prompt": "Which Supreme Court case called the Cherokee a 'domestic dependent nation' and dismissed their suit?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Cherokee Nation v. Georgia (1831)."
+      ],
+      "why": "The two Georgia cases are easy to mix up on a quiz: lost in 1831, won in 1832.",
+      "choices": [
+        {
+          "text": "Cherokee Nation v. Georgia (1831)",
+          "feedback": "Right: the Cherokee lost this one; they won the next year."
+        },
+        {
+          "text": "Worcester v. Georgia (1832)",
+          "feedback": "Worcester is the one they won."
+        },
+        {
+          "text": "Marbury v. Madison (1803)",
+          "feedback": "Marbury is about judicial review."
+        },
+        {
+          "text": "McGirt v. Oklahoma (2020)",
+          "feedback": "McGirt is a modern case about Creek land."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "cherokee"
     }
   ]
 }

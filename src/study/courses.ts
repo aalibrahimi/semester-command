@@ -130,8 +130,11 @@ export const courses: Course[] = [
     alerts: [
       { kind: "warn", text: "You've been missing the in-class exercises (45% of the grade). One excused absence all semester; the rest are zeros. Wednesday 1:30, DMH 227." },
       { kind: "warn", text: "You opted out of the textbook. The chapters here will be your replacement reading for the quizzes." },
+      { kind: "warn", text: "The David Walker homework exercise (20 pts, due Sep 18) still shows no submission on Canvas. Ask Dr. Jeffrey whether a late attempt is possible." },
     ],
     checklist: [
+      "Slavery, 'The Downward Spiral': New Amsterdam's first eleven, John Punch 1640, Virginia 1662, Carolina rice, Stono 1739.",
+      "Declaration: the 1754–1775 crisis, Lee's resolution, Locke and the social compact, who was left out.",
       "Market Revolution: transportation (canals, steamboats, railroads), what changed for farmers and workers.",
       "Lowell mills: who worked there, the boardinghouse system, why it mattered.",
       "Cherokee removal: Indian Removal Act, Worcester v. Georgia, Treaty of New Echota, Trail of Tears.",
@@ -139,10 +142,11 @@ export const courses: Course[] = [
       "Constitution: Great Compromise, Three-fifths, ratification by convention, Federalist vs Anti-Federalist, Bill of Rights.",
       "1790s stability: Washington's precedents, Judiciary Act, Hamilton's program, Whiskey Rebellion.",
       "Walker's argument with three quoted phrases and the 1830s context.",
+      "Abolition and women's rights: immediate emancipation, Garrison, Stewart, the Grimkés, the 1840 split, Seneca Falls.",
     ],
-    guides: ["6-walker", "8-confederation-to-constitution", "11-market-revolution"],
+    guides: ["1-slavery", "3-declaration", "8-confederation-to-constitution", "11-market-revolution", "6-walker", "12-reform"],
     planned: [
-      { label: "Weeks 6–7", title: "Abolitionism, Women's Rights, Contested West, Sectional Crisis (Sep 21–30)" },
+      { label: "Week 7", title: "The Contested West and the Sectional Crisis, ch. 14 (Sep 28–30)" },
       { label: "Paper 1", title: "Writing the Historical Analysis Paper (due week 9)" },
     ],
   },

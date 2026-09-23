@@ -1,0 +1,848 @@
+{
+  "id": "hist15/3-declaration",
+  "course": "hist15",
+  "lessons": "Week 2 · Aug 31 lecture",
+  "title": "The Declaration of Independence",
+  "summary": "Why the colonies broke with Britain (the 1754–1775 crisis), how Congress got to independence in 1776, where the Declaration's ideas came from (the English Bill of Rights and Locke), how the document is built, and who its promise of equality left out.",
+  "estimatedMinutes": 35,
+  "sourceNote": "Dr. Jeffrey's Aug 31 lecture 'Declaration of Independence' (8 slides) and the Declaration's text (National Archives). Background dates not on the slides are the standard ones and are marked as such.",
+  "sections": [
+    {
+      "id": "map",
+      "heading": "The big picture: a list of complaints and a theory of government",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "The **Declaration of Independence** (July 4, 1776) is the document in which the Second Continental Congress announced that the thirteen colonies were no longer part of the British Empire, and explained why. It does two jobs: it states a **theory of government** (people have rights; government exists to protect them; if it doesn't, people can replace it), and it lists the King's **grievances** as proof that he broke that deal.",
+          "slide": "What this chapter answers",
+          "id": "map.9b073c65"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The question",
+            "question": "How did loyal colonists end up declaring **independence**?",
+            "steps": [
+              {
+                "title": "The crisis, 1754–1775",
+                "sub": "taxes, courts, soldiers, a closed port",
+                "result": "grievances",
+                "tone": "amber"
+              },
+              {
+                "title": "Congress, 1774–1775",
+                "sub": "meet in Philadelphia; petition the King",
+                "result": "try to fix it",
+                "tone": "green"
+              },
+              {
+                "title": "Independence, 1776",
+                "sub": "Lee's resolution; Jefferson drafts",
+                "result": "break",
+                "tone": "brand"
+              },
+              {
+                "title": "The ideas",
+                "sub": "English Bill of Rights, Locke",
+                "result": "why it's legitimate",
+                "tone": "brand"
+              },
+              {
+                "title": "The limits",
+                "sub": "Native Americans, women, the enslaved",
+                "result": "who's left out",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The lecture in five stops.",
+          "slide": "Five stops",
+          "id": "map.d293de5b"
+        },
+        {
+          "type": "stepper",
+          "title": "From crisis to independence, 1754 to 1776",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 0,
+              "caption": "**1754.** The French and Indian War starts a 20-year **colonial crisis**. Britain wins but ends up deep in debt, and looks to the colonies to help pay.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 10
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 1,
+              "caption": "**1765, the Stamp Act.** Parliament taxes printed paper in the colonies. Colonists have no vote in Parliament: 'taxation without representation'.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 30
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 2,
+              "caption": "**1773, the Tea Act.** Another tax fight, answered by the Boston Tea Party.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 45
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 3,
+              "caption": "**1774.** Britain punishes Boston: **closes its port**, suspends colonial courts and assemblies, quarters troops in homes. In **September**, delegates meet in **Philadelphia**.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 60
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 4,
+              "caption": "**July 1775.** Even after fighting starts, Congress sends a **petition to the Crown** asking for peace. The King rejects it.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 55
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 5,
+              "caption": "**June 1776.** Richard Henry Lee of Virginia moves that the colonies 'are, and of right ought to be, free and independent States'. **PA, MD, NY and SC** hold back at first.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 80
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 6,
+              "caption": "**July 4, 1776.** Congress adopts the Declaration, drafted by **Thomas Jefferson**.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 95
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1754",
+                  "title": "Crisis begins: war with France"
+                },
+                {
+                  "year": "1765",
+                  "title": "Stamp Act: taxes without a vote",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1773",
+                  "title": "Tea Act",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1774",
+                  "title": "Boston's port closed; Congress meets",
+                  "tone": "red"
+                },
+                {
+                  "year": "1775",
+                  "title": "Petition to the King",
+                  "tone": "green"
+                },
+                {
+                  "year": "June 1776",
+                  "title": "Lee's resolution: independence"
+                },
+                {
+                  "year": "July 4",
+                  "title": "Declaration adopted",
+                  "tone": "brand"
+                },
+                {
+                  "year": "July 15",
+                  "title": "New York joins",
+                  "tone": "green"
+                }
+              ],
+              "at": 7,
+              "caption": "**By July 15.** New York, the last holdout, signs on. All thirteen colonies are now behind independence.",
+              "meter": {
+                "label": "How far the colonies had moved toward a break (a rough picture)",
+                "tone": "amber",
+                "low": "loyal subjects",
+                "high": "independent",
+                "value": 100
+              }
+            }
+          ],
+          "slide": true,
+          "id": "map.b448eed9"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters.** The Declaration is the promise every later movement in this course quotes back at the country: David Walker in 1829, the Seneca Falls women in 1848, and many more. You can't read those documents well unless you know what this one says and whom it left out.",
+          "label": "why",
+          "id": "map.1a1add91"
+        }
+      ]
+    },
+    {
+      "id": "crisis",
+      "heading": "The colonial crisis, 1754 to 1775",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "The lecture frames 1754 to 1775 as one long **colonial crisis**. After the French and Indian War (1754–1763), Britain tried to govern and tax the colonies more directly. Each step made colonists feel their rights as English people were being taken away.",
+          "id": "crisis.5be92ed2"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Taxation",
+                "lines": [
+                  "Stamp Act and Tea Act: Parliament taxed colonists who had no vote in it.",
+                  "Slogan: no taxation without representation."
+                ],
+                "badge": "1765, 1773",
+                "tone": "amber"
+              },
+              {
+                "title": "Courts suspended",
+                "lines": [
+                  "Colonial courts and assemblies were shut down or overruled.",
+                  "Colonists lost trial by jury in some cases."
+                ],
+                "badge": "1760s–1774",
+                "tone": "red"
+              },
+              {
+                "title": "Military rule",
+                "lines": [
+                  "British troops stationed in colonial towns, like Boston.",
+                  "The Quartering Act made colonists house and supply them."
+                ],
+                "badge": "1768 on",
+                "tone": "red"
+              },
+              {
+                "title": "Boston's port closed",
+                "lines": [
+                  "Punishment for the Tea Party: no ships in or out.",
+                  "It pushed other colonies to side with Massachusetts."
+                ],
+                "badge": "1774",
+                "tone": "brand"
+              }
+            ]
+          },
+          "caption": "The lecture's four kinds of grievance. Each shows up again, in Jefferson's words, in the Declaration's list of complaints.",
+          "slide": "The grievances",
+          "id": "crisis.6c0673d8"
+        },
+        {
+          "type": "prose",
+          "md": "**Congress tries first.** In **September 1774** delegates from the colonies met in **Philadelphia** (the First Continental Congress). Even after fighting began in 1775, Congress sent a **petition to the Crown in July 1775** (the standard name: the Olive Branch Petition) asking for peace. The King refused to read it and declared the colonies in rebellion. That refusal matters: the Declaration can say the colonists tried to fix things and were ignored.",
+          "id": "crisis.f6efe145"
+        },
+        {
+          "type": "prose",
+          "md": "**The vote.** In **June 1776**, **Richard Henry Lee** of Virginia moved that the colonies should be independent. Not everyone was ready: **Pennsylvania, Maryland, New York and South Carolina** opposed or hesitated. Congress named a committee, and **Thomas Jefferson** wrote the draft. Congress voted for independence on July 2 and adopted the Declaration on **July 4, 1776**. New York, the last holdout, joined by **July 15**.",
+          "id": "crisis.f01c4c20"
+        },
+        {
+          "type": "check",
+          "prompt": "Name three of the lecture's colonial grievances.",
+          "answer": "Any three of: **taxation** (Stamp Act, Tea Act), **suspension of colonial courts**, **military rule** and the **Quartering Act**, the **closure of Boston's port**.",
+          "sectionRef": "crisis",
+          "id": "crisis.7f613ff4"
+        },
+        {
+          "type": "check",
+          "prompt": "Which four colonies held back when Lee proposed independence in June 1776?",
+          "answer": "**Pennsylvania, Maryland, New York and South Carolina**.",
+          "sectionRef": "crisis",
+          "id": "crisis.7d78dd89"
+        }
+      ]
+    },
+    {
+      "id": "ideas",
+      "heading": "Where the ideas came from: 1689 and Locke",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "English Bill of Rights (1689)",
+          "body": "An act of Parliament after England's Glorious Revolution that limited the king: no taxes or standing army in peacetime without Parliament's consent, free elections, the right to petition. **Example:** the colonists' complaint about taxes without consent is an English complaint, 90 years old.",
+          "id": "ideas.d7019b48"
+        },
+        {
+          "type": "definition",
+          "term": "John Locke, Second Treatise of Government (1690)",
+          "body": "Locke argued people have **natural rights** (life, liberty and property) before any government exists. They agree to form a government to protect those rights. If it violates them, the people may **alter or abolish** it. **Example:** the Declaration's second paragraph is Locke, almost step by step.",
+          "id": "ideas.77390207"
+        },
+        {
+          "type": "definition",
+          "term": "Social compact",
+          "body": "The idea that government is an agreement: people give up some freedom and obey laws in exchange for protection of their rights. Break the agreement and it's void. **Example:** 'Governments are instituted among Men, deriving their just powers from the consent of the governed.'",
+          "id": "ideas.d6ec82aa"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Locke (1690)",
+              "sub": "Second Treatise",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Jefferson (1776)",
+              "sub": "the Declaration",
+              "tone": "green"
+            },
+            "rows": [
+              {
+                "label": "Rights",
+                "left": "Life, liberty, and **property**",
+                "right": "Life, liberty, and the **pursuit of happiness**"
+              },
+              {
+                "label": "Where government's power comes from",
+                "left": "Consent of the people",
+                "right": "'The consent of the governed'"
+              },
+              {
+                "label": "When government fails",
+                "left": "The people may resist and replace it",
+                "right": "'It is the Right of the People to alter or to abolish it'"
+              }
+            ]
+          },
+          "caption": "The Declaration's theory, next to its source. Notice Jefferson's one big change: property becomes the pursuit of happiness.",
+          "slide": "Locke and Jefferson",
+          "id": "ideas.0edd1789"
+        },
+        {
+          "type": "check",
+          "prompt": "What is the 'social compact'?",
+          "answer": "The idea that government is an **agreement**: people consent to be governed in exchange for protection of their rights, and if government breaks that deal the people can replace it.",
+          "sectionRef": "ideas",
+          "id": "ideas.f9ca4fd1"
+        }
+      ]
+    },
+    {
+      "id": "document",
+      "heading": "How the document is built",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Part",
+            "What it does",
+            "Famous line"
+          ],
+          "rows": [
+            [
+              "Introduction",
+              "Says why they are explaining themselves",
+              "'a decent respect to the opinions of mankind'"
+            ],
+            [
+              "Preamble (theory)",
+              "States rights and the purpose of government",
+              "'We hold these truths to be self-evident, that all men are created equal'"
+            ],
+            [
+              "Grievances",
+              "A long list of the King's abuses (27 of them)",
+              "'He has kept among us, in times of peace, Standing Armies'"
+            ],
+            [
+              "Conclusion",
+              "Declares independence",
+              "'these United Colonies are, and of right ought to be Free and Independent States'"
+            ]
+          ],
+          "title": "The Declaration in four parts",
+          "slide": "Four parts",
+          "id": "document.a9d88fbb"
+        },
+        {
+          "type": "prose",
+          "md": "**Read it like a legal brief.** The preamble is the **rule** (government must protect rights), the grievances are the **evidence** (the King didn't), and the conclusion is the **verdict** (so we're free). That structure is why later movements could copy it so easily: swap in new evidence, keep the rule.",
+          "label": "think",
+          "id": "document.189d60ab"
+        },
+        {
+          "type": "check",
+          "prompt": "What are the four parts of the Declaration?",
+          "answer": "Introduction, preamble (theory of rights), list of grievances, conclusion (declaration of independence).",
+          "sectionRef": "document",
+          "id": "document.352f90ed"
+        }
+      ]
+    },
+    {
+      "id": "limits",
+      "heading": "Who 'all men are created equal' left out",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "The lecture's last point: the Declaration's equality was **not extended** to **Native Americans**, **women**, or **enslaved people**. The grievances even attack Native Americans as 'merciless Indian Savages'. Women are not mentioned at all.",
+          "slide": "The limits",
+          "id": "limits.01ccc038"
+        },
+        {
+          "type": "prose",
+          "md": "**The compromise on slavery.** Jefferson's draft blamed the King for the slave trade, calling it a 'cruel war against human nature'. Congress **cut the passage** so the southern colonies (South Carolina and Georgia especially) would sign. Keeping the colonies united came first; the contradiction was left in place. The same trade-off shows up again at the Constitutional Convention in 1787 (the three-fifths clause and the 1808 slave-trade date).",
+          "id": "limits.229ff2aa"
+        },
+        {
+          "type": "trap",
+          "body": "Don't write that the Declaration ended slavery or gave anyone the vote. It is a statement of principles and grievances, not a law. It created no rights for women, Native Americans or the enslaved; those groups later **quoted** it to demand them.",
+          "source": "Class exercises",
+          "points": null,
+          "id": "limits.ebea6a6a"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you see it today.** Movements still use the same move: quote a founding promise and point at who is excluded. You'll see it three times in the next chapters: Walker's Appeal (1829), Maria Stewart (1831), and the Seneca Falls Declaration of Sentiments (1848), which copies the Declaration word for word and adds 'and women'.",
+          "label": "world",
+          "id": "limits.bf74851b"
+        },
+        {
+          "type": "check",
+          "prompt": "Which three groups did the Declaration's equality not extend to, according to the lecture?",
+          "answer": "**Native Americans, women, and enslaved people**.",
+          "sectionRef": "limits",
+          "id": "limits.342a9cbd"
+        },
+        {
+          "type": "check",
+          "prompt": "What happened to Jefferson's passage attacking the slave trade, and why?",
+          "answer": "Congress **removed** it so the southern colonies would support independence: a compromise on slavery.",
+          "sectionRef": "limits",
+          "id": "limits.5536eabd"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "locke",
+      "title": "Explain the Declaration's theory in your own words",
+      "prompt": "In 3 to 4 sentences, explain the theory of government in the Declaration's second paragraph and where it came from.",
+      "hints": [
+        "Three ideas: natural rights, consent of the governed, the right to alter or abolish.",
+        "Name the source by title and year: Locke's Second Treatise (1690). The English Bill of Rights (1689) is a bonus.",
+        "Frame: people have rights → governments exist to protect them and get power from consent → a government that destroys rights can be replaced → this came from Locke."
+      ],
+      "solution": [
+        "The Declaration argues that all people have natural, 'unalienable' rights, including life, liberty and the pursuit of happiness.",
+        "Governments are created to protect those rights and get their just powers from the consent of the governed.",
+        "When a government destroys those rights, the people have the right to alter or abolish it and create a new one.",
+        "Jefferson drew this social-compact theory from John Locke's Second Treatise of Government (1690), building on the limits on royal power in the English Bill of Rights (1689)."
+      ],
+      "why": "Stating an argument and naming its source is how you use any text as evidence, in history or in a court brief.",
+      "sectionRef": "ideas"
+    },
+    {
+      "id": "limits-ex",
+      "title": "Who was left out, and why it matters",
+      "prompt": "In 3 to 4 sentences: whom did the Declaration's 'all men are created equal' leave out, and give one specific example of how the document shows it.",
+      "hints": [
+        "The lecture names three groups.",
+        "One specific example beats three vague ones: the cut slave-trade passage, or the 'merciless Indian Savages' grievance.",
+        "End with why it matters: later groups quoted the Declaration to claim rights it didn't give them."
+      ],
+      "solution": [
+        "The Declaration's promise of equality did not include Native Americans, women, or enslaved people.",
+        "Its list of grievances attacks Native Americans as 'merciless Indian Savages', and women are never mentioned.",
+        "Congress also removed Jefferson's passage condemning the slave trade so that the southern colonies would support independence, a compromise that left slavery untouched.",
+        "Because the principle was stated so broadly, excluded groups, from David Walker to the Seneca Falls convention, later quoted it to demand their own rights."
+      ],
+      "why": "Spotting the gap between a stated principle and who actually gets it is the core of reading any policy or law critically.",
+      "sectionRef": "limits"
+    },
+    {
+      "id": "lee-mc",
+      "title": "Who proposed independence?",
+      "prompt": "In June 1776, who moved in Congress that the colonies 'ought to be free and independent States'?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Richard Henry Lee of Virginia."
+      ],
+      "why": "Who proposed vs who drafted is a classic quiz distinction.",
+      "choices": [
+        {
+          "text": "Richard Henry Lee of Virginia",
+          "feedback": "Right: Lee's resolution, which Congress approved on July 2."
+        },
+        {
+          "text": "Thomas Jefferson",
+          "feedback": "Jefferson drafted the Declaration; Lee made the motion."
+        },
+        {
+          "text": "John Adams",
+          "feedback": "Adams argued for it, but Lee moved it."
+        },
+        {
+          "text": "Benjamin Franklin",
+          "feedback": "Franklin served on the drafting committee."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "crisis"
+    },
+    {
+      "id": "locke-mc",
+      "title": "The main source of the Declaration's theory",
+      "prompt": "The Declaration's ideas about natural rights and consent of the governed come mainly from…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Locke's Second Treatise."
+      ],
+      "why": "Matching ideas to sources is a common quiz and exam question.",
+      "choices": [
+        {
+          "text": "John Locke's Second Treatise of Government (1690)",
+          "feedback": "Right."
+        },
+        {
+          "text": "Montesquieu's Spirit of the Laws (1748)",
+          "feedback": "Montesquieu matters for the Constitution's separation of powers, not the Declaration's theory."
+        },
+        {
+          "text": "The Articles of Confederation (1781)",
+          "feedback": "The Articles came after the Declaration."
+        },
+        {
+          "text": "Common Sense (1776)",
+          "feedback": "Paine's pamphlet pushed for independence but the theory is Locke's."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "ideas"
+    }
+  ],
+  "requires": []
+}

@@ -1,0 +1,997 @@
+{
+  "id": "hist15/12-reform",
+  "course": "hist15",
+  "lessons": "Weeks 6–7 · Sep 21 and Sep 23 lectures",
+  "title": "Abolitionism and Women's Rights",
+  "summary": "What made 1830s abolitionism new (immediate emancipation), its strategies and leaders (Walker, Garrison, Maria Stewart, the Grimké sisters, Douglass, Sojourner Truth), how women's antislavery work turned into a women's rights movement, and the Seneca Falls Declaration of Sentiments. Includes both class discussions (Angelina Grimké; Seneca Falls).",
+  "estimatedMinutes": 50,
+  "sourceNote": "Dr. Jeffrey's lectures 'Cherokee & Abolitionism' (abolition slides) and 'Abolitionism & Women's Rights' (Sep 21 and 23), with the class discussions on Angelina Grimké's 'Human Rights not founded on Sex' and the Seneca Falls Declaration of Sentiments. Dates not on the slides are the standard ones.",
+  "requires": [
+    "hist15/6-walker"
+  ],
+  "sections": [
+    {
+      "id": "map",
+      "heading": "The big picture: one movement grows out of another",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Abolitionism** is the movement to end slavery. The lecture defines the new abolitionism of the **1830s** by one word: **immediate**. Earlier reformers wanted slavery to end slowly, or wanted freed Black people sent to Africa. The 1830s abolitionists demanded **immediate emancipation**, now, with no payment to slaveholders.",
+          "slide": "What this chapter answers",
+          "id": "map.b57a2219"
+        },
+        {
+          "type": "prose",
+          "md": "**Women's rights** grew straight out of that work. Women ran petition drives and gave speeches against slavery, were told to be quiet because they were women, and started asking about their own rights. The lecture's line: the women's rights movement came out of antislavery activism.",
+          "id": "map.8e0a3d9d"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The question",
+            "question": "How did a fight against **slavery** become a fight for **women's rights** too?",
+            "steps": [
+              {
+                "title": "Immediate abolition, 1829–1833",
+                "sub": "Walker, Garrison, Stewart; speaking, writing, petitions",
+                "result": "a new movement",
+                "tone": "brand"
+              },
+              {
+                "title": "Women speak, 1830s",
+                "sub": "the Grimké sisters in public; critics object",
+                "result": "backlash",
+                "tone": "amber"
+              },
+              {
+                "title": "The split, 1840",
+                "sub": "abolitionists divide over women's role",
+                "result": "shut out",
+                "tone": "red"
+              },
+              {
+                "title": "Seneca Falls, 1848",
+                "sub": "Declaration of Sentiments",
+                "result": "demands",
+                "tone": "green"
+              },
+              {
+                "title": "Slow gains, 1850s–1860",
+                "sub": "Anthony and Stanton; New York law",
+                "result": "some rights",
+                "tone": "green"
+              }
+            ]
+          },
+          "caption": "The two lectures as one story.",
+          "slide": "Five stops",
+          "id": "map.409af6ef"
+        },
+        {
+          "type": "stepper",
+          "title": "Abolition and women's rights, 1829 to 1860",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 0,
+              "caption": "**1829.** David Walker, a free Black man in Boston, publishes his **Appeal**, the first abolitionist publication in the lecture's list. Black writers start the movement.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 10
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 1,
+              "caption": "**1831.** William Lloyd Garrison launches **The Liberator**. Maria Stewart begins writing and, in **1832**, becomes the first woman to speak to a mixed audience of men and women.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 20
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 2,
+              "caption": "**1833.** Lucretia Mott founds the **Philadelphia Female Anti-Slavery Society**. Women organize because the men's societies won't let them lead.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 30
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 3,
+              "caption": "**1837.** The **Grimké sisters**, from a slaveholding South Carolina family, lecture across New England. Critics say women shouldn't speak in public at all.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 40
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 4,
+              "caption": "**1840.** The abolition movement **splits** over women's role. At the World Anti-Slavery Convention in London, Mott and Stanton are **barred** from the floor.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 35
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 5,
+              "caption": "**July 1848.** Mott and Stanton hold the **Seneca Falls** convention. Its Declaration of Sentiments rewrites 1776: 'all men **and women** are created equal'.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 60
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 6,
+              "caption": "**1851.** Susan B. Anthony, a Quaker temperance worker, meets Stanton. Stanton writes, Anthony organizes.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 70
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1829",
+                  "title": "Walker's Appeal"
+                },
+                {
+                  "year": "1831",
+                  "title": "The Liberator; Stewart speaks out"
+                },
+                {
+                  "year": "1833",
+                  "title": "Mott's Female Anti-Slavery Society",
+                  "tone": "green"
+                },
+                {
+                  "year": "1837",
+                  "title": "Grimké sisters lecturing",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1840",
+                  "title": "London convention bars women; the movement splits",
+                  "tone": "red"
+                },
+                {
+                  "year": "1848",
+                  "title": "Seneca Falls",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1851",
+                  "title": "Anthony meets Stanton"
+                },
+                {
+                  "year": "1860",
+                  "title": "New York married women's law",
+                  "tone": "green"
+                }
+              ],
+              "at": 7,
+              "caption": "**1854 to 1860.** Stanton addresses the New York legislature; in **1860** New York gives married women rights to their **wages** and joint **custody** of children.",
+              "meter": {
+                "label": "Room for women to speak and act in public (a rough picture)",
+                "tone": "green",
+                "low": "silenced",
+                "high": "heard",
+                "value": 80
+              }
+            }
+          ],
+          "slide": true,
+          "id": "map.cc9a0261"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters.** This is where American reform learns its methods: petitions, newspapers, speaking tours, conventions, and quoting the Declaration of Independence back at the country. Every later rights movement, including ones today, uses the same toolkit.",
+          "label": "why",
+          "id": "map.5b093dda"
+        }
+      ]
+    },
+    {
+      "id": "abolition",
+      "heading": "Abolitionism: immediate emancipation",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Immediate emancipation",
+          "body": "The 1830s demand that slavery end **at once**, not gradually, and without paying slaveholders. **Example:** Garrison's Liberator: 'I will not retreat a single inch, and I will be heard.'",
+          "id": "abolition.06841c8b"
+        },
+        {
+          "type": "definition",
+          "term": "Gradual emancipation / colonization",
+          "body": "The older approach: end slavery slowly (often child by child, as northern states did), or 'colonize' freed Black Americans in Africa (the American Colonization Society, 1816). 1830s abolitionists, Black and white, **rejected** both.",
+          "id": "abolition.99d18260"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Speaking",
+                "lines": [
+                  "Traveling lecturers, including formerly enslaved people like Frederick Douglass, told what slavery was like.",
+                  "Women speaking in public was itself controversial."
+                ],
+                "badge": "lecture tours",
+                "tone": "brand"
+              },
+              {
+                "title": "Writing",
+                "lines": [
+                  "Walker's Appeal (1829), The Liberator (1831), slave narratives.",
+                  "Mailed into the South, where they were banned and burned."
+                ],
+                "badge": "papers and pamphlets",
+                "tone": "green"
+              },
+              {
+                "title": "Petitions",
+                "lines": [
+                  "Hundreds of thousands of signatures, many gathered by women.",
+                  "The House answered with a 'gag rule' (1836) to avoid debating them."
+                ],
+                "badge": "to Congress",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "The lecture's three strategies. None involved voting: most abolitionists, and all women, could not use the ballot to end slavery.",
+          "slide": "Three strategies",
+          "id": "abolition.b7d33f65"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "David Walker",
+                "lines": [
+                  "Appeal to the Coloured Citizens of the World, the first publication on the lecture's list.",
+                  "Died in 1830. (Full chapter: Walker.)"
+                ],
+                "badge": "1829",
+                "tone": "brand"
+              },
+              {
+                "title": "William Lloyd Garrison",
+                "lines": [
+                  "Founded The Liberator (1831) in Boston.",
+                  "Founded the New England Anti-Slavery Society (1832)."
+                ],
+                "badge": "1831–1832",
+                "tone": "brand"
+              },
+              {
+                "title": "Maria Stewart",
+                "lines": [
+                  "Free Black writer and speaker in Boston.",
+                  "In 1832, the first woman to address a mixed audience of men and women."
+                ],
+                "badge": "1831–1832",
+                "tone": "green"
+              },
+              {
+                "title": "Angelina and Sarah Grimké",
+                "lines": [
+                  "Daughters of a South Carolina slaveholding family; the only southern white women abolitionists.",
+                  "Angelina's 1835 letter to Garrison was printed in The Liberator; both lectured by 1837."
+                ],
+                "badge": "1835–1837",
+                "tone": "amber"
+              },
+              {
+                "title": "Frederick Douglass",
+                "lines": [
+                  "Escaped slavery in 1838; famous speaker and writer.",
+                  "Narrative (1845), The North Star (1847)."
+                ],
+                "badge": "1838 on",
+                "tone": "red"
+              },
+              {
+                "title": "Sojourner Truth",
+                "lines": [
+                  "Formerly enslaved in New York; preacher and speaker.",
+                  "Spoke for both abolition and women's rights."
+                ],
+                "badge": "1840s–1850s",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The lecture's early abolitionists. Know one fact and one date for each.",
+          "slide": "Who's who",
+          "id": "abolition.45925f58"
+        },
+        {
+          "type": "prose",
+          "md": "**Maria Stewart in her own words (1831):** 'It is not the color of the skin that makes the man, but it is the principles formed within the soul.' She was speaking to both Black and white audiences, as a Black woman, about equality: three things that were each controversial in 1831.",
+          "id": "abolition.253dbe0e"
+        },
+        {
+          "type": "check",
+          "prompt": "What made 1830s abolitionism different from earlier antislavery efforts?",
+          "answer": "It demanded **immediate** emancipation, rejecting gradual emancipation and colonization.",
+          "sectionRef": "abolition",
+          "id": "abolition.45691444"
+        },
+        {
+          "type": "check",
+          "prompt": "What were the three abolitionist strategies in the lecture?",
+          "answer": "**Speaking, writing, and petitions.**",
+          "sectionRef": "abolition",
+          "id": "abolition.aa3de41e"
+        },
+        {
+          "type": "check",
+          "prompt": "What did Garrison found in 1831 and 1832?",
+          "answer": "**The Liberator** (1831) and the **New England Anti-Slavery Society** (1832).",
+          "sectionRef": "abolition",
+          "id": "abolition.43effa71"
+        }
+      ]
+    },
+    {
+      "id": "grimke",
+      "heading": "Angelina Grimké: 'Human Rights not founded on Sex'",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Angelina Grimké grew up in a slaveholding family in Charleston, saw slavery up close, moved north, and became a Quaker and an abolitionist. When she and her sister Sarah lectured to mixed audiences in 1837, ministers and writers attacked them for stepping outside 'woman's sphere'. The class-discussion reading is her reply (1837, to the educator Catharine Beecher).",
+          "slide": "Who she was",
+          "id": "grimke.36057951"
+        },
+        {
+          "type": "definition",
+          "term": "Her argument, in one sentence",
+          "body": "Rights come from being a **moral human being**, not from being male or female, so whatever is morally right for a man to do is morally right for a woman to do, including speaking against slavery.",
+          "id": "grimke.c0ffff46"
+        },
+        {
+          "type": "prose",
+          "md": "**Key phrases to quote** (the discussion asks for them): 'Human beings have rights, because they are moral beings'; 'whatever it is morally right for man to do, it is morally right for woman to do'; and her refusal to recognize separate 'men's rights and women's rights', only **human rights**.",
+          "id": "grimke.a4806cdb"
+        },
+        {
+          "type": "prose",
+          "md": "**See the connection.** Her argument against sexism is the **same** argument as her argument against slavery: rights belong to every moral being. That's why defending her right to speak about slavery turned into a defense of women's rights. The two movements share one logic.",
+          "label": "think",
+          "id": "grimke.7a34c4a0"
+        },
+        {
+          "type": "prose",
+          "md": "**Historical context (Q2).** 1837: immediate abolition was only six years old and often met with mobs. The 'separate spheres' ideal (see the Market Revolution chapter) said respectable women belonged at home. Women were already doing much of the petition work. So a southern-born woman lecturing northern men about slavery broke two rules at once, and her critics went after the second one.",
+          "id": "grimke.a5526606"
+        },
+        {
+          "type": "check",
+          "prompt": "What is Angelina Grimké's central argument in 'Human Rights not founded on Sex'?",
+          "answer": "Rights come from being a **moral being**, not from sex, so what is morally right for a man to do is morally right for a woman to do: there are only **human rights**.",
+          "sectionRef": "grimke",
+          "id": "grimke.0e8d8eea"
+        },
+        {
+          "type": "check",
+          "prompt": "Why were the Grimké sisters unusual among abolitionists?",
+          "answer": "They were white women from a **southern slaveholding family** (South Carolina), the only ones in the movement, and they spoke to mixed audiences.",
+          "sectionRef": "grimke",
+          "id": "grimke.8c8dc5d5"
+        }
+      ]
+    },
+    {
+      "id": "womensrights",
+      "heading": "From antislavery to women's rights",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Coverture (women's legal status)",
+          "body": "The legal rule that a married woman's identity was absorbed into her husband's. The lecture's list: women could **not own property** once married, could not **testify** in court, and could not **make contracts**; a married woman was treated almost as her husband's property. **Example:** a wife's wages legally belonged to her husband.",
+          "id": "womensrights.551840eb"
+        },
+        {
+          "type": "prose",
+          "md": "**The 1840 split.** Abolitionists argued over whether women should hold leadership roles. When women were given a place in the American Anti-Slavery Society, those who objected walked out and formed the **American and Foreign Anti-Slavery Society** (1840). That same year, at the **World Anti-Slavery Convention in London**, women delegates, including **Lucretia Mott**, were refused seats. **Elizabeth Cady Stanton**, there with her husband, met Mott, and they resolved to hold a convention on women's rights.",
+          "slide": "The 1840 split",
+          "id": "womensrights.6ebdafd3"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Lucretia Mott",
+                "lines": [
+                  "Founded the Philadelphia Female Anti-Slavery Society (1833).",
+                  "Barred at the London convention (1840); co-organized Seneca Falls (1848)."
+                ],
+                "badge": "Quaker",
+                "tone": "brand"
+              },
+              {
+                "title": "Elizabeth Cady Stanton",
+                "lines": [
+                  "Organized the 1848 convention; drafted the Declaration of Sentiments.",
+                  "Addressed the NY legislature (1854); co-founded the National Woman Suffrage Association (1869)."
+                ],
+                "badge": "writer",
+                "tone": "green"
+              },
+              {
+                "title": "Susan B. Anthony",
+                "lines": [
+                  "Quaker, temperance activist.",
+                  "Met Stanton in 1851; they worked together for 50 years."
+                ],
+                "badge": "organizer",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "The lecture's three leaders.",
+          "slide": "Three leaders",
+          "id": "womensrights.5aa74513"
+        },
+        {
+          "type": "check",
+          "prompt": "What was 'coverture'?",
+          "answer": "The legal rule that absorbed a married woman into her husband: she couldn't own property, testify, or make contracts.",
+          "sectionRef": "womensrights",
+          "id": "womensrights.80ac3248"
+        },
+        {
+          "type": "check",
+          "prompt": "What happened in 1840, and why does it matter for women's rights?",
+          "answer": "The abolition movement **split** over women's role, and women were **barred** at the London convention, where Mott and Stanton met and decided to organize for women's rights.",
+          "sectionRef": "womensrights",
+          "id": "womensrights.96b2eba3"
+        }
+      ]
+    },
+    {
+      "id": "senecafalls",
+      "heading": "Seneca Falls and the Declaration of Sentiments (1848)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "On **July 19 and 20, 1848**, about 300 people met at **Seneca Falls, New York**. The convention adopted the **Declaration of Sentiments**, written mainly by Stanton, and about 100 people (68 women and 32 men) signed it.",
+          "slide": "Seneca Falls",
+          "id": "senecafalls.45aa1939"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Declaration of Independence (1776)",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Declaration of Sentiments (1848)",
+              "tone": "green"
+            },
+            "rows": [
+              {
+                "label": "Equality",
+                "left": "'all men are created equal'",
+                "right": "'all men **and women** are created equal'"
+              },
+              {
+                "label": "Who is the tyrant",
+                "left": "The King of Great Britain",
+                "right": "'**man**', who has held 'absolute tyranny' over woman"
+              },
+              {
+                "label": "The evidence",
+                "left": "27 grievances against the King",
+                "right": "Grievances against men: no vote, no property once married, no divorce or custody rights, shut out of colleges and most jobs"
+              },
+              {
+                "label": "The remedy",
+                "left": "Independence",
+                "right": "Equal rights, including the **vote**"
+              }
+            ]
+          },
+          "caption": "How the delegates used language (Discussion Q1): they copied the country's most respected document, so rejecting their demands meant rejecting 1776. The form **is** the critique of American democracy.",
+          "slide": "Two declarations",
+          "id": "senecafalls.a0915b23"
+        },
+        {
+          "type": "prose",
+          "md": "**The concerns for women's equality (Discussion Q2).** The grievances cover: the **vote** (women had to obey laws they had no voice in making); **property and wages** (taken by the husband); **marriage and divorce** law and **child custody** (favoring men); **education** (colleges closed to women); **jobs** (most professions closed); the **church** (shut out of the ministry); and the **double standard** in morals. The one resolution that almost failed was the demand for the **vote**; it passed after **Frederick Douglass** spoke for it.",
+          "id": "senecafalls.662db96d"
+        },
+        {
+          "type": "trap",
+          "body": "Seneca Falls did not win women the vote. It **demanded** it. Nationally, women won the vote only with the 19th Amendment in 1920. In the short run the gains were state laws, like New York's in 1860.",
+          "source": "Quiz wording",
+          "points": null,
+          "id": "senecafalls.41614b04"
+        },
+        {
+          "type": "prose",
+          "md": "**Results before the Civil War.** In 1854 Stanton addressed the **New York legislature**; in **1860** New York expanded married women's property rights, giving them rights to their own **wages** and joint **custody** of their children. Then, the lecture notes, women **set aside** their own campaign during the Civil War to support the Union and emancipation.",
+          "id": "senecafalls.342bc9ee"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you see it today.** Rewriting a famous text to expose who it leaves out is still a standard protest technique, and the Seneca Falls list of grievances reads like the agenda of the next 170 years: voting, pay, property, custody, education, jobs.",
+          "label": "world",
+          "id": "senecafalls.22e7bed8"
+        },
+        {
+          "type": "check",
+          "prompt": "How did the Seneca Falls delegates use the Declaration of Independence?",
+          "answer": "They **copied its structure and language**, adding 'and women' and listing grievances against men instead of the King, so their demands rested on the nation's founding principle.",
+          "sectionRef": "senecafalls",
+          "id": "senecafalls.a964bd4e"
+        },
+        {
+          "type": "check",
+          "prompt": "Which Seneca Falls resolution was the most controversial, and who helped it pass?",
+          "answer": "The demand for **the vote**; **Frederick Douglass** spoke for it.",
+          "sectionRef": "senecafalls",
+          "id": "senecafalls.485f14af"
+        }
+      ]
+    },
+    {
+      "id": "quiz",
+      "heading": "Rehearsal: quick recall",
+      "blocks": [
+        {
+          "type": "check",
+          "prompt": "Who was the first woman to address a mixed audience of men and women (1832)?",
+          "answer": "**Maria Stewart.**",
+          "sectionRef": "quiz",
+          "id": "quiz.15c78150"
+        },
+        {
+          "type": "check",
+          "prompt": "What organization did the anti-women faction form in 1840?",
+          "answer": "The **American and Foreign Anti-Slavery Society**.",
+          "sectionRef": "quiz",
+          "id": "quiz.ab2ea7b6"
+        },
+        {
+          "type": "check",
+          "prompt": "What did New York's 1860 law give married women?",
+          "answer": "Rights to their own **wages** and joint **custody** of their children, expanding their property rights.",
+          "sectionRef": "quiz",
+          "id": "quiz.9cb7fb36"
+        },
+        {
+          "type": "check",
+          "prompt": "When did Susan B. Anthony meet Elizabeth Cady Stanton?",
+          "answer": "**1851.**",
+          "sectionRef": "quiz",
+          "id": "quiz.7880aa4b"
+        },
+        {
+          "type": "check",
+          "prompt": "What did women do with their own campaign during the Civil War?",
+          "answer": "They **set it aside** to support the war effort and emancipation.",
+          "sectionRef": "quiz",
+          "id": "quiz.41503df5"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "grimke-q1",
+      "title": "Discussion: Grimké's argument and key phrases",
+      "prompt": "In 4 to 5 sentences, state Angelina Grimké's argument in 'Human Rights not founded on Sex' and quote or closely paraphrase two key phrases.",
+      "hints": [
+        "An argument is a claim plus a reason. Her claim is about who has rights; her reason is about what makes someone a rights-holder.",
+        "Weak answers say 'she argues for women's rights'. Stronger: say **why** she thinks women have them, and link it to slavery.",
+        "Frame: (1) claim, (2) reason (moral beings), (3) phrase one, (4) phrase two, (5) the link to abolition."
+      ],
+      "solution": [
+        "Angelina Grimké argues that rights do not depend on sex: they belong to every human being because every human being is a moral being.",
+        "She writes that 'human beings have rights, because they are moral beings', so the same moral standard applies to men and women.",
+        "From that she concludes that 'whatever it is morally right for man to do, it is morally right for woman to do', including speaking in public against slavery.",
+        "She refuses to recognize separate men's rights and women's rights, only human rights.",
+        "The argument ties her two causes together: the same principle that condemns slavery condemns denying women a public voice."
+      ],
+      "why": "Pulling out a thesis and its best evidence is what every job that reads documents asks of you.",
+      "sectionRef": "grimke"
+    },
+    {
+      "id": "seneca-q1",
+      "title": "Discussion: how the delegates use language to critique democracy",
+      "prompt": "In 4 to 5 sentences, explain how the Declaration of Sentiments uses language to critique American democracy. Give two specific examples.",
+      "hints": [
+        "Put the two declarations side by side: what did they copy, and what did they change?",
+        "The critique works because of the copying. Say why a reader in 1848 couldn't easily reject it.",
+        "Examples: 'all men and women are created equal'; 'man' in place of the King as the tyrant; the list of grievances; the demand for the vote."
+      ],
+      "solution": [
+        "The Declaration of Sentiments critiques American democracy by copying the Declaration of Independence almost word for word.",
+        "It opens 'all men and women are created equal', showing that the nation's founding promise had left out half its people.",
+        "It replaces the King with 'man' as the tyrant, and lists grievances against men just as 1776 listed grievances against George III, such as forcing women to obey laws they had no voice in making.",
+        "By using the country's most respected language, the delegates made it hard to reject their demands, especially the vote, without rejecting the principles of 1776."
+      ],
+      "why": "Using an opponent's own principles as your argument is one of the most effective moves in law, politics and negotiation.",
+      "sectionRef": "senecafalls"
+    },
+    {
+      "id": "immediate-mc",
+      "title": "What was new in the 1830s?",
+      "prompt": "What set 1830s abolitionists apart from earlier antislavery reformers?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Immediate emancipation."
+      ],
+      "why": "The one-word definition of the movement is a likely quiz question.",
+      "choices": [
+        {
+          "text": "They demanded immediate emancipation",
+          "feedback": "Right."
+        },
+        {
+          "text": "They supported sending freed people to Africa",
+          "feedback": "That's colonization, which 1830s abolitionists rejected."
+        },
+        {
+          "text": "They wanted slaveholders paid for freed people",
+          "feedback": "Immediatists refused compensation."
+        },
+        {
+          "text": "They focused only on ending the slave trade",
+          "feedback": "The trade was already banned in 1808; they wanted slavery itself ended now."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "abolition"
+    },
+    {
+      "id": "split-mc",
+      "title": "The 1840 split",
+      "prompt": "In 1840 the American Anti-Slavery Society split mainly over…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Women's role in the movement."
+      ],
+      "why": "Knowing why movements split is how you explain what came next.",
+      "choices": [
+        {
+          "text": "Women's role in the movement",
+          "feedback": "Right: opponents of women leaders formed the American and Foreign Anti-Slavery Society."
+        },
+        {
+          "text": "Whether to support the Mexican War",
+          "feedback": "The Mexican War began in 1846."
+        },
+        {
+          "text": "Whether to form a political party",
+          "feedback": "Some did form the Liberty Party, but the lecture's split is over women."
+        },
+        {
+          "text": "Colonization in Liberia",
+          "feedback": "Colonization was rejected by both sides."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "womensrights"
+    }
+  ]
+}

@@ -1,0 +1,1462 @@
+{
+  "id": "hist15/1-slavery",
+  "course": "hist15",
+  "lessons": "Weeks 1–3 · Class Discussions #1 and #2",
+  "title": "Slavery and the Making of America: The Downward Spiral",
+  "summary": "How slavery in North America went from a system with no rules (1620s) to a race-based, hereditary, legal caste (1740), told through New Amsterdam, the Chesapeake, and Carolina. Ends with the four discussion questions and the class exercise, answered with the specific examples the rubric rewards.",
+  "estimatedMinutes": 55,
+  "sourceNote": "The course's first topic: the PBS documentary 'Slavery and the Making of America', Episode 1, 'The Downward Spiral' (dir. Dante James, narrated by Morgan Freeman, 2005, 55 min; SJSU access through Alexander Street). Discussion #1 (Aug 24) covers minutes 0 to 33, Discussion #2 (Aug 26) covers 33 to 54. Facts here follow the film's narration; where a year is not stated in the film it is marked as the standard date.",
+  "sections": [
+    {
+      "id": "map",
+      "heading": "The big picture: slavery was built, law by law",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Slavery** is a system where one person is owned by another and forced to work without pay or consent. The film's main point: in early America slavery was **not fixed from day one**. At first there were no laws about it at all. Over about a hundred years, colonists wrote laws that tied slavery to **race**, made it **permanent** (for life) and **hereditary** (passed to your children). That slide is the 'downward spiral'.",
+          "slide": "What this chapter answers",
+          "id": "map.8f2af7dd"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "The question",
+            "question": "How did slavery go from **undefined** to a **racial caste**?",
+            "steps": [
+              {
+                "title": "New Amsterdam, 1620s",
+                "sub": "company slaves, no laws, room to bargain",
+                "result": "undefined",
+                "tone": "green"
+              },
+              {
+                "title": "Chesapeake, 1640",
+                "sub": "John Punch: same crime, life for the Black man",
+                "result": "race enters court",
+                "tone": "amber"
+              },
+              {
+                "title": "Virginia, 1662",
+                "sub": "a child follows the mother's status",
+                "result": "hereditary",
+                "tone": "red"
+              },
+              {
+                "title": "Carolina, 1670s–1720s",
+                "sub": "rice and a Black majority: the first slave society",
+                "result": "slave society",
+                "tone": "red"
+              },
+              {
+                "title": "Stono, 1739 → black code",
+                "sub": "rebellion, then total legal control",
+                "result": "locked in",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The five stops of the film, in order. Each one takes away a way out that existed before.",
+          "slide": "Five stops",
+          "id": "map.e2aca3f8"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters.** If slavery had always been a fixed, natural thing, nobody would be responsible for it. Seeing that people **chose** each law, and who profited from each choice, is the whole skill of this course: asking who made a rule and whom it served. The film's opening line of argument: slavery was 'no sideshow' in American history, 'it was the main event'.",
+          "label": "why",
+          "id": "map.0003a615"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you see it today.** Historians, lawyers and journalists still trace present-day gaps in wealth and land ownership back through laws like these. The method is the same one you will use on the exercise: find the specific law or court case, give its date, and say what it changed.",
+          "label": "world",
+          "id": "map.a8daaf12"
+        },
+        {
+          "type": "trap",
+          "body": "Answers that say 'slavery was always based on race' lose the film's main point. In the 1620s to 1640s Black and white servants worked side by side under similar treatment, and some enslaved Africans sued in court and won. Race-based slavery was **created** over time.",
+          "source": "Discussion rubric",
+          "points": "specific, developed examples",
+          "id": "map.2a2bd562"
+        }
+      ]
+    },
+    {
+      "id": "newamsterdam",
+      "heading": "New Amsterdam, 1620s: the first eleven",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Setting.** In 1624 the **Dutch West India Company** set up a fur trading post on the island of Manhattan. It would become New York City. Fewer than 200 people lived there, mostly men from northern Europe working for the Company. To make bigger profits, the Company wanted labor it didn't have to pay for.",
+          "slide": "Setting",
+          "id": "newamsterdam.321cbed2"
+        },
+        {
+          "type": "prose",
+          "md": "A few years later the Company brought **11 enslaved African men**. They were owned by the **Company**, not by individual colonists, and bought to build the colony. They were probably taken from Spanish or Portuguese ships, which Dutch and English raiders attacked for people and goods, so in a sense they were **prisoners of war**.",
+          "id": "newamsterdam.bdbab4d9"
+        },
+        {
+          "type": "definition",
+          "term": "Atlantic Creole",
+          "body": "A person of African descent who grew up in the Atlantic world where Africa, Europe and the Americas met (1400s to 1600s). Many had European names, spoke several languages, knew Christianity, and some had European fathers. **Example:** the names of the first eleven, like Simon Congo, Anthony Portuguese and John d'Angola: a Christian first name plus a place.",
+          "id": "newamsterdam.bba3755a"
+        },
+        {
+          "type": "definition",
+          "term": "Indentured servant",
+          "body": "A person who signs away their labor for a set number of years (often **seven**) to pay for passage to the colonies, then goes free. **Example:** most of the white laborers in New Amsterdam and Virginia. Early on, Black and white servants were treated much the same.",
+          "id": "newamsterdam.3b130125"
+        },
+        {
+          "type": "definition",
+          "term": "Company slave",
+          "body": "An enslaved person owned by the Dutch West India Company itself. **Example:** the first eleven cleared land, built roads and the fort, and unloaded ships. They were both manual and skilled workers.",
+          "id": "newamsterdam.f6258400"
+        },
+        {
+          "type": "definition",
+          "term": "Half freedom",
+          "body": "The Company's deal (1644, the standard date) for the first eleven and their wives: live on 'free Negro lots' and farm their own land, but pay the Company a yearly tribute, work when called, and **their children stay enslaved**.",
+          "id": "newamsterdam.28a99b57"
+        },
+        {
+          "type": "prose",
+          "md": "**Daily life.** Work started at sunrise in any weather, because 'their work is what was valuable, not their person'. In the evenings, enslaved Africans and white indentured servants drank in the same **taverns** and complained about the same masters. The film calls it 'interracial bonding'. In the late 1620s the Company brought African women into the colony, both as partners for the men (the Dutch feared racial mixing) and as workers.",
+          "id": "newamsterdam.75143100"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Courts",
+                "lines": [
+                  "They petitioned the Company for owed wages (1635).",
+                  "Anthony Portuguese sued a white merchant (1638); Pedro Negretto and Manuel de Reus won wage suits (1639)."
+                ],
+                "badge": "1635–1639",
+                "tone": "brand"
+              },
+              {
+                "title": "Marriage",
+                "lines": [
+                  "Anthony van Angola married Lucie d'Angola, the first recorded marriage between Black people in the colony.",
+                  "A legal marriage was a way to 'claim ground'."
+                ],
+                "badge": "1641",
+                "tone": "green"
+              },
+              {
+                "title": "Church",
+                "lines": [
+                  "Europeans believed Christians shouldn't enslave Christians, so many converted.",
+                  "In practice baptism did **not** free anyone."
+                ],
+                "badge": "Reformed Church",
+                "tone": "amber"
+              },
+              {
+                "title": "Military service",
+                "lines": [
+                  "When the Company fought local Native Americans, it armed the Creoles.",
+                  "Whites feared Africans might join Native Americans; the eleven used that fear to bargain."
+                ],
+                "badge": "1639 war",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "Four ways the first eleven negotiated. Because slavery had **no legal structure** yet, there was space to bargain. This card set is your ready-made answer to Discussion Question 2.",
+          "slide": "How they negotiated",
+          "id": "newamsterdam.4ad6fb65"
+        },
+        {
+          "type": "prose",
+          "md": "**Half freedom.** After building the fort, serving in the military and joining the church, the eleven argued 'it was their time to be free'. The Company answered with half freedom. The film warns: this was not kindness. The Company **calculated it could make more money** this way. And because their **children stayed enslaved**, every half-free family knew how fragile its freedom was. They kept petitioning for their children and for other enslaved people, and by then at least **20% of New Amsterdam** was Black: enslaved, half free or free.",
+          "id": "newamsterdam.f262d0b2"
+        },
+        {
+          "type": "prose",
+          "md": "**Ask yourself:** why would a company choose half freedom over full slavery? Hint: who pays for food and housing in each system, and who still gets the labor when it's needed?",
+          "label": "think",
+          "id": "newamsterdam.f5cf0a4d"
+        },
+        {
+          "type": "check",
+          "prompt": "Why could the first eleven sue in court and earn wages in the 1630s?",
+          "answer": "Because slavery had **no laws** defining it yet. Nothing said an enslaved person couldn't sue or be paid, and the Europeans depended on their labor, so they had room to negotiate.",
+          "sectionRef": "newamsterdam",
+          "id": "newamsterdam.e18d9049"
+        },
+        {
+          "type": "check",
+          "prompt": "What was the catch in 'half freedom'?",
+          "answer": "Their **children remained enslaved**, and they owed the Company tribute and labor when called.",
+          "sectionRef": "newamsterdam",
+          "id": "newamsterdam.efae2853"
+        },
+        {
+          "type": "check",
+          "prompt": "Name the three ways, besides courts, that Atlantic Creoles tried to widen their freedom.",
+          "answer": "**Marriage** (Anthony van Angola and Lucie d'Angola, 1641), **Christianity** (conversion and church membership), and **military service** (fighting in the 1639 war).",
+          "sectionRef": "newamsterdam",
+          "id": "newamsterdam.2224240e"
+        }
+      ]
+    },
+    {
+      "id": "chesapeake",
+      "heading": "The Chesapeake: when race entered the law",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Setting.** In Virginia and Maryland, the money was in **tobacco**. More tobacco meant more profit for investors in England, so there was 'tremendous pressure for labor'. Planters first tried to force Native Americans to work, but Virginia's Native nations were strong enough to stop that. So planters turned to **indentured servants**, both white and Black. By 1640 servants were essential to tobacco profits.",
+          "slide": "Tobacco needs labor",
+          "id": "chesapeake.1fe631a2"
+        },
+        {
+          "type": "prose",
+          "md": "At first white and Black servants were treated about the same: both were bound for a set time, both could become free, and both were 'treated real bad', with almost no rights.",
+          "id": "chesapeake.a7ebc8e5"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Victor and James Gregory",
+              "sub": "a Dutchman and a Scot",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "John Punch",
+              "sub": "an African",
+              "tone": "red"
+            },
+            "rows": [
+              {
+                "label": "Who",
+                "left": "Two white indentured servants of Hugh Gwyn",
+                "right": "A Black indentured servant on the same farm"
+              },
+              {
+                "label": "What they did",
+                "left": "Ran away to Maryland in 1640 and were caught",
+                "right": "Ran away with them and was caught"
+              },
+              {
+                "label": "Sentence",
+                "left": "A few **extra years** added to their indentures",
+                "right": "**Servitude for life**"
+              },
+              {
+                "label": "What it shows",
+                "left": "Punishment still has an end date",
+                "right": "Race now decides who can ever go free"
+              }
+            ],
+            "note": "No law yet said Punch had to be enslaved for life. The court chose it. That choice is the example the discussion questions want."
+          },
+          "caption": "Same crime, same court, different sentence. The film calls 1640 'the turning point': people start being sorted not by whether they are free, but by whether they are **Black or white**.",
+          "slide": "John Punch, 1640",
+          "id": "chesapeake.ad4d495e"
+        },
+        {
+          "type": "definition",
+          "term": "Partus sequitur ventrem (Virginia, 1662)",
+          "body": "Latin for 'offspring follows the womb'. Virginia's law: 'All children born in this country shall be held bond or free only according to the condition of the mother.' **Example:** a child of a white master and an enslaved woman is enslaved, so the father legally **owns his own child**.",
+          "id": "chesapeake.39a36d0d"
+        },
+        {
+          "type": "prose",
+          "md": "**Emanuel Driggus, an Atlantic Creole in Virginia.** He appears in records around 1645 as the slave of Captain Francis Pott. His wife Frances and two daughters were bound to Pott too. The girls' contracts promised freedom after a set time; his other children got no such promise. In **1657**, Pott fell into debt and **sold two of the Driggus children** (the oldest, Ann, for about 5,000 pounds of tobacco). By **1661** Emanuel was free, leasing 145 acres and raising livestock, but he paid far more for land than a white man would. In 1673 he gave mares to his enslaved daughters, hoping livestock could one day buy their freedom. He never could free the two children Pott sold.",
+          "slide": "The Driggus family",
+          "id": "chesapeake.2a52a17f"
+        },
+        {
+          "type": "prose",
+          "md": "**Frances Driggus, his granddaughter (born about 1677).** Born free, because her father Thomas married a free Black woman (the 1662 rule cut both ways). She was bound out to a blacksmith-planter, John Brewer, in 1694, then whipped 30 lashes and given two extra years for 'fornication'. When she had a child and named Brewer as the father, the court **refused to take a Black woman's word** against a white planter. She still **won** a later suit that freed her from Brewer's contract. By 1700 she was destitute and stole food, then bound herself and her child to the Foxcrofts (10 years for her, 25 for any children). When Isaac Foxcroft died, his widow broke his promise to free her. Without a document, Frances lost in court. After 1704 she disappears from the records.",
+          "id": "chesapeake.8d76c167"
+        },
+        {
+          "type": "prose",
+          "md": "**Notice the pattern across three generations.** Emanuel bargains and wins land. Frances can still use the courts, but each time the courts give her less. The film's summary: they went from a world where they could negotiate to one where 'there was no space left to do that'.",
+          "label": "think",
+          "id": "chesapeake.6c2bf80b"
+        },
+        {
+          "type": "prose",
+          "md": "**Closing the doors.** By the mid-1660s Maryland and New York had legalized slavery. From **1691**, Virginia laws pushed out and restricted free Black people. Black Virginians were cut off from education, free movement and property. By the early 1700s slavery had **replaced indentured servitude** as the labor system of choice, and the law treated enslaved people as **property**.",
+          "id": "chesapeake.54e9fe8d"
+        },
+        {
+          "type": "stepper",
+          "title": "Discussion #1 as one animation: the spiral in the North and the Chesapeake",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 0,
+              "caption": "**1619.** English settlers at Jamestown buy 20 Africans from Dutch traders. No law yet says what their status is.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 55
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 1,
+              "caption": "**1620s.** The Dutch West India Company brings 11 enslaved men to New Amsterdam. They are **company slaves**, and there are still **no laws** defining slavery.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 70
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 2,
+              "caption": "**1635.** Because nothing is written down, they can bargain: they **petition the company for wages** it owes them. Others sue white colonists and win.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 80
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 3,
+              "caption": "**1640, Virginia.** Three servants run away. The two white men get extra years; **John Punch, the Black man, gets life**. Race starts deciding punishment.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 60
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 4,
+              "caption": "**1644, New Amsterdam.** After years of labor, church membership and military service, the 11 win **half freedom**: their own land, but their children stay enslaved.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 65
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 5,
+              "caption": "**1657.** Captain Pott falls into debt and **sells Emanuel Driggus's children**. A family's future depends on one master's money problems.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 45
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 6,
+              "caption": "**1662.** Virginia rules a child is **bond or free according to the mother**. Slavery becomes hereditary: it passes to children automatically.",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 25
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1619",
+                  "title": "20 Africans sold at Jamestown"
+                },
+                {
+                  "year": "1620s",
+                  "title": "The first 11 reach New Amsterdam"
+                },
+                {
+                  "year": "1635",
+                  "title": "They petition for wages"
+                },
+                {
+                  "year": "1640",
+                  "title": "John Punch: servant for life",
+                  "tone": "red"
+                },
+                {
+                  "year": "1644",
+                  "title": "Half freedom",
+                  "tone": "green"
+                },
+                {
+                  "year": "1657",
+                  "title": "Driggus children sold for debt",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1662",
+                  "title": "Child follows the mother",
+                  "tone": "red"
+                },
+                {
+                  "year": "1691",
+                  "title": "Laws squeeze free Black people",
+                  "tone": "red"
+                }
+              ],
+              "at": 7,
+              "caption": "**1691 on.** New laws push out and restrict free Black people. Education, movement and property close off. **The ways out are shut.**",
+              "meter": {
+                "label": "Room the system left to bargain for freedom",
+                "tone": "green",
+                "low": "none",
+                "high": "a lot",
+                "value": 8
+              }
+            }
+          ],
+          "slide": true,
+          "id": "chesapeake.e9fa4649"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is John Punch's case (1640) called a turning point?",
+          "answer": "Three servants did the same thing; the two white men got extra years, the Black man got **servitude for life**. A court used race to decide who could ever be free, before any law required it.",
+          "sectionRef": "chesapeake",
+          "id": "chesapeake.b7baf82c"
+        },
+        {
+          "type": "check",
+          "prompt": "What did Virginia's 1662 law do, in one sentence?",
+          "answer": "It made a child's status follow the **mother's**, so the children of enslaved women were enslaved for life: slavery became **hereditary**.",
+          "sectionRef": "chesapeake",
+          "id": "chesapeake.86e55e78"
+        },
+        {
+          "type": "check",
+          "prompt": "Frances Driggus was born free. Why?",
+          "answer": "Her father Thomas was enslaved, but he married a **free Black woman**, and under the 1662 rule a child follows the mother.",
+          "sectionRef": "chesapeake",
+          "id": "chesapeake.0b14d3e1"
+        }
+      ]
+    },
+    {
+      "id": "carolina",
+      "heading": "Carolina: the first slave society",
+      "blocks": [
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Society with slaves",
+              "sub": "New York, Massachusetts, New Jersey, Maryland",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Slave society",
+              "sub": "Carolina, the first of the 13 colonies",
+              "tone": "red"
+            },
+            "rows": [
+              {
+                "label": "Where slavery sits",
+                "left": "One kind of labor among several",
+                "right": "The **center** of economic production"
+              },
+              {
+                "label": "Who works the main crop",
+                "left": "Farmers, servants, some enslaved people",
+                "right": "Mostly enslaved Africans"
+              },
+              {
+                "label": "Law",
+                "left": "Slavery allowed, grew over time",
+                "right": "Racial slavery written into the **1669 constitution**"
+              }
+            ]
+          },
+          "caption": "The film's key distinction. Every colony had slavery; Carolina was built around it.",
+          "slide": "With slaves vs slave society",
+          "id": "carolina.639651b1"
+        },
+        {
+          "type": "prose",
+          "md": "**Founding.** Charles II granted Carolina to a group of his friends, and settlement began around 1670. As one historian in the film puts it, the message was 'here's a place to exploit, fellows, go to it'. Many white settlers came from **Barbados**, an English sugar island with some 50,000 enslaved Afro-Caribbean people. The film calls the plantation system 'transplanted like a kind of virus'. Settlers got **50 acres for every person** they brought, so importing enslaved people literally earned land.",
+          "id": "carolina.1d930487"
+        },
+        {
+          "type": "prose",
+          "md": "**Rice.** Planters tried cotton, indigo and cattle and failed to find a money crop. Enslaved West Africans were growing **rice** (oryza) for themselves, a crop they had grown for centuries. Once they showed others how, they lost control of that knowledge, and 'an entire economy based on exploitation of Africans' was in place **within a generation**. Imports of Africans skyrocketed.",
+          "slide": "Rice",
+          "id": "carolina.cdbe782b"
+        },
+        {
+          "type": "prose",
+          "md": "**The trade.** Many captives were soldiers taken in African wars and sold by the winners. Some owners of Carolina also invested in the **Royal African Company**, profiting on both ends. Shipbuilding, insurance and sail-making grew around the trade: 'the expansion of slavery is an essential part of the expansion of capitalism'. One quarter to one third of the people who boarded a slave ship died on the way. Survivors were held at a 'pest house' on **Sullivan's Island**, then oiled, fed, and sold at auction in Charleston.",
+          "id": "carolina.6e9ccf2d"
+        },
+        {
+          "type": "definition",
+          "term": "Task system",
+          "body": "South Carolina's way of assigning rice work: each enslaved person got a fixed task per day, such as hoeing a quarter acre (105 feet square). People spent most of the year knee-deep in mud. 'Rice was a very demanding master.'",
+          "id": "carolina.be1f244e"
+        },
+        {
+          "type": "definition",
+          "term": "Black majority",
+          "body": "By the **1720s**, enslaved Black people outnumbered whites **more than two to one** in the Carolina lowcountry. Planters' fear of that majority drove harsher laws and policing.",
+          "id": "carolina.2741541e"
+        },
+        {
+          "type": "prose",
+          "md": "**Punishment and resistance.** Running away was punished in escalating steps: whipping, then an 'R' branded on the cheek, then an ear cut off, then worse. Planters calculated they could afford to kill people and import more. Enslaved people resisted anyway: pretending not to understand, burning barns at harvest, and poisoning. White fear ran so high that a law required white men to **carry guns to church** on Sunday, the one day enslaved people had off.",
+          "id": "carolina.12da81ba"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters.** The Carolina section is the film's answer to 'why did slavery get worse?' Follow the money: a profitable crop, land given per enslaved person imported, investors in the trade itself. When a system pays this well, the people who run it write laws to protect it.",
+          "label": "why",
+          "id": "carolina.65386fdb"
+        },
+        {
+          "type": "check",
+          "prompt": "What made Carolina a 'slave society' rather than a 'society with slaves'?",
+          "answer": "Slavery was the **center** of its economy (rice), racial slavery was in its 1669 constitution, and by the 1720s enslaved people were a 2 to 1 majority in the lowcountry.",
+          "sectionRef": "carolina",
+          "id": "carolina.64a421d8"
+        },
+        {
+          "type": "check",
+          "prompt": "Where did the know-how for Carolina rice come from?",
+          "answer": "From **enslaved West Africans**, who had grown rice for centuries. Planters took the knowledge and built the economy on it.",
+          "sectionRef": "carolina",
+          "id": "carolina.f31bee06"
+        }
+      ]
+    },
+    {
+      "id": "stono",
+      "heading": "The Stono Rebellion (1739) and the black code",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**What happened.** On a Saturday night in **September 1739**, a work crew, many of them from **Angola** and led by a man named **Jemmy**, met near the **Stono River** southwest of Charleston. They broke into a store, killed the owner, and took guns. Then they marched south, burning plantations and killing some whites; some enslaved people joined, others refused.",
+          "slide": "Stono, 1739",
+          "id": "stono.abf625ce"
+        },
+        {
+          "type": "prose",
+          "md": "**Why then, and where to.** It was harvest time (the hardest work) and a malaria epidemic had shut down Charleston. They were heading for **Spanish Florida**, whose governor had promised freedom to any enslaved person who reached it; there was a fort manned by free Africans, **Fort Mose**. They ran into the lieutenant governor on the road; he escaped and raised the alarm. A militia caught up within a day or two, killed many, and put the heads of captured rebels on poles along the road out of Charleston as a warning.",
+          "id": "stono.ac0ed261"
+        },
+        {
+          "type": "definition",
+          "term": "Black code (South Carolina, after Stono)",
+          "body": "After the rebellion, South Carolina gathered all its separate slave laws into **one code** (the Negro Act of 1740, the standard name and date) that restricted the movement of Black people and regulated almost every part of enslaved people's lives. **Example:** the end point of the spiral: total legal control.",
+          "id": "stono.a49c485e"
+        },
+        {
+          "type": "stepper",
+          "title": "Discussion #2 as one animation: Carolina and Stono",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 0,
+              "caption": "**1664.** The English take New Amsterdam and rename it **New York**. Like Massachusetts and Maryland, it is a **society with slaves**.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 45
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 1,
+              "caption": "**1669.** Carolina's founding constitution **sanctions racial slavery** from the start. No gray period this time.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 60
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 2,
+              "caption": "**About 1670.** Many settlers come from **Barbados**, a sugar colony of some 50,000 enslaved people. Every person you bring earns you **50 acres**.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 65
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 3,
+              "caption": "**Rice.** Enslaved West Africans already knew how to grow it. Once planters learned it, **a whole economy was built on their knowledge and labor** within a generation.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 75
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 4,
+              "caption": "**1720s.** In the lowcountry, enslaved Black people **outnumber whites more than two to one**. Planters answer fear with harsher policing.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 82
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 5,
+              "caption": "**September 1739.** Led by Jemmy, an Angolan, about 20 people seize guns at the Stono River and march toward **freedom in Spanish Florida**.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 85
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1664",
+                  "title": "New Amsterdam becomes New York"
+                },
+                {
+                  "year": "1669",
+                  "title": "Carolina's constitution allows racial slavery",
+                  "tone": "red"
+                },
+                {
+                  "year": "1670",
+                  "title": "Carolina founded; Barbados planters arrive"
+                },
+                {
+                  "year": "c. 1700",
+                  "title": "Rice: African know-how, planters' profit",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1720s",
+                  "title": "Enslaved people outnumber whites 2 to 1"
+                },
+                {
+                  "year": "1739",
+                  "title": "Stono Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "1740",
+                  "title": "One 'black code' for everything",
+                  "tone": "red"
+                }
+              ],
+              "at": 6,
+              "caption": "**After Stono.** South Carolina gathers every slave law into **one black code** that regulates almost every part of enslaved people's lives.",
+              "meter": {
+                "label": "How tight the law's grip was (a rough picture, not data)",
+                "tone": "red",
+                "low": "loose",
+                "high": "total",
+                "value": 98
+              }
+            }
+          ],
+          "slide": true,
+          "id": "stono.ba869be6"
+        },
+        {
+          "type": "trap",
+          "body": "Some online summaries of this episode (including the video's catalog description) date Stono to 1731. The film itself says **September 1739**, and 1739 is the date historians use. Write 1739.",
+          "source": "Dates on quizzes",
+          "points": null,
+          "id": "stono.e59ddd49"
+        },
+        {
+          "type": "prose",
+          "md": "**The film's last word.** It calls the rebels 'freedom fighters' and ends on dignity: people held on through spirituality, reverence for ancestors, and bonds across different African languages and nations. When a question asks what you learned, resistance is half the story; law is the other half.",
+          "label": "think",
+          "id": "stono.8bfdedf3"
+        },
+        {
+          "type": "check",
+          "prompt": "Where were the Stono rebels trying to go, and why there?",
+          "answer": "**Spanish Florida** (Fort Mose), because Florida's governor had promised freedom to enslaved people who escaped there.",
+          "sectionRef": "stono",
+          "id": "stono.d9d285c0"
+        },
+        {
+          "type": "check",
+          "prompt": "What did South Carolina do with its slave laws after Stono?",
+          "answer": "It combined them into a single **black code** that controlled movement and almost every part of enslaved people's lives.",
+          "sectionRef": "stono",
+          "id": "stono.019cda65"
+        }
+      ]
+    },
+    {
+      "id": "discussion",
+      "heading": "The four discussion questions and the class exercise",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Dr. Jeffrey's discussion rubric gives full credit (15) for **specific, developed examples** from the film, not general statements. Each answer below follows one pattern: **name → date → what happened → what it shows**. Try the Practice exercises at the bottom of this section first, then open the model answers.",
+          "slide": "How these are graded",
+          "id": "discussion.60f87209"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Question",
+            "What it asks",
+            "Best examples"
+          ],
+          "rows": [
+            [
+              "Q1 (Aug 24)",
+              "Three examples of how slavery **develops** in North America",
+              "The first eleven as company slaves; John Punch 1640; Virginia 1662; Carolina rice"
+            ],
+            [
+              "Q2 (Aug 24)",
+              "Three examples of Atlantic Creoles **negotiating** laws and customs",
+              "Wage petitions and lawsuits; the 1641 marriage; half freedom through service and church"
+            ],
+            [
+              "Q3 (Aug 26)",
+              "Two examples of **laws and courts** defining slavery",
+              "John Punch 1640; the 1662 'follows the mother' law; the post-Stono black code"
+            ],
+            [
+              "Q4 (Aug 26)",
+              "Summarize the key points; what did you learn",
+              "The spiral from undefined to racial, lifelong, hereditary; resistance throughout"
+            ]
+          ],
+          "title": "The questions at a glance",
+          "slide": "The four questions",
+          "id": "discussion.44c6df13"
+        },
+        {
+          "type": "prose",
+          "md": "**Class exercise (Q3 in 3 to 4 sentences).** Your submitted answer already had the right pieces: indentured servants both white and Black, John Punch's life sentence vs the white servants' extra years, slavery made permanent and hereditary through the mother, and enslaved people going to court over wages. The model below shows how to put a date and a 'this shows' clause on each.",
+          "label": "when",
+          "id": "discussion.2e8b6b5f"
+        },
+        {
+          "type": "check",
+          "prompt": "In the answer pattern 'name → date → what happened → what it shows', what does the last part do?",
+          "answer": "It turns a fact into an **argument**: it says what the example proves about how slavery developed. That clause is what separates a 12.5 from a 15.",
+          "sectionRef": "discussion",
+          "id": "discussion.9ab87949"
+        }
+      ]
+    },
+    {
+      "id": "quiz",
+      "heading": "Rehearsal: quick recall",
+      "blocks": [
+        {
+          "type": "check",
+          "prompt": "Who owned the first eleven enslaved men in New Amsterdam?",
+          "answer": "The **Dutch West India Company**, not individual colonists.",
+          "sectionRef": "quiz",
+          "id": "quiz.88ff733a"
+        },
+        {
+          "type": "check",
+          "prompt": "What was the first recorded marriage between Black people in New Amsterdam?",
+          "answer": "Anthony van Angola and Lucie d'Angola, **1641**.",
+          "sectionRef": "quiz",
+          "id": "quiz.8282a823"
+        },
+        {
+          "type": "check",
+          "prompt": "Why couldn't Virginia planters rely on Native American forced labor?",
+          "answer": "Virginia's Native nations were **powerful enough** to frustrate it, so planters turned to indentured servants.",
+          "sectionRef": "quiz",
+          "id": "quiz.9f4ed26d"
+        },
+        {
+          "type": "check",
+          "prompt": "How many acres did a Carolina settler get for each person brought into the colony?",
+          "answer": "**50 acres**, which rewarded importing enslaved people.",
+          "sectionRef": "quiz",
+          "id": "quiz.b66565b2"
+        },
+        {
+          "type": "check",
+          "prompt": "Who led the Stono Rebellion?",
+          "answer": "**Jemmy**, an enslaved man from Angola.",
+          "sectionRef": "quiz",
+          "id": "quiz.52c74f57"
+        },
+        {
+          "type": "check",
+          "prompt": "What share of people died crossing the Atlantic on slave ships, according to the film?",
+          "answer": "About **one quarter to one third** of those who boarded.",
+          "sectionRef": "quiz",
+          "id": "quiz.51e679c7"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "q1-develops",
+      "title": "Discussion Q1: how slavery develops (write yours first)",
+      "prompt": "In 5 to 7 sentences, identify and discuss **three examples** from the documentary that show how slavery develops in North America. Each example needs a name or place, a date, and a sentence on what it shows.",
+      "hints": [
+        "Think of the film as a slope: pick one example from the **start** (no laws), one from the **middle** (race enters the courts), and one from the **end** (laws make it permanent).",
+        "The usual weak answer lists three sad facts. The rubric wants each fact to show a **change** in how slavery worked. Ask of each: what could people do before this that they couldn't after?",
+        "Frame: (1) New Amsterdam's first eleven, 1620s, company slaves with no laws, so they could sue and earn wages. (2) John Punch, 1640, life servitude while white servants got extra years. (3) Virginia 1662, child follows the mother, slavery hereditary. Add Carolina rice or the black code if you want a fourth."
+      ],
+      "solution": [
+        "Slavery in North America developed from an undefined, negotiable condition into a permanent, race-based and hereditary system.",
+        "In the 1620s the Dutch West India Company brought eleven enslaved Atlantic Creoles to New Amsterdam; with no laws defining slavery, they petitioned for wages, sued Europeans in court, and won half freedom in the 1640s, which shows how open the system still was.",
+        "In 1640 Virginia's court sentenced the runaway servant John Punch to servitude for life while the two white servants who fled with him only got extra years, which shows race beginning to decide who could be free.",
+        "In 1662 Virginia declared that a child is bond or free according to the mother's condition, which made slavery hereditary and turned enslaved women's children into property.",
+        "By the 1670s to 1720s Carolina, founded with racial slavery in its 1669 constitution and built on rice, became the first slave society, and after the 1739 Stono Rebellion one black code controlled nearly every part of enslaved life."
+      ],
+      "why": "Explaining a change over time with three dated examples is the core move of every history essay and most policy writing: before, turning point, after.",
+      "sectionRef": "discussion"
+    },
+    {
+      "id": "q2-negotiate",
+      "title": "Discussion Q2: how Atlantic Creoles negotiated freedom",
+      "prompt": "In 5 to 6 sentences, explain how Atlantic Creoles and their children negotiated the laws and social customs that defined their freedom. Use **at least three examples**.",
+      "hints": [
+        "The four channels in the New Amsterdam card set: courts, marriage, church, military service. Pick three and give each a name or date.",
+        "Don't forget 'and their children': the half-free parents petitioning for their children, and Emanuel Driggus giving livestock to his enslaved daughters, both count.",
+        "End with the limit: their gains were real but fragile (children stayed enslaved; later courts refused Frances Driggus)."
+      ],
+      "solution": [
+        "Because slavery had no legal definition in the early 1600s, Atlantic Creoles used European institutions to widen their freedom.",
+        "They went to court: in 1635 the first eleven petitioned the Dutch West India Company for owed wages, Anthony Portuguese sued a white merchant in 1638, and in 1639 two others won wage suits against Europeans.",
+        "They used marriage and religion: Anthony van Angola and Lucie d'Angola's 1641 marriage was the first recorded Black marriage in the colony, and many joined the Reformed Church because Christians were not supposed to enslave Christians.",
+        "They used their service: after fighting in the 1639 war with Native Americans and building the fort, the eleven won half freedom, then kept petitioning for their enslaved children.",
+        "In Virginia, Emanuel Driggus bargained for livestock and land and gave mares to his enslaved daughters hoping to buy their freedom, and his granddaughter Frances won a lawsuit to escape an unfair indenture.",
+        "These gains were fragile: half-free parents' children stayed enslaved, and by 1700 courts refused Frances's testimony and ruled against her."
+      ],
+      "why": "Reading how people with little power use the rules that exist (courts, contracts, institutions) is how historians, lawyers and organizers study every rights movement.",
+      "sectionRef": "discussion"
+    },
+    {
+      "id": "q3-laws",
+      "title": "Class exercise / Discussion Q3: laws and courts (3 to 4 sentences)",
+      "prompt": "How did the laws and court system in the colonies define slavery in North America? Identify and discuss **two examples**, in 3 to 4 sentences.",
+      "hints": [
+        "Two examples, one court case and one law, is the cleanest structure.",
+        "The common error is describing the law without saying what it **changed**. After each example write 'This meant that…'.",
+        "Court: John Punch, 1640. Law: Virginia 1662 (mother's status). Bonus third: the black code after Stono (1739 to 1740)."
+      ],
+      "solution": [
+        "Colonial courts and laws turned slavery from a vague labor status into a lifelong, race-based and inherited one.",
+        "In 1640 a Virginia court punished three runaway servants differently: the two white men got extra years of service, but John Punch, who was Black, was sentenced to servitude for life, which meant race now decided who could ever go free.",
+        "In 1662 Virginia passed a law that children would be bond or free according to the condition of the mother, which meant slavery passed automatically to the next generation and even white fathers could own their own children.",
+        "After the 1739 Stono Rebellion, South Carolina combined its slave laws into a single black code that controlled nearly every part of enslaved people's lives."
+      ],
+      "why": "Showing how a rule on paper changes real lives is exactly what legal writing, policy memos and journalism ask for.",
+      "sectionRef": "discussion"
+    },
+    {
+      "id": "q4-summary",
+      "title": "Discussion Q4: key points and what you learned",
+      "prompt": "In 4 to 5 sentences, summarize the key points of 'The Downward Spiral' and say what you learned.",
+      "hints": [
+        "Summaries have a shape: the main claim, two or three supporting points in order, and one sentence of your own reaction.",
+        "'What did you learn' is graded too: name something specific that surprised you (for example, that Black and white servants drank together in taverns, or that enslaved people sued and won).",
+        "Main claim: over a hundred years, laws made slavery racial, lifelong and hereditary. Supports: New Amsterdam, the Chesapeake, Carolina. Close with resistance and your takeaway."
+      ],
+      "solution": [
+        "'The Downward Spiral' argues that slavery in North America was not fixed from the start but was built over about a hundred years into a racial, lifelong and hereditary system.",
+        "In 1620s New Amsterdam, company slaves with no laws against them could sue, marry and win half freedom.",
+        "In the Chesapeake, the 1640 John Punch case and the 1662 law tying status to the mother closed those openings, and in Carolina a rice economy built on African knowledge produced the first slave society.",
+        "Enslaved people resisted throughout, most dramatically in the 1739 Stono Rebellion, which was answered with a harsher black code.",
+        "I learned that at first Black and white servants lived and were treated much alike, so racial slavery was a choice lawmakers made to protect their profits, not something that was always there."
+      ],
+      "why": "A tight summary plus a specific takeaway is how you brief anyone on anything: what happened, why it matters, what's new to you.",
+      "sectionRef": "discussion"
+    },
+    {
+      "id": "stono-date",
+      "title": "Which date?",
+      "prompt": "The Stono Rebellion took place in…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "September 1739, South Carolina."
+      ],
+      "why": "Getting the date and place right is the cheapest point on any quiz.",
+      "choices": [
+        {
+          "text": "September 1739, in South Carolina",
+          "feedback": "Right: the film says September 1739, near the Stono River southwest of Charleston."
+        },
+        {
+          "text": "1731, in Virginia",
+          "feedback": "The catalog description says 1731, but the film and historians say 1739, and it was in South Carolina."
+        },
+        {
+          "text": "1663, in New Amsterdam",
+          "feedback": "New Amsterdam had become New York by 1664; Stono is in South Carolina."
+        },
+        {
+          "text": "1776, in Georgia",
+          "feedback": "Much too late; this is a colonial rebellion."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "stono"
+    },
+    {
+      "id": "punch-mc",
+      "title": "What does the John Punch case show?",
+      "prompt": "In 1640 John Punch, Victor and James Gregory ran away together. What does their sentencing show?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Race was starting to decide who could be enslaved for life."
+      ],
+      "why": "Knowing why a case is famous is what lets you use it as evidence.",
+      "choices": [
+        {
+          "text": "Race was starting to decide who could be enslaved for life",
+          "feedback": "Right: same act, but only the Black servant got life."
+        },
+        {
+          "text": "All runaways were enslaved for life",
+          "feedback": "The white servants got only extra years."
+        },
+        {
+          "text": "Indentured servitude had been abolished",
+          "feedback": "Servitude continued for decades."
+        },
+        {
+          "text": "The court followed a written Virginia slave law",
+          "feedback": "No law required it yet; the court chose it."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "chesapeake"
+    }
+  ],
+  "requires": []
+}

@@ -3,9 +3,9 @@
   "course": "hist15",
   "lessons": "Ch. 8–9",
   "title": "From Confederation to Constitution, and the 1790s",
-  "summary": "Answer any multiple-choice question on why the Articles failed, what the Constitution changed, why people objected, and what held the 1790s together — with the names, dates and terms a textbook quiz uses.",
+  "summary": "Answer any multiple-choice question on why the Articles failed, what the Constitution changed, why people objected, and what held the 1790s together: with the names, dates and terms a textbook quiz uses.",
   "estimatedMinutes": 60,
-  "sourceNote": "The American Promise ch. 8 (assigned sections) and ch. 9 ('sources of political stability in the 1790s'); the Sep 2 lecture; the PBS documentary 'Are We to Be a Nation?'. This is Quiz #1.",
+  "sourceNote": "The American Promise ch. 8 (assigned sections) and ch. 9 ('sources of political stability in the 1790s'); the Sep 2 lecture; the PBS documentary 'Are We to Be a Nation?'. This is Quiz #1. Also Dr. Jeffrey's 'Articles of Confederation and the Constitution' slides and Class Discussion #3 (Sep 9).",
   "requires": [],
   "sections": [
     {
@@ -14,24 +14,24 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "In 1776 thirteen colonies declared independence together but did not want to be one country — they'd just fought a king, and a strong central government looked like another king. So they built the weakest national government they could: the **Articles of Confederation**. That design choice caused everything that follows: because it couldn't tax, it couldn't pay its debts; because it couldn't compel, it couldn't protect its borders or stop an armed uprising in Massachusetts. In 1787 ==a convention meant to revise it instead threw it out== and wrote the **Constitution**, which created a real national government. Roughly half the country thought that was a betrayal of the Revolution. They lost the ratification fight but won a **Bill of Rights**. Then in the 1790s Washington and Hamilton made the new government work — and in doing so split the country into its first two political parties.",
+          "md": "In 1776 thirteen colonies declared independence together but did not want to be one country: they'd just fought a king, and a strong central government looked like another king. So they built the weakest national government they could: the **Articles of Confederation**. That design choice caused everything that follows: because it couldn't tax, it couldn't pay its debts; because it couldn't compel, it couldn't protect its borders or stop an armed uprising in Massachusetts. In 1787 ==a convention meant to revise it instead threw it out== and wrote the **Constitution**, which created a real national government. Roughly half the country thought that was a betrayal of the Revolution. They lost the ratification fight but won a **Bill of Rights**. Then in the 1790s Washington and Hamilton made the new government work: and in doing so split the country into its first two political parties.",
           "slide": "The arc",
-          "id": "why.6aa7ac6c"
+          "id": "why.86dcec4b"
         },
         {
           "type": "trap",
-          "body": "**How the quiz will ask it** Quiz #1 is 15 multiple-choice questions in 30 minutes, drawn from four section headings in ch. 8 and one in ch. 9. Each heading below IS a section heading from the book. A textbook quiz asks: what did X do, why did Y fail, who argued Z, what year. Read each section for the bolded terms and the named people — those are the answer choices.",
+          "body": "**How the quiz will ask it** Quiz #1 is 15 multiple-choice questions in 30 minutes, drawn from four section headings in ch. 8 and one in ch. 9. Each heading below IS a section heading from the book. A textbook quiz asks: what did X do, why did Y fail, who argued Z, what year. Read each section for the bolded terms and the named people: those are the answer choices.",
           "source": "Quiz",
           "points": null,
-          "id": "why.9767966f"
+          "id": "why.fec64c3f"
         },
         {
           "type": "figure",
           "viewBox": "0 0 660 260",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The amber span is the Confederation era: a 'firm league of friendship' whose government could not tax or compel anyone. Every event inside it is a symptom of that one design choice.</title><rect x='16' y='14' width='12' height='12' rx='3' fill='rgb(var(--at-risk) / 0.35)' stroke='rgb(var(--at-risk))'/><text x='34' y='24' font-size='11'>the league: can't tax, can't compel (1781–88)</text></g><g><title>The green span is the federal republic: after June 1788 there is a government with direct power over citizens, and the events inside it are that power being exercised for the first time.</title><rect x='336' y='14' width='12' height='12' rx='3' fill='rgb(var(--on-track) / 0.25)' stroke='rgb(var(--on-track))'/><text x='354' y='24' font-size='11'>the federal republic (1788–)</text></g><rect x='40' y='133' width='325' height='14' rx='4' fill='rgb(var(--at-risk) / 0.18)'/><rect x='365' y='133' width='255' height='14' rx='4' fill='rgb(var(--on-track) / 0.15)'/><line x1='40' y1='140' x2='620' y2='140' stroke='currentColor' stroke-width='1.6'/><g><title>1781: the Articles are finally ratified — and the same year Rhode Island alone kills the first tax amendment, proving the unanimity rule makes the design unfixable from inside.</title><line x1='79' y1='100' x2='79' y2='132' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='79' cy='140' r='4' fill='currentColor'/><text x='44' y='80' font-size='11'>Articles ratified · 1781</text><text x='44' y='94' font-size='10' opacity='0.6'>(tax amendment dies same year)</text></g><g><title>1783: the war ends with a huge debt — and New York kills the second tax amendment. Two failed fixes in two years; the flaw is now known to be permanent.</title><line x1='156' y1='148' x2='156' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='156' cy='140' r='4' fill='currentColor'/><text x='156' y='192' text-anchor='middle' font-size='11'>2nd tax amendment dies · 1783</text></g><g><title>Winter 1786–87: Shays's Rebellion — indebted veteran farmers close Massachusetts courts and march on the Springfield arsenal, and the national government can only watch. The shock that makes the Convention possible.</title><line x1='295' y1='100' x2='295' y2='132' stroke='rgb(var(--critical))' stroke-width='1.4'/><circle cx='295' cy='140' r='5' fill='rgb(var(--critical))'/><text x='295' y='94' text-anchor='middle' font-size='11' fill='rgb(var(--critical))'>Shays's Rebellion · 1786–87</text></g><g><title>May 1787: fifty-five delegates meet in Philadelphia with instructions to revise the Articles. They lock the doors and write a new government instead.</title><line x1='326' y1='148' x2='326' y2='216' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='326' cy='140' r='4' fill='currentColor'/><text x='326' y='232' text-anchor='middle' font-size='11'>Philadelphia Convention · May 1787</text></g><g><title>June 1788: New Hampshire, the ninth state, ratifies — the Constitution takes effect. Virginia and New York follow narrowly, on the promise of amendments.</title><line x1='365' y1='60' x2='365' y2='132' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='365' cy='140' r='6' fill='rgb(var(--on-track))'/><text x='365' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NH ratifies (9th) · June 1788</text></g><g><title>1789: Washington is inaugurated (elected unanimously) and the Judiciary Act builds the court system. The precedent-setting decade begins.</title><line x1='390' y1='148' x2='390' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='390' cy='140' r='4' fill='currentColor'/><text x='400' y='192' text-anchor='middle' font-size='11'>Washington · 1789</text></g><g><title>1791: the Bill of Rights is ratified — the Anti-Federalists' one lasting victory, and the concession that brought North Carolina and Rhode Island into the union.</title><line x1='465' y1='100' x2='465' y2='132' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><circle cx='465' cy='140' r='4' fill='rgb(var(--accent-fg))'/><text x='465' y='94' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>Bill of Rights · 1791</text></g><g><title>1794: the Whiskey Rebellion — Washington leads 13,000 militiamen west and the rising dissolves. Shays answered: the new government can enforce its laws.</title><line x1='581' y1='148' x2='581' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='581' cy='140' r='4' fill='currentColor'/><text x='612' y='192' text-anchor='end' font-size='11'>Whiskey Rebellion · 1794</text></g></g>",
-          "caption": "The whole unit on one line — hover any node. The amber half is a league that cannot tax or compel: both attempted fixes die under the unanimity rule, and Shays's Rebellion makes the helplessness public. The green half is the federal republic proving itself: ratification, courts, a bill of rights, and finally the Whiskey Rebellion — the same test Shays posed, now passed.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The amber span is the Confederation era: a 'firm league of friendship' whose government could not tax or compel anyone. Every event inside it is a symptom of that one design choice.</title><rect x='16' y='14' width='12' height='12' rx='3' fill='rgb(var(--at-risk) / 0.35)' stroke='rgb(var(--at-risk))'/><text x='34' y='24' font-size='11'>the league: can't tax, can't compel (1781–88)</text></g><g><title>The green span is the federal republic: after June 1788 there is a government with direct power over citizens, and the events inside it are that power being exercised for the first time.</title><rect x='336' y='14' width='12' height='12' rx='3' fill='rgb(var(--on-track) / 0.25)' stroke='rgb(var(--on-track))'/><text x='354' y='24' font-size='11'>the federal republic (1788–)</text></g><rect x='40' y='133' width='325' height='14' rx='4' fill='rgb(var(--at-risk) / 0.18)'/><rect x='365' y='133' width='255' height='14' rx='4' fill='rgb(var(--on-track) / 0.15)'/><line x1='40' y1='140' x2='620' y2='140' stroke='currentColor' stroke-width='1.6'/><g><title>1781: the Articles are finally ratified: and the same year Rhode Island alone kills the first tax amendment, proving the unanimity rule makes the design unfixable from inside.</title><line x1='79' y1='100' x2='79' y2='132' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='79' cy='140' r='4' fill='currentColor'/><text x='44' y='80' font-size='11'>Articles ratified · 1781</text><text x='44' y='94' font-size='10' opacity='0.6'>(tax amendment dies same year)</text></g><g><title>1783: the war ends with a huge debt: and New York kills the second tax amendment. Two failed fixes in two years; the flaw is now known to be permanent.</title><line x1='156' y1='148' x2='156' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='156' cy='140' r='4' fill='currentColor'/><text x='156' y='192' text-anchor='middle' font-size='11'>2nd tax amendment dies · 1783</text></g><g><title>Winter 1786–87: Shays's Rebellion: indebted veteran farmers close Massachusetts courts and march on the Springfield arsenal, and the national government can only watch. The shock that makes the Convention possible.</title><line x1='295' y1='100' x2='295' y2='132' stroke='rgb(var(--critical))' stroke-width='1.4'/><circle cx='295' cy='140' r='5' fill='rgb(var(--critical))'/><text x='295' y='94' text-anchor='middle' font-size='11' fill='rgb(var(--critical))'>Shays's Rebellion · 1786–87</text></g><g><title>May 1787: fifty-five delegates meet in Philadelphia with instructions to revise the Articles. They lock the doors and write a new government instead.</title><line x1='326' y1='148' x2='326' y2='216' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='326' cy='140' r='4' fill='currentColor'/><text x='326' y='232' text-anchor='middle' font-size='11'>Philadelphia Convention · May 1787</text></g><g><title>June 1788: New Hampshire, the ninth state, ratifies: the Constitution takes effect. Virginia and New York follow narrowly, on the promise of amendments.</title><line x1='365' y1='60' x2='365' y2='132' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='365' cy='140' r='6' fill='rgb(var(--on-track))'/><text x='365' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NH ratifies (9th) · June 1788</text></g><g><title>1789: Washington is inaugurated (elected unanimously) and the Judiciary Act builds the court system. The precedent-setting decade begins.</title><line x1='390' y1='148' x2='390' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='390' cy='140' r='4' fill='currentColor'/><text x='400' y='192' text-anchor='middle' font-size='11'>Washington · 1789</text></g><g><title>1791: the Bill of Rights is ratified: the Anti-Federalists' one lasting victory, and the concession that brought North Carolina and Rhode Island into the union.</title><line x1='465' y1='100' x2='465' y2='132' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><circle cx='465' cy='140' r='4' fill='rgb(var(--accent-fg))'/><text x='465' y='94' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>Bill of Rights · 1791</text></g><g><title>1794: the Whiskey Rebellion: Washington leads 13,000 militiamen west and the rising dissolves. Shays answered: the new government can enforce its laws.</title><line x1='581' y1='148' x2='581' y2='176' stroke='currentColor' stroke-width='1' opacity='0.5'/><circle cx='581' cy='140' r='4' fill='currentColor'/><text x='612' y='192' text-anchor='end' font-size='11'>Whiskey Rebellion · 1794</text></g></g>",
+          "caption": "The whole unit on one line: hover any node. The amber half is a league that cannot tax or compel: both attempted fixes die under the unanimity rule, and Shays's Rebellion makes the helplessness public. The green half is the federal republic proving itself: ratification, courts, a bill of rights, and finally the Whiskey Rebellion: the same test Shays posed, now passed.",
           "slide": "1781–1794 on one line",
-          "id": "why.5d7e93a1"
+          "id": "why.4ed89aba"
         }
       ]
     },
@@ -41,75 +41,120 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "The Articles were drafted by the Continental Congress in 1777 and finally ratified by all thirteen states in 1781. The document calls the union a =='firm league of friendship'== — that phrase matters, because it tells you what they were building: an alliance of thirteen sovereign states, not a nation. Each state kept 'its sovereignty, freedom, and independence.' Every rule below follows from that premise — if the states are sovereign, the center can only ask, never order.",
+          "md": "The Articles were drafted by the Continental Congress in 1777 and finally ratified by all thirteen states in 1781. The document calls the union a =='firm league of friendship'==: that phrase matters, because it tells you what they were building: an alliance of thirteen sovereign states, not a nation. Each state kept 'its sovereignty, freedom, and independence.' Every rule below follows from that premise: if the states are sovereign, the center can only ask, never order.",
           "slide": "A league, not a nation",
-          "id": "articles.2bc5bae6"
+          "id": "articles.3df5eab1"
         },
         {
           "type": "definition",
           "term": "One branch only",
           "body": "a Congress. No president (no executive), no national courts (no judiciary). Congress did everything, which meant it could do little.",
-          "id": "articles.5fe049f6"
+          "id": "articles.aeaf16b6"
         },
         {
           "type": "definition",
           "term": "One state, one vote",
-          "body": "Regardless of population — Virginia and Delaware counted the same. A sovereign state can't be outvoted by a bigger neighbor; that's the league premise again.",
-          "id": "articles.ced3827d"
+          "body": "Regardless of population: Virginia and Delaware counted the same. A sovereign state can't be outvoted by a bigger neighbor; that's the league premise again.",
+          "id": "articles.4406933d"
         },
         {
           "type": "definition",
           "term": "Nine of thirteen",
           "body": "states had to agree to pass anything important (declare war, make treaties, borrow money).",
-          "id": "articles.7a93d234"
+          "id": "articles.f1382af4"
         },
         {
           "type": "definition",
           "term": "All thirteen",
-          "body": "had to agree to amend the Articles. One state could block any change — and one always did.",
-          "id": "articles.6fe56aa2"
+          "body": "had to agree to amend the Articles. One state could block any change: and one always did.",
+          "id": "articles.3c21b7e2"
         },
         {
           "type": "definition",
           "term": "Could",
           "body": "declare war and make peace, conduct diplomacy and sign treaties, coin money, run a post office, manage the western territories.",
-          "id": "articles.7190d34d"
+          "id": "articles.b078dd0d"
         },
         {
           "type": "definition",
           "term": "Could NOT tax.",
           "body": "It could only *request* money from the states, who mostly ignored the requests.",
-          "id": "articles.affeca21"
+          "id": "articles.6d71fa61"
         },
         {
           "type": "definition",
           "term": "Could NOT regulate commerce",
           "body": "between states or with other countries. States taxed each other's goods.",
-          "id": "articles.fc650f98"
+          "id": "articles.770fb5d8"
         },
         {
           "type": "definition",
           "term": "Could NOT raise an army",
           "body": "on its own; it depended on state militias.",
-          "id": "articles.8dfce4bc"
+          "id": "articles.c71d307c"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Money and trade",
+                "lines": [
+                  "Could not tax; could only ask states for money.",
+                  "Could not regulate trade between the states."
+                ],
+                "badge": "no power",
+                "tone": "red"
+              },
+              {
+                "title": "Holding it together",
+                "lines": [
+                  "Could not force delegates to attend.",
+                  "No way to settle conflicts between states.",
+                  "No help in a crisis (think Shays's Rebellion)."
+                ],
+                "badge": "no teeth",
+                "tone": "amber"
+              },
+              {
+                "title": "Structure and votes",
+                "lines": [
+                  "No executive, no national courts.",
+                  "7 states to pass ordinary laws, 9 for war and treaties, 13 to amend."
+                ],
+                "badge": "hard to act",
+                "tone": "brand"
+              }
+            ]
+          },
+          "caption": "The lecture's list of the Articles' limits, grouped. When a quiz asks 'which was a weakness of the Articles?', the answer is on one of these cards.",
+          "slide": "The limits, lecture version",
+          "id": "articles.623861ae"
+        },
+        {
+          "type": "definition",
+          "term": "State constitutions (1776 to 1780)",
+          "body": "While the Articles kept the national government weak, each state wrote its own constitution. The lecture's features: government rests on the **consent of the governed**; **weak governors** and strong elected **assemblies** (fear of another king); **seven states** added a **bill of rights**; voting was tied to owning **property**. **Example:** the states, not Congress, were where real power sat in the 1780s.",
+          "id": "articles.cfcaf276"
         },
         {
           "type": "prose",
-          "md": "The Articles government did get one thing enduringly right. The **Land Ordinance of 1785** laid the survey grid — townships six miles square, sections of 640 acres, one section per township reserved for schools — that still shapes the Midwest from an airplane window. The **Northwest Ordinance of 1787** set the process by which a territory becomes a state (a governor, then a legislature at 5,000 free men, then statehood at 60,000 on equal footing with the original states) and ==banned slavery north of the Ohio River==. That ban is the first federal limit on slavery and the seed of the free-state/slave-state divide.",
+          "md": "The Articles government did get one thing enduringly right. The **Land Ordinance of 1785** laid the survey grid: townships six miles square, sections of 640 acres, one section per township reserved for schools: that still shapes the Midwest from an airplane window. The **Northwest Ordinance of 1787** set the process by which a territory becomes a state (a governor, then a legislature at 5,000 free men, then statehood at 60,000 on equal footing with the original states) and ==banned slavery north of the Ohio River==. That ban is the first federal limit on slavery and the seed of the free-state/slave-state divide.",
           "slide": "Its one big success: the West",
-          "id": "articles.2bd72223"
+          "id": "articles.00cf7f6d"
         },
         {
           "type": "check",
           "prompt": "Why did the Articles require unanimous consent to amend, and what did that guarantee?",
           "answer": "Because each state was sovereign and no state would accept being outvoted on the rules of the league. It guaranteed the Articles could never be fixed from inside: every proposed tax amendment (1781, 1783) died because a single state (Rhode Island, then New York) refused.",
           "sectionRef": "articles",
-          "id": "articles.665f0ad2"
+          "id": "articles.d6cf15b4"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** 'League of sovereign members with a unanimity rule' is not an antique — it is the European Union's constitution problem today: EU treaty changes and some tax and foreign-policy decisions require all member states to agree, so a single member (Hungary on sanctions, Ireland on the Lisbon Treaty) can play the role Rhode Island played in 1781. The UN Security Council veto is the same design, with the same result: the body watches crises it cannot act on. Whenever you read that NATO, the EU, or the UN 'failed to respond', you are reading a story this section already taught you — sovereignty kept by the members means paralysis at the center. And when this course reaches 1861, remember that secession is the league theory reasserting itself: the Confederacy's constitution deliberately re-weakened the center. Essay questions that ask 'was the Constitution a betrayal or a fulfillment of the Revolution?' expect you to see that the Articles were the Revolution's *first* answer, not a mistake.",
-          "id": "articles.5e8d21c4"
+          "md": "**Where you'll meet this after the exam** 'League of sovereign members with a unanimity rule' is not an antique: it is the European Union's constitution problem today: EU treaty changes and some tax and foreign-policy decisions require all member states to agree, so a single member (Hungary on sanctions, Ireland on the Lisbon Treaty) can play the role Rhode Island played in 1781. The UN Security Council veto is the same design, with the same result: the body watches crises it cannot act on. Whenever you read that NATO, the EU, or the UN 'failed to respond', you are reading a story this section already taught you: sovereignty kept by the members means paralysis at the center. And when this course reaches 1861, remember that secession is the league theory reasserting itself: the Confederacy's constitution deliberately re-weakened the center. Essay questions that ask 'was the Constitution a betrayal or a fulfillment of the Revolution?' expect you to see that the Articles were the Revolution's *first* answer, not a mistake.",
+          "id": "articles.7ba811b6"
         }
       ]
     },
@@ -120,45 +165,45 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**One cause** Every failure below traces to the same design choice: ==a government that couldn't tax or compel==. The chain is always the same three links — no tax power → no money and no army → helplessness when tested. Remember that and you can reconstruct the whole list on the quiz instead of memorizing it.",
+          "md": "**One cause** Every failure below traces to the same design choice: ==a government that couldn't tax or compel==. The chain is always the same three links: no tax power → no money and no army → helplessness when tested. Remember that and you can reconstruct the whole list on the quiz instead of memorizing it.",
           "slide": "Four failures, one cause",
-          "id": "failed.7d8a5bcd"
+          "id": "failed.3fefd587"
         },
         {
           "type": "prose",
-          "md": "- The war left a huge debt owed to soldiers, suppliers, and foreign lenders (France, the Dutch). Congress had no way to pay it — ==it couldn't tax==, so unpaid debt wasn't bad luck, it was built in.\n- Congress had printed paper money ('Continentals') during the war; with no tax revenue behind it, it became worthless: 'not worth a Continental' entered the language.\n- Because Congress couldn't regulate commerce, states printed their own money and put tariffs on goods from neighboring states. There was no national economy, just thirteen quarreling ones.",
+          "md": "- The war left a huge debt owed to soldiers, suppliers, and foreign lenders (France, the Dutch). Congress had no way to pay it: ==it couldn't tax==, so unpaid debt wasn't bad luck, it was built in.\n- Congress had printed paper money ('Continentals') during the war; with no tax revenue behind it, it became worthless: 'not worth a Continental' entered the language.\n- Because Congress couldn't regulate commerce, states printed their own money and put tariffs on goods from neighboring states. There was no national economy, just thirteen quarreling ones.",
           "slide": "Money",
-          "id": "failed.0978f352"
+          "id": "failed.35176851"
         },
         {
           "type": "prose",
-          "md": "Each foreign failure is the same chain — no army or navy (because no money, because no taxes) → no leverage → other powers act freely:\n- Britain kept its forts in the Northwest (Detroit, Niagara) in violation of the 1783 peace treaty, and Congress couldn't force them out.\n- ==Spain closed the Mississippi River to American trade in 1784==, strangling western farmers. Congress had no leverage to reopen it.\n- Barbary pirates seized American ships in the Mediterranean; Britain no longer protected them and Congress had no navy to send.",
+          "md": "Each foreign failure is the same chain: no army or navy (because no money, because no taxes) → no leverage → other powers act freely:\n- Britain kept its forts in the Northwest (Detroit, Niagara) in violation of the 1783 peace treaty, and Congress couldn't force them out.\n- ==Spain closed the Mississippi River to American trade in 1784==, strangling western farmers. Congress had no leverage to reopen it.\n- Barbary pirates seized American ships in the Mediterranean; Britain no longer protected them and Congress had no navy to send.",
           "slide": "Weakness abroad",
-          "id": "failed.fcf28848"
+          "id": "failed.2422f24d"
         },
         {
           "type": "prose",
-          "md": "Follow the chain down to the ground. Congress couldn't tax → the war debt fell on the states → Massachusetts tried to pay its share with heavy taxes in hard money → farmers in the western part of the state, many of them Revolutionary War veterans, couldn't pay and were losing their farms in debt court. Led by **Daniel Shays**, a former captain, they closed the courts by force and marched on the federal arsenal at Springfield in January 1787. The Confederation government could do nothing — no army, no money, for the same root reason the farmers were being squeezed. Massachusetts put the rising down with a *privately funded* militia. To the country's elites, this was the proof: ==a government that couldn't protect a federal arsenal from its own citizens wasn't a government==. Washington wrote that he was 'mortified beyond expression.'",
-          "slide": "Shays's Rebellion, 1786–87 — the shock",
-          "id": "failed.c78a2aa2"
+          "md": "Follow the chain down to the ground. Congress couldn't tax → the war debt fell on the states → Massachusetts tried to pay its share with heavy taxes in hard money → farmers in the western part of the state, many of them Revolutionary War veterans, couldn't pay and were losing their farms in debt court. Led by **Daniel Shays**, a former captain, they closed the courts by force and marched on the federal arsenal at Springfield in January 1787. The Confederation government could do nothing: no army, no money, for the same root reason the farmers were being squeezed. Massachusetts put the rising down with a *privately funded* militia. To the country's elites, this was the proof: ==a government that couldn't protect a federal arsenal from its own citizens wasn't a government==. Washington wrote that he was 'mortified beyond expression.'",
+          "slide": "Shays's Rebellion, 1786–87: the shock",
+          "id": "failed.0b68a6d8"
         },
         {
           "type": "prose",
-          "md": "In September 1786 a meeting at **Annapolis** to fix trade problems drew only five states — too few to do anything — but the delegates (including **Alexander Hamilton** and **James Madison**) called for a new convention in Philadelphia in May 1787 'to render the federal constitution adequate.' Shays's Rebellion, happening at that exact moment, got Congress to endorse it. Fifty-five delegates from twelve states came (Rhode Island refused). ==Their instructions were to revise the Articles; they locked the doors and wrote a new government instead.==",
+          "md": "In September 1786 a meeting at **Annapolis** to fix trade problems drew only five states: too few to do anything: but the delegates (including **Alexander Hamilton** and **James Madison**) called for a new convention in Philadelphia in May 1787 'to render the federal constitution adequate.' Shays's Rebellion, happening at that exact moment, got Congress to endorse it. Fifty-five delegates from twelve states came (Rhode Island refused). ==Their instructions were to revise the Articles; they locked the doors and wrote a new government instead.==",
           "slide": "From Annapolis to Philadelphia",
-          "id": "failed.ebb23c2d"
+          "id": "failed.cdf2702e"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The shape of this section — a structural rule makes failure inevitable, the fix is blocked by the same rule, then one dramatic event makes the failure undeniable — is how historians explain almost every institutional collapse, and it's the shape the cause-chain exercise below drills. You'll reuse it on modern material constantly: analyses of why the U.S. Senate filibuster blocks its own reform, why the EU can't discipline a member that holds a veto, or why a company's board can't fire itself all run Rhode-Island-shaped logic. Journalists reach for 'Shays's Rebellion moment' whenever unrest exposes a government that lacks capacity rather than will. And on essays: when Dr. Jeffrey asks *why* the Articles failed, the graded move is the chain (rule → blocked fix → visible collapse), not the list — 'Shays's Rebellion caused the Constitution' without the earlier links is the answer that loses the point.",
-          "id": "failed.3a9c74e1"
+          "md": "**Where you'll meet this after the exam** The shape of this section: a structural rule makes failure inevitable, the fix is blocked by the same rule, then one dramatic event makes the failure undeniable: is how historians explain almost every institutional collapse, and it's the shape the cause-chain exercise below drills. You'll reuse it on modern material constantly: analyses of why the U.S. Senate filibuster blocks its own reform, why the EU can't discipline a member that holds a veto, or why a company's board can't fire itself all run Rhode-Island-shaped logic. Journalists reach for 'Shays's Rebellion moment' whenever unrest exposes a government that lacks capacity rather than will. And on essays: when Dr. Jeffrey asks *why* the Articles failed, the graded move is the chain (rule → blocked fix → visible collapse), not the list: 'Shays's Rebellion caused the Constitution' without the earlier links is the answer that loses the point.",
+          "id": "failed.542d84e5"
         },
         {
           "type": "check",
           "prompt": "Which event most directly persuaded reluctant states and Congress to support the Philadelphia Convention?",
           "answer": "Shays's Rebellion (winter 1786–87). It showed the national government couldn't respond to armed unrest even at a federal arsenal, and it frightened property-owning elites in every state.",
           "sectionRef": "failed",
-          "id": "failed.061dbe7f"
+          "id": "failed.c98ad1c1"
         }
       ]
     },
@@ -168,59 +213,106 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "The Articles made a league of states; the Constitution made a **federal republic** — a national government with direct power over individual citizens (==it can tax you, not just ask your state==), supreme over state law in its own sphere (the **supremacy clause**, Article VI), and able to do the two things the Articles couldn't: **tax** and **regulate commerce**. Power was divided between nation and states — that division is what 'federalism' means. Read the whole document as a point-by-point answer: every power it grants corresponds to a specific Confederation failure, which is what the figure below maps.",
+          "md": "The Articles made a league of states; the Constitution made a **federal republic**: a national government with direct power over individual citizens (==it can tax you, not just ask your state==), supreme over state law in its own sphere (the **supremacy clause**, Article VI), and able to do the two things the Articles couldn't: **tax** and **regulate commerce**. Power was divided between nation and states: that division is what 'federalism' means. Read the whole document as a point-by-point answer: every power it grants corresponds to a specific Confederation failure, which is what the figure below maps.",
           "slide": "The big shift: federal, not confederal",
-          "id": "changed.dc3a10b7"
+          "id": "changed.f0effb4f"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 400",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='cfx1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><text x='149' y='22' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))'>ARTICLES WEAKNESS</text><text x='491' y='22' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>CONSTITUTIONAL FIX</text><g><title>The root weakness: Congress could only request money from states that ignored the requests. The fix is the very first power Article I grants: Congress lays and collects taxes directly from citizens. Money is why every other fix works.</title><rect x='24' y='34' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='52' font-size='11.5' font-weight='700'>Could only REQUEST money</text><text x='36' y='68' font-size='10.5' opacity='0.65'>no tax power; debts unpaid</text><path d='M278 56 L358 56' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='34' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='52' font-size='11.5' font-weight='700'>Art. I: Congress taxes directly</text><text x='378' y='68' font-size='10.5' opacity='0.65'>'lay and collect Taxes' — on you, not your state</text></g><g><title>No commerce power meant thirteen quarreling economies with state tariffs at every border. The commerce clause hands interstate and foreign trade to Congress — the clause Gibbons v. Ogden (1824) and much of modern federal law rest on.</title><rect x='24' y='94' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='112' font-size='11.5' font-weight='700'>No power over commerce</text><text x='36' y='128' font-size='10.5' opacity='0.65'>states tariffed each other's goods</text><path d='M278 116 L358 116' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='94' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='112' font-size='11.5' font-weight='700'>Commerce clause</text><text x='378' y='128' font-size='10.5' opacity='0.65'>Congress regulates interstate &amp; foreign trade</text></g><g><title>With no executive and no army, the government watched Shays's men march on its own arsenal. Article II creates a single President, commander in chief, whose job is to see the laws faithfully executed — tested and proven in the Whiskey Rebellion.</title><rect x='24' y='154' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='172' font-size='11.5' font-weight='700'>No executive, no army</text><text x='36' y='188' font-size='10.5' opacity='0.65'>couldn't answer Shays's Rebellion</text><path d='M278 176 L358 176' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='154' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='172' font-size='11.5' font-weight='700'>Art. II: a President</text><text x='378' y='188' font-size='10.5' opacity='0.65'>commander in chief; enforces the law</text></g><g><title>No national courts meant no umpire between states or over federal law. Article III creates the Supreme Court and lower federal courts; the Judiciary Act of 1789 builds them.</title><rect x='24' y='214' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='232' font-size='11.5' font-weight='700'>No national courts</text><text x='36' y='248' font-size='10.5' opacity='0.65'>no umpire between states</text><path d='M278 236 L358 236' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='214' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='232' font-size='11.5' font-weight='700'>Art. III: Supreme Court</text><text x='378' y='248' font-size='10.5' opacity='0.65'>+ lower federal courts (Judiciary Act 1789)</text></g><g><title>One state, one vote ignored population — Virginia counted the same as Delaware. The Great Compromise splits the difference: a House by population for the big states, a Senate of two per state for the small ones.</title><rect x='24' y='274' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='292' font-size='11.5' font-weight='700'>One state, one vote</text><text x='36' y='308' font-size='10.5' opacity='0.65'>Virginia counted the same as Delaware</text><path d='M278 296 L358 296' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='274' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='292' font-size='11.5' font-weight='700'>Great Compromise</text><text x='378' y='308' font-size='10.5' opacity='0.65'>House by population · Senate 2 per state</text></g><g><title>Unanimous amendment let one state veto every fix — Rhode Island in 1781, New York in 1783. Article V lowers the bar to two-thirds of Congress plus three-quarters of the states: hard, but possible. The document can now repair itself.</title><rect x='24' y='334' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='352' font-size='11.5' font-weight='700'>Amending needed all 13</text><text x='36' y='368' font-size='10.5' opacity='0.65'>one state blocked every fix</text><path d='M278 356 L358 356' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='334' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='352' font-size='11.5' font-weight='700'>Art. V amendment</text><text x='378' y='368' font-size='10.5' opacity='0.65'>2/3 of Congress + 3/4 of states</text></g></g>",
-          "caption": "Every constitutional power answers a specific Confederation failure — hover any row for the story behind it. This one-to-one mapping is the fastest way to answer both 'why did the Articles fail?' and 'what did the Constitution change?': they are the same question read in opposite directions.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='cfx1' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><text x='149' y='22' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))'>ARTICLES WEAKNESS</text><text x='491' y='22' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>CONSTITUTIONAL FIX</text><g><title>The root weakness: Congress could only request money from states that ignored the requests. The fix is the very first power Article I grants: Congress lays and collects taxes directly from citizens. Money is why every other fix works.</title><rect x='24' y='34' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='52' font-size='11.5' font-weight='700'>Could only REQUEST money</text><text x='36' y='68' font-size='10.5' opacity='0.65'>no tax power; debts unpaid</text><path d='M278 56 L358 56' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='34' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='52' font-size='11.5' font-weight='700'>Art. I: Congress taxes directly</text><text x='378' y='68' font-size='10.5' opacity='0.65'>'lay and collect Taxes': on you, not your state</text></g><g><title>No commerce power meant thirteen quarreling economies with state tariffs at every border. The commerce clause hands interstate and foreign trade to Congress: the clause Gibbons v. Ogden (1824) and much of modern federal law rest on.</title><rect x='24' y='94' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='112' font-size='11.5' font-weight='700'>No power over commerce</text><text x='36' y='128' font-size='10.5' opacity='0.65'>states tariffed each other's goods</text><path d='M278 116 L358 116' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='94' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='112' font-size='11.5' font-weight='700'>Commerce clause</text><text x='378' y='128' font-size='10.5' opacity='0.65'>Congress regulates interstate &amp; foreign trade</text></g><g><title>With no executive and no army, the government watched Shays's men march on its own arsenal. Article II creates a single President, commander in chief, whose job is to see the laws faithfully executed: tested and proven in the Whiskey Rebellion.</title><rect x='24' y='154' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='172' font-size='11.5' font-weight='700'>No executive, no army</text><text x='36' y='188' font-size='10.5' opacity='0.65'>couldn't answer Shays's Rebellion</text><path d='M278 176 L358 176' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='154' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='172' font-size='11.5' font-weight='700'>Art. II: a President</text><text x='378' y='188' font-size='10.5' opacity='0.65'>commander in chief; enforces the law</text></g><g><title>No national courts meant no umpire between states or over federal law. Article III creates the Supreme Court and lower federal courts; the Judiciary Act of 1789 builds them.</title><rect x='24' y='214' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='232' font-size='11.5' font-weight='700'>No national courts</text><text x='36' y='248' font-size='10.5' opacity='0.65'>no umpire between states</text><path d='M278 236 L358 236' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='214' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='232' font-size='11.5' font-weight='700'>Art. III: Supreme Court</text><text x='378' y='248' font-size='10.5' opacity='0.65'>+ lower federal courts (Judiciary Act 1789)</text></g><g><title>One state, one vote ignored population: Virginia counted the same as Delaware. The Great Compromise splits the difference: a House by population for the big states, a Senate of two per state for the small ones.</title><rect x='24' y='274' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='292' font-size='11.5' font-weight='700'>One state, one vote</text><text x='36' y='308' font-size='10.5' opacity='0.65'>Virginia counted the same as Delaware</text><path d='M278 296 L358 296' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='274' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='292' font-size='11.5' font-weight='700'>Great Compromise</text><text x='378' y='308' font-size='10.5' opacity='0.65'>House by population · Senate 2 per state</text></g><g><title>Unanimous amendment let one state veto every fix: Rhode Island in 1781, New York in 1783. Article V lowers the bar to two-thirds of Congress plus three-quarters of the states: hard, but possible. The document can now repair itself.</title><rect x='24' y='334' width='250' height='44' rx='9' fill='rgb(var(--critical) / 0.08)' stroke='rgb(var(--critical))' stroke-width='1.5'/><text x='36' y='352' font-size='11.5' font-weight='700'>Amending needed all 13</text><text x='36' y='368' font-size='10.5' opacity='0.65'>one state blocked every fix</text><path d='M278 356 L358 356' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#cfx1)'/><rect x='366' y='334' width='250' height='44' rx='9' fill='rgb(var(--on-track) / 0.1)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='378' y='352' font-size='11.5' font-weight='700'>Art. V amendment</text><text x='378' y='368' font-size='10.5' opacity='0.65'>2/3 of Congress + 3/4 of states</text></g></g>",
+          "caption": "Every constitutional power answers a specific Confederation failure: hover any row for the story behind it. This one-to-one mapping is the fastest way to answer both 'why did the Articles fail?' and 'what did the Constitution change?': they are the same question read in opposite directions.",
           "slide": "Each weakness, and the clause that fixed it",
-          "id": "changed.6b2f84d9"
+          "id": "changed.30c695cd"
         },
         {
           "type": "definition",
           "term": "Legislative",
           "body": "(Article I): a two-house Congress with enumerated powers, plus the 'necessary and proper' clause that lets it stretch them.",
-          "id": "changed.f5c8aff1"
+          "id": "changed.7a4b21b1"
         },
         {
           "type": "definition",
           "term": "Executive",
           "body": "(Article II): a single **President**, chosen by an **Electoral College**, commander in chief, able to veto laws.",
-          "id": "changed.53e54fb6"
+          "id": "changed.d5dc8676"
         },
         {
           "type": "definition",
           "term": "Judicial",
           "body": "(Article III): a **Supreme Court** and lower federal courts.",
-          "id": "changed.cd6c7633"
+          "id": "changed.829527f3"
         },
         {
           "type": "prose",
           "md": "- Each branch checks the others: Congress passes laws, the President can veto, Congress can override; the President appoints judges, the Senate confirms; and so on. The design assumes people are ambitious and sets ambition against ambition (Madison, Federalist 51).",
           "slide": "Three branches, checks and balances",
-          "id": "changed.0c979fc5"
+          "id": "changed.e36f1fcd"
         },
         {
           "type": "prose",
-          "md": "The convention nearly broke over representation. Madison's **Virginia Plan** proposed two houses both apportioned by population — big states would dominate. The **New Jersey Plan** (William Paterson) kept one vote per state. Roger Sherman's **Connecticut Compromise** (the 'Great Compromise') split it: the **House** apportioned by population, the **Senate** with two members per state regardless of size. ##That's why Wyoming and California each have two senators today## — the 1787 deal is still running.",
+          "md": "The convention nearly broke over representation. Madison's **Virginia Plan** proposed two houses both apportioned by population: big states would dominate. The **New Jersey Plan** (William Paterson) kept one vote per state. Roger Sherman's **Connecticut Compromise** (the 'Great Compromise') split it: the **House** apportioned by population, the **Senate** with two members per state regardless of size. ##That's why Wyoming and California each have two senators today##: the 1787 deal is still running.",
           "slide": "The Great Compromise",
-          "id": "changed.47808714"
+          "id": "changed.b21f1cb3"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Virginia Plan",
+              "sub": "James Madison · favors big states",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "New Jersey Plan",
+              "sub": "William Paterson · favors small states",
+              "tone": "amber"
+            },
+            "rows": [
+              {
+                "label": "Branches",
+                "left": "Three: legislative, executive, judicial",
+                "right": "Kept Congress as the center, with a weak executive"
+              },
+              {
+                "label": "Congress",
+                "left": "**Two houses**, both by population",
+                "right": "**One house**, one vote per state"
+              },
+              {
+                "label": "Executive",
+                "left": "Chosen by Congress",
+                "right": "A **three-person** executive elected by Congress"
+              },
+              {
+                "label": "New powers",
+                "left": "Broad national power, veto over state laws",
+                "right": "Add power to **tax**, regulate **trade**, and use **force** on states"
+              }
+            ]
+          },
+          "caption": "The two plans on the lecture slides. The Great Compromise took the Virginia Plan's population-based House and the New Jersey Plan's equal-vote Senate.",
+          "slide": "Two plans",
+          "id": "changed.b9b291c6"
+        },
+        {
+          "type": "definition",
+          "term": "Montesquieu, The Spirit of the Laws (1748)",
+          "body": "A French writer who argued liberty is safe only when lawmaking, enforcing and judging are held by **separate** powers. **Example:** the Virginia Plan's three branches, and the checks between them, come from him.",
+          "id": "changed.1f1be6e5"
         },
         {
           "type": "prose",
-          "md": "The word 'slavery' appears nowhere in the Constitution, but three clauses protect it. The **Three-fifths Compromise**: for both representation in the House and direct taxes, ==enslaved people would be counted as three-fifths of a person== — giving southern states extra seats and extra electoral votes for people who could not vote. Congress could not ban the **international slave trade** until **1808** (Article I, Section 9). And the **fugitive slave clause** (Article IV) required that people escaping slavery be returned even from free states. The cause→effect to hold onto: South Carolina and Georgia made these clauses the price of signing → the framers paid it to get a union → the union they got had slavery structurally rewarded in Congress and the Electoral College. That bargain is exactly the gap David Walker will attack in 1829 — keep this section in mind for Friday's exercise.",
+          "md": "The word 'slavery' appears nowhere in the Constitution, but three clauses protect it. The **Three-fifths Compromise**: for both representation in the House and direct taxes, ==enslaved people would be counted as three-fifths of a person==: giving southern states extra seats and extra electoral votes for people who could not vote. Congress could not ban the **international slave trade** until **1808** (Article I, Section 9). And the **fugitive slave clause** (Article IV) required that people escaping slavery be returned even from free states. The cause→effect to hold onto: South Carolina and Georgia made these clauses the price of signing → the framers paid it to get a union → the union they got had slavery structurally rewarded in Congress and the Electoral College. That bargain is exactly the gap David Walker will attack in 1829: keep this section in mind for Friday's exercise.",
           "slide": "The compromises over slavery",
-          "id": "changed.1e1f943d"
+          "id": "changed.baa49510"
         },
         {
           "type": "prose",
           "md": "The convention required approval by **nine of thirteen** states (not all, as the Articles demanded) and by **special conventions** elected for the purpose rather than by state legislatures. Two reasons: the legislatures would lose power and would likely vote no, and ==a document that opens 'We the People' needed the people's direct consent== to claim authority above the states. Notice the causal design: choose the ratifiers whose interests align with ratifying, and lower the bar from thirteen to nine so no single Rhode Island can veto the whole.",
           "slide": "Ratification by the people, not the legislatures",
-          "id": "changed.8ba04e53"
+          "id": "changed.0beb4cd1"
         },
         {
           "type": "table",
@@ -277,19 +369,363 @@
             ]
           ],
           "slide": "Articles vs Constitution, side by side",
-          "id": "changed.a9864fe9"
+          "id": "changed.0f13a776"
+        },
+        {
+          "type": "stepper",
+          "title": "From the Articles to the Constitution, 1777 to 1791",
+          "frames": [
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 0,
+              "caption": "**1777.** Congress drafts the Articles: a 'league of friendship' with one branch and no power to tax.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 15
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 1,
+              "caption": "**1781.** All thirteen states finally ratify. The national government can ask, but not require.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 15
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 2,
+              "caption": "**1786 to 1787.** Farmers in Massachusetts, crushed by debt and state taxes, rise up. Congress **cannot help**. Elites panic.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 10
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 3,
+              "caption": "**May 1787.** Delegates meet in Philadelphia to fix the Articles, and instead write a new plan: Virginia vs New Jersey.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 45
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 4,
+              "caption": "**September 1787.** The Constitution is signed: three branches, taxing power, the Great Compromise, the three-fifths clause.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 75
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 5,
+              "caption": "**1788.** New Hampshire is the **ninth** state to ratify, so the Constitution takes effect. Federalists win, narrowly.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 80
+              }
+            },
+            {
+              "kind": "timeline",
+              "events": [
+                {
+                  "year": "1777",
+                  "title": "Articles drafted"
+                },
+                {
+                  "year": "1781",
+                  "title": "Articles ratified",
+                  "tone": "amber"
+                },
+                {
+                  "year": "1786–87",
+                  "title": "Shays's Rebellion",
+                  "tone": "red"
+                },
+                {
+                  "year": "May 1787",
+                  "title": "Convention opens",
+                  "tone": "brand"
+                },
+                {
+                  "year": "Sept 1787",
+                  "title": "Constitution signed",
+                  "tone": "brand"
+                },
+                {
+                  "year": "1788",
+                  "title": "Ninth state ratifies",
+                  "tone": "green"
+                },
+                {
+                  "year": "1791",
+                  "title": "Bill of Rights",
+                  "tone": "green"
+                }
+              ],
+              "at": 6,
+              "caption": "**1791.** The Bill of Rights, promised to win over Anti-Federalists, is ratified.",
+              "meter": {
+                "label": "Power of the national government (a rough picture)",
+                "tone": "brand",
+                "low": "league",
+                "high": "strong",
+                "value": 80
+              }
+            }
+          ],
+          "slide": true,
+          "id": "changed.81b19626"
         },
         {
           "type": "check",
           "prompt": "What did the Three-fifths Compromise give the South, concretely?",
-          "answer": "More seats in the House and more electoral votes than its free population warranted — about a third more, by counting enslaved people who had no political rights. It's why Virginians held the presidency for 32 of the first 36 years.",
+          "answer": "More seats in the House and more electoral votes than its free population warranted: about a third more, by counting enslaved people who had no political rights. It's why Virginians held the presidency for 32 of the first 36 years.",
           "sectionRef": "changed",
-          "id": "changed.d56b5c24"
+          "id": "changed.4013a156"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Federal-versus-state power is not a settled 1788 question; it is the live wire of current politics, and the clauses in this section are the ones being argued over. The **supremacy clause** and the **commerce clause** decide whether federal law displaces state law on marijuana (legal in a state, still a federal crime), on immigration enforcement and 'sanctuary' cities, and on healthcare — the Affordable Care Act survived at the Supreme Court in 2012 as a *tax*, after the commerce-clause argument failed. Since *Dobbs* (2022) returned abortion to the states, the country has been re-running the ratification-era argument about which level of government owns which questions. The Senate's two-per-state rule and the Electoral College — both 1787 bargains from this section — are why presidential campaigns live in a handful of states and why constitutional-reform op-eds appear every election year. When Dr. Jeffrey's essay questions ask you to 'trace a founding-era debate to the present', this section is the sourcebook: name the clause, name the 1787 interest behind it, then name the modern fight it still structures.",
-          "id": "changed.1c5a92e7"
+          "md": "**Where you'll meet this after the exam** Federal-versus-state power is not a settled 1788 question; it is the live wire of current politics, and the clauses in this section are the ones being argued over. The **supremacy clause** and the **commerce clause** decide whether federal law displaces state law on marijuana (legal in a state, still a federal crime), on immigration enforcement and 'sanctuary' cities, and on healthcare: the Affordable Care Act survived at the Supreme Court in 2012 as a *tax*, after the commerce-clause argument failed. Since *Dobbs* (2022) returned abortion to the states, the country has been re-running the ratification-era argument about which level of government owns which questions. The Senate's two-per-state rule and the Electoral College: both 1787 bargains from this section: are why presidential campaigns live in a handful of states and why constitutional-reform op-eds appear every election year. When Dr. Jeffrey's essay questions ask you to 'trace a founding-era debate to the present', this section is the sourcebook: name the clause, name the 1787 interest behind it, then name the modern fight it still structures.",
+          "id": "changed.065ae36c"
         }
       ]
     },
@@ -301,68 +737,68 @@
           "type": "prose",
           "md": "The people who opposed ratification ==called themselves the true heirs of 1776== and got stuck with the name their opponents gave them: **Anti-Federalists**. Their logic was causal and Revolutionary: distant power caused tyranny once, so concentrating power at a distance will cause it again. Their leaders included **Patrick Henry** ('I smell a rat'), **George Mason** (who had written Virginia's Declaration of Rights and refused to sign the Constitution), **Richard Henry Lee**, and Governor **George Clinton** of New York. Their base was small farmers, debtors, and the western backcountry.",
           "slide": "Anti-Federalists: the Revolution's logic turned on the Constitution",
-          "id": "objected.251939f1"
+          "id": "objected.2d3578a5"
         },
         {
           "type": "definition",
           "term": "Consolidation",
           "body": "a distant, powerful central government would swallow the states and become the tyranny they'd just escaped. The President looked like a king; the Senate like an aristocracy.",
-          "id": "objected.7f3ce470"
+          "id": "objected.6ad66030"
         },
         {
           "type": "definition",
           "term": "Size",
           "body": "the political theory of the day (Montesquieu) said republics only work in small territories where representatives know their constituents. A continental republic was a contradiction.",
-          "id": "objected.7b2b0c51"
+          "id": "objected.cbf4d111"
         },
         {
           "type": "definition",
           "term": "Standing army",
-          "body": "and the power to tax — the two things Britain had used against them.",
-          "id": "objected.42816a21"
+          "body": "and the power to tax: the two things Britain had used against them.",
+          "id": "objected.63571161"
         },
         {
           "type": "definition",
           "term": "Class",
           "body": "the document favored the wealthy creditor class and was written in secret by elites.",
-          "id": "objected.7d1cb1d8"
+          "id": "objected.d7ca4698"
         },
         {
           "type": "definition",
           "term": "No Bill of Rights",
           "body": "the objection that stuck. The Constitution listed the government's powers but not the people's protections: no guarantee of speech, press, religion, jury trial.",
-          "id": "objected.6b443b90"
+          "id": "objected.87c93bd0"
         },
         {
           "type": "prose",
-          "md": "Supporters — **Federalists** — had the better organization, the newspapers, and Washington's endorsement. **Hamilton, Madison, and John Jay** wrote 85 essays as 'Publius', *The Federalist*, to win New York. The most famous, **Federalist No. 10**, flips the size objection: ==a large republic is safer==, because with so many competing factions no single one can seize control. To win the close states, Federalists promised to add a bill of rights by amendment once the Constitution was in place — concede the strongest objection, keep the document.",
+          "md": "Supporters: **Federalists**: had the better organization, the newspapers, and Washington's endorsement. **Hamilton, Madison, and John Jay** wrote 85 essays as 'Publius', *The Federalist*, to win New York. The most famous, **Federalist No. 10**, flips the size objection: ==a large republic is safer==, because with so many competing factions no single one can seize control. To win the close states, Federalists promised to add a bill of rights by amendment once the Constitution was in place: concede the strongest objection, keep the document.",
           "slide": "Federalists: the answer",
-          "id": "objected.71d24c56"
+          "id": "objected.cbae4c47"
         },
         {
           "type": "prose",
-          "md": "Delaware ratified first (December 1787). ==New Hampshire was the ninth, in June 1788, making it law== — but the union was meaningless without Virginia and New York, which ratified narrowly (89–79 and 30–27) on the promise of amendments. The promise was kept, and that's the causal point: Madison drafted the amendments himself in the first Congress; ten were ratified as the **Bill of Rights** in **1791**; North Carolina and Rhode Island only joined after seeing them. The Anti-Federalists lost the vote but their objection wrote the first ten amendments.",
+          "md": "Delaware ratified first (December 1787). ==New Hampshire was the ninth, in June 1788, making it law==: but the union was meaningless without Virginia and New York, which ratified narrowly (89–79 and 30–27) on the promise of amendments. The promise was kept, and that's the causal point: Madison drafted the amendments himself in the first Congress; ten were ratified as the **Bill of Rights** in **1791**; North Carolina and Rhode Island only joined after seeing them. The Anti-Federalists lost the vote but their objection wrote the first ten amendments.",
           "slide": "Ratification and the Bill of Rights",
-          "id": "objected.d0d21c5f"
+          "id": "objected.548ecbd4"
         },
         {
           "type": "trap",
-          "body": "**The documentary's framing** 'Are We to Be a Nation? 1783–1788' is built as the Federalist–Anti-Federalist debate. If a quiz question asks what the documentary presents as the central question, it's whether thirteen states would consent to become one nation under a government strong enough to govern — and the Anti-Federalists' answer, that liberty is safer close to home, is treated as a serious argument, not a mistake.",
+          "body": "**The documentary's framing** 'Are We to Be a Nation? 1783–1788' is built as the Federalist–Anti-Federalist debate. If a quiz question asks what the documentary presents as the central question, it's whether thirteen states would consent to become one nation under a government strong enough to govern: and the Anti-Federalists' answer, that liberty is safer close to home, is treated as a serious argument, not a mistake.",
           "source": "Quiz",
           "points": null,
-          "id": "objected.df821146"
+          "id": "objected.096e9528"
         },
         {
           "type": "check",
           "prompt": "Federalist No. 10 argued that a large republic was better than a small one. Why?",
           "answer": "Because a large republic contains many factions (interests), so no single faction can form a majority and oppress the rest; and a larger pool of candidates yields better representatives. This reversed the Anti-Federalist (Montesquieu) claim that republics must be small.",
           "sectionRef": "objected",
-          "id": "objected.9f3b32da"
+          "id": "objected.e6f57bec"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The Anti-Federalists lost in 1788 and have been winning arguments ever since. 'Government closest to the people governs best' is a straight Anti-Federalist line, and you'll hear it in every campaign season; Tenth Amendment and states'-rights claims in court are their consolidation objection with a docket number; the persistent unease about presidents acting like kings is George Mason's floor speech, updated. Federalist No. 10 runs the other direction: it is the single most-cited Federalist essay in modern commentary, quoted whenever polarization, lobbying, or 'faction' is diagnosed — political scientists still test Madison's bet that size dilutes faction, and social media is the strongest evidence yet against it. The Bill of Rights, remember, exists because the *losers* of a ratification fight extracted it — a pattern (concession to the defeated as the price of legitimacy) you'll see again in Reconstruction's amendments. Dr. Jeffrey's documentary framing is the essay frame too: treat the Anti-Federalists as a serious argument that lost, not a mistake that was corrected.",
-          "id": "objected.4f8e163b"
+          "md": "**Where you'll meet this after the exam** The Anti-Federalists lost in 1788 and have been winning arguments ever since. 'Government closest to the people governs best' is a straight Anti-Federalist line, and you'll hear it in every campaign season; Tenth Amendment and states'-rights claims in court are their consolidation objection with a docket number; the persistent unease about presidents acting like kings is George Mason's floor speech, updated. Federalist No. 10 runs the other direction: it is the single most-cited Federalist essay in modern commentary, quoted whenever polarization, lobbying, or 'faction' is diagnosed: political scientists still test Madison's bet that size dilutes faction, and social media is the strongest evidence yet against it. The Bill of Rights, remember, exists because the *losers* of a ratification fight extracted it: a pattern (concession to the defeated as the price of legitimacy) you'll see again in Reconstruction's amendments. Dr. Jeffrey's documentary framing is the essay frame too: treat the Anti-Federalists as a serious argument that lost, not a mistake that was corrected.",
+          "id": "objected.a9966b46"
         }
       ]
     },
@@ -372,58 +808,58 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "By 1789 the United States had a government that could tax, trade, defend itself, and enforce its laws — the things the Articles couldn't. What it had *not* settled: how far federal power reached versus the states (the argument of the 1790s and of 1861), and slavery, which the compromises deferred rather than resolved. The textbook's conclusion makes this point: the Constitution was a framework, and the fights over what it meant began immediately.",
+          "md": "By 1789 the United States had a government that could tax, trade, defend itself, and enforce its laws: the things the Articles couldn't. What it had *not* settled: how far federal power reached versus the states (the argument of the 1790s and of 1861), and slavery, which the compromises deferred rather than resolved. The textbook's conclusion makes this point: the Constitution was a framework, and the fights over what it meant began immediately.",
           "slide": "Settled and unsettled",
-          "id": "conclusion.157d9375"
+          "id": "conclusion.e0c7d241"
         }
       ]
     },
     {
       "id": "stability",
-      "heading": "Ch. 9 — What were the sources of political stability in the 1790s?",
+      "heading": "Ch. 9: What were the sources of political stability in the 1790s?",
       "blocks": [
         {
           "type": "prose",
           "label": "why",
           "md": "**The question the section answers** A brand-new government under a document half the country had opposed could easily have collapsed. It didn't. The section asks why. The answer has five parts, and the quiz will ask about each.",
           "slide": "Why this is the assigned section",
-          "id": "stability.b2484228"
+          "id": "stability.58c88e00"
         },
         {
           "type": "prose",
-          "md": "**George Washington** was elected unanimously by the Electoral College in 1789 — the only president ever to be. ==He knew every act set a precedent== and chose carefully: he created a **cabinet** (Jefferson at State, Hamilton at Treasury, Knox at War, Randolph as Attorney General), insisted on the plain title 'Mr. President' over 'His Highness', toured the states to make the office visible, and retired after **two terms** — a limit followed until FDR and then written into the 22nd Amendment. His **Farewell Address** (1796) warned against permanent foreign alliances and against political parties.",
+          "md": "**George Washington** was elected unanimously by the Electoral College in 1789: the only president ever to be. ==He knew every act set a precedent== and chose carefully: he created a **cabinet** (Jefferson at State, Hamilton at Treasury, Knox at War, Randolph as Attorney General), insisted on the plain title 'Mr. President' over 'His Highness', toured the states to make the office visible, and retired after **two terms**: a limit followed until FDR and then written into the 22nd Amendment. His **Farewell Address** (1796) warned against permanent foreign alliances and against political parties.",
           "slide": "1 · Washington",
-          "id": "stability.d6b2a21f"
+          "id": "stability.3dc0ba21"
         },
         {
           "type": "prose",
-          "md": "The first Congress did two things that ==reconciled the losers of ratification== — stability came from giving the defeated a reason to stay in the game. It passed the **Bill of Rights** (1791), answering the Anti-Federalists' main complaint. And the **Judiciary Act of 1789** built the court system the Constitution had only sketched: a **Supreme Court** of six justices, thirteen district courts, and three circuit courts — with the federal courts able to review state court decisions on federal questions.",
+          "md": "The first Congress did two things that ==reconciled the losers of ratification==: stability came from giving the defeated a reason to stay in the game. It passed the **Bill of Rights** (1791), answering the Anti-Federalists' main complaint. And the **Judiciary Act of 1789** built the court system the Constitution had only sketched: a **Supreme Court** of six justices, thirteen district courts, and three circuit courts: with the federal courts able to review state court decisions on federal questions.",
           "slide": "2 · The Bill of Rights and the Judiciary Act",
-          "id": "stability.79761961"
+          "id": "stability.8e9e91e2"
         },
         {
           "type": "prose",
-          "md": "Treasury Secretary **Alexander Hamilton** set out to make the national government's credit sound and to bind the wealthy to its success. His *Report on Public Credit* (1790) proposed **funding** the national debt at full face value (paying bondholders in full, even speculators who'd bought bonds cheap) and **assuming** the states' war debts. Then a **national bank** — the **Bank of the United States** (1791) — to hold government funds and issue a stable currency; an **excise tax** on whiskey; and a **tariff** on imports to protect American manufacturing (his *Report on Manufactures*). Every piece serves one causal logic: ==creditors who are owed money by the government want the government to survive== — pay the debt at face value and the richest men in America become the Constitution's bodyguards.",
+          "md": "Treasury Secretary **Alexander Hamilton** set out to make the national government's credit sound and to bind the wealthy to its success. His *Report on Public Credit* (1790) proposed **funding** the national debt at full face value (paying bondholders in full, even speculators who'd bought bonds cheap) and **assuming** the states' war debts. Then a **national bank**: the **Bank of the United States** (1791): to hold government funds and issue a stable currency; an **excise tax** on whiskey; and a **tariff** on imports to protect American manufacturing (his *Report on Manufactures*). Every piece serves one causal logic: ==creditors who are owed money by the government want the government to survive==: pay the debt at face value and the richest men in America become the Constitution's bodyguards.",
           "slide": "3 · Hamilton's financial program",
-          "id": "stability.c3037c0e"
+          "id": "stability.84bbf3e8"
         },
         {
           "type": "prose",
-          "md": "Assumption of state debts stalled — Virginia had already paid its debts and didn't want to pay Massachusetts's. In June 1790, over dinner, ==Jefferson and Madison agreed to deliver southern votes for assumption== in exchange for Hamilton delivering northern votes to put the permanent **national capital on the Potomac** — Washington, D.C. Both sides got what they wanted; the deal is a textbook staple, and it's also the mechanism of the whole section in miniature: stability bought by trading what each side valued most.",
+          "md": "Assumption of state debts stalled: Virginia had already paid its debts and didn't want to pay Massachusetts's. In June 1790, over dinner, ==Jefferson and Madison agreed to deliver southern votes for assumption== in exchange for Hamilton delivering northern votes to put the permanent **national capital on the Potomac**: Washington, D.C. Both sides got what they wanted; the deal is a textbook staple, and it's also the mechanism of the whole section in miniature: stability bought by trading what each side valued most.",
           "slide": "The Dinner Table Bargain",
-          "id": "stability.88bc60b9"
+          "id": "stability.1a4f872f"
         },
         {
           "type": "prose",
-          "md": "Hamilton's whiskey excise fell hardest on western Pennsylvania farmers who turned grain into whiskey because it was the only way to get it to market. In 1794 they tarred and feathered tax collectors and gathered by the thousands. Washington personally led a **13,000-man militia** west; the rebels dissolved before it arrived. ##Under the Articles, the government watched Shays; under the Constitution, it marched.## That before/after contrast is the whole point of the section — same kind of uprising, same kind of grievance (taxes on struggling farmers), opposite outcome, because the design changed.",
-          "slide": "4 · The Whiskey Rebellion, 1794 — Shays's Rebellion answered",
-          "id": "stability.7cb5545e"
+          "md": "Hamilton's whiskey excise fell hardest on western Pennsylvania farmers who turned grain into whiskey because it was the only way to get it to market. In 1794 they tarred and feathered tax collectors and gathered by the thousands. Washington personally led a **13,000-man militia** west; the rebels dissolved before it arrived. ##Under the Articles, the government watched Shays; under the Constitution, it marched.## That before/after contrast is the whole point of the section: same kind of uprising, same kind of grievance (taxes on struggling farmers), opposite outcome, because the design changed.",
+          "slide": "4 · The Whiskey Rebellion, 1794: Shays's Rebellion answered",
+          "id": "stability.a0aa2df3"
         },
         {
           "type": "prose",
-          "md": "The 1790s were economically good: European wars (after 1793) made American ships the neutral carriers of the Atlantic, exports boomed, and the population grew fast and moved west (Kentucky 1792, Tennessee 1796). ==A government that presides over growth gets the credit== — prosperity made every other source of stability easier to sustain.",
+          "md": "The 1790s were economically good: European wars (after 1793) made American ships the neutral carriers of the Atlantic, exports boomed, and the population grew fast and moved west (Kentucky 1792, Tennessee 1796). ==A government that presides over growth gets the credit==: prosperity made every other source of stability easier to sustain.",
           "slide": "5 · Prosperity and expansion",
-          "id": "stability.9a05518b"
+          "id": "stability.83b84cc4"
         },
         {
           "type": "table",
@@ -465,31 +901,152 @@
             ]
           ],
           "slide": "How stability turned into the first parties",
-          "id": "stability.609cac4c"
+          "id": "stability.a42654c7"
         },
         {
           "type": "prose",
           "md": "The section you were assigned stops at stability, but the quiz might reach into what followed: the party split over Hamilton's bank and the French Revolution, **Jay's Treaty** (1795, avoided war with Britain but looked like surrender to Jeffersonians), the **XYZ Affair** (1797–98, French demands for bribes → Quasi-War), and the **Alien and Sedition Acts** (1798, jailing Republican editors) answered by Jefferson and Madison's **Virginia and Kentucky Resolutions**. If a question names one of those, put it on the Federalist or Republican side using the table.",
-          "id": "stability.3c887788"
+          "id": "stability.db221e70"
         },
         {
           "type": "check",
           "prompt": "Name three parts of Hamilton's program and the purpose that connected them.",
           "answer": "Funding the national debt at par, assuming state debts, and a national bank (also the excise and tariff). Purpose: establish the nation's credit and give wealthy creditors a stake in the federal government's survival.",
           "sectionRef": "stability",
-          "id": "stability.c7b79a6d"
+          "id": "stability.9ae4078b"
         },
         {
           "type": "check",
           "prompt": "Why does a historian call the Whiskey Rebellion a 'source of stability' rather than a threat to it?",
-          "answer": "Because its suppression demonstrated that the new government could enforce federal law with force — precisely what the Articles government had failed to do in Shays's Rebellion seven years earlier.",
+          "answer": "Because its suppression demonstrated that the new government could enforce federal law with force: precisely what the Articles government had failed to do in Shays's Rebellion seven years earlier.",
           "sectionRef": "stability",
-          "id": "stability.cee3c104"
+          "id": "stability.4c38bcae"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The 1790s built the furniture American politics still sits on. Washington's two-term precedent held for 144 years on custom alone before FDR broke it and the 22nd Amendment wrote it down — the standing example, in every civics debate, of how much of the presidency runs on norms rather than text. Hamilton's funded debt is the origin story of the U.S. Treasury market, the 'full faith and credit' that today's debt-ceiling standoffs threaten; his creditors-as-stakeholders logic reappears whenever a government bails out bondholders to protect its borrowing. The Virginia and Kentucky Resolutions' claim that states can nullify federal law resurfaces in the 1832 nullification crisis, in 1861, and — in softer form — in today's sanctuary cities and state marijuana laws that simply decline to help enforce federal statutes. Even the Dinner Table Bargain is the template every legislative logroll follows. When an essay question asks 'how did the new government survive its first decade?', the graded structure is this section's five mechanisms — precedent, concession to the losers, creditor self-interest, demonstrated force, prosperity — each with its named example.",
-          "id": "stability.8d3b57f2"
+          "md": "**Where you'll meet this after the exam** The 1790s built the furniture American politics still sits on. Washington's two-term precedent held for 144 years on custom alone before FDR broke it and the 22nd Amendment wrote it down: the standing example, in every civics debate, of how much of the presidency runs on norms rather than text. Hamilton's funded debt is the origin story of the U.S. Treasury market, the 'full faith and credit' that today's debt-ceiling standoffs threaten; his creditors-as-stakeholders logic reappears whenever a government bails out bondholders to protect its borrowing. The Virginia and Kentucky Resolutions' claim that states can nullify federal law resurfaces in the 1832 nullification crisis, in 1861, and: in softer form: in today's sanctuary cities and state marijuana laws that simply decline to help enforce federal statutes. Even the Dinner Table Bargain is the template every legislative logroll follows. When an essay question asks 'how did the new government survive its first decade?', the graded structure is this section's five mechanisms: precedent, concession to the losers, creditor self-interest, demonstrated force, prosperity: each with its named example.",
+          "id": "stability.7ccacd9d"
+        }
+      ]
+    },
+    {
+      "id": "discussion",
+      "heading": "Class Discussion #3: the Constitution and 'Are We to Be a Nation?'",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The two discussion questions (Sep 9).** (1) Analyze a **specific power** in the Article of the Constitution you were assigned, and cite it (Article, Section, Clause). (2) Using the PBS documentary *Liberty!*, Episode 6, 'Are We to Be a Nation? 1783–1788', discuss the **debate** over the Constitution: its **benefits and drawbacks**, with examples.",
+          "slide": "The questions",
+          "id": "discussion.69b8f0e1"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Article",
+            "Branch or topic",
+            "One power to analyze"
+          ],
+          "rows": [
+            [
+              "I",
+              "Congress",
+              "Section 8: 'To lay and collect Taxes, Duties, Imposts and Excises'"
+            ],
+            [
+              "II",
+              "The President",
+              "Section 2: commander in chief; makes treaties with two-thirds of the Senate"
+            ],
+            [
+              "III",
+              "The courts",
+              "Section 2: judicial power over cases under the Constitution and federal laws"
+            ],
+            [
+              "IV",
+              "The states",
+              "Section 1: full faith and credit for other states' records and court rulings"
+            ],
+            [
+              "V",
+              "Amendments",
+              "Two-thirds of Congress to propose, three-fourths of states to ratify"
+            ],
+            [
+              "VI",
+              "Supremacy",
+              "Clause 2: the Constitution and federal laws are 'the supreme Law of the Land'"
+            ],
+            [
+              "VII",
+              "Ratification",
+              "Nine states' conventions to put it into effect"
+            ]
+          ],
+          "title": "One power per Article (with the citation format)",
+          "slide": "Powers by Article",
+          "id": "discussion.979852e5"
+        },
+        {
+          "type": "prose",
+          "md": "**Your exercise was on Article I, Section 8, the power to tax.** The strong version ties the power back to the problem it solved: under the Articles Congress could only **ask** states for money, so war debts and soldiers went unpaid. Clause 1 lets Congress tax individuals directly 'to pay the Debts and provide for the common Defence and general Welfare'.",
+          "label": "when",
+          "id": "discussion.fb76e107"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Benefits (Federalists)",
+              "sub": "Madison, Hamilton, Jay",
+              "tone": "green"
+            },
+            "right": {
+              "title": "Drawbacks (Anti-Federalists)",
+              "sub": "Patrick Henry, George Mason",
+              "tone": "red"
+            },
+            "rows": [
+              {
+                "label": "Money",
+                "left": "A government that can tax can pay its debts and army",
+                "right": "Distant officials taxing people directly, like Parliament did"
+              },
+              {
+                "label": "Order",
+                "left": "Can answer a Shays's Rebellion or a foreign threat",
+                "right": "A strong central power and standing army threaten liberty"
+              },
+              {
+                "label": "Rights",
+                "left": "Separated powers and checks protect liberty",
+                "right": "**No bill of rights** in the original text"
+              },
+              {
+                "label": "Size",
+                "left": "A large republic balances many factions (Federalist 10)",
+                "right": "Only small republics stay close to the people"
+              }
+            ]
+          },
+          "caption": "The debate the documentary follows, point by point. For Q2, pick one row from each side and give an example.",
+          "slide": "The ratification debate",
+          "id": "discussion.4ae2991d"
+        },
+        {
+          "type": "check",
+          "prompt": "What citation format does the discussion ask for when you name a power?",
+          "answer": "Article, Section, Clause, for example **Article I, Section 8, Clause 1** (the taxing power).",
+          "sectionRef": "discussion",
+          "id": "discussion.96f43086"
+        },
+        {
+          "type": "check",
+          "prompt": "Give one benefit and one drawback of the Constitution from the ratification debate.",
+          "answer": "Benefit: Congress can **tax** and pay debts / keep order. Drawback: **no bill of rights** in the original, and a strong central government far from the people.",
+          "sectionRef": "discussion",
+          "id": "discussion.361a7359"
         }
       ]
     },
@@ -502,63 +1059,63 @@
           "body": "**How to take it** Open book, 30 minutes, 15 questions, ONE attempt, one question per page (you can go back). Two minutes per question. Keep this chapter open in another window and use the browser's find. Take the Practice Quiz at the top of Canvas first to confirm your browser works.",
           "source": "Quiz",
           "points": null,
-          "id": "quiz.70aab9f9"
+          "id": "quiz.5eac4cc5"
         },
         {
           "type": "check",
           "prompt": "Under the Articles, how many states were needed to amend the document?",
           "answer": "All thirteen (unanimous).",
           "sectionRef": "quiz",
-          "id": "quiz.746050eb"
+          "id": "quiz.99b507f9"
         },
         {
           "type": "check",
           "prompt": "Which plan proposed representation by population in both houses, and who wrote it?",
           "answer": "The Virginia Plan, drafted by James Madison (presented by Edmund Randolph).",
           "sectionRef": "quiz",
-          "id": "quiz.075d74fd"
+          "id": "quiz.0e8678cf"
         },
         {
           "type": "check",
           "prompt": "The Northwest Ordinance of 1787 is significant because it…",
           "answer": "Set the process for territories to become equal states and banned slavery north of the Ohio River.",
           "sectionRef": "quiz",
-          "id": "quiz.7013b0d9"
+          "id": "quiz.2f0f6f3f"
         },
         {
           "type": "check",
           "prompt": "Which state's ratification made the Constitution take effect, and in what year?",
           "answer": "New Hampshire, the ninth state, June 1788.",
           "sectionRef": "quiz",
-          "id": "quiz.1dfa23d5"
+          "id": "quiz.af485e8f"
         },
         {
           "type": "check",
           "prompt": "What did Anti-Federalists most successfully demand as a condition of ratification?",
-          "answer": "A Bill of Rights — added as the first ten amendments in 1791.",
+          "answer": "A Bill of Rights: added as the first ten amendments in 1791.",
           "sectionRef": "quiz",
-          "id": "quiz.6a1ef2a3"
+          "id": "quiz.c9ad71d1"
         },
         {
           "type": "check",
           "prompt": "The 'Dinner Table Bargain' traded what for what?",
           "answer": "Southern votes for Hamilton's assumption of state debts, in exchange for locating the national capital on the Potomac.",
           "sectionRef": "quiz",
-          "id": "quiz.a9f5348c"
+          "id": "quiz.48db0b02"
         },
         {
           "type": "check",
           "prompt": "Which of Washington's actions became a precedent later written into the Constitution?",
           "answer": "Retiring after two terms (the 22nd Amendment, 1951).",
           "sectionRef": "quiz",
-          "id": "quiz.559047b4"
+          "id": "quiz.63b6a942"
         },
         {
           "type": "check",
           "prompt": "Until what year did the Constitution protect the international slave trade from Congress?",
           "answer": "1808.",
           "sectionRef": "quiz",
-          "id": "quiz.89e1995f"
+          "id": "quiz.541dbce9"
         }
       ]
     }
@@ -570,7 +1127,7 @@
       "prompt": "Arrange these into a cause-and-effect chain with one connecting phrase between each pair: Shays's Rebellion · no power to tax under the Articles · Philadelphia Convention · unanimous-consent rule for amendments · failed tax amendments of 1781 and 1783 · war debt unpaid. Start with the structural flaw and end with the Convention.",
       "hints": [
         "Ask of each item: is this a rule, a consequence of a rule, or an event that consequences produced? Rules come first, events last.",
-        "The common error is putting Shays's Rebellion first because it's the most dramatic. It's the *trigger*, not the *cause* — it happens near the end of the chain, and it only matters because the earlier links made the government unable to respond.",
+        "The common error is putting Shays's Rebellion first because it's the most dramatic. It's the *trigger*, not the *cause*: it happens near the end of the chain, and it only matters because the earlier links made the government unable to respond.",
         "Chain shape: rule (no tax power) → attempt to fix (amendments) blocked by rule (unanimity) → consequence (debt unpaid, soldiers unpaid, farmers taxed by states) → event (Shays) → response (Convention)."
       ],
       "solution": [
@@ -579,7 +1136,7 @@
         "Unpaid debts and heavy state taxes fell on farmers → Shays's Rebellion (1786–87), which the national government could not put down.",
         "That failure frightened elites in every state → the Philadelphia Convention (May 1787), which had been called to amend the Articles and instead replaced them."
       ],
-      "why": "Chains like this are what historians mean by 'explanation' — and what a quiz means by 'why did X fail'. The skill transfers directly to reading any policy failure: find the rule that made the fix impossible, then the event that made the failure visible."
+      "why": "Chains like this are what historians mean by 'explanation': and what a quiz means by 'why did X fail'. The skill transfers directly to reading any policy failure: find the rule that made the fix impossible, then the event that made the failure visible."
     },
     {
       "id": "which-plan",
@@ -588,7 +1145,7 @@
       "hints": [
         "Representation means: how many seats does a state get, and in how many houses? Ask 'by population or by state?' for each plan, for each house.",
         "The frequent slip is thinking the Great Compromise picked one plan. It split the difference: one house by population (Virginia's idea), one house equal (New Jersey's idea).",
-        "For three-fifths: who benefits from counting enslaved people at all? The states that had them — for seats and electoral votes — even though those people had no vote. That's the 'whose interest' column."
+        "For three-fifths: who benefits from counting enslaved people at all? The states that had them: for seats and electoral votes: even though those people had no vote. That's the 'whose interest' column."
       ],
       "solution": [
         "Virginia Plan (Madison, presented by Randolph): both houses by population; served large states; survived as the House of Representatives and the general shape of a strong national government.",
@@ -596,7 +1153,26 @@
         "Great Compromise (Connecticut, Sherman): House by population, Senate equal; served both by giving each a house; survived whole.",
         "Three-fifths Compromise: count three of every five enslaved people for representation and taxation; served Southern states with extra House seats and electoral votes; survived until the Fourteenth Amendment (1868)."
       ],
-      "why": "Every legislature in the world is a version of this argument — how to weigh people against places — and the U.S. Senate and Electoral College still carry the 1787 answer. Understanding the deal is understanding why American elections work the way they do."
+      "why": "Every legislature in the world is a version of this argument: how to weigh people against places: and the U.S. Senate and Electoral College still carry the 1787 answer. Understanding the deal is understanding why American elections work the way they do."
+    },
+    {
+      "id": "article-power",
+      "title": "Discussion #3 Q1: analyze a power with a citation",
+      "prompt": "In 4 to 5 sentences, analyze Congress's power to tax, with the citation, and explain why the framers gave it.",
+      "hints": [
+        "Start with the exact citation and the words of the clause.",
+        "Then the 'why': what failed under the Articles without it?",
+        "End with one consequence or limit (direct taxes had to be apportioned by population, which is where the three-fifths clause matters)."
+      ],
+      "solution": [
+        "Article I, Section 8, Clause 1 gives Congress power 'to lay and collect Taxes, Duties, Imposts and Excises, to pay the Debts and provide for the common Defence and general Welfare of the United States'.",
+        "The framers added it because under the Articles of Confederation Congress could only request money from the states, which mostly refused.",
+        "Without revenue the government could not pay its war debts or soldiers, or respond to crises like Shays's Rebellion.",
+        "The taxing power let the national government act directly on citizens instead of begging the states.",
+        "It was also one of the Anti-Federalists' biggest fears, since it recalled Parliament's taxes before the Revolution."
+      ],
+      "why": "Reading a clause, citing it exactly, and explaining the problem it solves is the everyday work of lawyers, policy analysts and journalists.",
+      "sectionRef": "discussion"
     }
   ]
 }

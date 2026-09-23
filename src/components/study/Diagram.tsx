@@ -19,6 +19,8 @@
  *   bigo       f(n) against c·g(n) with the n₀ region shaded
  *   formula    a big formula whose parts are colored chips with labels,
  *              and optional code lines tagged with the part they produce
+ *   compare    two sides point by point (a T-chart): left/right headers,
+ *              then rows of {label, left, right}
  */
 import { cn } from "@/lib/utils";
 import { Inline } from "./Blocks";
@@ -217,7 +219,7 @@ function Cards({ d }: { d: Record<string, unknown> }) {
   const cards = A(d.cards);
   return (
     <div className="flex flex-col gap-3">
-      <div className={cn("grid gap-3", cards.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+      <div className={cn("grid gap-3", cards.length === 3 || cards.length > 4 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         {cards.map((c, k) => {
           const t = tone(c.tone);
           const lines = Array.isArray(c.lines) ? (c.lines as unknown[]).map((x) => S(x)) : [];
@@ -402,6 +404,59 @@ function Formula({ d }: { d: Record<string, unknown> }) {
   );
 }
 
+/* ── compare ────────────────────────────────────────────────────────────── */
+
+/**
+ * Two things side by side, point by point: a colored header per side, then
+ * one row per point with its label as a small eyebrow. Reads like a
+ * T-chart; on a narrow screen the sides stack.
+ */
+function Compare({ d }: { d: Record<string, unknown> }) {
+  const sides = [d.left, d.right].map((v) => (v && typeof v === "object" ? (v as Record<string, unknown>) : {}));
+  const rows = A(d.rows);
+  const tones = sides.map((s, k) => tone(s.tone ?? (k === 0 ? "brand" : "amber")));
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-3">
+        {sides.map((s, k) => (
+          <div key={k} className={cn("rounded-xl px-4 py-3 ring-1", TONE_SOFT[tones[k]])}>
+            <div className={cn("font-display text-lg font-semibold tracking-tight", TONE_TEXT[tones[k]])}>
+              <Inline text={S(s.title)} />
+            </div>
+            {s.sub !== undefined && (
+              <div className="text-sm text-muted-foreground">
+                <Inline text={S(s.sub)} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        {rows.map((r, k) => (
+          <div key={k} className="rounded-xl border border-border/70 bg-card px-4 py-3 shadow-card">
+            {r.label !== undefined && <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{S(r.label)}</div>}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[r.left, r.right].map((v, i) => (
+                <div key={i} className="flex gap-2.5 text-[14.5px] leading-snug">
+                  <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", TONE_SOLID[tones[i]])} />
+                  <span className="min-w-0">
+                    <Inline text={S(v)} />
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      {d.note !== undefined && (
+        <div className="text-sm font-medium">
+          <Inline text={S(d.note)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Diagram({ kind, data }: { kind: string; data: Record<string, unknown> }) {
   switch (kind) {
     case "roadmap":
@@ -416,6 +471,8 @@ export function Diagram({ kind, data }: { kind: string; data: Record<string, unk
       return <BigO d={data} />;
     case "formula":
       return <Formula d={data} />;
+    case "compare":
+      return <Compare d={data} />;
     default:
       return <div className="text-xs text-at-risk-fg">Unknown diagram "{kind}".</div>;
   }

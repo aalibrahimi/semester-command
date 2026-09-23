@@ -333,6 +333,98 @@ function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kin
   );
 }
 
+/* ── Timeline frames: a story moving along a line of dates ───────────────── */
+
+const DOT_TONE: Record<string, string> = {
+  brand: "bg-brand-solid ring-brand/25",
+  green: "bg-on-track ring-on-track/25",
+  amber: "bg-at-risk ring-at-risk/25",
+  red: "bg-critical ring-critical/25",
+};
+const BAR_TONE: Record<string, string> = {
+  brand: "from-brand/80 to-brand/50",
+  green: "from-on-track/80 to-on-track/50",
+  amber: "from-at-risk/80 to-at-risk/50",
+  red: "from-critical/80 to-critical/50",
+};
+
+/**
+ * The events sit at even spacing (history's dates are lumpy; even spacing
+ * keeps every label readable). The filled part of the line and the marker
+ * slide to the current event; the bubble follows them.
+ */
+function TimelineView({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "timeline" }>; large?: boolean; caption?: string; minH: number }) {
+  const ev = frame.events;
+  const n = Math.max(1, ev.length);
+  const at = Math.min(Math.max(0, frame.at), n - 1);
+  const x = (k: number) => ((k + 0.5) / n) * 100;
+  const m = frame.meter;
+  const mv = m ? Math.min(100, Math.max(0, m.value)) : 0;
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="mx-auto flex flex-col" style={{ minWidth: n * 88 }}>
+        {caption !== undefined && <Bubble text={caption} x={`${x(at)}%`} minH={minH} />}
+        <div className="relative" style={{ height: large ? 170 : 140 }}>
+          {/* the line, and the part already travelled */}
+          <span className="absolute top-[38px] h-1 rounded-full bg-foreground/10" style={{ left: `${x(0)}%`, right: `${100 - x(n - 1)}%` }} />
+          <span className={cn("absolute top-[38px] h-1 rounded-full bg-gradient-to-r from-brand/40 to-brand transition-[width]", EASE)} style={{ left: `${x(0)}%`, width: `${x(at) - x(0)}%` }} />
+          {ev.map((e, k) => {
+            const state = k < at ? "past" : k === at ? "now" : "future";
+            const t = e.tone ?? "brand";
+            return (
+              <div
+                key={k}
+                className={cn("absolute top-0 flex -translate-x-1/2 flex-col items-center text-center transition-opacity", EASE, state === "future" && "opacity-40")}
+                style={{ left: `${x(k)}%`, width: `${100 / n}%` }}
+              >
+                <span data-numeric className={cn("font-mono font-semibold tabular-nums transition-colors duration-500", large ? "text-sm" : "text-xs", state === "now" ? "text-brand-fg" : "text-muted-foreground")}>
+                  {e.year}
+                </span>
+                <span className="mt-2 flex h-5 items-center justify-center">
+                  <span
+                    className={cn(
+                      "block rounded-full ring-4 transition-all",
+                      EASE,
+                      state === "now" ? cn("h-5 w-5 shadow-elevated", DOT_TONE[t]) : state === "past" ? cn("h-3 w-3 ring-transparent", DOT_TONE[t]) : "h-3 w-3 bg-foreground/25 ring-transparent",
+                    )}
+                  />
+                </span>
+                <span
+                  className={cn(
+                    "mt-3 rounded-lg px-1.5 py-1 leading-snug transition-all",
+                    EASE,
+                    large ? "text-sm" : "text-[12.5px]",
+                    state === "now" ? "bg-card font-semibold text-foreground shadow-card ring-1 ring-brand/30" : "text-foreground/75",
+                  )}
+                >
+                  {e.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        {m && (
+          <div className="mx-auto mt-1 flex w-full max-w-[640px] flex-col gap-1.5 rounded-xl bg-card/80 px-4 py-3 shadow-card ring-1 ring-border/60">
+            <div className="flex items-baseline justify-between gap-3 text-xs">
+              <span className="font-semibold text-foreground">{m.label}</span>
+              <span data-numeric className="font-mono text-muted-foreground">{Math.round(mv)}%</span>
+            </div>
+            <span className="h-2.5 overflow-hidden rounded-full bg-foreground/10">
+              <span className={cn("block h-full rounded-full bg-gradient-to-r transition-[width]", EASE, BAR_TONE[m.tone ?? "brand"])} style={{ width: `${Math.max(2, mv)}%` }} />
+            </span>
+            {(m.low || m.high) && (
+              <div className="flex justify-between text-[11px] text-muted-foreground">
+                <span>{m.low}</span>
+                <span>{m.high}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** The old flow layout, for cells too long to slide. */
 function FlowArray({ frame, large }: { frame: Extract<Frame, { kind: "array" }>; large?: boolean }) {
   return (
@@ -423,6 +515,9 @@ export function FrameView({ frame, large, caption, minH = 0 }: { frame: Frame; l
           ))}
         </div>,
       );
+
+    case "timeline":
+      return <TimelineView frame={frame} large={large} caption={caption} minH={minH} />;
 
     case "lines":
       return top(

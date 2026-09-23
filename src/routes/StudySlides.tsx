@@ -23,6 +23,7 @@ import { GuideBlockView, Markdown } from "@/components/study/GuideBlocks";
 import { ResourceChips } from "@/components/study/ResourceChips";
 import { FrameView } from "@/components/study/Stepper";
 import { cn } from "@/lib/utils";
+import { Inline } from "@/components/study/Blocks";
 import { buildDeck, courseBySlug } from "@/study";
 import { figureAtStep, figureGroups, isEssential, narration } from "@/study/lecture";
 import { guideById } from "@/study/loadGuides";
@@ -224,7 +225,9 @@ export default function StudySlides() {
               <div className="flex flex-col gap-6">
                 <div className="text-base font-medium">{c.stepperTitle}</div>
                 <FrameView frame={c.frame} large />
-                <p className="text-base leading-[1.8] text-foreground/90">{c.frame.caption}</p>
+                <p className="text-base leading-[1.8] text-foreground/90">
+                  <Inline text={c.frame.caption} />
+                </p>
               </div>
             )}
           </div>
