@@ -110,6 +110,6 @@ export function isEssential(slide: Slide): boolean {
   const b = c.block;
   if (slide.title) return true;
   if (b.type === "figure" || b.type === "sim" || b.type === "trap" || b.type === "definition" || b.type === "table") return true;
-  if (b.type === "prose" && b.label === "why") return true;
+  if (b.type === "prose" && b.label) return true;
   return false;
 }

@@ -3,7 +3,8 @@
  * Read view. Each block type gets its own shape so the eye can tell them
  * apart before reading a word:
  *
- *   prose       plain paragraphs (a "why" label when the block explains why)
+ *   prose       plain paragraphs, or a labeled callout: why it exists, in the
+ *               real world, how to think about it, when to use it
  *   definition  card: term in a heading, body below — the bold terms
  *   example     card, monospace-friendly body
  *   trap        brand-tinted card with "COSTS POINTS · <source>" label
@@ -17,16 +18,24 @@
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
  * Consecutive definition/trap cards are laid out in a two-column grid.
  */
-import type { ReactNode } from "react";
-import { AlertOctagon, HelpCircle } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { GuideBlock } from "@/study/guide";
+import type { GuideBlock, ProseLabel } from "@/study/guide";
 import { Inline } from "./Blocks";
 import { ExampleBody } from "./ExampleBody";
 import { ResourceChips } from "./ResourceChips";
 import { PyCell } from "./PyCell";
 import { Sim } from "./sims";
 import { Stepper } from "./Stepper";
+
+/** The four labeled callouts a prose block can be (guide.ts ProseLabel). */
+const CALLOUT: Record<ProseLabel, { title: string; icon: typeof HelpCircle; box: string; head: string }> = {
+  why: { title: "Why it exists", icon: HelpCircle, box: "border-border bg-fill-ghost/60", head: "text-muted-foreground" },
+  world: { title: "In the real world", icon: Globe2, box: "border-on-track/35 bg-on-track/[0.06]", head: "text-on-track-fg" },
+  think: { title: "How to think about it", icon: Lightbulb, box: "border-at-risk/35 bg-at-risk/[0.06]", head: "text-at-risk-fg" },
+  when: { title: "When to use it", icon: Compass, box: "border-brand/35 bg-brand/[0.06]", head: "text-brand-fg" },
+};
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
 
@@ -86,19 +95,25 @@ export function Markdown({ md, className }: { md: string; className?: string }) 
 
 export function GuideBlockView({ block }: { block: GuideBlock }) {
   switch (block.type) {
-    case "prose":
-      return block.label === "why" ? (
-        <aside id={block.id} className="scroll-mt-6 rounded-xl border border-border bg-fill-ghost/60 px-4 py-3.5">
-          <div className="mb-1 flex items-center gap-1.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-            <HelpCircle className="h-3.5 w-3.5" /> Why
+    case "prose": {
+      if (!block.label) {
+        return (
+          <div id={block.id} className="scroll-mt-6">
+            <Markdown md={block.md} />
+          </div>
+        );
+      }
+      const c = CALLOUT[block.label];
+      const Icon = c.icon;
+      return (
+        <aside id={block.id} className={cn("scroll-mt-6 rounded-xl border px-4 py-3.5", c.box)}>
+          <div className={cn("mb-1 flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider", c.head)}>
+            <Icon className="h-3.5 w-3.5" /> {c.title}
           </div>
           <Markdown md={block.md} />
         </aside>
-      ) : (
-        <div id={block.id} className="scroll-mt-6">
-          <Markdown md={block.md} />
-        </div>
       );
+    }
 
     case "definition":
       return (
@@ -179,12 +194,7 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
       );
 
     case "figure":
-      return (
-        <figure id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
-          <svg viewBox={block.viewBox} className="mx-auto h-auto w-full max-w-[560px]" dangerouslySetInnerHTML={{ __html: block.svg }} />
-          <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">{block.caption}</figcaption>
-        </figure>
-      );
+      return <FigureView id={block.id} svg={block.svg} viewBox={block.viewBox} caption={block.caption} />;
 
     case "sim":
       return (
@@ -240,5 +250,43 @@ export function GuideBlocks({ blocks }: { blocks: GuideBlock[] }) {
         ),
       )}
     </div>
+  );
+}
+
+/**
+ * A figure, with an Enlarge button: the Read column is narrow, so a click
+ * opens the same drawing at up to 1100px over the page. Esc or a click
+ * anywhere closes it. Hover tooltips (<title>) work in both sizes.
+ */
+function FigureView({ id, svg, viewBox, caption }: { id: string; svg: string; viewBox: string; caption: string }) {
+  const [big, setBig] = useState(false);
+  useEffect(() => {
+    if (!big) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setBig(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [big]);
+  return (
+    <figure id={id} className="group/fig relative scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-4">
+      <button
+        type="button"
+        onClick={() => setBig(true)}
+        title="Enlarge"
+        aria-label="Enlarge figure"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity duration-micro hover:bg-fill-ghost hover:text-foreground focus-visible:opacity-100 group-hover/fig:opacity-100"
+      >
+        <Maximize2 className="h-3.5 w-3.5" />
+      </button>
+      <svg viewBox={viewBox} className="mx-auto h-auto w-full max-w-[560px] cursor-zoom-in" onClick={() => setBig(true)} dangerouslySetInnerHTML={{ __html: svg }} />
+      <figcaption className="mt-3 text-xs leading-relaxed text-muted-foreground">{caption}</figcaption>
+      {big && (
+        <div role="dialog" aria-modal="true" aria-label="Figure, enlarged" className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-background/90 p-6 backdrop-blur-sm" onClick={() => setBig(false)}>
+          <div className="flex max-h-full w-full max-w-[1100px] flex-col gap-3 overflow-auto rounded-2xl border border-border bg-card p-6 shadow-elevated">
+            <svg viewBox={viewBox} className="mx-auto h-auto max-h-[78vh] w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+            <p className="text-sm leading-relaxed text-muted-foreground">{caption}</p>
+          </div>
+        </div>
+      )}
+    </figure>
   );
 }

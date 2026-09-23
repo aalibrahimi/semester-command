@@ -88,12 +88,21 @@ interface BlockBase {
   resources?: GuideResource[];
 }
 
+export const PROSE_LABELS = ["why", "world", "think", "when"] as const;
+export type ProseLabel = (typeof PROSE_LABELS)[number];
+
 /** A markdown paragraph. Lists and sub-headings are markdown too. */
 export interface ProseBlock extends BlockBase {
   type: "prose";
   md: string;
-  /** "why": the paragraph explains why a concept exists (rendered with a small label). */
-  label?: "why";
+  /**
+   * A labeled callout instead of a plain paragraph:
+   *   why    why the concept exists at all (the problem it solves)
+   *   world  where it shows up in real software, with a concrete product
+   *   think  how to think about it: a recipe, "when you see X, do Y"
+   *   when   when to use it and when not to (a decision guide)
+   */
+  label?: ProseLabel;
 }
 
 /** A click-through walkthrough: one Frame per step (array / tree / lines). */

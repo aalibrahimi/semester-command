@@ -2,99 +2,356 @@
   "id": "cs146/4-big-o-merge-sort",
   "course": "cs146",
   "lessons": "Lectures 4–5",
-  "title": "Big-O in practice, divide & conquer, and merge sort",
-  "summary": "Compare algorithms by growth rate and say when constants matter; explain divide & conquer; trace merge and merge sort in Poon's M([…]) format; derive O(n log n) and O(n) space; build Project 1's three sorts in Java.",
-  "estimatedMinutes": 70,
-  "sourceNote": "Lecture 4 (Aug 31) and Lecture 5 (Sep 2) slides, HW 4, HW 5, Project 1 spec (SortingHub).",
+  "title": "Big-O in practice, divide and conquer, and merge sort",
+  "summary": "Count an algorithm's steps, turn the count into Big-O, recognize the common growth shapes on sight, then use the divide-and-conquer recipe to build merge sort and explain, with one picture, why it costs n log n.",
+  "estimatedMinutes": 90,
+  "sourceNote": "Lecture 4 'Asymptotic Notation' (Aug 31) and Lecture 5 'Divide and Conquer, Merge Sort' (Sep 2) slides, HW 4 and HW 5, Project 1 spec. Real-world notes are general industry practice.",
   "requires": [
     "cs146/0-notation",
     "cs146/2-adts-invariants-insertion"
   ],
   "sections": [
     {
-      "id": "bigo",
-      "heading": "Big-O in practice (Lecture 4)",
+      "id": "map",
+      "heading": "The big picture: what this chapter is for",
       "blocks": [
         {
           "type": "prose",
-          "md": "Chapter 0 has the definition of O, Ω and Θ. Lecture 4 is about *using* them, and Poon opens with a correction worth remembering: 'time complexity' is a misnomer. We count **operations** as a function of input size, not seconds — seconds depend on the machine; operation counts don't.",
-          "slide": "What we're actually counting",
-          "id": "bigo.79caff2c"
+          "md": "You already know *how* to write a loop. This chapter is about a different question: **before you run a program, can you tell whether it will be fast enough?** Two lectures answer it in five small steps. Read them in order; each one uses the one before.",
+          "slide": "What this chapter answers",
+          "id": "map.0727e273"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc1' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec1' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='20' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >The question this chapter answers:</text><text x='10' y='40' font-size='17.2' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Is it fast, before you run it?</text><g><title>Step 1: Count steps (not seconds). Result: T(n) = 2n + 3.</title><circle cx='22' cy='78' r='11' fill='rgb(var(--accent))'/><text x='22' y='82' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><rect x='42' y='58' width='268' height='40' rx='9' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='56' y='76' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Count steps</text><text x='56' y='91' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >not seconds</text><text x='470' y='83' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) = 2n + 3</text><line x1='22' y1='90' x2='22' y2='118' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>Step 2: Keep the shape (drop the details). Result: O(n).</title><circle cx='22' cy='130' r='11' fill='rgb(var(--accent))'/><text x='22' y='134' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><rect x='42' y='110' width='268' height='40' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='128' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Keep the shape</text><text x='56' y='143' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >drop the details</text><text x='470' y='135' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(n)</text><line x1='22' y1='142' x2='22' y2='170' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>Step 3: Halve it (binary search). Result: O(log n).</title><circle cx='22' cy='182' r='11' fill='rgb(var(--accent))'/><text x='22' y='186' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><rect x='42' y='162' width='268' height='40' rx='9' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='56' y='180' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Halve it</text><text x='56' y='195' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >binary search</text><text x='470' y='187' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(log n)</text><line x1='22' y1='194' x2='22' y2='222' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>Step 4: Divide & conquer (split, solve, combine). Result: a recipe.</title><circle cx='22' cy='234' r='11' fill='rgb(var(--accent))'/><text x='22' y='238' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >4</text><rect x='42' y='214' width='268' height='40' rx='9' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='56' y='232' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Divide & conquer</text><text x='56' y='247' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >split, solve, combine</text><text x='470' y='239' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >a recipe</text><line x1='22' y1='246' x2='22' y2='274' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc1)'/></g><g><title>Step 5: Merge sort (halve, then merge). Result: O(n log n).</title><circle cx='22' cy='286' r='11' fill='rgb(var(--accent))'/><text x='22' y='290' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >5</text><rect x='42' y='266' width='268' height='40' rx='9' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='56' y='284' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Merge sort</text><text x='56' y='299' font-size='12.1' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >halve, then merge</text><text x='470' y='291' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >O(n log n)</text></g><g><title>Where it pays off: sorting a million items takes about 20 million steps instead of a trillion.</title><rect x='10' y='324' width='460' height='46' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='240' y='344' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1,000,000 items: merge sort ≈ 20 million steps,</text><text x='240' y='361' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >insertion sort ≈ 1 trillion steps</text></g></g>",
+          "viewBox": "0 0 480 378",
+          "caption": "The whole chapter on one line. Hover a step to see what it adds. By the end you can look at a sort you have never seen and say how it will behave on a million items.",
+          "slide": "Five steps",
+          "id": "map.e03275ae"
+        },
+        {
+          "type": "prose",
+          "md": "**Why bother predicting?** Because the alternative is finding out in production. An app that sorts 100 test items instantly can freeze on a real customer's 1,000,000. Engineers want to know that from the design, before writing or shipping anything. Poon's last slide in Lecture 7 makes the same point: the math lets you 'avoid costly implementation of slow algorithms'.",
+          "label": "why",
+          "id": "map.126e245e"
+        }
+      ]
+    },
+    {
+      "id": "count",
+      "heading": "Step 1: count steps, not seconds",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Running time T(n)",
+          "body": "The **number of basic steps** an algorithm takes on an input of size n. A basic step is anything that takes about the same time no matter how big n is: one comparison, one assignment, one array read.",
+          "id": "count.52f36d01"
+        },
+        {
+          "type": "prose",
+          "md": "Why steps and not seconds? Seconds depend on the machine, the language, and what else the computer is doing. The **step count** is the same on every machine, so it describes the algorithm itself. Poon calls 'time complexity' a slight misnomer for exactly this reason.",
+          "id": "count.ec5494ba"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc2' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec2' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><rect x='10' y='8' width='460' height='164' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='24' y='30' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >code</text><text x='456' y='30' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >runs this many times</text><g><title>'int sum = 0;' runs 1 times.</title><text x='24' y='56' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >int sum = 0;</text><text x='456' y='56' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text></g><g><title>'for (i = 0; i < n; i++)' runs n + 1 times.</title><text x='24' y='80' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >for (i = 0; i < n; i++)</text><text x='456' y='80' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n + 1</text></g><g><title>'sum += a[i];' runs n times.</title><text x='24' y='104' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >    sum += a[i];</text><text x='456' y='104' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n</text></g><g><title>'return sum;' runs 1 times.</title><text x='24' y='128' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >return sum;</text><text x='456' y='128' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text></g><g><title>Add the counts: 1 + (n + 1) + n + 1 = 2n + 3.</title><line x1='24' y1='140' x2='456' y2='140' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><text x='24' y='162' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >add them up</text><text x='456' y='162' font-size='17.2' fill='rgb(var(--accent-fg))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >T(n) = 2n + 3</text></g><line x1='50' y1='360' x2='450' y2='360' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.3'/><line x1='50' y1='360' x2='50' y2='210' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.3'/><text x='44' y='204' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >steps</text><g><title>Double n and the step count about doubles. That is what 'linear' means.</title><rect x='80' y='332' width='52' height='28' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='106' y='326' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7</text><text x='106' y='377' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n = 2</text><rect x='172' y='316' width='52' height='44' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='198' y='310' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >11</text><text x='198' y='377' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n = 4</text><rect x='264' y='284' width='52' height='76' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='290' y='278' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >19</text><text x='290' y='377' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n = 8</text><rect x='356' y='220' width='52' height='140' rx='3' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)'/><text x='382' y='214' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >35</text><text x='382' y='377' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >n = 16</text></g><text x='240' y='400' font-size='13.8' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >double n → about double the steps: linear</text></g>",
+          "viewBox": "0 0 480 410",
+          "caption": "Count how many times each line runs, then add. The sum of an array takes 2n + 3 steps. The bars show the only thing we will keep from that formula: double n, and the work about doubles.",
+          "slide": "Counting steps",
+          "id": "count.8fe0d108"
+        },
+        {
+          "type": "prose",
+          "md": "**The two counting rules.** You only need these two.\n\n- **Things in a row ADD.** One loop of n, then another loop of n: n + n = 2n.\n- **Things inside each other MULTIPLY.** A loop of n inside a loop of n: n × n = n².\n\nSo to count: find the loops, ask how many times each one runs, add the ones in sequence, multiply the ones that are nested.",
+          "label": "think",
+          "id": "count.58e544ce"
+        },
+        {
+          "type": "example",
+          "title": "Bubble sort's inner work (Lecture 4)",
+          "body": "for i = 0 to n − 1          // outer: n times\n    for j = 0 to n − 2      // inner: n − 1 times, EVERY outer pass\n        compare a[j], a[j+1]\n\nsteps ≈ n × (n − 1) = n² − n",
+          "answer": "about n² steps",
+          "slide": "A nested loop",
+          "id": "count.2a5672b5"
+        },
+        {
+          "type": "code",
+          "title": "Count the steps yourself",
+          "task": "Run this. It literally counts the steps of a single loop and of two nested loops. Look at what happens to each count when n gets 10 times bigger. Then change the `for n in` list and run it again.",
+          "starter": "def one_loop(n):\n    steps = 0\n    for i in range(n):\n        steps += 1          # the loop body runs n times\n    return steps\n\ndef nested_loops(n):\n    steps = 0\n    for i in range(n):\n        for j in range(n):\n            steps += 1      # runs n times for EACH i\n    return steps\n\nfor n in [10, 100, 1000]:\n    print(f\"n = {n:5}:   one loop = {one_loop(n):7,}    nested = {nested_loops(n):11,}\")\n",
+          "hints": [
+            "Watch the ratio: when n goes from 100 to 1000 (×10), one loop goes ×10 but nested goes ×100."
+          ],
+          "id": "count.9bef46a8"
+        },
+        {
+          "type": "check",
+          "prompt": "A loop of n runs, then a separate loop of n runs, then a loop of n inside a loop of n. Roughly how many steps?",
+          "answer": "n + n + n·n = n² + 2n. In rows ADD, nested MULTIPLY.",
+          "sectionRef": "count",
+          "id": "count.2c417125"
+        }
+      ]
+    },
+    {
+      "id": "bigo",
+      "heading": "Step 2: Big-O keeps only the shape",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Exact counts like 2n + 3 or n² − n are fussy, and the fussy parts stop mattering once n is big. When n is a million, 2n + 3 and 2n are the same number for any practical purpose, and even the 2 only matters as much as buying a twice-as-fast computer. **Big-O throws away the fussy parts and keeps the shape of the growth.**",
+          "id": "bigo.26d7fe3c"
+        },
+        {
+          "type": "definition",
+          "term": "Big-O, in plain words",
+          "body": "f(n) = O(g(n)) means **f grows no faster than g**. Past some input size, f(n) stays under g(n) times some fixed number, forever.",
+          "id": "bigo.19f6b970"
+        },
+        {
+          "type": "definition",
+          "term": "Big-O, the way Poon writes it",
+          "body": "f(n) = O(g(n)) if there are constants **c > 0** and **n₀** such that **f(n) ≤ c·g(n) for every n ≥ n₀**. c is the 'times some fixed number'; n₀ is the 'past some input size'.",
+          "id": "bigo.72f8f753"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc3' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec3' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><line x1='44' y1='250' x2='454' y2='250' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.3'/><line x1='44' y1='250' x2='44' y2='30' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.3'/><text x='38' y='24' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >steps</text><text x='454' y='284' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >n (input size) →</text><text x='44' y='267' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >0</text><text x='146.5' y='267' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><text x='249' y='267' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><text x='351.5' y='267' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><text x='454' y='267' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >16</text><g><title>Right of n₀ = 10 (green): f(n) never goes above c·g(n) again.</title><rect x='300.2' y='30' width='153.8' height='220' fill='rgb(var(--on-track) / 0.10)'/><line x1='300.2' y1='250' x2='300.2' y2='30' stroke='rgb(var(--on-track))' stroke-width='1.4' stroke-dasharray='4 3'/><text x='306.2' y='46' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >n₀ = 10</text><text x='306.2' y='62' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >from here on,</text><text x='306.2' y='76' font-size='12.6' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >f stays under</text></g><g><title>f(n) = 5n + 10, the algorithm's real step count.</title><path d='M44 228 L47.4 226.5 L50.8 225.1 L54.2 223.6 L57.7 222.1 L61.1 220.7 L64.5 219.2 L67.9 217.7 L71.3 216.3 L74.8 214.8 L78.2 213.3 L81.6 211.9 L85 210.4 L88.4 208.9 L91.8 207.5 L95.2 206 L98.7 204.5 L102.1 203.1 L105.5 201.6 L108.9 200.1 L112.3 198.7 L115.8 197.2 L119.2 195.7 L122.6 194.3 L126 192.8 L129.4 191.3 L132.8 189.9 L136.2 188.4 L139.7 186.9 L143.1 185.5 L146.5 184 L149.9 182.5 L153.3 181.1 L156.8 179.6 L160.2 178.1 L163.6 176.7 L167 175.2 L170.4 173.7 L173.8 172.3 L177.2 170.8 L180.7 169.3 L184.1 167.9 L187.5 166.4 L190.9 164.9 L194.3 163.5 L197.8 162 L201.2 160.5 L204.6 159.1 L208 157.6 L211.4 156.1 L214.8 154.7 L218.2 153.2 L221.7 151.7 L225.1 150.3 L228.5 148.8 L231.9 147.3 L235.3 145.9 L238.8 144.4 L242.2 142.9 L245.6 141.5 L249 140 L252.4 138.5 L255.8 137.1 L259.2 135.6 L262.7 134.1 L266.1 132.7 L269.5 131.2 L272.9 129.7 L276.3 128.3 L279.8 126.8 L283.2 125.3 L286.6 123.9 L290 122.4 L293.4 120.9 L296.8 119.5 L300.2 118 L303.7 116.5 L307.1 115.1 L310.5 113.6 L313.9 112.1 L317.3 110.7 L320.8 109.2 L324.2 107.7 L327.6 106.3 L331 104.8 L334.4 103.3 L337.8 101.9 L341.2 100.4 L344.7 98.9 L348.1 97.5 L351.5 96 L354.9 94.5 L358.3 93.1 L361.8 91.6 L365.2 90.1 L368.6 88.7 L372 87.2 L375.4 85.7 L378.8 84.3 L382.2 82.8 L385.7 81.3 L389.1 79.9 L392.5 78.4 L395.9 76.9 L399.3 75.5 L402.8 74 L406.2 72.5 L409.6 71.1 L413 69.6 L416.4 68.1 L419.8 66.7 L423.2 65.2 L426.7 63.7 L430.1 62.3 L433.5 60.8 L436.9 59.3 L440.3 57.9 L443.8 56.4 L447.2 54.9 L450.6 53.5 L454 52' fill='none' stroke='rgb(var(--accent))' stroke-width='2.8' stroke-linecap='round'/></g><g><title>c·g(n) = 6n: g(n) = n scaled by c = 6. It starts below f but crosses it at n = 10.</title><path d='M44 250 L47.4 248.2 L50.8 246.5 L54.2 244.7 L57.7 243 L61.1 241.2 L64.5 239.4 L67.9 237.7 L71.3 235.9 L74.8 234.2 L78.2 232.4 L81.6 230.6 L85 228.9 L88.4 227.1 L91.8 225.4 L95.2 223.6 L98.7 221.8 L102.1 220.1 L105.5 218.3 L108.9 216.6 L112.3 214.8 L115.8 213 L119.2 211.3 L122.6 209.5 L126 207.8 L129.4 206 L132.8 204.2 L136.2 202.5 L139.7 200.7 L143.1 199 L146.5 197.2 L149.9 195.4 L153.3 193.7 L156.8 191.9 L160.2 190.2 L163.6 188.4 L167 186.6 L170.4 184.9 L173.8 183.1 L177.2 181.4 L180.7 179.6 L184.1 177.8 L187.5 176.1 L190.9 174.3 L194.3 172.6 L197.8 170.8 L201.2 169 L204.6 167.3 L208 165.5 L211.4 163.8 L214.8 162 L218.2 160.2 L221.7 158.5 L225.1 156.7 L228.5 155 L231.9 153.2 L235.3 151.4 L238.8 149.7 L242.2 147.9 L245.6 146.2 L249 144.4 L252.4 142.6 L255.8 140.9 L259.2 139.1 L262.7 137.4 L266.1 135.6 L269.5 133.8 L272.9 132.1 L276.3 130.3 L279.8 128.6 L283.2 126.8 L286.6 125 L290 123.3 L293.4 121.5 L296.8 119.8 L300.2 118 L303.7 116.2 L307.1 114.5 L310.5 112.7 L313.9 111 L317.3 109.2 L320.8 107.4 L324.2 105.7 L327.6 103.9 L331 102.2 L334.4 100.4 L337.8 98.6 L341.2 96.9 L344.7 95.1 L348.1 93.4 L351.5 91.6 L354.9 89.8 L358.3 88.1 L361.8 86.3 L365.2 84.6 L368.6 82.8 L372 81 L375.4 79.3 L378.8 77.5 L382.2 75.8 L385.7 74 L389.1 72.2 L392.5 70.5 L395.9 68.7 L399.3 67 L402.8 65.2 L406.2 63.4 L409.6 61.7 L413 59.9 L416.4 58.2 L419.8 56.4 L423.2 54.6 L426.7 52.9 L430.1 51.1 L433.5 49.4 L436.9 47.6 L440.3 45.8 L443.8 44.1 L447.2 42.3 L450.6 40.6 L454 38.8' fill='none' stroke='rgb(var(--at-risk))' stroke-width='2.6' stroke-linecap='round' stroke-dasharray='6 4'/></g><g><title>The definition, in words.</title><line x1='20' y1='312' x2='46' y2='312' stroke='rgb(var(--accent))' stroke-width='2.8'/><text x='54' y='316' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >f(n) = 5n + 10</text><line x1='250' y1='312' x2='276' y2='312' stroke='rgb(var(--at-risk))' stroke-width='2.6' stroke-dasharray='6 4'/><text x='284' y='316' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >c·g(n) = 6n</text><rect x='10' y='328' width='460' height='58' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='351' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >f(n) = O(g(n)): past some n₀, f(n) ≤ c·g(n) forever.</text><text x='240' y='372' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Here c = 6, n₀ = 10, g(n) = n, so 5n + 10 = O(n).</text></g></g>",
+          "viewBox": "0 0 480 394",
+          "caption": "Lecture 4's second example as a picture. f(n) = 5n + 10 starts above 6n, but they cross at n = 10, and from then on f stays under. That is all the definition asks: one c and one n₀ that work forever after.",
+          "slide": "The definition as a picture",
+          "id": "bigo.fa3f3669"
+        },
+        {
+          "type": "stepper",
+          "title": "Proving 5n + 10 = O(n), step by step (Lecture 4)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Goal: find c and n₀ with 5n + 10 ≤ c·n for all n ≥ n₀"
+              ],
+              "active": 0,
+              "caption": "Write down what you need to show. g(n) = n, so we need 5n + 10 ≤ c·n."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Goal: find c and n₀ with 5n + 10 ≤ c·n for all n ≥ n₀",
+                "Try c = 6:  5n + 10 ≤ 6n"
+              ],
+              "active": 1,
+              "caption": "Pick c a little bigger than the leading number (5). c = 6 gives us one spare n to cover the + 10."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Goal: find c and n₀ with 5n + 10 ≤ c·n for all n ≥ n₀",
+                "Try c = 6:  5n + 10 ≤ 6n",
+                "Subtract 5n:  10 ≤ n"
+              ],
+              "active": 2,
+              "caption": "Solve for n. The inequality holds exactly when n ≥ 10."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Goal: find c and n₀ with 5n + 10 ≤ c·n for all n ≥ n₀",
+                "Try c = 6:  5n + 10 ≤ 6n",
+                "Subtract 5n:  10 ≤ n",
+                "So c = 6, n₀ = 10 works.  5n + 10 = O(n) ✓"
+              ],
+              "active": 3,
+              "caption": "Done. Write the constants you found; that is the whole proof. (For 2n + 1, Poon uses c = 3 and n₀ = 1: 2n + 1 ≤ 3n whenever n ≥ 1.)"
+            }
+          ],
+          "slide": true,
+          "id": "bigo.20e75c49"
+        },
+        {
+          "type": "prose",
+          "md": "**The shortcut you'll actually use.** You rarely need c and n₀ on homework unless it asks for a proof. To find the Big-O of a formula:\n\n1. Keep only the **fastest-growing term**. (n² beats n, n beats log n, anything beats a constant.)\n2. **Drop its constant** multiplier.\n\n3n² + 100n + 7 → 3n² → **O(n²)**. 5n + 10 → 5n → **O(n)**. 1000 → **O(1)**.",
+          "label": "think",
+          "slide": "The shortcut",
+          "id": "bigo.a5a1f28a"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc4' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec4' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><g><title>O: the ceiling. f grows at most as fast as g.</title><rect x='6' y='6' width='150' height='208' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='18' y='36' font-size='27.6' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >O</text><text x='144' y='34' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >ceiling</text><line x1='20' y1='150' x2='144' y2='150' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='20' y1='150' x2='20' y2='54' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><path d='M20 116.4 L21 115.1 L22.1 113.9 L23.1 112.6 L24.1 111.4 L25.2 110.2 L26.2 109 L27.2 107.8 L28.3 106.7 L29.3 105.6 L30.3 104.5 L31.4 103.5 L32.4 102.6 L33.4 101.7 L34.5 100.8 L35.5 100 L36.5 99.3 L37.6 98.6 L38.6 98 L39.6 97.4 L40.7 96.9 L41.7 96.5 L42.7 96.1 L43.8 95.8 L44.8 95.6 L45.8 95.4 L46.9 95.3 L47.9 95.2 L48.9 95.3 L50 95.3 L51 95.4 L52 95.6 L53.1 95.8 L54.1 96.1 L55.1 96.4 L56.2 96.7 L57.2 97.1 L58.2 97.5 L59.3 97.9 L60.3 98.3 L61.3 98.8 L62.4 99.2 L63.4 99.7 L64.4 100.2 L65.5 100.6 L66.5 101.1 L67.5 101.5 L68.6 101.9 L69.6 102.3 L70.6 102.7 L71.7 103 L72.7 103.3 L73.7 103.5 L74.8 103.7 L75.8 103.9 L76.8 104 L77.9 104 L78.9 104 L79.9 104 L81 103.8 L82 103.7 L83 103.4 L84.1 103.1 L85.1 102.7 L86.1 102.3 L87.2 101.8 L88.2 101.2 L89.2 100.6 L90.3 99.9 L91.3 99.1 L92.3 98.3 L93.4 97.4 L94.4 96.5 L95.4 95.5 L96.5 94.5 L97.5 93.4 L98.5 92.3 L99.6 91.2 L100.6 90 L101.6 88.8 L102.7 87.6 L103.7 86.4 L104.7 85.1 L105.8 83.9 L106.8 82.6 L107.8 81.3 L108.9 80.1 L109.9 78.8 L110.9 77.6 L112 76.4 L113 75.2 L114 74.1 L115.1 72.9 L116.1 71.9 L117.1 70.8 L118.2 69.8 L119.2 68.9 L120.2 68 L121.3 67.1 L122.3 66.3 L123.3 65.6 L124.4 64.9 L125.4 64.3 L126.4 63.8 L127.5 63.3 L128.5 62.9 L129.5 62.5 L130.6 62.2 L131.6 62 L132.6 61.9 L133.7 61.8 L134.7 61.7 L135.7 61.8 L136.8 61.8 L137.8 62 L138.8 62.1 L139.9 62.4 L140.9 62.6 L141.9 62.9 L143 63.3 L144 63.7' fill='none' stroke='rgb(var(--accent))' stroke-width='2.6' stroke-linecap='round'/><path d='M20 103.9 L21 103.3 L22.1 102.6 L23.1 102 L24.1 101.4 L25.2 100.7 L26.2 100.1 L27.2 99.4 L28.3 98.8 L29.3 98.2 L30.3 97.5 L31.4 96.9 L32.4 96.2 L33.4 95.6 L34.5 95 L35.5 94.3 L36.5 93.7 L37.6 93 L38.6 92.4 L39.6 91.8 L40.7 91.1 L41.7 90.5 L42.7 89.8 L43.8 89.2 L44.8 88.6 L45.8 87.9 L46.9 87.3 L47.9 86.6 L48.9 86 L50 85.4 L51 84.7 L52 84.1 L53.1 83.4 L54.1 82.8 L55.1 82.2 L56.2 81.5 L57.2 80.9 L58.2 80.2 L59.3 79.6 L60.3 79 L61.3 78.3 L62.4 77.7 L63.4 77 L64.4 76.4 L65.5 75.8 L66.5 75.1 L67.5 74.5 L68.6 73.8 L69.6 73.2 L70.6 72.6 L71.7 71.9 L72.7 71.3 L73.7 70.6 L74.8 70 L75.8 69.4 L76.8 68.7 L77.9 68.1 L78.9 67.4 L79.9 66.8 L81 66.2 L82 65.5 L83 64.9 L84.1 64.2 L85.1 63.6 L86.1 63 L87.2 62.3 L88.2 61.7 L89.2 61 L90.3 60.4 L91.3 59.8 L92.3 59.1 L93.4 58.5 L94.4 57.8 L95.4 57.2 L96.5 56.6 L97.5 55.9 L98.5 55.3 L99.6 54.6 L100.6 54 L101.6 53.4 L102.7 52.7 L103.7 52.1 L104.7 51.4 L105.8 50.8 L106.8 50.2 L107.8 49.5 L108.9 48.9 L109.9 48.2 L110.9 47.6 L112 47 L113 46.3 L114 45.7 L115.1 45 L116.1 44.4 L117.1 43.8 L118.2 43.1 L119.2 42.5 L120.2 41.8 L121.3 41.2 L122.3 40.6 L123.3 39.9 L124.4 39.6' fill='none' stroke='rgb(var(--at-risk))' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='6 4'/><text x='18' y='176' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >f grows at most</text><text x='18' y='194' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >as fast as g</text></g><g><title>Ω: the floor. f grows at least as fast as g.</title><rect x='164' y='6' width='150' height='208' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='176' y='36' font-size='27.6' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Ω</text><text x='302' y='34' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >floor</text><line x1='178' y1='150' x2='302' y2='150' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='178' y1='150' x2='178' y2='54' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><path d='M178 116.4 L179 115.1 L180.1 113.9 L181.1 112.6 L182.1 111.4 L183.2 110.2 L184.2 109 L185.2 107.8 L186.3 106.7 L187.3 105.6 L188.3 104.5 L189.4 103.5 L190.4 102.6 L191.4 101.7 L192.5 100.8 L193.5 100 L194.5 99.3 L195.6 98.6 L196.6 98 L197.6 97.4 L198.7 96.9 L199.7 96.5 L200.7 96.1 L201.8 95.8 L202.8 95.6 L203.8 95.4 L204.9 95.3 L205.9 95.2 L206.9 95.3 L208 95.3 L209 95.4 L210 95.6 L211.1 95.8 L212.1 96.1 L213.1 96.4 L214.2 96.7 L215.2 97.1 L216.2 97.5 L217.3 97.9 L218.3 98.3 L219.3 98.8 L220.4 99.2 L221.4 99.7 L222.4 100.2 L223.5 100.6 L224.5 101.1 L225.5 101.5 L226.6 101.9 L227.6 102.3 L228.6 102.7 L229.7 103 L230.7 103.3 L231.7 103.5 L232.8 103.7 L233.8 103.9 L234.8 104 L235.9 104 L236.9 104 L237.9 104 L239 103.8 L240 103.7 L241 103.4 L242.1 103.1 L243.1 102.7 L244.1 102.3 L245.2 101.8 L246.2 101.2 L247.2 100.6 L248.3 99.9 L249.3 99.1 L250.3 98.3 L251.4 97.4 L252.4 96.5 L253.4 95.5 L254.5 94.5 L255.5 93.4 L256.5 92.3 L257.6 91.2 L258.6 90 L259.6 88.8 L260.7 87.6 L261.7 86.4 L262.7 85.1 L263.8 83.9 L264.8 82.6 L265.8 81.3 L266.9 80.1 L267.9 78.8 L268.9 77.6 L270 76.4 L271 75.2 L272 74.1 L273.1 72.9 L274.1 71.9 L275.1 70.8 L276.2 69.8 L277.2 68.9 L278.2 68 L279.3 67.1 L280.3 66.3 L281.3 65.6 L282.4 64.9 L283.4 64.3 L284.4 63.8 L285.5 63.3 L286.5 62.9 L287.5 62.5 L288.6 62.2 L289.6 62 L290.6 61.9 L291.7 61.8 L292.7 61.7 L293.7 61.8 L294.8 61.8 L295.8 62 L296.8 62.1 L297.9 62.4 L298.9 62.6 L299.9 62.9 L301 63.3 L302 63.7' fill='none' stroke='rgb(var(--accent))' stroke-width='2.6' stroke-linecap='round'/><path d='M178 140.4 L179 140.2 L180.1 139.9 L181.1 139.7 L182.1 139.4 L183.2 139.2 L184.2 139 L185.2 138.7 L186.3 138.5 L187.3 138.2 L188.3 138 L189.4 137.8 L190.4 137.5 L191.4 137.3 L192.5 137 L193.5 136.8 L194.5 136.6 L195.6 136.3 L196.6 136.1 L197.6 135.8 L198.7 135.6 L199.7 135.4 L200.7 135.1 L201.8 134.9 L202.8 134.6 L203.8 134.4 L204.9 134.2 L205.9 133.9 L206.9 133.7 L208 133.4 L209 133.2 L210 133 L211.1 132.7 L212.1 132.5 L213.1 132.2 L214.2 132 L215.2 131.8 L216.2 131.5 L217.3 131.3 L218.3 131 L219.3 130.8 L220.4 130.6 L221.4 130.3 L222.4 130.1 L223.5 129.8 L224.5 129.6 L225.5 129.4 L226.6 129.1 L227.6 128.9 L228.6 128.6 L229.7 128.4 L230.7 128.2 L231.7 127.9 L232.8 127.7 L233.8 127.4 L234.8 127.2 L235.9 127 L236.9 126.7 L237.9 126.5 L239 126.2 L240 126 L241 125.8 L242.1 125.5 L243.1 125.3 L244.1 125 L245.2 124.8 L246.2 124.6 L247.2 124.3 L248.3 124.1 L249.3 123.8 L250.3 123.6 L251.4 123.4 L252.4 123.1 L253.4 122.9 L254.5 122.6 L255.5 122.4 L256.5 122.2 L257.6 121.9 L258.6 121.7 L259.6 121.4 L260.7 121.2 L261.7 121 L262.7 120.7 L263.8 120.5 L264.8 120.2 L265.8 120 L266.9 119.8 L267.9 119.5 L268.9 119.3 L270 119 L271 118.8 L272 118.6 L273.1 118.3 L274.1 118.1 L275.1 117.8 L276.2 117.6 L277.2 117.4 L278.2 117.1 L279.3 116.9 L280.3 116.6 L281.3 116.4 L282.4 116.2 L283.4 115.9 L284.4 115.7 L285.5 115.4 L286.5 115.2 L287.5 115 L288.6 114.7 L289.6 114.5 L290.6 114.2 L291.7 114 L292.7 113.8 L293.7 113.5 L294.8 113.3 L295.8 113 L296.8 112.8 L297.9 112.6 L298.9 112.3 L299.9 112.1 L301 111.8 L302 111.6' fill='none' stroke='rgb(var(--on-track))' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='6 4'/><text x='176' y='176' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >f grows at least</text><text x='176' y='194' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >as fast as g</text></g><g><title>Θ: the sandwich. f grows exactly as fast as g.</title><rect x='322' y='6' width='150' height='208' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='334' y='36' font-size='27.6' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Θ</text><text x='460' y='34' font-size='14.9' fill='currentColor' text-anchor='end' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >sandwich</text><line x1='336' y1='150' x2='460' y2='150' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='336' y1='150' x2='336' y2='54' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><path d='M336 116.4 L337 115.1 L338.1 113.9 L339.1 112.6 L340.1 111.4 L341.2 110.2 L342.2 109 L343.2 107.8 L344.3 106.7 L345.3 105.6 L346.3 104.5 L347.4 103.5 L348.4 102.6 L349.4 101.7 L350.5 100.8 L351.5 100 L352.5 99.3 L353.6 98.6 L354.6 98 L355.6 97.4 L356.7 96.9 L357.7 96.5 L358.7 96.1 L359.8 95.8 L360.8 95.6 L361.8 95.4 L362.9 95.3 L363.9 95.2 L364.9 95.3 L366 95.3 L367 95.4 L368 95.6 L369.1 95.8 L370.1 96.1 L371.1 96.4 L372.2 96.7 L373.2 97.1 L374.2 97.5 L375.3 97.9 L376.3 98.3 L377.3 98.8 L378.4 99.2 L379.4 99.7 L380.4 100.2 L381.5 100.6 L382.5 101.1 L383.5 101.5 L384.6 101.9 L385.6 102.3 L386.6 102.7 L387.7 103 L388.7 103.3 L389.7 103.5 L390.8 103.7 L391.8 103.9 L392.8 104 L393.9 104 L394.9 104 L395.9 104 L397 103.8 L398 103.7 L399 103.4 L400.1 103.1 L401.1 102.7 L402.1 102.3 L403.2 101.8 L404.2 101.2 L405.2 100.6 L406.3 99.9 L407.3 99.1 L408.3 98.3 L409.4 97.4 L410.4 96.5 L411.4 95.5 L412.5 94.5 L413.5 93.4 L414.5 92.3 L415.6 91.2 L416.6 90 L417.6 88.8 L418.7 87.6 L419.7 86.4 L420.7 85.1 L421.8 83.9 L422.8 82.6 L423.8 81.3 L424.9 80.1 L425.9 78.8 L426.9 77.6 L428 76.4 L429 75.2 L430 74.1 L431.1 72.9 L432.1 71.9 L433.1 70.8 L434.2 69.8 L435.2 68.9 L436.2 68 L437.3 67.1 L438.3 66.3 L439.3 65.6 L440.4 64.9 L441.4 64.3 L442.4 63.8 L443.5 63.3 L444.5 62.9 L445.5 62.5 L446.6 62.2 L447.6 62 L448.6 61.9 L449.7 61.8 L450.7 61.7 L451.7 61.8 L452.8 61.8 L453.8 62 L454.8 62.1 L455.9 62.4 L456.9 62.6 L457.9 62.9 L459 63.3 L460 63.7' fill='none' stroke='rgb(var(--accent))' stroke-width='2.6' stroke-linecap='round'/><path d='M336 103.9 L337 103.3 L338.1 102.6 L339.1 102 L340.1 101.4 L341.2 100.7 L342.2 100.1 L343.2 99.4 L344.3 98.8 L345.3 98.2 L346.3 97.5 L347.4 96.9 L348.4 96.2 L349.4 95.6 L350.5 95 L351.5 94.3 L352.5 93.7 L353.6 93 L354.6 92.4 L355.6 91.8 L356.7 91.1 L357.7 90.5 L358.7 89.8 L359.8 89.2 L360.8 88.6 L361.8 87.9 L362.9 87.3 L363.9 86.6 L364.9 86 L366 85.4 L367 84.7 L368 84.1 L369.1 83.4 L370.1 82.8 L371.1 82.2 L372.2 81.5 L373.2 80.9 L374.2 80.2 L375.3 79.6 L376.3 79 L377.3 78.3 L378.4 77.7 L379.4 77 L380.4 76.4 L381.5 75.8 L382.5 75.1 L383.5 74.5 L384.6 73.8 L385.6 73.2 L386.6 72.6 L387.7 71.9 L388.7 71.3 L389.7 70.6 L390.8 70 L391.8 69.4 L392.8 68.7 L393.9 68.1 L394.9 67.4 L395.9 66.8 L397 66.2 L398 65.5 L399 64.9 L400.1 64.2 L401.1 63.6 L402.1 63 L403.2 62.3 L404.2 61.7 L405.2 61 L406.3 60.4 L407.3 59.8 L408.3 59.1 L409.4 58.5 L410.4 57.8 L411.4 57.2 L412.5 56.6 L413.5 55.9 L414.5 55.3 L415.6 54.6 L416.6 54 L417.6 53.4 L418.7 52.7 L419.7 52.1 L420.7 51.4 L421.8 50.8 L422.8 50.2 L423.8 49.5 L424.9 48.9 L425.9 48.2 L426.9 47.6 L428 47 L429 46.3 L430 45.7 L431.1 45 L432.1 44.4 L433.1 43.8 L434.2 43.1 L435.2 42.5 L436.2 41.8 L437.3 41.2 L438.3 40.6 L439.3 39.9 L440.4 39.6' fill='none' stroke='rgb(var(--at-risk))' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='6 4'/><path d='M336 140.4 L337 140.2 L338.1 139.9 L339.1 139.7 L340.1 139.4 L341.2 139.2 L342.2 139 L343.2 138.7 L344.3 138.5 L345.3 138.2 L346.3 138 L347.4 137.8 L348.4 137.5 L349.4 137.3 L350.5 137 L351.5 136.8 L352.5 136.6 L353.6 136.3 L354.6 136.1 L355.6 135.8 L356.7 135.6 L357.7 135.4 L358.7 135.1 L359.8 134.9 L360.8 134.6 L361.8 134.4 L362.9 134.2 L363.9 133.9 L364.9 133.7 L366 133.4 L367 133.2 L368 133 L369.1 132.7 L370.1 132.5 L371.1 132.2 L372.2 132 L373.2 131.8 L374.2 131.5 L375.3 131.3 L376.3 131 L377.3 130.8 L378.4 130.6 L379.4 130.3 L380.4 130.1 L381.5 129.8 L382.5 129.6 L383.5 129.4 L384.6 129.1 L385.6 128.9 L386.6 128.6 L387.7 128.4 L388.7 128.2 L389.7 127.9 L390.8 127.7 L391.8 127.4 L392.8 127.2 L393.9 127 L394.9 126.7 L395.9 126.5 L397 126.2 L398 126 L399 125.8 L400.1 125.5 L401.1 125.3 L402.1 125 L403.2 124.8 L404.2 124.6 L405.2 124.3 L406.3 124.1 L407.3 123.8 L408.3 123.6 L409.4 123.4 L410.4 123.1 L411.4 122.9 L412.5 122.6 L413.5 122.4 L414.5 122.2 L415.6 121.9 L416.6 121.7 L417.6 121.4 L418.7 121.2 L419.7 121 L420.7 120.7 L421.8 120.5 L422.8 120.2 L423.8 120 L424.9 119.8 L425.9 119.5 L426.9 119.3 L428 119 L429 118.8 L430 118.6 L431.1 118.3 L432.1 118.1 L433.1 117.8 L434.2 117.6 L435.2 117.4 L436.2 117.1 L437.3 116.9 L438.3 116.6 L439.3 116.4 L440.4 116.2 L441.4 115.9 L442.4 115.7 L443.5 115.4 L444.5 115.2 L445.5 115 L446.6 114.7 L447.6 114.5 L448.6 114.2 L449.7 114 L450.7 113.8 L451.7 113.5 L452.8 113.3 L453.8 113 L454.8 112.8 L455.9 112.6 L456.9 112.3 L457.9 112.1 L459 111.8 L460 111.6' fill='none' stroke='rgb(var(--on-track))' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='6 4'/><text x='334' y='176' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >f grows exactly</text><text x='334' y='194' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >as fast as g</text></g><text x='10' y='236' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Blue: f(n), your algorithm.  Dashed: c·g(n), the bound.</text></g>",
+          "viewBox": "0 0 480 246",
+          "caption": "The three symbols are a ceiling, a floor, and both. O says 'never faster-growing than this', Ω says 'never slower-growing than this', Θ says 'exactly this shape'.",
+          "slide": "O, Ω, Θ",
+          "id": "bigo.b59b19f2"
         },
         {
           "type": "table",
           "columns": [
-            "Big-O",
-            "Name",
-            "Where it comes from",
+            "Symbol",
+            "Reads as",
+            "Poon uses it for",
             "Example"
           ],
           "rows": [
             [
-              "O(1)",
-              "Constant",
-              "No dependence on n",
-              "Reading a[i]; push/pop"
+              "O(g)",
+              "at most g (ceiling)",
+              "the worst case",
+              "insertion sort is O(n²)"
             ],
             [
-              "O(log n)",
-              "Logarithmic",
-              "Halving the problem each step",
-              "Binary search"
+              "Ω(g)",
+              "at least g (floor)",
+              "the best case",
+              "insertion sort is Ω(n)"
             ],
             [
-              "O(n)",
-              "Linear",
-              "One pass over the input",
-              "Linear search; summing an array; merge"
-            ],
-            [
-              "O(n log n)",
-              "Linearithmic",
-              "Halving, with linear work per level",
-              "Merge sort"
-            ],
-            [
-              "O(n²)",
-              "Quadratic",
-              "Nested loops over the input",
-              "Insertion sort worst case"
-            ],
-            [
-              "O(2ⁿ)",
-              "Exponential",
-              "Work doubles per extra element",
-              "Naive recursive Fibonacci"
+              "Θ(g)",
+              "exactly g (both)",
+              "when best and worst match",
+              "summing an array is Θ(n)"
             ]
           ],
-          "slide": "The growth-rate table (slide 26 — reproduce from memory)",
-          "id": "bigo.f8b9ae5b"
+          "title": "O, Ω, Θ in one table (Lecture 4)",
+          "id": "bigo.fd0d9512"
         },
         {
           "type": "definition",
           "term": "Insertion sort",
           "body": "Ω(n) best (sorted), O(n²) worst (reversed).",
-          "id": "bigo.70a6aebf"
+          "id": "bigo.05708aff"
         },
         {
           "type": "definition",
           "term": "Linear search",
           "body": "Ω(1) best (it's the first element), O(n) worst (last, or missing).",
-          "id": "bigo.aada3193"
+          "id": "bigo.7c8e19d3"
         },
         {
           "type": "definition",
           "term": "Sum all elements",
-          "body": "Ω(n) and O(n) — you must touch everything, no shortcut, so it's **Θ(n)**.",
-          "id": "bigo.3c3acdf9"
+          "body": "Ω(n) and O(n): you must touch everything, no shortcut, so it's **Θ(n)**.",
+          "id": "bigo.a23782b9"
+        },
+        {
+          "type": "trap",
+          "body": "Dropping a term that is not smaller. n² + n log n → O(n²) is right. But n·log n is NOT 'n' with a constant: log n grows, so O(n log n) stays O(n log n). Only true constants (numbers that don't depend on n) get dropped.",
+          "source": "HW 4",
+          "points": null,
+          "slide": "What you may drop",
+          "id": "bigo.81d06be1"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 4 Problem 2: `for i in 0..n−1: for j in 0..i−1: sum += i`. How many times does the inner line run, and what's the Big-O?",
+          "answer": "For each i it runs i times: 0 + 1 + 2 + … + (n−1) = n(n−1)/2 (Chapter 0's sum). Drop the ½ and the −n/2: O(n²).",
+          "sectionRef": "bigo",
+          "id": "bigo.3d16c8c2"
+        },
+        {
+          "type": "check",
+          "prompt": "Give the simplest O, Ω and Θ for f(n) = 2n³ + 5n² + 100.",
+          "answer": "All n³: f = O(n³) and Ω(n³), so Θ(n³). Only the fastest-growing term survives.",
+          "sectionRef": "bigo",
+          "id": "bigo.8a729f0d"
+        }
+      ]
+    },
+    {
+      "id": "classes",
+      "heading": "Step 3: the growth ladder, and how to spot each rung",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Almost every algorithm in this course lands on one of six rungs. Learn them like a ladder: each rung is dramatically worse than the one below it.",
+          "id": "classes.8c381177"
+        },
+        {
+          "type": "sim",
+          "sim": "growth",
+          "caption": "Three panels. (1) Drag 'Plot up to n' and watch 2ⁿ and n² leave the chart. (2) Slide the input size up to a million or a billion and read the real time for each rung. (3) Race a careful n² algorithm against a sloppy n log n one and find where they cross.",
+          "params": {
+            "xmax": 12,
+            "n": 1000000
+          },
+          "slide": "Race the curves",
+          "id": "classes.af7de195"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Rung",
+            "Name",
+            "The code looks like",
+            "Everyday version"
+          ],
+          "rows": [
+            [
+              "O(1)",
+              "constant",
+              "no loop over the input",
+              "grabbing the top plate off a stack"
+            ],
+            [
+              "O(log n)",
+              "logarithmic",
+              "a loop that HALVES what's left",
+              "finding a word in a paper dictionary"
+            ],
+            [
+              "O(n)",
+              "linear",
+              "one loop over the input",
+              "reading every name on a list once"
+            ],
+            [
+              "O(n log n)",
+              "linearithmic",
+              "halving, with a full pass at each level",
+              "sorting a deck by splitting and merging piles"
+            ],
+            [
+              "O(n²)",
+              "quadratic",
+              "a loop inside a loop, both over the input",
+              "everyone at a party shaking hands with everyone"
+            ],
+            [
+              "O(2ⁿ)",
+              "exponential",
+              "trying every yes/no combination",
+              "trying every possible playlist of your songs"
+            ]
+          ],
+          "title": "The growth ladder",
+          "slide": "Six rungs",
+          "id": "classes.7f5e4b5a"
+        },
+        {
+          "type": "prose",
+          "md": "**When you see X, think Y.** This is the pattern-matching you do on an exam.\n\n- A single `for` over the array → **n**.\n- A `for` inside a `for`, both up to n → **n²**. (Inner goes to i instead of n? Still n², it's half of n².)\n- A variable that is **halved or doubled** each pass (`n = n / 2`, `i *= 2`) → **log n**.\n- A loop of n around something that halves → **n log n**.\n- A loop that runs a **fixed** number of times, like 100 → constant, **O(1)**, no matter how big 100 looks.",
+          "label": "think",
+          "slide": "Spot the rung",
+          "id": "classes.66232bc4"
+        },
+        {
+          "type": "prose",
+          "md": "**What size of input can each rung handle?** A laptop does roughly a billion simple steps per second. Rule of thumb for 'answers in about a second':\n\n- O(n²): up to around **30,000** items.\n- O(n log n): up to tens of **millions**.\n- O(n): up to around a **billion**.\n- O(2ⁿ): about **30** items. Really.\n\nSo if a task says 'n up to a million', any O(n²) plan is already dead, and you should be looking for n log n or better.",
+          "label": "when",
+          "id": "classes.db15aba5"
+        },
+        {
+          "type": "prose",
+          "md": "**Where the rungs show up.** Looking up a contact by name in a sorted list: **log n** (it's binary search, next section). Scrolling a feed and rendering each post: **n**. Every sort built into a programming language: **n log n**. Checking every pair of users for 'people you may know' naively: **n²**, which is exactly why real systems don't do it naively. Trying every subset to pack a delivery truck perfectly: **2ⁿ**, which is why logistics companies settle for 'very good' instead of 'perfect'.",
+          "label": "world",
+          "id": "classes.50741f06"
         },
         {
           "type": "example",
           "title": "1000n vs 5n²",
-          "body": "Algorithm A takes 1000n operations, B takes 5n². Which is faster?\n\n1. Set them equal to find the crossover: 1000n = 5n² → 1000 = 5n → n = 200.\n2. Below 200, the n² hasn't grown enough to beat the big 1000 constant: **B is faster** for small inputs.\n3. Above 200, n² takes over and keeps pulling away: **A is faster** for large inputs, and the gap grows without bound.\n4. This is why Big-O throws away constants: for big enough n the growth rate decides, and 'big enough' always arrives. But it's also why the hybrid sort in Project 1 exists — for tiny n, constants are the whole story.",
+          "body": "Algorithm A takes 1000n operations, B takes 5n². Which is faster?\n\n1. Set them equal to find the crossover: 1000n = 5n² → 1000 = 5n → n = 200.\n2. Below 200, the n² hasn't grown enough to beat the big 1000 constant: **B is faster** for small inputs.\n3. Above 200, n² takes over and keeps pulling away: **A is faster** for large inputs, and the gap grows without bound.\n4. This is why Big-O throws away constants: for big enough n the growth rate decides, and 'big enough' always arrives. But it's also why the hybrid sort in Project 1 exists: for tiny n, constants are the whole story.",
           "answer": "B for n < 200, A for n > 200, tie at 200",
           "slide": "HW 4 Problem 3: when do constants win?",
-          "slideNotes": "The general recipe for every 'which is faster' question: set the two cost functions equal, solve for n, and that crossover is where the winner flips. Below the crossover the bigger constant is just a bigger constant; above it, the faster-growing term takes over and **never gives the lead back** — that's the whole meaning of asymptotic. The Big-O Cheat Sheet below has the standard growth rates of every structure and sort in one table; it's the thing to stare at the night before the exam.",
+          "slideNotes": "The general recipe for every 'which is faster' question: set the two cost functions equal, solve for n, and that crossover is where the winner flips. Below the crossover the bigger constant is just a bigger constant; above it, the faster-growing term takes over and **never gives the lead back**: that's the whole meaning of asymptotic. The Big-O Cheat Sheet below has the standard growth rates of every structure and sort in one table; it's the thing to stare at the night before the exam.",
           "resources": [
             {
               "label": "Big-O Cheat Sheet",
@@ -102,67 +359,312 @@
               "kind": "site"
             }
           ],
-          "id": "bigo.0264e589"
+          "id": "classes.6b4697a2"
         },
         {
           "type": "check",
-          "prompt": "HW 4 Problem 2: `for i in 0..n−1: for j in 0..i−1: sum += i`. How many times does the inner line run, and what's the Big-O?",
-          "answer": "For each i it runs i times: 0 + 1 + 2 + … + (n−1) = n(n−1)/2 (Chapter 0's sum). Drop the ½ and the −n/2: O(n²).",
-          "sectionRef": "bigo",
-          "id": "bigo.cce9db30"
+          "prompt": "Which rung: `i = 1; while (i < n) i = i * 2;`",
+          "answer": "O(log n). i doubles each pass, so it reaches n after about log₂ n passes.",
+          "sectionRef": "classes",
+          "id": "classes.6b751219"
         },
         {
           "type": "check",
-          "prompt": "Give the simplest O, Ω and Θ for f(n) = 2n³ + 5n² + 100.",
-          "answer": "All n³: f = O(n³) and Ω(n³), so Θ(n³). Only the fastest-growing term survives.",
-          "sectionRef": "bigo",
-          "id": "bigo.2551d9b7"
+          "prompt": "Which rung: `for i in 0..n−1: for j in 0..99: count++`",
+          "answer": "O(n). The inner loop is always 100, a constant: 100n = O(n).",
+          "sectionRef": "classes",
+          "id": "classes.379f91df"
+        }
+      ]
+    },
+    {
+      "id": "binsearch",
+      "heading": "Step 4: binary search, the halving trick",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Binary search",
+          "body": "Find a value in a **sorted** array by checking the middle, then throwing away the half that can't contain it. Repeat on the half that's left.",
+          "id": "binsearch.512db22f"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc5' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec5' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Find 23 in 16 sorted numbers.</text><g><title>Look 1: 16 candidates. middle is 41, too big → keep the LEFT half.</title><text x='12' y='54' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='20' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='32.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='47.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='59.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='75' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='87.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='102.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='114.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><rect x='130' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='142.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >16</text><rect x='157.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='169.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >23</text><rect x='185' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='197.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >38</text><rect x='212.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='224.8' y='53.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >41</text><rect x='240' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='252.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >56</text><rect x='267.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='279.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >62</text><rect x='295' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='307.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >71</text><rect x='322.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='334.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >77</text><rect x='350' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='362.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >83</text><rect x='377.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='389.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >88</text><rect x='405' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='417.2' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >91</text><rect x='432.5' y='34' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='444.8' y='53.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >99</text><text x='20' y='82' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >16 left · middle is 41, too big → keep the LEFT half</text></g><g><title>Look 2: 7 candidates. middle is 12, too small → keep the RIGHT half.</title><text x='12' y='118' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='20' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='32.2' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='47.5' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='59.8' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='75' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='87.2' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='102.5' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='114.8' y='117.6' font-size='13.2' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><rect x='130' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='142.2' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >16</text><rect x='157.5' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='169.8' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >23</text><rect x='185' y='98' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='197.2' y='117.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >38</text><rect x='212.5' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='240' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='267.5' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='295' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='322.5' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='350' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='377.5' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='405' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='432.5' y='98' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><text x='20' y='146' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >7 left · middle is 12, too small → keep the RIGHT half</text></g><g><title>Look 3: 3 candidates. middle is 23: found it!.</title><text x='12' y='182' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='20' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='47.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='75' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='102.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='130' y='162' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='142.2' y='181.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >16</text><rect x='157.5' y='162' width='24.5' height='30' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='169.8' y='181.6' font-size='13.2' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >23</text><rect x='185' y='162' width='24.5' height='30' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='197.2' y='181.6' font-size='13.2' fill='currentColor' text-anchor='middle' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >38</text><rect x='212.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='240' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='267.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='295' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='322.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='350' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='377.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='405' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='432.5' y='162' width='24.5' height='30' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3' stroke-dasharray='4 3'/><text x='20' y='210' font-size='13.8' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3 left · middle is 23: found it!</text></g><g><title>The worst case looks at ranges of 16, 8, 4, 2, 1: five looks, which is log₂ 16 + 1.</title><text x='10' y='246' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Worst case: 16 → 8 → 4 → 2 → 1 = 5 looks (log₂ 16 + 1).</text></g><g><title>Double the items and you add ONE look.</title><rect x='10' y='258' width='460' height='42' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='284' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Double the items → only ONE more look.</text></g></g>",
+          "viewBox": "0 0 480 308",
+          "caption": "Each look cuts the candidates in half. The grayed-out boxes are gone for good after one comparison. That is why the number of looks is log₂ n, not n.",
+          "slide": "Halving",
+          "id": "binsearch.22fcbc73"
+        },
+        {
+          "type": "stepper",
+          "title": "Binary search for 23, one look at a time",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                41,
+                56,
+                62
+              ],
+              "caption": "Find 23. The list is sorted, so we can be clever. Two markers: low = 0 and high = 9 cover everything that could still hold 23.",
+              "hl": [
+                0,
+                9
+              ],
+              "note": "low = 0, high = 9"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                41,
+                56,
+                62
+              ],
+              "caption": "mid = (0 + 9) / 2 = 4. a[4] = 16. Is 23 bigger or smaller? Bigger, so 23 can only be to the RIGHT of index 4. Throw away indexes 0 to 4 in one move.",
+              "hl": [
+                4
+              ],
+              "note": "mid = 4, a[mid] = 16 < 23"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                41,
+                56,
+                62
+              ],
+              "caption": "low = mid + 1 = 5. Now only indexes 5 to 9 are left: five candidates instead of ten.",
+              "hl": [
+                5,
+                9
+              ],
+              "note": "low = 5, high = 9"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                41,
+                56,
+                62
+              ],
+              "caption": "mid = (5 + 9) / 2 = 7. a[7] = 41. 23 is smaller, so it can only be to the LEFT: high = mid − 1 = 6.",
+              "hl": [
+                7
+              ],
+              "note": "mid = 7, a[mid] = 41 > 23"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                41,
+                56,
+                62
+              ],
+              "caption": "mid = (5 + 6) / 2 = 5. a[5] = 23. Found it after 3 looks. Linear search would have needed 6.",
+              "hl": [
+                5
+              ],
+              "done": [
+                5
+              ],
+              "note": "found at index 5"
+            }
+          ],
+          "slide": true,
+          "id": "binsearch.53f6b4dd"
+        },
+        {
+          "type": "example",
+          "title": "The code (Lecture 5, iterative)",
+          "body": "int binarySearch(int[] a, int target) {\n    int low = 0, high = a.length - 1;\n    while (low <= high) {\n        int mid = (low + high) / 2;\n        if (a[mid] == target) return mid;\n        else if (a[mid] < target) low = mid + 1;   // go right\n        else high = mid - 1;                       // go left\n    }\n    return -1;                                     // not there\n}",
+          "slide": "The code",
+          "id": "binsearch.8280fcd0"
+        },
+        {
+          "type": "prose",
+          "md": "**Why is it log n?** Every look halves what's left: n, n/2, n/4, … 1. Chapter 0 defined log₂ n as exactly 'how many times can you halve n before reaching 1'. So binary search takes about log₂ n looks. For a million items that's 20. For a billion, 30.",
+          "label": "why",
+          "id": "binsearch.92d886ab"
+        },
+        {
+          "type": "prose",
+          "md": "**Binary search is everywhere.** A database finding a row by its id uses an index sorted for exactly this kind of halving (B-trees, a later lecture's cousin). `git bisect` finds the commit that broke your code by testing the middle commit, then the middle of the bad half: 1,000 commits take about 10 tests. Even a phone's contact list jumping to 'M' is halving, not scanning.",
+          "label": "world",
+          "id": "binsearch.509ff30d"
+        },
+        {
+          "type": "prose",
+          "md": "**Use it when** the data is sorted and you search many times. **Don't** if the data is unsorted and you search once: sorting first costs n log n, more than one plain O(n) scan.",
+          "label": "when",
+          "id": "binsearch.197d5433"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: count the halvings",
+          "task": "Write `halvings(n)`: how many times can you halve n (with whole-number division `n // 2`) before it reaches 1? This number is ⌊log₂ n⌋, the number of 'go left or go right' decisions binary search makes.",
+          "starter": "def halvings(n):\n    count = 0\n    # Keep replacing n with n // 2 while n is bigger than 1.\n    # Add 1 to count each time you halve.\n    return count\n\nfor n in [1, 2, 16, 1000, 1_000_000]:\n    print(f\"{n:>9,} -> {halvings(n)}\")\n",
+          "check": "assert halvings(1) == 0, \"halvings(1) should be 0: 1 is already 1, nothing to halve.\"\nassert halvings(2) == 1, \"halvings(2) should be 1: 2 → 1.\"\nassert halvings(16) == 4, \"halvings(16) should be 4: 16 → 8 → 4 → 2 → 1.\"\nassert halvings(1000) == 9, \"halvings(1000) should be 9: 1000 → 500 → 250 → 125 → 62 → 31 → 15 → 7 → 3 → 1.\"\nassert halvings(1_000_000) == 19, \"halvings(1,000,000) should be 19. Are you stopping when n reaches 1?\"",
+          "solution": "def halvings(n):\n    count = 0\n    while n > 1:\n        n = n // 2\n        count += 1\n    return count\n\nfor n in [1, 2, 16, 1000, 1_000_000]:\n    print(f\"{n:>9,} -> {halvings(n)}\")\n",
+          "hints": [
+            "Use a `while n > 1:` loop.",
+            "Inside the loop: `n = n // 2` and `count += 1`.",
+            "Return count after the loop ends."
+          ],
+          "success": "A million items, 19 halvings. That's why binary search on a million sorted items needs only about 20 comparisons.",
+          "id": "binsearch.bbc59fa0"
+        },
+        {
+          "type": "check",
+          "prompt": "A sorted array has 1,024 items. At most how many 'go left or right' decisions does binary search make?",
+          "answer": "log₂ 1024 = 10 halvings (plus one final look at the last candidate).",
+          "sectionRef": "binsearch",
+          "id": "binsearch.df2561dc"
         }
       ]
     },
     {
       "id": "dc",
-      "heading": "Divide and conquer",
+      "heading": "Step 5: divide and conquer, a recipe",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Divide and conquer",
+          "body": "A recipe for designing algorithms in three steps: **divide** the problem into smaller copies of the same problem, **conquer** each copy by solving it the same way (recursion), and **combine** the answers.",
+          "id": "dc.37603545"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc6' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc6' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec6' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><g><title>The problem: sort 8 numbers.</title><rect x='150' y='6' width='180' height='36' rx='10' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='240' y='29.2' font-size='14.9' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7 3 9 1 4 8 2 6</text></g><g><title>1 · DIVIDE: cut it into smaller copies of the SAME problem.</title><circle cx='198' cy='62' r='11' fill='rgb(var(--accent))'/><text x='198' y='66' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >1</text><text x='214' y='67' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Divide</text><line x1='200' y1='44' x2='130' y2='82' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><line x1='280' y1='44' x2='350' y2='82' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='55' y='84' width='150' height='34' rx='10' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='130' y='106.2' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >7 3 9 1</text><rect x='275' y='84' width='150' height='34' rx='10' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='350' y='106.2' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4 8 2 6</text></g><g><title>2 · CONQUER: solve each piece the same way (recursion), until a piece is small enough to be obvious: the base case.</title><circle cx='198' cy='142' r='11' fill='rgb(var(--accent))'/><text x='198' y='146' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >2</text><text x='214' y='147' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Conquer</text><line x1='130' y1='120' x2='130' y2='162' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><line x1='350' y1='120' x2='350' y2='162' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.6' marker-end='url(#arrowSc6)'/><rect x='55' y='164' width='150' height='34' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='130' y='186.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1 3 7 9</text><rect x='275' y='164' width='150' height='34' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='350' y='186.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2 4 6 8</text></g><g><title>3 · COMBINE: glue the solved pieces into the answer. For merge sort this is the merge step.</title><circle cx='198' cy='222' r='11' fill='rgb(var(--accent))'/><text x='198' y='226' font-size='13.2' fill='white' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3</text><text x='214' y='227' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Combine</text><line x1='130' y1='200' x2='200' y2='242' stroke='rgb(var(--accent))' stroke-width='1.6' marker-end='url(#arrowBc6)'/><line x1='350' y1='200' x2='280' y2='242' stroke='rgb(var(--accent))' stroke-width='1.6' marker-end='url(#arrowBc6)'/><rect x='135' y='244' width='210' height='36' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='267.2' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1 2 3 4 6 7 8 9</text></g><text x='10' y='306' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Binary search uses the same recipe, but conquers only</text><text x='10' y='322' font-size='13.2' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >ONE half and has nothing to combine.</text></g>",
+          "viewBox": "0 0 480 330",
+          "caption": "The recipe on 8 numbers. Hover each numbered step. Divide makes smaller versions of the same problem; conquer is 'do the same thing again, on less'; combine glues the answers.",
+          "slide": "Divide, conquer, combine",
+          "id": "dc.b716d980"
+        },
+        {
+          "type": "definition",
+          "term": "Base case",
+          "body": "The size where you stop dividing because the answer is obvious. For sorting: one item (or zero) is already sorted. Without a base case, the recursion never stops.",
+          "id": "dc.1e7e1ca3"
+        },
+        {
           "type": "prose",
-          "label": "why",
-          "md": "**The idea** How do you find 'marble' in a paper dictionary? You don't start at page 1. You open to the middle, see 'L…', and throw away the whole first half. Open the middle of what's left, throw away half again. Each look halves the problem, so a 1000-page dictionary takes about 10 looks (Chapter 0: log₂ 1000 ≈ 10). That's the pattern: make the problem smaller by a constant factor each step, and the number of steps is logarithmic. **Divide and conquer** is that pattern turned into a recipe.",
-          "slide": "Looking up a word",
-          "slideNotes": "Divide-and-conquer is a **template**, not one algorithm — the same three beats (split, solve the halves, combine) give you binary search (trivial combine), merge sort (all the work is in combine), and later quicksort (all the work is in split). When a new problem shows up on an exam, ask the template's two questions: 'can I split this into smaller copies of itself?' and 'where does the real work live — the split or the combine?' The answers usually hand you the recurrence for Lecture 6.",
-          "id": "dc.06e7ca21"
+          "md": "Recursion can feel circular: how can a function use itself? The answer is that every call works on a **smaller** input, so the calls must eventually hit the base case, which answers without calling again. Then each call hands its answer back to the one that called it.",
+          "id": "dc.7d113e19"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Binary search",
+            "Merge sort"
+          ],
+          "rows": [
+            [
+              "Divide",
+              "look at the middle",
+              "cut the array in half"
+            ],
+            [
+              "Conquer",
+              "search ONE half",
+              "sort BOTH halves"
+            ],
+            [
+              "Combine",
+              "nothing to do",
+              "**merge** the two sorted halves"
+            ]
+          ],
+          "title": "Same recipe, two algorithms (Lecture 5)",
+          "slide": "Same recipe twice",
+          "id": "dc.089c1128"
+        },
+        {
+          "type": "prose",
+          "md": "**How to design with it.** Ask three questions: (1) If a friend handed me the answers for each half, could I build the full answer quickly? (2) What's the smallest input where the answer is obvious? (3) Does splitting really shrink the problem? If all three are yes, divide and conquer will work.",
+          "label": "think",
+          "id": "dc.20282286"
+        },
+        {
+          "type": "prose",
+          "md": "**At company scale.** Google's MapReduce, the idea behind processing the whole web, is divide and conquer: split the data across thousands of machines (divide), let each work alone (conquer), gather the results (combine). The same pattern runs sorting of files too big for memory: sort chunks that fit, then merge the sorted chunks. Your phone's photo app making thumbnails on every CPU core at once is the same idea on a small scale.",
+          "label": "world",
+          "id": "dc.1168100f"
         },
         {
           "type": "trap",
           "body": "**Poon's definition** **Divide**: break the problem into smaller subproblems that are the same kind of problem as the original. **Conquer**: solve them recursively; when a subproblem is small enough (the **base case**), solve it directly. Many algorithms add a third step, **combine**: put the sub-answers together. His examples: binary search and dictionary lookup.",
           "source": "Exam",
           "points": null,
-          "id": "dc.9f953a2f"
+          "id": "dc.b52f48db"
         },
         {
-          "type": "prose",
-          "md": "The function calls itself on a smaller input. That feels circular until you see the base case: the calls keep shrinking the input, so eventually they hit something trivially solvable (one element, an empty list) and return without calling again. Each returning call hands its answer up to the caller, which combines it and returns in turn. The call stack from Lectures 2–3 is what keeps track of who's waiting for whom.",
-          "slide": "What 'recursively' means here",
-          "id": "dc.387dd597"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Divide & conquer is less an algorithm than an industry pattern. ==MapReduce== — the idea Google built its index on — is divide (split the data across machines), conquer (each machine works alone), combine (merge the results); merge sort across a datacenter. **Databases sort files bigger than RAM** with exactly merge sort's merge step: sort chunks that fit in memory, then merge the sorted runs from disk ('external sort'). **Your language's built-in sort** — Python's and Java's Timsort — is merge sort with insertion sort on the small pieces, which is ##literally Project 1's hybrid##; you're building the real thing. And divide & conquer parallelizes for free: the two halves don't touch each other's data, so they can run on two cores. That independence is why the pattern keeps winning.",
-          "id": "dc.b8e3a1f5"
+          "type": "check",
+          "prompt": "In binary search, what are divide, conquer, and combine?",
+          "answer": "Divide: compare with the middle. Conquer: search the one half that can hold the target. Combine: nothing, the answer from that half is the answer.",
+          "sectionRef": "dc",
+          "id": "dc.06fd7f94"
         }
       ]
     },
     {
       "id": "merge",
-      "heading": "Merge: two sorted lists into one",
+      "heading": "Merge: the one move merge sort needs",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Merge",
+          "body": "Take **two sorted lists** and produce **one sorted list** containing everything from both, by repeatedly taking the smaller of the two front items.",
+          "id": "merge.679086bc"
+        },
+        {
           "type": "prose",
+          "md": "**Why merging is easy but sorting is hard.** In two sorted piles, the smallest item overall must be on the front of one pile: nothing buried can be smaller than the front of its own pile. So you never search. You just compare two fronts, take the smaller, and repeat. Each step places one item for good.",
           "label": "why",
-          "md": "**The one trick merge sort needs** Combining two *unsorted* piles into a sorted one is hard. Combining two *sorted* piles is easy: the smallest overall must be at the front of one pile or the other. Look at both fronts, take the smaller, repeat. Merge sort is built entirely on this: it only ever asks 'merge two sorted lists', and it makes sure the lists are sorted by making them tiny first.",
-          "slide": "Why merge is the key move",
-          "slideNotes": "The merge invariant, in one sentence you can reuse on the exam: **everything already copied to the output is ≤ everything still waiting in either input** — that's why comparing just the two front elements is enough, and why merge finishes in one pass, O(n). If you ever blank on the code, re-derive it from that sentence: two fingers, compare fronts, copy the smaller, advance that finger, and when one list empties, pour the rest of the other one in.",
-          "id": "merge.44b094b1"
+          "id": "merge.ab474fdc"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc7' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc7' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec7' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Two sorted piles. The smallest item left is</text><text x='10' y='36' font-size='14.9' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >always at the FRONT of one of them.</text><text x='20' y='64' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >left pile</text><text x='260' y='64' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >right pile</text><g><title>Already taken: 2 and 5 from the left, 3 from the right (grayed out).</title><rect x='20' y='72' width='48' height='36' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3'/><text x='44' y='95.6' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='68' y='72' width='48' height='36' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3'/><text x='92' y='95.6' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='260' y='72' width='48' height='36' rx='5' fill='none' stroke='rgb(var(--foreground) / 0.25)' stroke-width='1.3'/><text x='284' y='95.6' font-size='16.1' fill='rgb(var(--muted-foreground))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='164' y='72' width='48' height='36' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='188' y='95.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >12</text><rect x='356' y='72' width='48' height='36' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='380' y='95.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >9</text><rect x='404' y='72' width='48' height='36' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='428' y='95.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text></g><g><title>Finger i is on 8 (left's front). Finger j is on 6 (right's front).</title><rect x='116' y='72' width='48' height='36' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='140' y='95.6' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><rect x='308' y='72' width='48' height='36' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='332' y='95.6' font-size='16.1' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><line x1='140' y1='134' x2='140' y2='112' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><text x='140' y='148' font-size='12.6' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >i</text><line x1='332' y1='134' x2='332' y2='112' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.6' marker-end='url(#arrowSc7)'/><text x='332' y='148' font-size='12.6' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >j</text></g><g><title>Compare the two fronts: 6 < 8, so 6 goes next. Only j moves.</title><rect x='140' y='158' width='200' height='34' rx='10' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='240' y='180.2' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6 < 8 → take 6</text></g><text x='20' y='222' font-size='13.8' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >output (always sorted)</text><g><title>The output fills left to right. Each item is copied exactly once: about n steps in total.</title><rect x='20' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='47.5' y='252.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='75' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='102.5' y='252.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >3</text><rect x='130' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3'/><text x='157.5' y='252.6' font-size='16.1' fill='currentColor' text-anchor='middle' font-weight='500' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >5</text><rect x='185' y='230' width='55' height='34' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='212.5' y='252.6' font-size='16.1' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >6</text><rect x='240' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='295' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='350' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/><rect x='405' y='230' width='55' height='34' rx='5' fill='rgb(var(--foreground) / 0.035)' stroke='rgb(var(--foreground) / 0.12)' stroke-width='1.3' stroke-dasharray='4 3'/></g><text x='20' y='290' font-size='13.8' fill='currentColor' text-anchor='start' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >One copy per step, never twice → merging is O(n).</text></g>",
+          "viewBox": "0 0 480 300",
+          "caption": "Two fingers, one per pile. Compare the two front items, copy the smaller to the output, move only that finger. The output is always sorted, and each item is copied exactly once.",
+          "slide": "Two fingers",
+          "id": "merge.5da8241b"
         },
         {
           "type": "stepper",
@@ -283,31 +785,72 @@
                 2
               ],
               "note": "copy the rest of L",
-              "caption": "One list ran out, so copy whatever's left of the other (just 12). Done. Count the work: 8 elements went out, each after at most one comparison. Merge is **O(n)** — it touches each element once."
+              "caption": "One list ran out, so copy whatever's left of the other (just 12). Done. Count the work: 8 elements went out, each after at most one comparison. Merge is **O(n)**: it touches each element once."
             }
           ],
           "slide": true,
-          "id": "merge.0619e5fc"
+          "id": "merge.6e1ec79c"
+        },
+        {
+          "type": "prose",
+          "md": "**Cost of one merge.** Every step copies one item to the output, and nothing is copied twice. Merging lists with n items in total therefore takes about **n steps: O(n)**.",
+          "id": "merge.cf459bff"
         },
         {
           "type": "example",
           "title": "This is the shape Project 1 needs: it merges a[lo..mid] with a[mid+1..hi] into tmp, then copies back. `i` and `j` are the two fingers; `k` is the output position.",
           "body": "// merges the two sorted halves a[lo..mid] and a[mid+1..hi]\nstatic void merge(int[] a, int lo, int mid, int hi, int[] tmp) {\n  int i = lo, j = mid + 1, k = lo;\n  while (i <= mid && j <= hi) {\n    if (a[i] <= a[j]) tmp[k++] = a[i++];   // <= keeps it stable\n    else              tmp[k++] = a[j++];\n  }\n  while (i <= mid) tmp[k++] = a[i++];       // copy the rest of the left half\n  while (j <= hi)  tmp[k++] = a[j++];       // copy the rest of the right half\n  for (k = lo; k <= hi; k++) a[k] = tmp[k]; // copy back\n}",
           "slide": "merge in Java, working on a subrange with a temp array",
-          "id": "merge.15a178c3"
+          "id": "merge.7580c770"
         },
         {
           "type": "prose",
-          "md": "Java (like JS) lets `k++` mean 'use k, then add one to it'. So `tmp[k++] = a[i++]` is three things in one line: copy a[i] into tmp[k], then advance both k and i. You can write it as three lines if that's clearer; the meaning is identical.",
-          "slide": "Reading `tmp[k++] = a[i++]`",
-          "id": "merge.af835008"
+          "md": "**Merging sorted lists is a daily job for software.** Your email app showing messages from several accounts in one timeline is merging lists already sorted by date. A database answering 'join these two tables' often sorts both and merges them (a 'merge join'). Version control tools merge ordered sequences of lines. When data is already sorted, merging is the cheapest way to combine it.",
+          "label": "world",
+          "id": "merge.8b20e3c6"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: write merge",
+          "task": "Finish the loop so it compares `left[i]` and `right[j]`, appends the smaller one to `out`, and moves that finger forward. Delete the `break` line when you write your version. Use `<=` so ties take from the left (that keeps merge sort stable).",
+          "starter": "def merge(left, right):\n    out = []\n    i, j = 0, 0\n    while i < len(left) and j < len(right):\n        # compare left[i] and right[j], append the smaller one,\n        # then move that finger (i += 1 or j += 1)\n        break   # delete this line once your comparison is written\n    # one pile ran out: copy whatever is left of both\n    out.extend(left[i:])\n    out.extend(right[j:])\n    return out\n\nprint(merge([2, 5, 8, 12], [3, 6, 9, 10]))\n",
+          "check": "r = merge([2, 5, 8, 12], [3, 6, 9, 10])\nassert r == [2, 3, 5, 6, 8, 9, 10, 12], f\"merge([2, 5, 8, 12], [3, 6, 9, 10]) gave {r}. Did you compare left[i] with right[j] and move only one finger?\"\nassert merge([], [1, 2]) == [1, 2], \"Merging with an empty list should give the other list back.\"\nassert merge([1, 4], []) == [1, 4], \"Merging with an empty list should give the other list back.\"\nassert merge([1, 1, 3], [1, 2]) == [1, 1, 1, 2, 3], \"Ties: equal values should all end up in the output.\"\nassert merge([10], [1, 2, 3]) == [1, 2, 3, 10], \"One pile can run out long before the other.\"",
+          "solution": "def merge(left, right):\n    out = []\n    i, j = 0, 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            out.append(left[i])\n            i += 1\n        else:\n            out.append(right[j])\n            j += 1\n    out.extend(left[i:])\n    out.extend(right[j:])\n    return out\n\nprint(merge([2, 5, 8, 12], [3, 6, 9, 10]))\n",
+          "hints": [
+            "Use an if/else: `if left[i] <= right[j]:` take from the left, else take from the right.",
+            "In the left branch: `out.append(left[i])` then `i += 1`.",
+            "In the right branch: `out.append(right[j])` then `j += 1`. Don't forget to delete the `break`."
+          ],
+          "success": "That's the heart of merge sort, and the same merge the Java version in Project 1 needs.",
+          "id": "merge.dcc04fa7"
+        },
+        {
+          "type": "check",
+          "prompt": "Merging [1, 4, 9] with [2, 3, 10, 11]: how many comparisons happen before one list runs out?",
+          "answer": "1v2 take 1; 4v2 take 2; 4v3 take 3; 4v10 take 4; 9v10 take 9. The left list is now empty: 5 comparisons. Then 10, 11 are copied with no comparisons.",
+          "sectionRef": "merge",
+          "id": "merge.c4513211"
         }
       ]
     },
     {
       "id": "mergesort",
-      "heading": "Merge sort",
+      "heading": "Merge sort, top to bottom",
       "blocks": [
+        {
+          "type": "definition",
+          "term": "Merge sort",
+          "body": "Split the array in half, merge-sort each half, then **merge** the two sorted halves. A piece of size 1 is already sorted (the base case).",
+          "id": "mergesort.44c52230"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc8' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc8' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec8' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='22' font-size='14.9' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >DOWN:</text><text x='10' y='38' font-size='13.8' fill='rgb(var(--at-risk-fg))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >split</text><text x='10' y='54' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >(no work)</text><g><title>Start: M([50, 20, 60, 30, 10]).</title><rect x='205' y='10' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='222' y='29' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='239' y='10' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='256' y='29' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='273' y='10' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='290' y='29' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text><rect x='307' y='10' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='324' y='29' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='341' y='10' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='358' y='29' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text></g><g><title>Split in the middle. The left half gets the extra item.</title><line x1='290' y1='38' x2='245' y2='58' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='290' y1='38' x2='352' y2='58' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><rect x='194' y='58' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='211' y='77' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='228' y='58' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='245' y='77' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='262' y='58' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='279' y='77' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text><rect x='318' y='58' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='335' y='77' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='352' y='58' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='369' y='77' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text></g><g><title>Keep splitting. [60], [30], [10] are single items: the base case, already sorted.</title><line x1='245' y1='86' x2='206' y2='106' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='245' y1='86' x2='279' y2='106' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='352' y1='86' x2='335' y2='106' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='352' y1='86' x2='391' y2='106' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><rect x='172' y='106' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='189' y='125' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='206' y='106' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='223' y='125' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='262' y='106' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='279' y='125' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text><rect x='318' y='106' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='335' y='125' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='374' y='106' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='391' y='125' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text></g><g><title>[50, 20] splits into [50] and [20]. Every piece is now size 1.</title><line x1='206' y1='134' x2='178' y2='154' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><line x1='206' y1='134' x2='234' y2='154' stroke='rgb(var(--foreground) / 0.4)' stroke-width='1.2'/><rect x='161' y='154' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='178' y='173' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='217' y='154' width='34' height='28' rx='5' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk) / 0.8)' stroke-width='1.3'/><text x='234' y='173' font-size='14.4' fill='rgb(var(--at-risk-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text></g><line x1='10' y1='200' x2='470' y2='200' stroke='rgb(var(--foreground) / 0.15)' stroke-width='1' stroke-dasharray='4 3'/><text x='10' y='226' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >UP:</text><text x='10' y='242' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >merge</text><text x='10' y='258' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >(all the</text><text x='10' y='272' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='start' font-weight='400' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >work)</text><g><title>Merge [50] and [20] → [20, 50]. The first real comparison.</title><rect x='172' y='214' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='189' y='233' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='206' y='214' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='223' y='233' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='262' y='214' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='279' y='233' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text><rect x='318' y='214' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='335' y='233' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='374' y='214' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='391' y='233' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text></g><g><title>Merge [20, 50] with [60] → [20, 50, 60]. Merge [30] with [10] → [10, 30].</title><line x1='206' y1='242' x2='245' y2='270' stroke='rgb(var(--accent))' stroke-width='1.2'/><line x1='279' y1='242' x2='245' y2='270' stroke='rgb(var(--accent))' stroke-width='1.2'/><line x1='335' y1='242' x2='352' y2='270' stroke='rgb(var(--accent))' stroke-width='1.2'/><line x1='391' y1='242' x2='352' y2='270' stroke='rgb(var(--accent))' stroke-width='1.2'/><rect x='194' y='270' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='211' y='289' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='228' y='270' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='245' y='289' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='262' y='270' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='279' y='289' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text><rect x='318' y='270' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='335' y='289' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text><rect x='352' y='270' width='34' height='28' rx='5' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='369' y='289' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text></g><g><title>Merge the two halves → [10, 20, 30, 50, 60]. Sorted.</title><line x1='245' y1='298' x2='290' y2='326' stroke='rgb(var(--accent))' stroke-width='1.2'/><line x1='352' y1='298' x2='290' y2='326' stroke='rgb(var(--accent))' stroke-width='1.2'/><rect x='205' y='326' width='34' height='28' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='222' y='345' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >10</text><rect x='239' y='326' width='34' height='28' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='256' y='345' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >20</text><rect x='273' y='326' width='34' height='28' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='290' y='345' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >30</text><rect x='307' y='326' width='34' height='28' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='324' y='345' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >50</text><rect x='341' y='326' width='34' height='28' rx='5' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='358' y='345' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >60</text></g><text x='240' y='384' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >Every comparison happens on the way UP.</text></g>",
+          "viewBox": "0 0 480 394",
+          "caption": "Merge sort is an hourglass. Going down it only cuts (no comparisons at all). Coming up it merges, and every comparison in the whole algorithm happens on the way up. Hover each row.",
+          "slide": "Down, then up",
+          "id": "mergesort.725a7baf"
+        },
         {
           "type": "stepper",
           "title": "Merge sort as a tree: M([50, 20, 60, 30, 10])",
@@ -322,7 +865,7 @@
                   "hl": true
                 }
               ],
-              "caption": "M([50, 20, 60, 30, 10]) — Poon's slide 20 example. Five things. Too many to sort 'directly', so **divide**: split in the middle. Left gets the extra element when the length is odd."
+              "caption": "M([50, 20, 60, 30, 10]): Poon's slide 20 example. Five things. Too many to sort 'directly', so **divide**: split in the middle. Left gets the extra element when the length is odd."
             },
             {
               "kind": "tree",
@@ -366,7 +909,7 @@
                   "hl": true
                 }
               ],
-              "caption": "[60], [30], [10] are single elements — a one-element list is already sorted. That's the **base case**. [50 20] still needs one more split."
+              "caption": "[60], [30], [10] are single elements: a one-element list is already sorted. That's the **base case**. [50 20] still needs one more split."
             },
             {
               "kind": "tree",
@@ -444,7 +987,7 @@
                   "work": "merge [20 50],[60] → [20 50 60]  ·  merge [30],[10] → [10 30]"
                 }
               ],
-              "caption": "Merge [20, 50] with [60] → [20, 50, 60]. On the right, merge [30] with [10] → [10, 30]. Each level's merges together touch every element once — that's O(n) per level."
+              "caption": "Merge [20, 50] with [60] → [20, 50, 60]. On the right, merge [30] with [10] → [10, 30]. Each level's merges together touch every element once: that's O(n) per level."
             },
             {
               "kind": "tree",
@@ -461,12 +1004,12 @@
             }
           ],
           "slide": true,
-          "id": "mergesort.c0aa0b55"
+          "id": "mergesort.9de6fe18"
         },
         {
-          "id": "mergesort.2dea72bf",
           "type": "sim",
           "sim": "sort",
+          "caption": "Merge sort on your own array. Watch the splits go down to single elements and the merges come back up; the window shows which slice is being worked on. Count the levels for n = 8.",
           "params": {
             "algorithm": "merge",
             "array": [
@@ -480,125 +1023,134 @@
               6
             ]
           },
-          "caption": "Merge sort on your own array. Watch the splits go down to single elements and the merges come back up; the window shows which slice is being worked on. Count the levels for n = 8.",
-          "slide": "Try it"
+          "slide": "Try it",
+          "id": "mergesort.2dea72bf"
         },
         {
           "type": "example",
           "title": "Indent by recursion depth. Under each call, show its two sub-calls, then `→ result` when it returns. Odd lengths: the left half gets the extra element (mid = (lo + hi) / 2, left = lo..mid).",
           "body": "M([50, 20, 60, 30, 10])\n  M([50, 20, 60])\n    M([50, 20])\n      M([50]) → [50]\n      M([20]) → [20]\n      → [20, 50]\n    M([60]) → [60]\n    → [20, 50, 60]\n  M([30, 10])\n    M([30]) → [30]\n    M([10]) → [10]\n    → [10, 30]\n  → [10, 20, 30, 50, 60]",
-          "slide": "Poon's trace format, M([…]) — HW 5 requires exactly this",
-          "id": "mergesort.05abf561"
+          "slide": "Poon's trace format, M([…]): HW 5 requires exactly this",
+          "id": "mergesort.b148fb8e"
         },
         {
           "type": "example",
           "title": "Three lines of logic: base case, two recursive calls, merge. The public wrapper allocates the temp array once and handles Project 1's null / short-array cases.",
           "body": "public static void mergeSort(int[] a) {\n  if (a == null || a.length < 2) return;\n  mergeSort(a, 0, a.length - 1, new int[a.length]);\n}\nstatic void mergeSort(int[] a, int lo, int hi, int[] tmp) {\n  if (lo >= hi) return;                 // base case: 0 or 1 element\n  int mid = (lo + hi) / 2;              // integer division: left gets the extra\n  mergeSort(a, lo, mid, tmp);           // conquer left\n  mergeSort(a, mid + 1, hi, tmp);       // conquer right\n  merge(a, lo, mid, hi, tmp);           // combine\n}",
           "slide": "mergeSort in Java",
-          "id": "mergesort.530b3ded"
+          "id": "mergesort.144eb69e"
+        },
+        {
+          "type": "prose",
+          "md": "**How to trace merge sort without getting lost.** Always finish the LEFT side completely before touching the right. Write each call on its own line, indented by depth; write → result only after both of its children have returned. Odd length: the left half gets the extra item (mid = (lo + hi) / 2).",
+          "label": "think",
+          "id": "mergesort.e86a216b"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 5 Problem 2: trace merge sort on [8, 3, 1, 7, 4, 6] in M() format.",
+          "answer": "M([8,3,1,7,4,6]): M([8,3,1]) → M([8,3]) → M([8])→[8], M([3])→[3], →[3,8]; M([1])→[1]; →[1,3,8]. M([7,4,6]) → M([7,4]) → [7],[4] → [4,7]; M([6])→[6]; →[4,6,7]. Final → [1,3,4,6,7,8].",
+          "sectionRef": "mergesort",
+          "id": "mergesort.3e55b035"
+        }
+      ]
+    },
+    {
+      "id": "whynlogn",
+      "heading": "Why merge sort costs n log n (one picture)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "This is the most important picture of the first half of the course. It comes back in Lecture 6 (recurrences), Lecture 7 (the master method), Lecture 8 (heap sort) and Lecture 9 (quicksort's best case).",
+          "id": "whynlogn.c636010b"
+        },
+        {
+          "type": "figure",
+          "svg": "<defs><marker id='arrowSc9' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--foreground) / 0.4)'/></marker><marker id='arrowBc9' viewBox='0 0 10 10' refX='8.5' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent))'/></marker><linearGradient id='fadec9' x1='0' x2='1'><stop offset='0' stop-color='rgb(var(--accent))' stop-opacity='0.9'/><stop offset='1' stop-color='rgb(var(--accent))' stop-opacity='0.15'/></linearGradient></defs><g font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif'><text x='10' y='18' font-size='16.1' fill='currentColor' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >n = 8: every level costs 8.</text><g><title>The whole array: 8 items.</title><text x='54' y='54' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 0</text><rect x='62' y='34' width='347' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='235.5' y='54' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >8</text><text x='416' y='54' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >=8</text></g><g><title>Two halves of 4. Merging them later touches 4 + 4 = 8 items.</title><text x='54' y='100' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 1</text><rect x='62' y='80' width='171' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='147.5' y='100' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><rect x='238' y='80' width='171' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='323.5' y='100' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >4</text><text x='416' y='100' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >=8</text></g><g><title>Four pieces of 2: merging costs 2 + 2 + 2 + 2 = 8.</title><text x='54' y='146' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 2</text><rect x='62' y='126' width='83' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='103.5' y='146' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='150' y='126' width='83' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='191.5' y='146' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='238' y='126' width='83' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='279.5' y='146' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><rect x='326' y='126' width='83' height='30' rx='6' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='367.5' y='146' font-size='14.4' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >2</text><text x='416' y='146' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >=8</text></g><g><title>Eight single items: the base case. Nothing to merge here.</title><text x='54' y='192' font-size='12.6' fill='rgb(var(--muted-foreground))' text-anchor='end' font-weight='400' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >level 3</text><rect x='62' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='81.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='106' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='125.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='150' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='169.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='194' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='213.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='238' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='257.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='282' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='301.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='326' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='345.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><rect x='370' y='172' width='39' height='30' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track) / 0.75)' stroke-width='1.3'/><text x='389.5' y='192' font-size='14.4' fill='rgb(var(--on-track-fg))' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >1</text><text x='416' y='192' font-size='14.9' fill='rgb(var(--on-track-fg))' text-anchor='start' font-weight='700' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >=8</text></g><g><title>Levels that do merging: 8 → 4 → 2 → 1 is 3 halvings, and log₂ 8 = 3.</title><text x='62' y='234' font-size='13.8' fill='rgb(var(--accent-fg))' text-anchor='start' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >3 levels of merging (8 → 4 → 2 → 1), and log₂ 8 = 3</text></g><g><title>Multiply: n per level times log n levels = n log n. For n = 8 that's 8 × 3 = 24.</title><rect x='10' y='248' width='460' height='50' rx='10' fill='rgb(var(--accent) / 0.14)' stroke='rgb(var(--accent) / 0.7)' stroke-width='1.3'/><text x='240' y='270' font-size='14.9' fill='rgb(var(--accent-fg))' text-anchor='middle' font-weight='700' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif' >total ≈ n per level × log₂ n levels = n log n</text><text x='240' y='289' font-size='14.4' fill='currentColor' text-anchor='middle' font-weight='600' font-family='ui-monospace, SFMono-Regular, Menlo, monospace' >for n = 8: 8 × 3 = 24</text></g></g>",
+          "viewBox": "0 0 480 306",
+          "caption": "Every level of the tree does n work in total, because its merges handle each item once. There are log₂ n levels of merging, because that's how many halvings it takes to get from n down to 1. Work = n per level × log n levels.",
+          "slide": "n per level × log n levels",
+          "id": "whynlogn.f7b47339"
         },
         {
           "type": "stepper",
-          "title": "Why it's O(n log n)",
+          "title": "The argument in four lines",
           "frames": [
             {
               "kind": "lines",
               "lines": [
-                "Merging one level = O(n)",
-                "Number of levels = log₂ n",
-                "Total merging = O(n) · log n = O(n log n)",
-                "Dividing: n − 1 splits, each O(1) = O(n)",
-                "Overall: O(n log n) + O(n) = O(n log n)"
+                "1. One level's merges touch every item once: n steps"
               ],
               "active": 0,
-              "caption": "At any one level of the tree, all the merges together handle every element exactly once. So a level costs about n operations — no matter how many pieces it's cut into."
+              "caption": "No matter how many pieces a level is cut into, together they hold all n items, and merging touches each item once."
             },
             {
               "kind": "lines",
               "lines": [
-                "Merging one level = O(n)",
-                "Number of levels = log₂ n",
-                "Total merging = O(n) · log n = O(n log n)",
-                "Dividing: n − 1 splits, each O(1) = O(n)",
-                "Overall: O(n log n) + O(n) = O(n log n)"
+                "1. One level's merges touch every item once: n steps",
+                "2. The sizes go n, n/2, n/4, …, 1: log₂ n levels"
               ],
               "active": 1,
-              "caption": "How many levels? Sizes go n, n/2, n/4, … down to 1. Chapter 0: the number of halvings from n to 1 is log₂ n. (Poon spends four slides on this; it's the foundation for every recurrence later.)"
+              "caption": "Chapter 0: the number of halvings from n to 1 is log₂ n."
             },
             {
               "kind": "lines",
               "lines": [
-                "Merging one level = O(n)",
-                "Number of levels = log₂ n",
-                "Total merging = O(n) · log n = O(n log n)",
-                "Dividing: n − 1 splits, each O(1) = O(n)",
-                "Overall: O(n log n) + O(n) = O(n log n)"
+                "1. One level's merges touch every item once: n steps",
+                "2. The sizes go n, n/2, n/4, …, 1: log₂ n levels",
+                "3. Splitting is free (just compute mid): O(n) total"
               ],
               "active": 2,
-              "caption": "n per level, log n levels: n log n."
+              "caption": "Poon counts n − 1 splits, each O(1). That's O(n), which is smaller than what the merges cost."
             },
             {
               "kind": "lines",
               "lines": [
-                "Merging one level = O(n)",
-                "Number of levels = log₂ n",
-                "Total merging = O(n) · log n = O(n log n)",
-                "Dividing: n − 1 splits, each O(1) = O(n)",
-                "Overall: O(n log n) + O(n) = O(n log n)"
+                "1. One level's merges touch every item once: n steps",
+                "2. The sizes go n, n/2, n/4, …, 1: log₂ n levels",
+                "3. Splitting is free (just compute mid): O(n) total",
+                "4. Total: n × log n + n = O(n log n)"
               ],
               "active": 3,
-              "caption": "Poon also counts the dividing: to get n single elements you make n − 1 cuts, each just computing a midpoint. O(n) total — small next to the merging."
-            },
-            {
-              "kind": "lines",
-              "lines": [
-                "Merging one level = O(n)",
-                "Number of levels = log₂ n",
-                "Total merging = O(n) · log n = O(n log n)",
-                "Dividing: n − 1 splits, each O(1) = O(n)",
-                "Overall: O(n log n) + O(n) = O(n log n)"
-              ],
-              "active": 4,
-              "caption": "Add them; drop the lower-order term. **O(n log n)**, best case and worst case alike — merge sort does the same splits and merges regardless of the input's order."
+              "caption": "Keep the biggest term. Merge sort is O(n log n), and since it does this work on every input, even sorted input, it's Θ(n log n)."
             }
           ],
           "slide": true,
-          "id": "mergesort.d8aaf901"
-        },
-        {
-          "type": "figure",
-          "viewBox": "0 0 620 300",
-          "svg": "<g font-family='ui-monospace, monospace' font-size='12' fill='currentColor'><text x='20' y='160' transform='rotate(-90 20 160)' text-anchor='middle' font-size='11' opacity='0.6'>log n levels</text><g><title>Level 0: one problem of size n. The merge at this level touches all n elements once — cost n.</title><rect x='60' y='28' width='300' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='210' y='49' text-anchor='middle' fill='rgb(var(--on-track))'>n</text><text x='440' y='49' fill='rgb(var(--accent-fg))'>level cost: n</text></g><g><title>Level 1: two problems of size n/2. Two merges, each touching n/2 elements — the level STILL costs n in total. This is the punchline: every level costs the same.</title><rect x='60' y='86' width='146' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='133' y='107' text-anchor='middle' fill='rgb(var(--on-track))'>n/2</text><rect x='214' y='86' width='146' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='287' y='107' text-anchor='middle' fill='rgb(var(--on-track))'>n/2</text><text x='440' y='107' fill='rgb(var(--accent-fg))'>n/2 + n/2 = n</text></g><g><title>Level 2: four problems of size n/4. Four merges of n/4 each — total n again. The pieces shrink but there are exactly enough of them to keep each level's bill constant.</title><rect x='60' y='144' width='69' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='94' y='165' text-anchor='middle' fill='rgb(var(--on-track))'>n/4</text><rect x='137' y='144' width='69' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='171' y='165' text-anchor='middle' fill='rgb(var(--on-track))'>n/4</text><rect x='214' y='144' width='69' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='248' y='165' text-anchor='middle' fill='rgb(var(--on-track))'>n/4</text><rect x='291' y='144' width='69' height='32' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='325' y='165' text-anchor='middle' fill='rgb(var(--on-track))'>n/4</text><text x='440' y='165' fill='rgb(var(--accent-fg))'>4 × n/4 = n</text></g><text x='210' y='202' text-anchor='middle' opacity='0.6'>⋮</text><text x='452' y='202' fill='rgb(var(--accent-fg))' opacity='0.6'>⋮  (always n)</text><g><title>The bottom: n problems of size 1 — the base cases. Even this level totals n. How many levels did it take to get here? The number of halvings from n to 1: log n. That is the ONLY place log n enters the story.</title><rect x='60' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><rect x='88' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><rect x='116' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><rect x='144' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><rect x='172' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><text x='212' y='236' opacity='0.7'>…</text><rect x='232' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><rect x='260' y='218' width='22' height='26' rx='4' fill='none' stroke='rgb(var(--on-track))'/><text x='71' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='99' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='127' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='155' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='183' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='243' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='271' y='236' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))'>1</text><text x='440' y='236' fill='rgb(var(--accent-fg))'>n × 1 = n</text></g><g><title>The multiplication that IS the theorem: every one of the log n levels bills exactly n, so the total is n · log n. No algebra, just a picture with a consistent bill.</title><text x='310' y='284' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>total = n per level × log n levels = n log n</text></g></g>",
-          "caption": "Where n log n actually comes from — hover each level. Splitting halves the pieces but doubles their count, so EVERY level's merges cost exactly n in total. The number of levels is the number of halvings from n to 1 — that's log n by definition (Chapter 0). Same-cost levels × log n of them = n log n. This one picture is also the master method's whole intuition a lecture early.",
-          "slide": "Every level costs n; there are log n levels",
-          "slideNotes": "This one picture is worth memorizing because it comes back **twice**: Lecture 6 formalizes it as the recursion-tree method (the table you build for HW 6 IS this figure with algebra), and the master theorem's three cases describe whether the levels of a tree like this stay even, grow, or shrink. 'Cost per level × number of levels' is the template — n work per level × log₂ n levels = n log n. Abdul Bari's video below walks the same tree with different numbers if you want to hear it a second way; VisuAlgo animates the actual splits and merges on a real array.",
-          "resources": [
-            {
-              "label": "Merge sort, step by step (Abdul Bari)",
-              "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
-              "kind": "video"
-            },
-            {
-              "label": "Watch merge sort run (VisuAlgo)",
-              "url": "https://visualgo.net/en/sorting",
-              "kind": "site"
-            }
-          ],
-          "id": "mergesort.a3f7c210"
+          "id": "whynlogn.8684b816"
         },
         {
           "type": "prose",
           "md": "n = 1,000,000. Merge sort: about n log n = 1,000,000 × 20 = 20,000,000 operations. Insertion sort worst case: about n² = 10¹². That's the difference between a blink and eleven days. This is the sentence to remember when someone asks why growth rate matters more than constants.",
           "slide": "His scale check",
-          "id": "mergesort.df182200"
+          "id": "whynlogn.43026f78"
         },
         {
-          "type": "prose",
-          "label": "why",
-          "md": "**O(n) space — the price of the speed** Merge writes its output somewhere. If it wrote straight back into the input array, it would overwrite elements it hasn't read yet: merging [2, 5] with [1, 4] in place, the 1 has to go where the 2 is, but the 2 hasn't been placed yet. So merge needs a temporary array the size of the input — **O(n) extra space**. Slide 38 walks through exactly this. Heap sort (Lecture 8) is the sort that avoids it.",
-          "slide": "Why merge sort needs extra space",
-          "id": "mergesort.7f26efbc"
+          "type": "code",
+          "title": "See it: count the comparisons",
+          "task": "This runs merge sort and insertion sort on random lists of growing size, counts their comparisons, and plots both. Run it. Insertion sort's curve bends upward (n²); merge sort's stays nearly straight (n log n). Try adding 1600 to `sizes`.",
+          "starter": "import random, math\nimport matplotlib.pyplot as plt\n\ndef merge_sort_count(a):\n    \"\"\"Sort a; return (sorted list, number of comparisons).\"\"\"\n    if len(a) <= 1:\n        return a, 0\n    mid = (len(a) + 1) // 2          # left half gets the extra item\n    left, cl = merge_sort_count(a[:mid])\n    right, cr = merge_sort_count(a[mid:])\n    out, i, j, c = [], 0, 0, 0\n    while i < len(left) and j < len(right):\n        c += 1\n        if left[i] <= right[j]:\n            out.append(left[i]); i += 1\n        else:\n            out.append(right[j]); j += 1\n    return out + left[i:] + right[j:], cl + cr + c\n\ndef insertion_sort_count(a):\n    a, c = a[:], 0\n    for j in range(1, len(a)):\n        key, i = a[j], j - 1\n        while i >= 0:\n            c += 1\n            if a[i] > key:\n                a[i + 1] = a[i]; i -= 1\n            else:\n                break\n        a[i + 1] = key\n    return a, c\n\nsizes = [10, 50, 100, 200, 400, 800]\nms, ins = [], []\nfor n in sizes:\n    data = [random.random() for _ in range(n)]\n    ms.append(merge_sort_count(data)[1])\n    ins.append(insertion_sort_count(data)[1])\n    print(f\"n = {n:4}: merge {ms[-1]:6,}   insertion {ins[-1]:7,}   n·log2(n) = {round(n * math.log2(n)):6,}\")\n\nplt.plot(sizes, ins, \"o-\", label=\"insertion sort (about n²/4 on random input)\")\nplt.plot(sizes, ms, \"o-\", label=\"merge sort (about n log n)\")\nplt.xlabel(\"n (items)\"); plt.ylabel(\"comparisons\"); plt.legend(); plt.title(\"Comparisons on random input\")\nplt.show()\n",
+          "id": "whynlogn.82a4c0f8"
         },
+        {
+          "type": "check",
+          "prompt": "Merge sort on n = 16: how many levels of merging, and about how many item-moves in total?",
+          "answer": "log₂ 16 = 4 levels, 16 moves per level: about 64.",
+          "sectionRef": "whynlogn",
+          "id": "whynlogn.e66a6329"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is merge sort O(n log n) even in the best case, when insertion sort can be Ω(n)?",
+          "answer": "Merge sort always makes the same splits and always merges every level; it never notices that the input was sorted. Insertion sort's inner loop stops early on sorted input, so it does less work.",
+          "sectionRef": "whynlogn",
+          "id": "whynlogn.6b9525e2"
+        }
+      ]
+    },
+    {
+      "id": "choose",
+      "heading": "Which sort, when?",
+      "blocks": [
         {
           "type": "table",
           "columns": [
@@ -619,8 +1171,8 @@
             ],
             [
               "Extra space",
-              "O(1) — in place",
-              "O(n) — temp array"
+              "O(1): in place",
+              "O(n): temp array"
             ],
             [
               "Stable",
@@ -634,21 +1186,35 @@
             ]
           ],
           "slide": "Insertion sort vs merge sort",
-          "id": "mergesort.b203dec2"
+          "id": "choose.b7530aea"
         },
         {
-          "type": "check",
-          "prompt": "HW 5 Problem 2: trace merge sort on [8, 3, 1, 7, 4, 6] in M() format.",
-          "answer": "M([8,3,1,7,4,6]): M([8,3,1]) → M([8,3]) → M([8])→[8], M([3])→[3], →[3,8]; M([1])→[1]; →[1,3,8]. M([7,4,6]) → M([7,4]) → [7],[4] → [4,7]; M([6])→[6]; →[4,6,7]. Final → [1,3,4,6,7,8].",
-          "sectionRef": "mergesort",
-          "id": "mergesort.476e5227"
+          "type": "prose",
+          "label": "why",
+          "md": "**O(n) space: the price of the speed** Merge writes its output somewhere. If it wrote straight back into the input array, it would overwrite elements it hasn't read yet: merging [2, 5] with [1, 4] in place, the 1 has to go where the 2 is, but the 2 hasn't been placed yet. So merge needs a temporary array the size of the input: **O(n) extra space**. Slide 38 walks through exactly this. Heap sort (Lecture 8) is the sort that avoids it.",
+          "slide": "Why merge sort needs extra space",
+          "id": "choose.3461e792"
         },
         {
-          "type": "check",
-          "prompt": "Why is merge sort O(n log n) even in the best case, when insertion sort can be Ω(n)?",
-          "answer": "Merge sort always makes the same splits and always merges every level; it never notices that the input was sorted. Insertion sort's inner loop stops early on sorted input, so it does less work.",
-          "sectionRef": "mergesort",
-          "id": "mergesort.c4b72ab0"
+          "type": "prose",
+          "md": "**Pick insertion sort** when the list is tiny (under a few dozen items) or already almost sorted, like adding one new score to a sorted leaderboard: it does almost no work then, and it needs no extra memory.\n\n**Pick merge sort** when the list is big, when you need a guaranteed n log n no matter what the input looks like, when equal items must keep their order (stable), or when the data doesn't fit in memory and must be merged from disk.\n\n**Watch out for** merge sort's extra O(n) memory on small devices. Heap sort (Lecture 8) fixes that.",
+          "label": "when",
+          "slide": "Insertion or merge?",
+          "id": "choose.b7cf06b1"
+        },
+        {
+          "type": "prose",
+          "md": "**The real answer is 'both'.** Python's built-in sort and Java's sort for objects use **Timsort**: it finds runs that are already sorted, uses insertion sort to extend short runs, and merges runs merge-sort style. That's exactly Project 1's hybrid sort idea, used by billions of devices. Real-world data is often partly sorted, and this hybrid takes advantage of it.",
+          "label": "world",
+          "id": "choose.198abb60"
+        },
+        {
+          "type": "trap",
+          "body": "Saying merge sort sorts 'in place'. It doesn't: merge writes into a temporary array of size n, so it uses O(n) extra space. Insertion sort (and later heap sort) are the in-place ones.",
+          "source": "Lecture 5",
+          "points": null,
+          "slide": "In place?",
+          "id": "choose.f07ad35b"
         }
       ]
     },
@@ -658,69 +1224,378 @@
       "blocks": [
         {
           "type": "prose",
-          "md": "Part 1 is three methods in Java: **insertionSort**, **mergeSort**, and **hybridSort** — a merge sort that switches to insertion sort when a piece gets small. Part 2 runs the provided `main()` to time them and asks you to write about what you see. Everything above in this chapter and the previous one *is* the project; the code blocks here are the pieces. Check the spec for the exact method names and signatures he expects, and use his — he docks for format.",
+          "md": "Part 1 is three methods in Java: **insertionSort**, **mergeSort**, and **hybridSort**: a merge sort that switches to insertion sort when a piece gets small. Part 2 runs the provided `main()` to time them and asks you to write about what you see. Everything above in this chapter and the previous one *is* the project; the code blocks here are the pieces. Check the spec for the exact method names and signatures he expects, and use his: he docks for format.",
           "slide": "What the project is",
-          "id": "project.565dcb5a"
+          "id": "project.7551ceaa"
         },
         {
           "type": "example",
           "title": "The only new idea: change the base case. When a range is at or below the threshold, insertion-sort just that range instead of splitting further. Insertion sort must therefore work on a subrange lo..hi, not the whole array.",
           "body": "public static void hybridSort(int[] a, int threshold) {\n  if (a == null || a.length < 2) return;\n  hybridSort(a, 0, a.length - 1, threshold, new int[a.length]);\n}\nstatic void hybridSort(int[] a, int lo, int hi, int t, int[] tmp) {\n  if (hi - lo + 1 <= t) { insertionSortRange(a, lo, hi); return; }\n  int mid = (lo + hi) / 2;\n  hybridSort(a, lo, mid, t, tmp);\n  hybridSort(a, mid + 1, hi, t, tmp);\n  merge(a, lo, mid, hi, tmp);\n}\nstatic void insertionSortRange(int[] a, int lo, int hi) {\n  for (int j = lo + 1; j <= hi; j++) {\n    int key = a[j], i = j - 1;\n    while (i >= lo && a[i] > key) { a[i + 1] = a[i]; i--; }\n    a[i + 1] = key;\n  }\n}",
           "slide": "hybridSort: merge sort with a small-case base",
-          "id": "project.da95d7f6"
+          "id": "project.99fe58b7"
         },
         {
           "type": "definition",
           "term": "Types everywhere",
           "body": "`int x`, `int[] a`, `boolean`, `void` for no return. No `let`/`const`.",
-          "id": "project.435a782d"
+          "id": "project.f9487e6d"
         },
         {
           "type": "definition",
           "term": "Arrays are fixed size",
           "body": "`new int[n]` makes n zeros; no `.push`, no `.length` changes. `a.length` (no parentheses) is the size.",
-          "id": "project.91bb08b7"
+          "id": "project.b84322f7"
         },
         {
           "type": "definition",
           "term": "Integer division",
-          "body": "`(lo + hi) / 2` with ints throws away the remainder automatically — no `Math.floor` needed.",
-          "id": "project.ba740879"
+          "body": "`(lo + hi) / 2` with ints throws away the remainder automatically: no `Math.floor` needed.",
+          "id": "project.96f104b9"
         },
         {
           "type": "definition",
           "term": "`static`",
-          "body": "means the method belongs to the class, not an object — you call `SortingHub.mergeSort(a)` without `new`. The spec's methods are almost certainly static.",
-          "id": "project.a1c4f3b2"
+          "body": "means the method belongs to the class, not an object: you call `SortingHub.mergeSort(a)` without `new`. The spec's methods are almost certainly static.",
+          "id": "project.d6f6e972"
         },
         {
           "type": "definition",
           "term": "Compile, then run",
-          "body": "`javac SortingHub.java` then `java SortingHub`. Errors at compile time are your friend — read the line number.",
-          "id": "project.9ee6ad87"
+          "body": "`javac SortingHub.java` then `java SortingHub`. Errors at compile time are your friend: read the line number.",
+          "id": "project.cf975dc7"
         },
         {
           "type": "definition",
           "term": "Passing arrays",
           "body": "like JS, the method gets a reference, so sorting `a` inside the method changes the caller's array. That's why these sorts return `void`.",
-          "id": "project.c1eb178f"
+          "id": "project.0e7106cf"
         },
         {
           "type": "example",
           "title": "In what order to write it",
-          "body": "How to get from an empty file to a submitted project.\n\n1. Write `insertionSort` (Lectures 2–3 chapter) and a tiny `main` that sorts `{8, 5, 2, 6, 9}` and prints it. Also test `null`, `{}`, `{1}`, and an already-sorted array.\n2. Write `merge` and test it alone on two sorted halves inside one array — e.g. `{2, 5, 8, 12, 3, 6, 9, 10}` with lo=0, mid=3, hi=7. Print the result; expect the HW 5 answer.\n3. Write `mergeSort` on top of `merge`. Test with the M() example — you should get [10, 20, 30, 50, 60].\n4. Copy `mergeSort` into `hybridSort`, change the base case to call `insertionSortRange`. Test with threshold 1 (should behave like merge sort) and threshold = array length (should behave like insertion sort).\n5. Run the provided `main()` for Part 2. For the write-up: expect insertion sort to win at tiny sizes, lose badly at large sizes; the hybrid should match or beat plain merge sort, with a sweet-spot threshold somewhere around 10–30. Explain *why* using the HW 4 crossover idea: constants win small, growth rate wins large.",
+          "body": "How to get from an empty file to a submitted project.\n\n1. Write `insertionSort` (Lectures 2–3 chapter) and a tiny `main` that sorts `{8, 5, 2, 6, 9}` and prints it. Also test `null`, `{}`, `{1}`, and an already-sorted array.\n2. Write `merge` and test it alone on two sorted halves inside one array: e.g. `{2, 5, 8, 12, 3, 6, 9, 10}` with lo=0, mid=3, hi=7. Print the result; expect the HW 5 answer.\n3. Write `mergeSort` on top of `merge`. Test with the M() example: you should get [10, 20, 30, 50, 60].\n4. Copy `mergeSort` into `hybridSort`, change the base case to call `insertionSortRange`. Test with threshold 1 (should behave like merge sort) and threshold = array length (should behave like insertion sort).\n5. Run the provided `main()` for Part 2. For the write-up: expect insertion sort to win at tiny sizes, lose badly at large sizes; the hybrid should match or beat plain merge sort, with a sweet-spot threshold somewhere around 10–30. Explain *why* using the HW 4 crossover idea: constants win small, growth rate wins large.",
           "slide": "Build order that won't waste your weekend",
-          "id": "project.f1cb4b67"
+          "id": "project.21a64c33"
         },
         {
           "type": "prose",
           "md": "**Late penalty** 10% off per day. A working insertion sort + merge sort submitted on time is worth far more than a perfect hybrid submitted Sunday. Get Part 1 in first.",
-          "id": "project.d0b2fcab"
+          "id": "project.63a21523"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "T(n)",
+              "the number of steps on an input of size n"
+            ],
+            [
+              "Big-O, O(g)",
+              "grows no faster than g: a ceiling"
+            ],
+            [
+              "Omega, Ω(g)",
+              "grows no slower than g: a floor"
+            ],
+            [
+              "Theta, Θ(g)",
+              "grows exactly like g: both"
+            ],
+            [
+              "c, n₀",
+              "the fixed multiplier and the 'from here on' point in the Big-O definition"
+            ],
+            [
+              "Binary search",
+              "find a value in a sorted array by halving: O(log n)"
+            ],
+            [
+              "Divide and conquer",
+              "split into smaller copies, solve each, combine"
+            ],
+            [
+              "Base case",
+              "the size small enough to answer directly (for sorting: 1 item)"
+            ],
+            [
+              "Merge",
+              "combine two sorted lists into one sorted list in O(n)"
+            ],
+            [
+              "Stable",
+              "equal items keep their original order"
+            ],
+            [
+              "In place",
+              "uses only O(1) extra memory"
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
   ],
   "exercises": [
+    {
+      "id": "rung-halving",
+      "title": "Spot the rung: halving",
+      "prompt": "What is the Big-O of this loop?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "i takes the values n, n/2, n/4, …, 2.",
+        "The number of halvings from n to 1 is log₂ n.",
+        "So the loop body runs about log₂ n times: O(log n)."
+      ],
+      "why": "Halving loops are the fingerprint of log n: binary search, heap operations, and the height of merge sort's tree.",
+      "choices": [
+        {
+          "text": "O(1)",
+          "feedback": "It depends on n: bigger n means more passes."
+        },
+        {
+          "text": "O(log n)",
+          "feedback": "Right. i is halved each pass, so there are about log₂ n passes."
+        },
+        {
+          "text": "O(n)",
+          "feedback": "It doesn't visit every value from n down to 1; it jumps by halving."
+        },
+        {
+          "text": "O(n / 2)",
+          "feedback": "O(n/2) would be a loop that goes down by 1 until n/2. And n/2 is just O(n) anyway."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "classes",
+      "code": "int count = 0;\nfor (int i = n; i > 1; i = i / 2)\n    count++;"
+    },
+    {
+      "id": "rung-nested-const",
+      "title": "Spot the rung: a constant inner loop",
+      "prompt": "What is the Big-O?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "The outer loop runs n times.",
+        "The inner loop runs 50 times every time: a constant.",
+        "50n → drop the constant → O(n)."
+      ],
+      "why": "Only loops whose length depends on n change the rung. This is a common exam trick.",
+      "choices": [
+        {
+          "text": "O(n²)",
+          "feedback": "Nested loops multiply, but the inner one is 50, not n."
+        },
+        {
+          "text": "O(50n²)",
+          "feedback": "The inner loop never depends on n, and constants are dropped anyway."
+        },
+        {
+          "text": "O(n)",
+          "feedback": "Right: 50 × n = 50n = O(n)."
+        },
+        {
+          "text": "O(1)",
+          "feedback": "The outer loop grows with n."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "classes",
+      "code": "for (int i = 0; i < n; i++)\n    for (int j = 0; j < 50; j++)\n        total += a[i];"
+    },
+    {
+      "id": "bigo-shortcut",
+      "title": "Keep the fastest term",
+      "prompt": "Give the Big-O of T(n) = 4n² + 300n log n + 10⁶. Answer like O(n^2).",
+      "hints": [
+        "Which of the three terms grows fastest as n gets huge?",
+        "n² beats n log n (because n beats log n), and both beat a constant.",
+        "Keep 4n², drop the 4."
+      ],
+      "solution": [
+        "Terms: 4n², 300 n log n, 10⁶.",
+        "Fastest-growing: n².",
+        "Drop the constant 4: O(n²)."
+      ],
+      "why": "Big constants like 300 or 10⁶ feel important, but for big enough n the shape always wins.",
+      "accept": [
+        "O(n^2)",
+        "O(n²)",
+        "n^2",
+        "n²",
+        "O(n*n)"
+      ],
+      "sectionRef": "bigo"
+    },
+    {
+      "id": "bigo-c",
+      "title": "Find c",
+      "prompt": "To prove 3n + 8 = O(n) with n₀ = 8, what is the smallest whole-number c that works? (We need 3n + 8 ≤ c·n for all n ≥ 8.)",
+      "hints": [
+        "Try c = 4: is 3n + 8 ≤ 4n when n ≥ 8?",
+        "3n + 8 ≤ 4n ⟺ 8 ≤ n. True for all n ≥ 8.",
+        "Could c = 3 work? 3n + 8 ≤ 3n means 8 ≤ 0: never."
+      ],
+      "solution": [
+        "c = 3 fails: 3n + 8 ≤ 3n is never true.",
+        "c = 4: 3n + 8 ≤ 4n ⟺ n ≥ 8. True from n₀ = 8 on.",
+        "So c = 4."
+      ],
+      "why": "This is the exact pattern of Poon's 5n + 10 example: one more than the leading number, and n₀ equal to the constant.",
+      "accept": [
+        "4"
+      ],
+      "sectionRef": "bigo"
+    },
+    {
+      "id": "bs-looks",
+      "title": "Binary search looks",
+      "prompt": "About how many halvings does binary search need on a sorted list of 1,000,000 items? (Give the whole number of times you can halve 1,000,000 before reaching 1.)",
+      "hints": [
+        "2¹⁰ = 1,024, so 2²⁰ ≈ 1,000,000.",
+        "log₂ 1,000,000 ≈ 19.9.",
+        "Halving with whole numbers stops after 19; counting the final look it's 20."
+      ],
+      "solution": [
+        "2²⁰ ≈ 1,048,576 ≈ 1,000,000.",
+        "So log₂ 1,000,000 ≈ 20.",
+        "About 19 to 20 looks, compared with up to 1,000,000 for a linear scan."
+      ],
+      "why": "This is why databases and search indexes keep data sorted: lookups stay tiny even when the data is enormous.",
+      "accept": [
+        "19",
+        "20"
+      ],
+      "sectionRef": "binsearch"
+    },
+    {
+      "id": "merge-cost",
+      "title": "Cost of a merge",
+      "prompt": "Merging two sorted lists of 500 items each takes how many steps, roughly?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Each step copies one item into the output.",
+        "No item is copied twice.",
+        "1,000 items total → about 1,000 steps."
+      ],
+      "why": "Merge is linear because sortedness lets you skip searching. That single fact is where merge sort's speed comes from.",
+      "choices": [
+        {
+          "text": "About 10 (log of 1000)",
+          "feedback": "That's the number of halvings, not of copies."
+        },
+        {
+          "text": "About 1,000",
+          "feedback": "Right: every item is copied to the output exactly once, so about 1,000 steps: O(n)."
+        },
+        {
+          "text": "About 250,000",
+          "feedback": "That's (n/2)², what you'd get comparing every pair. Merge never does that."
+        },
+        {
+          "text": "About 1,000,000",
+          "feedback": "That's n², far too many."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "merge"
+    },
+    {
+      "id": "ms-where-work",
+      "title": "Where merge sort does its work",
+      "prompt": "In merge sort, where do the comparisons between items actually happen?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Going down: just cutting.",
+        "Base case: one item, nothing to do.",
+        "Coming up: merge compares fronts. That's all the work."
+      ],
+      "why": "Quicksort (Lecture 9) is the mirror image: all its work happens on the way DOWN (partition), and there is nothing to combine.",
+      "choices": [
+        {
+          "text": "While splitting the array in half",
+          "feedback": "Splitting just computes mid = (lo + hi) / 2. No item is looked at."
+        },
+        {
+          "text": "Only in the base case",
+          "feedback": "A single item needs no comparison: it's already sorted."
+        },
+        {
+          "text": "While merging, on the way back up",
+          "feedback": "Right. All comparisons happen in merge, as the recursion returns."
+        },
+        {
+          "text": "Nowhere; merge sort doesn't compare",
+          "feedback": "It's a comparison sort: merge compares two fronts."
+        }
+      ],
+      "answer": 2,
+      "sectionRef": "mergesort"
+    },
+    {
+      "id": "choose-sort",
+      "title": "Pick the sort",
+      "prompt": "A fitness app keeps a leaderboard of 5,000 scores, always sorted. Each minute, one new score arrives and must be put in place. Which is the better fit?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "The list is already sorted except one item.",
+        "Insertion sort's best case is on nearly sorted input.",
+        "Sliding one item into place is at most n shifts."
+      ],
+      "why": "Matching the algorithm to the shape of the data, not just its size, is what real engineers do. It's also why Timsort looks for already-sorted runs.",
+      "choices": [
+        {
+          "text": "Merge sort the whole list each minute",
+          "feedback": "That's n log n ≈ 60,000 steps every minute to place one item."
+        },
+        {
+          "text": "Insertion sort's idea: slide the new score into place",
+          "feedback": "Right. On an almost-sorted list, insertion does at most n shifts, usually far fewer, and uses no extra memory."
+        },
+        {
+          "text": "Try every ordering and keep the sorted one",
+          "feedback": "That's n!, hopeless."
+        },
+        {
+          "text": "It doesn't matter; both are the same Big-O here",
+          "feedback": "They're not: inserting one item is O(n) at worst, re-sorting is O(n log n)."
+        }
+      ],
+      "answer": 1,
+      "sectionRef": "choose"
+    },
     {
       "id": "crossover",
       "title": "When does the 'slower' algorithm win?",
@@ -745,7 +1620,7 @@
       "hints": [
         "Write M([9,2,7,4,1,8,3]) at the top. Split: mid = (0+6)/2 = 3, so left is indexes 0..3 (four elements) and right is 4..6 (three). Indent each sub-call one level.",
         "Two common slips: splitting so the *right* half gets the extra element (Poon's convention is left), and writing the merged result before both children have returned. Every → must come after both sub-calls above it.",
-        "Base case is a single element: M([x]) → [x] on one line. When you merge, do it with two fingers on paper — don't sort the two halves in your head."
+        "Base case is a single element: M([x]) → [x] on one line. When you merge, do it with two fingers on paper: don't sort the two halves in your head."
       ],
       "solution": [
         "M([9,2,7,4,1,8,3])",
@@ -754,7 +1629,7 @@
         "  →[1,2,3,4,7,8,9]",
         "Seven elements, three levels of merging below the root: 7 × 3 ≈ 21 element-moves, matching n log n ≈ 7 × 2.8."
       ],
-      "why": "Merge sort is the algorithm behind external sorting (data too big for memory), behind `git merge`'s ordering, and behind Timsort in Python and Java. Being able to trace it means being able to debug a recursive function by hand — the skill that separates 'it works' from 'I know why'.",
+      "why": "Merge sort is the algorithm behind external sorting (data too big for memory), behind `git merge`'s ordering, and behind Timsort in Python and Java. Being able to trace it means being able to debug a recursive function by hand: the skill that separates 'it works' from 'I know why'.",
       "sectionRef": "mergesort"
     },
     {
@@ -763,12 +1638,12 @@
       "prompt": "Try to merge the two sorted halves of [2, 5, 1, 4] *in place*, writing the merged output into the same four slots from left to right. Show the exact step where it breaks and explain what merge sort does instead and what that costs.",
       "hints": [
         "Left half [2, 5], right half [1, 4]. Merge step 1: the smallest is 1. Where does it need to go? What's currently in that slot?",
-        "The mistake is to say 'just swap them'. Swap 1 and 2: [1, 5, 2, 4]. Now the right half is [2, 4] — still sorted, lucky — but keep going and you'll find swaps that break the sortedness of a half. Try [2, 6, 1, 3].",
-        "The clean argument: writing output to slot k overwrites an element you may not have read yet. So merge writes to a separate array and copies back — O(n) extra space, the price of O(n) merge time."
+        "The mistake is to say 'just swap them'. Swap 1 and 2: [1, 5, 2, 4]. Now the right half is [2, 4]: still sorted, lucky: but keep going and you'll find swaps that break the sortedness of a half. Try [2, 6, 1, 3].",
+        "The clean argument: writing output to slot k overwrites an element you may not have read yet. So merge writes to a separate array and copies back: O(n) extra space, the price of O(n) merge time."
       ],
       "solution": [
-        "Merge [2, 5] and [1, 4]: first output is 1, which belongs at index 0 — but index 0 holds 2, which hasn't been placed yet. Writing 1 there destroys the 2.",
-        "Swapping instead of overwriting can break a half's sortedness in general (e.g. [2, 6, 1, 3]: after moving 1 to the front, the 2 lands in the right half ahead of 3 — fine — but the next steps put 6 before 3).",
+        "Merge [2, 5] and [1, 4]: first output is 1, which belongs at index 0: but index 0 holds 2, which hasn't been placed yet. Writing 1 there destroys the 2.",
+        "Swapping instead of overwriting can break a half's sortedness in general (e.g. [2, 6, 1, 3]: after moving 1 to the front, the 2 lands in the right half ahead of 3: fine: but the next steps put 6 before 3).",
         "Merge sort avoids this with a temp array: write the merged run into tmp[lo..hi], then copy back. Space O(n); time stays O(n) per merge.",
         "Heap sort (Lecture 8) is the O(n log n) sort that manages without the extra array."
       ],

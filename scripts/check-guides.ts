@@ -15,6 +15,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { courses } from "../src/study/courses";
 import { SIM_NAMES } from "../src/study/sims";
+import { PROSE_LABELS } from "../src/study/guide";
 
 const dir = join(process.cwd(), "src/study/guides");
 const problems: string[] = [];
@@ -51,7 +52,7 @@ for (const f of readdirSync(dir)) {
       else seen.add(id);
       if (b.slide !== undefined && b.slide !== true && !isStr(b.slide)) at(`${id}: slide must be true or a string`);
       switch (b.type) {
-        case "prose": if (!isStr(b.md)) at(`${id}: prose.md`); if (b.label !== undefined && b.label !== "why") at(`${id}: prose.label`); break;
+        case "prose": if (!isStr(b.md)) at(`${id}: prose.md`); if (b.label !== undefined && !(PROSE_LABELS as readonly unknown[]).includes(b.label)) at(`${id}: prose.label`); break;
         case "definition":
           if (!isStr(b.term) || !isStr(b.body)) at(`${id}: definition term/body`);
           if (b.related !== undefined && (!isArr(b.related) || !b.related.every(isStr))) at(`${id}: related`);

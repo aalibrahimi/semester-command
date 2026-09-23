@@ -12,10 +12,14 @@ import type { ComponentType } from "react";
 import type { SimName } from "@/study/sims";
 import { DfaSim } from "./DfaSim";
 import { FourierSim } from "./FourierSim";
+import { GrowthSim } from "./GrowthSim";
+import { HeapSim } from "./HeapSim";
 import { NfaSim } from "./NfaSim";
+import { RecTreeSim } from "./RecTreeSim";
 import { RegexSim } from "./RegexSim";
 import { SamplingSim } from "./SamplingSim";
 import { SortSim } from "./SortSim";
+import { StackQueueSim } from "./StackQueueSim";
 import { TreeSim } from "./TreeSim";
 
 export interface SimProps {
@@ -30,6 +34,10 @@ const REGISTRY: Record<SimName, ComponentType<SimProps>> = {
   sort: SortSim,
   regex: RegexSim,
   tree: TreeSim,
+  growth: GrowthSim,
+  rectree: RecTreeSim,
+  stackqueue: StackQueueSim,
+  heap: HeapSim,
 };
 
 export function Sim({ name, params }: { name: string; params: Record<string, unknown> }) {
