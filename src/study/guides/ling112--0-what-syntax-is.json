@@ -56,6 +56,11 @@
       "heading": "Four properties of every human language",
       "blocks": [
         {
+          "type": "prose",
+          "md": "**Missed this lecture?** The next chapter, *Which universal is this?*, walks through all five from zero, one at a time, with pictures, trees you can click, and a practice set that has you name the property from an example.",
+          "id": "universals.da0744a7"
+        },
+        {
           "type": "definition",
           "term": "Words belong to syntactic categories",
           "body": "(parts of speech): noun, verb, adjective… — Week 2.",

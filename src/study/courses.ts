@@ -186,7 +186,7 @@ export const courses: Course[] = [
       "Substitution, movement, fragment-answer tests with correct pass/fail.",
       "Head directionality for English, Japanese, Arabic.",
     ],
-    guides: ["0-what-syntax-is", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure"],
+    guides: ["0-what-syntax-is", "1-universals", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure"],
     planned: [
       { label: "Week 7", title: "X-bar theory (Sep 29–Oct 1)" },
       { label: "Week 8", title: "Arguments, adjuncts, theta roles · Oral Exam 1 prep" },

@@ -27,6 +27,7 @@ import { drills as hist15Walker } from "./hist15--6-walker";
 import { drills as hist15Constitution } from "./hist15--8-confederation-to-constitution";
 import { drills as hist15Market } from "./hist15--11-market-revolution";
 import { drills as ling112Syntax } from "./ling112--0-what-syntax-is";
+import { drills as ling112Universals } from "./ling112--1-universals";
 import { drills as ling112Categories } from "./ling112--2-categories";
 import { drills as ling112Heads } from "./ling112--4-heads-dependents";
 import { drills as ling112Constituency } from "./ling112--5-constituency-tests";
@@ -62,6 +63,7 @@ const ALL: Drill[][] = [
   hist15Constitution,
   hist15Market,
   ling112Syntax,
+  ling112Universals,
   ling112Categories,
   ling112Heads,
   ling112Constituency,
