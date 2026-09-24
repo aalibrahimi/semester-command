@@ -305,7 +305,7 @@ function OfficeHoursCard({
       <h2 className={CARD_H}>Office hours</h2>
       {name && <div className="text-[13.5px] font-medium">{name}</div>}
       <div className="flex flex-col gap-0.5 text-[13px] leading-relaxed text-muted-foreground">
-        {lines.length > 0 ? lines.map((l) => <span key={l}>{l}</span>) : <span>Not found in the syllabus yet. Import it from the Syllabi hub.</span>}
+        {lines.length > 0 ? lines.map((l) => <span key={l}>{l}</span>) : <span>Not found in the syllabus yet. See the Syllabus tab.</span>}
       </div>
       {digest?.contactNote && <div className="text-[13px] leading-relaxed text-muted-foreground">{digest.contactNote}</div>}
     </section>

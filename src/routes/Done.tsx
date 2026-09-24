@@ -1,7 +1,8 @@
 /**
  * Done — the finished pile (graded, submitted, and locally marked done).
  *
- * Called by: the router, at "/done".
+ * Called by: the router, at "/done" (linked from Today's "Finished work"
+ * and the command palette; no longer in the sidebar).
  * Calls: ipc debugDump (already-synced assignments/submissions/courses),
  * submissionComments (live per-assignment fetch), localPrefs done set.
  *

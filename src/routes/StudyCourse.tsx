@@ -40,7 +40,9 @@ import type { SectionStatus } from "@/study/mastery";
 import type { Action } from "@/study/plan";
 import { ago, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
 import { ProgressBar } from "@/components/study/ProgressBar";
-import { courseTick } from "./Study";
+import { courseTick } from "@/components/study/courseTick";
+import { useCourses } from "@/hooks/useCourses";
+import { parseCourseLabel } from "@/lib/courseLabel";
 import { useCourseData } from "@/hooks/useCourseStudy";
 
 const KIND_LABEL: Record<Action["kind"], string> = { drill: "Drill", recall: "Recall", reread: "Reread", read: "Read", mock: "Mock", mistakes: "Mistakes" };
@@ -49,15 +51,25 @@ const KIND_LABEL: Record<Action["kind"], string> = { drill: "Drill", recall: "Re
 const H2 = "text-2xs font-semibold uppercase tracking-wider text-foreground/70";
 const CARD = "rounded-xl border border-foreground/15 bg-card shadow-sm";
 
+/**
+ * /study/:course: the study guide now lives on the course's own page
+ * (Study tab), so this route forwards there when Canvas knows the course.
+ * Without a synced course (fresh install, calendar-feed only) the guide
+ * still opens here on its own.
+ */
 export default function StudyCourse() {
   const { course: slug } = useParams();
   const c = courseBySlug(slug);
-  if (!c) return <Navigate to="/study" replace />;
+  const { courses, loaded } = useCourses();
+  if (!c) return <Navigate to="/" replace />;
+  const canvas = courses.find((x) => parseCourseLabel(x.courseCode ?? x.name).code?.toLowerCase().replace(/[^a-z0-9]/g, "") === c.slug);
+  if (canvas) return <Navigate to={`/courses/${canvas.id}?tab=study`} replace />;
+  if (!loaded) return null;
 
   return (
     <div className="mx-auto w-full max-w-[1280px] px-8 pb-16 pt-6">
-      <Link to="/study" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> All courses
+      <Link to="/" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-3.5 w-3.5" /> Today
       </Link>
 
       <div className="mt-4 flex items-start gap-3">
@@ -203,6 +215,10 @@ export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean
           <ExamCard c={c} />
           {tab === "lectures" && actions.length > 0 && <DoNextCard actions={actions} />}
           <DatesCard c={c} all={tab === "exam"} />
+          <Link to="/study/mistakes" className={cn(CARD, "flex items-center justify-between px-4 py-3 text-sm font-medium transition-colors duration-micro hover:bg-fill-ghost/60")}>
+            Mistake log: every drill you missed
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
         </aside>
       </div>
     </div>

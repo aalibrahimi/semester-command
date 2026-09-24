@@ -236,7 +236,7 @@ export default function StudyRead() {
     return () => clearTimeout(t);
   }, [section?.id, params]);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
   if (!guide || !section) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const go = (i: number) => {

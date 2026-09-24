@@ -40,15 +40,11 @@ const COLLAPSE_KEY = "sc.sidebar.collapsed";
 /** Digit → route, ⌘1–⌘9 — same order as the sidebar nav. */
 const DIGIT_ROUTES: Record<string, string> = {
   "1": "/",
-  "2": "/courses",
-  "3": "/calendar",
-  "4": "/syllabi",
-  "5": "/contacts",
-  "6": "/graduation",
-  "7": "/done",
-  "8": "/finance",
-  "9": "/study",
-  "0": "/inbox",
+  "2": "/calendar",
+  "3": "/inbox",
+  "4": "/courses",
+  "5": "/graduation",
+  "6": "/finance",
 };
 
 export function AppShell() {

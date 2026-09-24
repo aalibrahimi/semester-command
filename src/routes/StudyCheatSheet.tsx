@@ -255,7 +255,7 @@ export default function StudyCheatSheet() {
     };
   }, []);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
   if (!guide) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const colW = box.w ? (box.w - GAP * (COLS - 1)) / COLS : 0;

@@ -97,7 +97,7 @@ function demo(): InboxItem[] {
   return [
     mk(7, "deadline", "Project 1 · SortingHub: due in 3h", "CS 146 · worth 10.0% of your final grade", 2, false, "high"),
     mk(6, "grade", "Grade posted: Assignment 3 - Using the JFLAP", "CS 154 · 1.5 / 1.5 (100%)", 50, false),
-    mk(5, "missing", "Marked missing: Lab #6", "LING 124: still submittable? Check the late policy in Syllabi.", 180, false, "high"),
+    mk(5, "missing", "Marked missing: Lab #6", "LING 124: still submittable? Check the late policy on the course's Syllabus tab.", 180, false, "high"),
     mk(4, "digest", "2 due today · 9 open", "Start with: HW 2 (LING-112) · Quiz 2 (HIST-15) · Lab #8 (LING-124)", 60 * 20, true),
     mk(3, "sync", "4 new assignments on Canvas", "They're in Triage, ranked by how much of your grade they're worth.", 60 * 30, true, "low"),
     mk(2, "grade", "LING-115: grade moved up", "Current grade 88.2% → 91.0%", 60 * 50, true),

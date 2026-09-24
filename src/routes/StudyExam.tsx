@@ -150,7 +150,7 @@ export default function StudyExam() {
     }
   }, [phase, saved, answers, items, course, guides, left]);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
 
   const days = daysUntil(course.exam.date);
 

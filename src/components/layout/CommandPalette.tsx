@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Award,
-  BookOpen,
   CalendarDays,
   CheckCircle2,
   ClipboardList,
@@ -24,8 +23,8 @@ import {
   NotebookPen,
   RefreshCw,
   Settings,
-  Users,
   Wallet,
+  Inbox as InboxIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -97,45 +96,38 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             Today
             <CommandShortcut>{shortcut("1")}</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => go("/courses")}>
-            <GraduationCap className="mr-2 h-4 w-4" />
-            Courses
-            <CommandShortcut>{shortcut("2")}</CommandShortcut>
-          </CommandItem>
           <CommandItem onSelect={() => go("/calendar")}>
             <CalendarDays className="mr-2 h-4 w-4" />
             Calendar
+            <CommandShortcut>{shortcut("2")}</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go("/inbox")}>
+            <InboxIcon className="mr-2 h-4 w-4" />
+            Inbox
             <CommandShortcut>{shortcut("3")}</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => go("/syllabi")}>
-            <BookOpen className="mr-2 h-4 w-4" />
-            Syllabi
+          <CommandItem onSelect={() => go("/courses")}>
+            <GraduationCap className="mr-2 h-4 w-4" />
+            All courses
             <CommandShortcut>{shortcut("4")}</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={() => go("/study")}>
-            <NotebookPen className="mr-2 h-4 w-4" />
-            Study
-            <CommandShortcut>{shortcut("9")}</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={() => go("/contacts")}>
-            <Users className="mr-2 h-4 w-4" />
-            Contacts
-            <CommandShortcut>{shortcut("5")}</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go("/graduation")}>
             <Award className="mr-2 h-4 w-4" />
             Graduation
+            <CommandShortcut>{shortcut("5")}</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go("/finance")}>
+            <Wallet className="mr-2 h-4 w-4" />
+            Finances
             <CommandShortcut>{shortcut("6")}</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go("/done")}>
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            Done
-            <CommandShortcut>{shortcut("7")}</CommandShortcut>
+            Finished work
           </CommandItem>
-          <CommandItem onSelect={() => go("/finance")}>
-            <Wallet className="mr-2 h-4 w-4" />
-            Finance
-            <CommandShortcut>{shortcut("8")}</CommandShortcut>
+          <CommandItem onSelect={() => go("/study/mistakes")}>
+            <NotebookPen className="mr-2 h-4 w-4" />
+            Mistake log
           </CommandItem>
         </CommandGroup>
 

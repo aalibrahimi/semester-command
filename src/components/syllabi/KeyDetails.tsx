@@ -2,7 +2,7 @@
  * KeyDetails: one course's syllabus boiled down to what changes what you
  * do this semester.
  *
- * Called by: routes/Syllabi.tsx, above the full-text viewer.
+ * Called by: components/course/SyllabusPanel.tsx, above the full-text viewer.
  * Calls: lib/syllabusDigest (data), study/index (date helpers), the opener
  * plugin to open the original syllabus in the browser.
  *

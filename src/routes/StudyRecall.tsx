@@ -182,7 +182,7 @@ export default function StudyRecall() {
     return () => window.removeEventListener("keydown", onKey);
   }, [card, revealed, grade, missLocked]);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
   if (!guide) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const totals = guides.reduce(

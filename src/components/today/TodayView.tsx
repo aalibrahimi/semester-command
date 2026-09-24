@@ -174,7 +174,12 @@ export function TodayView({
         <section className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card px-5 pb-2 pt-4 shadow-card">
           <div className="flex items-baseline justify-between gap-3 pb-1">
             <h2 className="font-display text-lg font-semibold">Do next</h2>
-            <span className="text-[12.5px] text-muted-foreground">Missing work first, then what&apos;s due, then what to study</span>
+            <span className="flex items-baseline gap-3 text-[12.5px] text-muted-foreground">
+              <span className="hidden lg:inline">Missing work first, then what&apos;s due, then what to study</span>
+              <Link to="/done" className="font-medium text-brand-fg hover:underline">
+                Finished work
+              </Link>
+            </span>
           </div>
 
           {rows.length === 0 && actions.length === 0 && (

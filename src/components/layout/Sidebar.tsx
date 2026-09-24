@@ -5,12 +5,16 @@
  * Called by: AppShell.
  * Calls: react-router (NavLink), useSync, ThemeToggle, CourseStatusDot.
  *
- * Three zones, in this order and for these reasons:
- *   Nav      — four destinations, count badges where a count means something.
- *   Courses  — the live list, sorted by RISK rather than alphabetically, so the
- *              class closest to falling short sits at the top. This is the
- *              sidebar's actual job.
- *   Footer   — sync status, theme, settings. "Reconnect to Canvas" has to be
+ * Four zones, in this order and for these reasons:
+ *   Daily    : Today, Calendar, Inbox: the pages opened every day, count
+ *              badges where a count means something.
+ *   Courses  : the live list, sorted by RISK rather than alphabetically, so the
+ *              class closest to falling short sits at the top. Each row opens
+ *              that course's page, which holds its study guide, syllabus,
+ *              grades and people (those used to be separate screens). The
+ *              heading links to the full Courses list (hidden courses too).
+ *   Planning : Graduation and Finances, opened a few times a term.
+ *   Footer   : sync status, theme, settings. "Reconnect to Canvas" has to be
  *              visible from every screen, which is precisely why it lives here
  *              instead of in a screen-level banner.
  *
@@ -24,20 +28,15 @@
 import { NavLink, useLocation, useMatch } from "react-router-dom";
 import {
   Landmark,
-  CheckCheck,
   AlertTriangle,
   Award,
-  BookOpen,
   CalendarDays,
   ChevronsLeft,
   ChevronsRight,
-  GraduationCap,
   Inbox as InboxIcon,
   ListChecks,
   Loader2,
-  NotebookPen,
   Settings as SettingsIcon,
-  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { shortcut } from "@/lib/platform";
@@ -88,20 +87,17 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
 
   // Zero-count badges render as no badge at all — a "0" chip is noise. Before
   // the first load counts stay null for the same reason.
-  const items: NavItem[] = [
+  const daily: NavItem[] = [
     { to: "/", label: "Today", icon: ListChecks, digit: "1", count: loaded && openTotal > 0 ? openTotal : null },
-    { to: "/inbox", label: "Inbox", icon: InboxIcon, digit: "0", count: unread > 0 ? unread : null },
-    { to: "/courses", label: "Courses", icon: GraduationCap, digit: "2", count: null },
-    { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "3", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
-    { to: "/syllabi", label: "Syllabi", icon: BookOpen, digit: "4", count: null },
-    { to: "/study", label: "Study", icon: NotebookPen, digit: "9", count: null },
-    { to: "/contacts", label: "Contacts", icon: Users, digit: "5", count: null },
-    { to: "/done", label: "Done", icon: CheckCheck, digit: "7", count: null },
-    { to: "/finance", label: "Finances", icon: Landmark, digit: "8", count: null },
+    { to: "/calendar", label: "Calendar", icon: CalendarDays, digit: "2", count: loaded && dueThisWeek > 0 ? dueThisWeek : null },
+    { to: "/inbox", label: "Inbox", icon: InboxIcon, digit: "3", count: unread > 0 ? unread : null },
+  ];
+  const planning: NavItem[] = [
     // No count badge: the degree audit is a separate import the sidebar would
     // have to load on every paint to produce a number, and unlike the triage
     // and calendar counts it does not move between syncs.
-    { to: "/graduation", label: "Graduation", icon: Award, digit: "6", count: null },
+    { to: "/graduation", label: "Graduation", icon: Award, digit: "5", count: null },
+    { to: "/finance", label: "Finances", icon: Landmark, digit: "6", count: null },
   ];
 
   return (
@@ -151,9 +147,10 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
         </Tooltip>
       </div>
 
-      {/* ── Zone 1 · Nav ────────────────────────────────────────────────── */}
-      <nav className="flex flex-col gap-0.5 px-2">
-        {items.map((item) => (
+      {/* ── Zone 1 · Daily ──────────────────────────────────────────────── */}
+      <nav className="flex flex-col gap-0.5 px-2" aria-label="Daily">
+        {!collapsed && <GroupLabel>Daily</GroupLabel>}
+        {daily.map((item) => (
           <NavItemLink key={item.to} item={item} collapsed={collapsed} />
         ))}
       </nav>
@@ -164,9 +161,24 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
       <ScrollArea className="min-h-0 flex-1">
         <div className="px-2 pb-2">
           {!collapsed && (
-            <h2 className="px-2 pb-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">
-              Courses
-            </h2>
+            <div className="flex items-baseline justify-between pr-2">
+              <GroupLabel as="h2">Courses</GroupLabel>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to="/courses"
+                    end
+                    className={cn(
+                      "rounded px-1 text-2xs font-medium transition-colors duration-micro",
+                      location.pathname === "/courses" ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    All
+                  </NavLink>
+                </TooltipTrigger>
+                <TooltipContent side="right">Every course, hidden ones too · {shortcut("4")}</TooltipContent>
+              </Tooltip>
+            </div>
           )}
           {courses.length > 0 ? (
             <div className="flex flex-col gap-0.5">
@@ -250,7 +262,15 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
         </div>
       </ScrollArea>
 
-      {/* ── Zone 3 · Footer ─────────────────────────────────────────────── */}
+      {/* ── Zone 3 · Planning ───────────────────────────────────────────── */}
+      <nav className="flex shrink-0 flex-col gap-0.5 border-t border-border/60 px-2 pb-1 pt-2" aria-label="Planning">
+        {!collapsed && <GroupLabel>Planning</GroupLabel>}
+        {planning.map((item) => (
+          <NavItemLink key={item.to} item={item} collapsed={collapsed} />
+        ))}
+      </nav>
+
+      {/* ── Zone 4 · Footer ─────────────────────────────────────────────── */}
       <div className="shrink-0 border-t border-border/60 p-2">
         <SyncIndicator
           collapsed={collapsed}
@@ -289,6 +309,11 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
       </div>
     </aside>
   );
+}
+
+/** A zone's small heading ("Daily", "Courses", "Planning"). */
+function GroupLabel({ children, as: As = "div" }: { children: string; as?: "div" | "h2" }) {
+  return <As className="px-2.5 pb-1 pt-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">{children}</As>;
 }
 
 /** One nav row. Active state gets the `--fill-ghost-selected` background and an

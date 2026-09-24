@@ -2,7 +2,7 @@
  * syllabusFacts — plain-regex mining of extracted syllabus text.
  *
  * One parser shared by every page that surfaces syllabus knowledge
- * (Contacts, CourseDetail), so a course's office hours read identically
+ * (the course page's People and Overview tabs), so a course's office hours read identically
  * everywhere. Transparent by design: callers label results "from syllabus",
  * never pretending Canvas confirmed them. Grew out of Contacts' inline
  * extractContact when CourseDetail needed the same facts plus policies.

@@ -12,9 +12,9 @@
  *   small cards: next exam, this week, how the grade is made, office hours.
  *   See components/course/CourseOverview.tsx.
  * - **Study**: the course's study guide (StudyCourseView, embedded).
- * - **Syllabus**: the Syllabi hub's viewer for this course only.
+ * - **Syllabus**: the course's syllabus viewer (SyllabusPanel).
  * - **Grades**: target, grade scale, hide, and the layout below.
- * - **People**: the Contacts cards for this course only.
+ * - **People**: the course's instructors (PeoplePanel).
  * The header carries the state as pills (missing, next due, next exam) and
  * the solver button; warnings sit above every tab.
  *
@@ -99,8 +99,8 @@ import { digestFor } from "@/lib/syllabusDigest";
 import { courseBySlug, daysUntil } from "@/study";
 import type { Course as StudyCourseDef } from "@/study/types";
 import { StudyCourseView } from "./StudyCourse";
-import { CourseSyllabusPanel } from "./Syllabi";
-import { CoursePeoplePanel } from "./Contacts";
+import { CourseSyllabusPanel } from "@/components/course/SyllabusPanel";
+import { CoursePeoplePanel } from "@/components/course/PeoplePanel";
 import { setNickname, useNicknames } from "@/lib/localPrefs";
 import { dueShort, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";

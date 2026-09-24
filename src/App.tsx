@@ -23,13 +23,10 @@ import Triage from "@/routes/Triage";
 import Courses from "@/routes/Courses";
 import CourseDetail from "@/routes/CourseDetail";
 import Calendar from "@/routes/Calendar";
-import Contacts from "@/routes/Contacts";
 import Done from "@/routes/Done";
 import Finance from "@/routes/Finance";
 import FinanceTerm from "@/routes/FinanceTerm";
 import Graduation from "@/routes/Graduation";
-import Syllabi from "@/routes/Syllabi";
-import Study from "@/routes/Study";
 import StudyCourse from "@/routes/StudyCourse";
 import StudyRead from "@/routes/StudyRead";
 import StudyCheatSheet from "@/routes/StudyCheatSheet";
@@ -57,8 +54,11 @@ export default function App() {
               <Route path="courses" element={<Courses />} />
               <Route path="courses/:courseId" element={<CourseDetail />} />
               <Route path="calendar" element={<Calendar />} />
-              <Route path="syllabi" element={<Syllabi />} />
-              <Route path="study" element={<Study />} />
+              {/* Folded into each course's page (Syllabus, People and Study
+                  tabs) and Today; old links land somewhere sensible. */}
+              <Route path="syllabi" element={<Navigate to="/courses" replace />} />
+              <Route path="contacts" element={<Navigate to="/courses" replace />} />
+              <Route path="study" element={<Navigate to="/" replace />} />
               <Route path="study/:course" element={<StudyCourse />} />
               <Route path="study/mistakes" element={<StudyMistakes />} />
               <Route path="study/:course/exam" element={<StudyExam />} />
@@ -69,7 +69,6 @@ export default function App() {
               <Route path="study/:course/:chapter/map" element={<StudyMap />} />
               <Route path="study/:course/:chapter/slides" element={<StudySlides />} />
               <Route path="graduation" element={<Graduation />} />
-              <Route path="contacts" element={<Contacts />} />
               <Route path="done" element={<Done />} />
               <Route path="finance" element={<Finance />} />
               <Route path="finance/:termId" element={<FinanceTerm />} />

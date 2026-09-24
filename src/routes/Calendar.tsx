@@ -1726,7 +1726,7 @@ function DetectDialog({
               . SJSU rarely publishes meeting times to Canvas, so two ways forward:
             </p>
             <ul className="mt-2 list-disc pl-5 text-xs">
-              <li>Import your syllabus PDFs (Syllabi tab) — most state the meeting pattern.</li>
+              <li>Import your syllabus PDFs (each course's Syllabus tab) — most state the meeting pattern.</li>
               <li>Or click any empty slot on the grid and enter times from MySJSU once.</li>
             </ul>
           </div>

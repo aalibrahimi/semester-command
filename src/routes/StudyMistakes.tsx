@@ -22,7 +22,7 @@ import { drillsForGuide } from "@/study/drills";
 import { guideById } from "@/study/loadGuides";
 import { attemptsRecent, type AttemptRecord } from "@/study/mastery";
 import { mistakes } from "@/study/plan";
-import { courseTick } from "./Study";
+import { courseTick } from "@/components/study/courseTick";
 
 const SOURCE: Record<AttemptRecord["source"], string> = { read: "reading", focus: "focus", exam: "mock exam" };
 
@@ -71,8 +71,8 @@ export default function StudyMistakes() {
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-8 pb-16 pt-6">
-      <Link to="/study" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> Study
+      <Link to="/" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-3.5 w-3.5" /> Today
       </Link>
       <h1 className="mt-3 flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
         <ListX className="h-5 w-5 text-at-risk-fg" /> Mistake log

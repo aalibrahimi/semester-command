@@ -2,7 +2,7 @@
  * classDetect — shared state and filtering for class-time detection.
  *
  * The Calendar week view auto-runs detection once per app session; the
- * Syllabi page re-arms it after a new import so fresh syllabus text gets a
+ * course Syllabus tab re-arms it after a new import so fresh syllabus text gets a
  * second chance. Both filter candidates against blocks already on the grid,
  * with the same tolerance, so "found N" toasts and the review dialog can
  * never disagree about what counts as new.

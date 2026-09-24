@@ -1,7 +1,7 @@
 /**
  * Highlighted — plain text with `<mark>`s over matched terms.
  *
- * Called by: Syllabi (policy chips and search).
+ * Called by: components/course/SyllabusPanel (policy chips and search).
  * Calls: lib/canvasHtml for the regex escaping.
  *
  * Renders React nodes, never innerHTML, so there is no injection surface.

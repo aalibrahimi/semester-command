@@ -94,7 +94,7 @@ export default function StudyMap() {
     if (d) setParams({ n: d }, { replace: true });
   }, [graph, selectedId, mastery, setParams]);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
   if (!guide || !graph) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const select = (id: string) => setParams({ n: id });

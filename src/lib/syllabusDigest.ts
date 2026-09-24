@@ -3,7 +3,7 @@
  * do: when and where class meets, how to reach the professor, how the grade
  * is built, the dates, and the rules that cost points.
  *
- * Called by: routes/Syllabi.tsx (the "Key details" panel).
+ * Called by: components/course/SyllabusPanel.tsx (the "Key details" panel), the course page header and Overview.
  * Calls: nothing. Static data.
  *
  * Where it came from (read on 2026-09-22):

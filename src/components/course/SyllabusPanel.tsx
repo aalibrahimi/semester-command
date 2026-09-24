@@ -1,30 +1,21 @@
 /**
- * Syllabi — every course's syllabus, searchable for the policies that matter.
- *
- * Called by: the router, at "/syllabi".
+ * SyllabusPanel: one course's syllabus, shown on the Syllabus tab of the
+ * course page (CourseDetail). This used to be the Syllabi hub (a course
+ * rail plus this viewer); the hub was folded into each course's page.
  * Calls: ipc syllabi / fetchSyllabusFromCanvas / importSyllabusFile, the
  * dialog plugin (native file picker), the opener plugin (open the PDF).
- *
- * Master-detail on purpose: a course rail on the left, one syllabus in view
- * on the right — the user asked for less scrolling, and eight syllabi
- * stacked vertically is the opposite of that.
- *
  * Key details first: when a course has a digest (lib/syllabusDigest), the
  * viewer opens on the short version (grade weights, dates, rules that cost
- * points) and the full extracted text sits behind a toggle. Courses with a
- * digest show in the rail even before Canvas sync has stored anything.
- *
+ * points) and the full extracted text sits behind a toggle.
  * The policy chips are keyword highlighters, not comprehension: clicking
  * "Late work" marks every occurrence of late/penalty/deduct in the extracted
- * text and jumps to the first. Dumb, transparent, and useful — smart policy
- * extraction is LLM territory and out of scope by SPEC.md §0.
+ * text and jumps to the first.
  */
 import { useCallback, useEffect, useState } from "react";
 import { open as openFileDialog } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { BookOpen, ChevronDown, CloudDownload, ExternalLink, FileText, FolderOpen, Search } from "lucide-react";
+import { BookOpen, ChevronDown, CloudDownload, ExternalLink, FolderOpen, Search } from "lucide-react";
 import { toast } from "sonner";
-import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,128 +79,6 @@ function withDigests(data: CourseSyllabus[]): CourseSyllabus[] {
     files: [],
   }));
   return [...data, ...extra];
-}
-
-export default function Syllabi() {
-  const [courses, setCourses] = useState<CourseSyllabus[] | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [activeTerms, setActiveTerms] = useState<string[]>([]);
-  const [activeChip, setActiveChip] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-
-  const refresh = useCallback(async () => {
-    try {
-      const data = withDigests(await syllabi());
-      setCourses(data);
-      // Default to the first course that actually has material.
-      setSelectedId(
-        (prev) =>
-          prev ??
-          (data.find((c) => digestOf(c)) ?? data.find((c) => c.files.length > 0 || c.syllabusHtml) ?? data[0])?.courseId ??
-          null,
-      );
-    } catch {
-      const data = withDigests([]);
-      setCourses(data);
-      setSelectedId((prev) => prev ?? data[0]?.courseId ?? null);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Synchronising with the Rust backend; the fetch resolves into state.
-    // oxlint-disable-next-line set-state-in-effect
-    void refresh();
-  }, [refresh]);
-
-  const selected = courses?.find((c) => c.courseId === selectedId) ?? null;
-  // Search box and chips share the highlight mechanism; search wins while
-  // it has text so what you typed is always what is marked.
-  const terms = query.trim().length >= 2 ? [query.trim()] : activeTerms;
-
-  return (
-    <>
-      <ScreenHeader
-        title="Syllabi"
-        subtitle="Only what matters from each syllabus: when, who, how you are graded, the dates, and the rules that cost points."
-      />
-
-      {courses === null ? (
-        <div className="mx-8 flex gap-4">
-          <Skeleton className="h-64 w-56 rounded-2xl" />
-          <Skeleton className="h-96 flex-1 rounded-2xl" />
-        </div>
-      ) : courses.length === 0 ? (
-        <EmptyState
-          icon={BookOpen}
-          title="No courses yet"
-          description="Sync Canvas first — syllabus documents are pulled per course, and anything the files API hides can be imported by hand."
-        />
-      ) : (
-        <div className="mx-8 mb-10 flex items-start gap-4">
-          {/* ── Course rail ─────────────────────────────────────────────── */}
-          <nav className="flex w-56 shrink-0 flex-col gap-0.5">
-            {courses.map((c) => {
-              const has = c.files.length > 0 || c.syllabusHtml !== null || digestOf(c) !== null;
-              return (
-                <button
-                  key={c.courseId}
-                  type="button"
-                  onClick={() => {
-                    setSelectedId(c.courseId);
-                    setActiveTerms([]);
-                    setActiveChip(null);
-                    setQuery("");
-                  }}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors duration-micro",
-                    c.courseId === selectedId
-                      ? "bg-card font-medium shadow-card"
-                      : "text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
-                  )}
-                >
-                  <FileText
-                    className={cn("h-3.5 w-3.5 shrink-0", !has && "opacity-30")}
-                  />
-                  <span className="min-w-0 flex-1 truncate">
-                    {courseShort(c.courseCode ?? c.courseName ?? c.courseId)}
-                  </span>
-                  {c.files.length > 0 && (
-                    <span data-numeric className="font-mono text-2xs text-muted-foreground">
-                      {c.files.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* ── Viewer ──────────────────────────────────────────────────── */}
-          {selected && (
-            <SyllabusViewer
-              key={selected.courseId}
-              course={selected}
-              digest={digestOf(selected)}
-              terms={terms}
-              activeChip={activeChip}
-              query={query}
-              onQuery={setQuery}
-              onChip={(label, chipTerms) => {
-                setQuery("");
-                if (activeChip === label) {
-                  setActiveChip(null);
-                  setActiveTerms([]);
-                } else {
-                  setActiveChip(label);
-                  setActiveTerms(chipTerms);
-                }
-              }}
-              onChanged={refresh}
-            />
-          )}
-        </div>
-      )}
-    </>
-  );
 }
 
 function SyllabusViewer({
@@ -472,7 +341,7 @@ export function CourseSyllabusPanel({ courseId, courseCode }: { courseId: string
       <EmptyState
         icon={BookOpen}
         title="No syllabus for this course yet"
-        description="Import it from the Syllabi hub; office hours, grade weights and late rules then show up here and on the Overview."
+        description="Canvas has no syllabus file for this course yet. Once one syncs or is imported, office hours, grade weights and late rules show up here and on the Overview."
       />
     );
   }

@@ -41,7 +41,7 @@ export default function StudySlides() {
   const [i, setI] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const slide = deck[Math.min(i, Math.max(0, deck.length - 1))];
-  const bookHref = chapter ? `/study/${chapter.id}` : "/study";
+  const bookHref = chapter ? `/study/${chapter.id}` : "/";
 
   // Figure build-up: how many tooltip groups are showing on this slide.
   const groups = useMemo(() => (slide?.content.kind === "block" && slide.content.block.type === "figure" ? figureGroups(slide.content.block.svg) : []), [slide]);
@@ -123,7 +123,7 @@ export default function StudySlides() {
     return () => window.removeEventListener("keydown", onKey);
   }, [advance, back, navigate, bookHref, stopSpeech]);
 
-  if (!course) return <Navigate to="/study" replace />;
+  if (!course) return <Navigate to="/" replace />;
   if (!chapter || !slide) return <Navigate to={bookHref} replace />;
 
   const c = slide.content;
