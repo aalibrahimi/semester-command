@@ -18,7 +18,7 @@
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use reqwest::header::{HeaderValue, ACCEPT, CONTENT_TYPE, COOKIE, LOCATION};
+use reqwest::header::{HeaderValue, ACCEPT, CONTENT_TYPE, COOKIE, LOCATION, SET_COOKIE};
 use tokio::sync::{RwLock, Semaphore};
 
 /// The Canvas instance this app is built for (SPEC.md §0).
@@ -32,6 +32,9 @@ const ACCEPT_JSON: &str = "application/json+canvas-string-ids";
 /// request. Canvas's bucket refills continuously; 100 of ~700 is the
 /// documented comfort zone.
 const RATE_LIMIT_FLOOR: f64 = 100.0;
+
+/// Saves a refreshed session cookie header.
+type PersistFn = Box<dyn Fn(&str) + Send + Sync>;
 
 /// How we prove identity to Canvas (§2.0).
 ///
@@ -123,6 +126,11 @@ pub struct CanvasClient {
     limiter: Semaphore,
     /// Where raw response bodies are persisted, `None` in unit tests.
     raw_dir: Option<PathBuf>,
+    /// Saves a refreshed cookie header (see [`CanvasClient::absorb_cookies`]).
+    /// Set once at startup; `None` in unit tests.
+    persist: std::sync::OnceLock<PersistFn>,
+    /// When the refreshed cookie header was last saved, to throttle writes.
+    last_persist: std::sync::Mutex<Option<std::time::Instant>>,
 }
 
 impl CanvasClient {
@@ -149,6 +157,80 @@ impl CanvasClient {
             alive: AtomicBool::new(false),
             limiter: Semaphore::new(4),
             raw_dir,
+            persist: std::sync::OnceLock::new(),
+            last_persist: std::sync::Mutex::new(None),
+        }
+    }
+
+    /// Where refreshed session cookies get saved (the credential store).
+    /// Called once at startup.
+    pub fn set_persist(&self, f: impl Fn(&str) + Send + Sync + 'static) {
+        let _ = self.persist.set(Box::new(f));
+    }
+
+    /// Keep a cookie session alive the way a browser does.
+    ///
+    /// # Why this exists: "reconnect to Canvas every day"
+    ///
+    /// Canvas keeps its session in the `canvas_session` cookie itself, and
+    /// that cookie carries its own expiry. Every successful response sends a
+    /// fresh copy (`Set-Cookie`) with the clock pushed forward, which is how a
+    /// browser tab stays signed in for as long as it's used. The app used to
+    /// replay the cookie header it harvested at sign-in forever and ignore
+    /// every `Set-Cookie`, so the session died a fixed time after sign-in
+    /// (about a day) no matter how often it synced.
+    ///
+    /// Now every successful Canvas JSON response is checked for `Set-Cookie`;
+    /// changed values are merged into the live header right away and saved
+    /// to the credential store at most every 10 minutes (the store may be the
+    /// OS keychain, which should not be written per request). Only 2xx JSON
+    /// responses count: a session-death response (3xx, 401, an HTML login
+    /// page) can carry an anonymous cookie that must never replace ours.
+    async fn absorb_cookies(&self, used: &AuthMode, resp: &reqwest::Response) {
+        const PERSIST_EVERY: std::time::Duration = std::time::Duration::from_secs(10 * 60);
+        let AuthMode::Session { cookie_header } = used else {
+            return;
+        };
+        let set: Vec<&str> = resp
+            .headers()
+            .get_all(SET_COOKIE)
+            .iter()
+            .filter_map(|v| v.to_str().ok())
+            .collect();
+        if set.is_empty() {
+            return;
+        }
+        let Some(merged) = merge_set_cookies(cookie_header, &set) else {
+            return;
+        };
+        {
+            let mut auth = self.auth.write().await;
+            // Only replace the header we actually sent: a sign-in that
+            // finished while this request was in flight wins.
+            match &*auth {
+                AuthMode::Session {
+                    cookie_header: current,
+                } if current == cookie_header => {
+                    *auth = AuthMode::Session {
+                        cookie_header: merged.clone(),
+                    };
+                }
+                _ => return,
+            }
+        }
+        let due = {
+            let mut last = self.last_persist.lock().unwrap();
+            let due = last.map_or(true, |t| t.elapsed() >= PERSIST_EVERY);
+            if due {
+                *last = Some(std::time::Instant::now());
+            }
+            due
+        };
+        if due {
+            if let Some(save) = self.persist.get() {
+                save(&merged);
+                tracing::debug!("refreshed Canvas session cookie saved");
+            }
         }
     }
 
@@ -198,6 +280,9 @@ impl CanvasClient {
                 path: path.into(),
             });
         }
+        // At launch the restored credential is validated here first; take
+        // Canvas's refreshed cookie from this very response.
+        self.absorb_cookies(mode, &resp).await;
         let body = resp.text().await?;
         let user: ValidatedUser =
             serde_json::from_str(&body).map_err(|source| CanvasError::Parse {
@@ -257,6 +342,7 @@ impl CanvasClient {
             }
 
             rl_attempts = 0;
+            self.absorb_cookies(&auth, &resp).await;
             self.respect_rate_limit(&resp).await;
 
             // Grab the next link before consuming the response for its body.
@@ -300,6 +386,7 @@ impl CanvasClient {
                 path: path.into(),
             });
         }
+        self.absorb_cookies(&auth, &resp).await;
         self.respect_rate_limit(&resp).await;
         let body = resp.text().await?;
         serde_json::from_str(&body).map_err(|source| CanvasError::Parse {
@@ -534,6 +621,71 @@ fn parse_link_next(header: Option<&str>) -> Option<String> {
     None
 }
 
+/// Merge `Set-Cookie` values into a `Cookie` request header.
+///
+/// Returns the new header, or `None` when nothing changed. Existing cookies
+/// keep their position; a cookie Canvas newly sets is appended. Deletions
+/// (an empty value, `Max-Age=0` or `Max-Age` negative) are ignored rather
+/// than applied: dropping a cookie from a working session is never needed to
+/// keep it alive, and getting it wrong would sign the user out. Cookies
+/// scoped to another domain are ignored too.
+pub fn merge_set_cookies(header: &str, set_cookies: &[&str]) -> Option<String> {
+    let mut jar: Vec<(String, String)> = header
+        .split(';')
+        .filter_map(|p| {
+            let (n, v) = p.trim().split_once('=')?;
+            Some((n.trim().to_string(), v.trim().to_string()))
+        })
+        .filter(|(n, _)| !n.is_empty())
+        .collect();
+    let mut changed = false;
+    for sc in set_cookies {
+        let mut parts = sc.split(';');
+        let Some((name, value)) = parts.next().and_then(|p| p.trim().split_once('=')) else {
+            continue;
+        };
+        let (name, value) = (name.trim(), value.trim());
+        if name.is_empty() || value.is_empty() {
+            continue;
+        }
+        let mut skip = false;
+        for attr in parts {
+            let (k, v) = attr.trim().split_once('=').unwrap_or((attr.trim(), ""));
+            let k = k.trim().to_ascii_lowercase();
+            let v = v.trim().to_ascii_lowercase();
+            if k == "max-age" && v.parse::<i64>().is_ok_and(|n| n <= 0) {
+                skip = true;
+            }
+            if k == "domain" {
+                let d = v.trim_start_matches('.');
+                if !(d == "sjsu.instructure.com" || d == "instructure.com") {
+                    skip = true;
+                }
+            }
+        }
+        if skip {
+            continue;
+        }
+        match jar.iter_mut().find(|(n, _)| n == name) {
+            Some((_, v)) if v == value => {}
+            Some((_, v)) => {
+                *v = value.to_string();
+                changed = true;
+            }
+            None => {
+                jar.push((name.to_string(), value.to_string()));
+                changed = true;
+            }
+        }
+    }
+    changed.then(|| {
+        jar.iter()
+            .map(|(n, v)| format!("{n}={v}"))
+            .collect::<Vec<_>>()
+            .join("; ")
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -568,6 +720,45 @@ mod tests {
         assert_eq!(
             parse_link_next(Some(h)).as_deref(),
             Some("https://sjsu.instructure.com/api/v1/planner/items?page=bookmark%3AWzEwXQ")
+        );
+    }
+
+    /// A refreshed canvas_session replaces the old value in place; the
+    /// other cookies are untouched.
+    #[test]
+    fn set_cookie_refreshes_session_value() {
+        let h = "canvas_session=OLD; _csrf_token=abc; log_session_id=L1";
+        let out = merge_set_cookies(
+            h,
+            &["canvas_session=NEW; path=/; expires=Thu, 01 Oct 2026 00:00:00 GMT; secure; HttpOnly"],
+        );
+        assert_eq!(
+            out.as_deref(),
+            Some("canvas_session=NEW; _csrf_token=abc; log_session_id=L1")
+        );
+    }
+
+    /// Same values: no change, so no write.
+    #[test]
+    fn set_cookie_unchanged_is_none() {
+        let h = "canvas_session=A; _csrf_token=b";
+        assert_eq!(merge_set_cookies(h, &["canvas_session=A; path=/"]), None);
+        assert_eq!(merge_set_cookies(h, &[]), None);
+    }
+
+    /// Deletions and foreign domains are ignored; new cookies are appended.
+    #[test]
+    fn set_cookie_ignores_deletes_and_foreign_domains() {
+        let h = "canvas_session=A";
+        assert_eq!(merge_set_cookies(h, &["canvas_session=; Max-Age=0"]), None);
+        assert_eq!(merge_set_cookies(h, &["canvas_session=Z; Max-Age=0"]), None);
+        assert_eq!(
+            merge_set_cookies(h, &["tracker=1; Domain=example.com"]),
+            None
+        );
+        assert_eq!(
+            merge_set_cookies(h, &["_csrf_token=t; path=/; Domain=.instructure.com"]).as_deref(),
+            Some("canvas_session=A; _csrf_token=t")
         );
     }
 

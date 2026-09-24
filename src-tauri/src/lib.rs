@@ -212,6 +212,17 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
     let raw_dir = config_dir.join("raw");
     let client = std::sync::Arc::new(CanvasClient::new(BASE_URL, Some(raw_dir)));
     let store = SessionStore::new(config_dir);
+    // Canvas refreshes the session cookie on every response; the client
+    // saves the refreshed header here so a restart doesn't bring back the
+    // stale one (see CanvasClient::absorb_cookies).
+    {
+        let store = store.clone();
+        client.set_persist(move |header| {
+            if let Err(e) = store.store(Slot::Session, header) {
+                tracing::warn!(error = %e, "could not save the refreshed Canvas session");
+            }
+        });
+    }
 
     let restored = store.load();
     let ctx = AuthCtx::new(client.clone(), store);
