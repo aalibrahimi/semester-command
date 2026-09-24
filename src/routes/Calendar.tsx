@@ -15,7 +15,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { save as saveFileDialog } from "@tauri-apps/plugin-dialog";
-import { AlertCircle, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock, Download, Plus, Sparkles, Trash2 } from "lucide-react";
+import { AlertCircle, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock, Download, LayoutGrid, PanelRight, Plus, Sparkles, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -58,7 +58,7 @@ import {
   markAutoDetectAttempted,
   newCandidates,
 } from "@/lib/classDetect";
-import { dateTime, relativeDue } from "@/lib/format";
+import { dateTime, dueClock, relativeDue } from "@/lib/format";
 import { courseFull, courseShort } from "@/lib/courseLabel";
 import { cn } from "@/lib/utils";
 import type { CalendarItem, ClassSlotCandidate, PlannerBlock } from "@/types";
@@ -274,6 +274,16 @@ function readHidden(): Set<string> {
   }
 }
 
+type MonthLayout = "detailed" | "overview";
+const MONTH_LAYOUT_KEY = "calendar-month-layout";
+function readLayout(): MonthLayout {
+  try {
+    return localStorage.getItem(MONTH_LAYOUT_KEY) === "overview" ? "overview" : "detailed";
+  } catch {
+    return "detailed";
+  }
+}
+
 type DueState = "done" | "overdue" | "past" | "soon" | "upcoming";
 
 /** One word for where an item stands, from the viewer's point of view. */
@@ -319,6 +329,15 @@ function MonthView({ items, controls }: { items: CalendarItem[]; controls: React
   const nicknames = useNicknames();
   const doneSet = useDoneSet();
   const [hidden, setHidden] = useState<Set<string>>(readHidden);
+  const [layout, setLayout] = useState<MonthLayout>(readLayout);
+  const pickLayout = (l: MonthLayout) => {
+    setLayout(l);
+    try {
+      localStorage.setItem(MONTH_LAYOUT_KEY, l);
+    } catch {
+      /* per-viewer convenience only */
+    }
+  };
 
   const toggleCourse = (id: string) => {
     setHidden((prev) => {
@@ -414,9 +433,11 @@ function MonthView({ items, controls }: { items: CalendarItem[]; controls: React
         <div className="ml-auto">{controls}</div>
       </div>
 
-      {/* Legend and filter: one chip per course, in its color. */}
+      {/* Legend and filter (one chip per course, in its color), and the
+          Detailed / Overview switch. */}
+      <div className="flex flex-wrap items-center gap-2">
       {courses.length > 1 && (
-        <div className="flex flex-wrap items-center gap-2">
+        <>
           {courses.map((c) => {
             const off = hidden.has(c.courseId);
             return (
@@ -438,105 +459,346 @@ function MonthView({ items, controls }: { items: CalendarItem[]; controls: React
               </button>
             );
           })}
-        </div>
+        </>
       )}
-
-      <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card">
-        <div className="grid grid-cols-7 border-b border-border/60">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, k) => (
-            <div
-              key={d}
+        <div className="ml-auto flex items-center rounded-full bg-fill-ghost p-0.5 text-xs" role="group" aria-label="Month layout">
+          {(["detailed", "overview"] as const).map((l) => (
+            <button
+              key={l}
+              type="button"
+              aria-pressed={layout === l}
+              onClick={() => pickLayout(l)}
+              title={l === "detailed" ? "Every item in the grid" : "Dots in the grid, full titles in a side panel"}
               className={cn(
-                "px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider",
-                k === today.getDay() && month === today.getMonth() && year === today.getFullYear() ? "text-brand-fg" : "text-muted-foreground",
+                "flex items-center gap-1.5 rounded-full px-3 py-1 font-medium transition-colors duration-micro",
+                layout === l ? "bg-card text-foreground shadow-card" : "text-muted-foreground hover:text-foreground",
               )}
             >
+              {l === "detailed" ? <LayoutGrid className="h-3.5 w-3.5" /> : <PanelRight className="h-3.5 w-3.5" />}
+              {l === "detailed" ? "Detailed" : "Overview"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {layout === "overview" ? (
+        <OverviewLayout
+          cells={cells}
+          weeks={weeks}
+          month={month}
+          today={today}
+          byDate={byDate}
+          visible={visible}
+          isDone={isDone}
+          labelOf={labelOf}
+        />
+      ) : (
+        <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card">
+          <div className="grid grid-cols-7 border-b border-border/60">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d, k) => (
+              <div
+                key={d}
+                className={cn(
+                  "px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider",
+                  k === today.getDay() && month === today.getMonth() && year === today.getFullYear() ? "text-brand-fg" : "text-muted-foreground",
+                )}
+              >
+                {d}
+              </div>
+            ))}
+          </div>
+          <div className="grid flex-1 grid-cols-7" style={{ gridTemplateRows: `repeat(${weeks}, minmax(132px, 1fr))` }}>
+            {cells.map((day, idx) => {
+              const inMonth = day.getMonth() === month;
+              const isToday = dateKey(day) === dateKey(today);
+              const isPast = day.getTime() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+              const weekend = day.getDay() === 0 || day.getDay() === 6;
+              const dayItems = byDate.get(dateKey(day)) ?? [];
+              const open = dayItems.filter((i) => { const st = dueState(i, isDone(i), now); return st !== "done" && st !== "past"; }).length;
+              const special = academicOn(day).slice(0, 1);
+              const shown = dayItems.slice(0, special.length ? MAX - 1 : MAX);
+              const extra = dayItems.length - shown.length;
+              return (
+                <div
+                  key={day.toISOString()}
+                  className={cn(
+                    "relative flex min-w-0 flex-col gap-1 border-border/50 p-2",
+                    idx % 7 !== 6 && "border-r",
+                    idx < cells.length - 7 && "border-b",
+                    weekend && inMonth && "bg-fill-ghost/35",
+                    !inMonth && "bg-fill-ghost/50",
+                    isToday && "bg-brand/[0.05]",
+                  )}
+                >
+                  {isToday && <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[3px] ring-2 ring-inset ring-brand/60" />}
+                  <div className="flex items-center justify-between gap-1">
+                    <span
+                      data-numeric
+                      className={cn(
+                        "inline-flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 font-mono text-[13px] font-semibold tabular-nums",
+                        isToday ? "bg-brand-solid text-white shadow-card" : !inMonth ? "text-muted-foreground/40" : isPast ? "text-muted-foreground" : "text-foreground",
+                      )}
+                    >
+                      {day.getDate()}
+                    </span>
+                    {open > 0 && inMonth && (
+                      <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-semibold", isPast ? "bg-critical/12 text-critical-fg" : "bg-foreground/[0.06] text-muted-foreground")}>
+                        {open} due
+                      </span>
+                    )}
+                  </div>
+                  <div className={cn("flex min-w-0 flex-col gap-1", !inMonth && "opacity-55")}>
+                    {special.map((s) => (
+                      <div
+                        key={s.label}
+                        title={s.label}
+                        className={cn(
+                          "truncate rounded-md px-2 py-1 text-[11.5px] font-medium",
+                          s.kind === "holiday" || s.kind === "break" ? "bg-at-risk/15 text-at-risk-fg" : "bg-foreground/[0.06] text-muted-foreground",
+                        )}
+                      >
+                        {s.label}
+                      </div>
+                    ))}
+                    {shown.map((item) => (
+                      <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} />
+                    ))}
+                    {extra > 0 && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" className="w-fit rounded-md px-2 py-0.5 text-left text-[11.5px] font-semibold text-muted-foreground hover:bg-fill-ghost hover:text-foreground">
+                            +{extra} more
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-80 rounded-xl p-3 shadow-elevated">
+                          <div className="mb-2 text-xs font-semibold text-muted-foreground">
+                            {new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(day)}
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            {dayItems.map((item) => (
+                              <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} roomy />
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The Overview layout of the month: a calm grid of dots (course color = to
+ * do, red ring = missing, faint = done) with one short label per day, and a
+ * side panel with full, untruncated titles: the selected day (today to
+ * start; click any day), what's coming up, and what's missing. The
+ * Detailed layout stays the default; this is the "where do I stand" view.
+ */
+function OverviewLayout({
+  cells,
+  weeks,
+  month,
+  today,
+  byDate,
+  visible,
+  isDone,
+  labelOf,
+}: {
+  cells: Date[];
+  weeks: number;
+  month: number;
+  today: Date;
+  byDate: Map<string, CalendarItem[]>;
+  visible: CalendarItem[];
+  isDone: (i: CalendarItem) => boolean;
+  labelOf: (i: CalendarItem) => string;
+}) {
+  const now = today.getTime();
+  const [selected, setSelected] = useState<Date>(() => new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const stateOf = (i: CalendarItem) => dueState(i, isDone(i), now);
+
+  const dayList = byDate.get(dateKey(selected)) ?? [];
+  const upcoming = visible
+    .filter((i) => {
+      const st = stateOf(i);
+      return st === "soon" || st === "upcoming";
+    })
+    .sort((a, b) => a.dueAt.localeCompare(b.dueAt))
+    .slice(0, 6);
+  const missing = visible.filter((i) => stateOf(i) === "overdue").sort((a, b) => b.dueAt.localeCompare(a.dueAt));
+  const dayTitle = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "short", day: "numeric" }).format(selected);
+  const shortDate = (iso: string) => new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" }).format(new Date(iso));
+
+  return (
+    <div className="flex min-h-0 flex-1 gap-5">
+      {/* The grid */}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="grid grid-cols-7 gap-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d} className="px-3">
               {d}
             </div>
           ))}
         </div>
-        <div className="grid flex-1 grid-cols-7" style={{ gridTemplateRows: `repeat(${weeks}, minmax(132px, 1fr))` }}>
-          {cells.map((day, idx) => {
+        <div className="grid flex-1 grid-cols-7 gap-2" style={{ gridTemplateRows: `repeat(${weeks}, minmax(96px, 1fr))` }}>
+          {cells.map((day) => {
             const inMonth = day.getMonth() === month;
             const isToday = dateKey(day) === dateKey(today);
-            const isPast = day.getTime() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-            const weekend = day.getDay() === 0 || day.getDay() === 6;
-            const dayItems = byDate.get(dateKey(day)) ?? [];
-            const open = dayItems.filter((i) => { const st = dueState(i, isDone(i), now); return st !== "done" && st !== "past"; }).length;
-            const special = academicOn(day).slice(0, 1);
-            const shown = dayItems.slice(0, special.length ? MAX - 1 : MAX);
-            const extra = dayItems.length - shown.length;
+            const isSel = dateKey(day) === dateKey(selected);
+            const past = day.getTime() < startOfToday;
+            const list = byDate.get(dateKey(day)) ?? [];
+            const miss = list.filter((i) => stateOf(i) === "overdue");
+            const open = list.filter((i) => {
+              const st = stateOf(i);
+              return st === "soon" || st === "upcoming";
+            });
+            const rest = list.filter((i) => {
+              const st = stateOf(i);
+              return st === "done" || st === "past";
+            });
+            const special = academicOn(day)[0];
+            const label = miss.length ? `${miss.length} missing` : open.length ? `${open.length} due` : special ? special.label : "";
             return (
-              <div
+              <button
                 key={day.toISOString()}
+                type="button"
+                onClick={() => setSelected(day)}
+                aria-pressed={isSel}
+                aria-label={`${new Intl.DateTimeFormat(undefined, { month: "long", day: "numeric" }).format(day)}${label ? `, ${label}` : ""}`}
                 className={cn(
-                  "relative flex min-w-0 flex-col gap-1 border-border/50 p-2",
-                  idx % 7 !== 6 && "border-r",
-                  idx < cells.length - 7 && "border-b",
-                  weekend && inMonth && "bg-fill-ghost/35",
-                  !inMonth && "bg-fill-ghost/50",
-                  isToday && "bg-brand/[0.05]",
+                  "flex min-w-0 flex-col justify-between rounded-xl bg-card px-3 pb-3 pt-2.5 text-left shadow-card ring-1 ring-inset transition-[box-shadow,background-color] duration-micro hover:ring-brand/40",
+                  isSel ? "bg-brand/[0.07] ring-2 ring-brand" : "ring-border/60",
+                  !inMonth && "opacity-45",
                 )}
               >
-                {isToday && <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[3px] ring-2 ring-inset ring-brand/60" />}
-                <div className="flex items-center justify-between gap-1">
+                <span className="flex items-baseline justify-between gap-2">
                   <span
                     data-numeric
                     className={cn(
-                      "inline-flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 font-mono text-[13px] font-semibold tabular-nums",
-                      isToday ? "bg-brand-solid text-white shadow-card" : !inMonth ? "text-muted-foreground/40" : isPast ? "text-muted-foreground" : "text-foreground",
+                      "font-mono text-[15px] font-semibold tabular-nums",
+                      isToday ? "text-brand-fg" : past ? "text-muted-foreground" : "text-foreground",
                     )}
                   >
                     {day.getDate()}
                   </span>
-                  {open > 0 && inMonth && (
-                    <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-semibold", isPast ? "bg-critical/12 text-critical-fg" : "bg-foreground/[0.06] text-muted-foreground")}>
-                      {open} due
-                    </span>
-                  )}
-                </div>
-                <div className={cn("flex min-w-0 flex-col gap-1", !inMonth && "opacity-55")}>
-                  {special.map((s) => (
-                    <div
-                      key={s.label}
-                      title={s.label}
+                  {label && (
+                    <span
                       className={cn(
-                        "truncate rounded-md px-2 py-1 text-[11.5px] font-medium",
-                        s.kind === "holiday" || s.kind === "break" ? "bg-at-risk/15 text-at-risk-fg" : "bg-foreground/[0.06] text-muted-foreground",
+                        "truncate text-[11.5px] font-semibold",
+                        miss.length ? "text-critical-fg" : open.length ? "text-brand-fg" : "text-at-risk-fg",
                       )}
                     >
-                      {s.label}
-                    </div>
-                  ))}
-                  {shown.map((item) => (
-                    <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} />
-                  ))}
-                  {extra > 0 && (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button type="button" className="w-fit rounded-md px-2 py-0.5 text-left text-[11.5px] font-semibold text-muted-foreground hover:bg-fill-ghost hover:text-foreground">
-                          +{extra} more
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent align="start" className="w-80 rounded-xl p-3 shadow-elevated">
-                        <div className="mb-2 text-xs font-semibold text-muted-foreground">
-                          {new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(day)}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          {dayItems.map((item) => (
-                            <DueChip key={item.assignmentId} item={item} label={labelOf(item)} state={dueState(item, isDone(item), now)} roomy />
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                      {label}
+                    </span>
                   )}
-                </div>
-              </div>
+                </span>
+                <span className="flex flex-wrap items-center gap-1.5">
+                  {open.map((i) => (
+                    <span key={i.assignmentId} className="h-3 w-3 rounded-full" style={{ backgroundColor: courseHsla(i.courseId, 0.95) }} />
+                  ))}
+                  {miss.map((i) => (
+                    <span key={i.assignmentId} className="h-3 w-3 rounded-full ring-2 ring-inset ring-critical" />
+                  ))}
+                  {rest.map((i) => (
+                    <span key={i.assignmentId} className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: courseHsla(i.courseId, 0.35) }} />
+                  ))}
+                </span>
+              </button>
             );
           })}
         </div>
+        <div className="flex flex-wrap items-center gap-5 px-1 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-brand" /> to do (course color)
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full ring-2 ring-inset ring-critical" /> missing
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-foreground/25" /> done
+          </span>
+          <span className="ml-auto">Click a day to see it on the right.</span>
+        </div>
       </div>
+
+      {/* The panel */}
+      <aside className="flex w-[380px] shrink-0 flex-col gap-3 overflow-y-auto">
+        <PanelSection
+          title={dayTitle}
+          badge={dateKey(selected) === dateKey(today) ? "Today" : undefined}
+          empty="Nothing due this day."
+          rows={dayList.map((i) => ({ item: i, sub: `${labelOf(i)} · ${dueClock(i.dueAt)}`, state: stateOf(i) }))}
+        />
+        <PanelSection
+          title="Coming up"
+          empty="Nothing left to do. Nice."
+          rows={upcoming.map((i) => ({ item: i, sub: `${labelOf(i)} · ${shortDate(i.dueAt)}`, state: stateOf(i) }))}
+        />
+        {missing.length > 0 && (
+          <PanelSection
+            title={`Missing · ${missing.length}`}
+            tone="critical"
+            empty=""
+            rows={missing.map((i) => ({ item: i, sub: `${labelOf(i)} · ${shortDate(i.dueAt)}`, state: stateOf(i) }))}
+          />
+        )}
+      </aside>
     </div>
+  );
+}
+
+function PanelSection({
+  title,
+  badge,
+  empty,
+  rows,
+  tone,
+}: {
+  title: string;
+  badge?: string;
+  empty: string;
+  rows: { item: CalendarItem; sub: string; state: DueState }[];
+  tone?: "critical";
+}) {
+  return (
+    <section
+      className={cn(
+        "flex flex-col gap-3 rounded-2xl border p-4 shadow-card",
+        tone === "critical" ? "border-critical/25 bg-critical/[0.04]" : "border-border/70 bg-card",
+      )}
+    >
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className={cn("font-display text-[15px] font-semibold", tone === "critical" && "text-critical-fg")}>{title}</h2>
+        {badge && <span className="text-xs font-semibold text-brand-fg">{badge}</span>}
+      </div>
+      {rows.length === 0 && <p className="text-sm text-muted-foreground">{empty}</p>}
+      {rows.map(({ item, sub, state }) => (
+        <Link key={item.assignmentId} to={`/courses/${item.courseId}`} className="group flex items-center gap-3 rounded-lg">
+          <span className="w-1 self-stretch rounded-full" style={{ backgroundColor: courseHsla(item.courseId, 0.95) }} />
+          <span className="min-w-0 flex-1">
+            <span
+              className={cn(
+                "block text-sm font-medium leading-snug group-hover:underline",
+                state === "done" || state === "past" ? "text-muted-foreground" : "text-foreground",
+              )}
+            >
+              {item.name ?? "Untitled"}
+            </span>
+            <span className="block text-xs text-muted-foreground">{sub}</span>
+          </span>
+          <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold", STATE_CHIP[state])}>
+            {state === "done" ? (item.graded ? "Graded" : item.submitted ? "Submitted" : "Done") : STATE_LABEL[state]}
+          </span>
+        </Link>
+      ))}
+    </section>
   );
 }
 
