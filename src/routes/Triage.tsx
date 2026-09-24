@@ -3,7 +3,7 @@
  * dashboard (per Ali's reference design).
  *
  * Called by: the router, at "/".
- * Calls: ipc triage_rows / calendar_items; useCourses; localPrefs
+ * Calls: ipc triage_rows; useCourses; localPrefs
  * (nicknames, done marks).
  *
  * This file is deliberately thin: it loads the data, owns the assignment
@@ -23,16 +23,15 @@ import { TodayView } from "@/components/today/TodayView";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCourses } from "@/hooks/useCourses";
-import { calendarItems, courseDetail, triageRows } from "@/lib/ipc";
+import { courseDetail, triageRows } from "@/lib/ipc";
 import { courseShort } from "@/lib/courseLabel";
 import { setDone, useDoneSet, useNicknames } from "@/lib/localPrefs";
-import type { AssignmentDetail, CalendarItem, TriageRow } from "@/types";
+import type { AssignmentDetail, TriageRow } from "@/types";
 
 export default function Triage() {
   const [rows, setRows] = useState<TriageRow[] | null>(null);
-  const [week, setWeek] = useState<CalendarItem[]>([]);
   const [openAssignment, setOpenAssignment] = useState<AssignmentDetail | null>(null);
-  const { courses, openTotal, overallCurrentPct, loaded } = useCourses();
+  const { courses, loaded } = useCourses();
   const { status: auth } = useAuth();
   const nicknames = useNicknames();
   const doneSet = useDoneSet();
@@ -47,20 +46,6 @@ export default function Triage() {
 
   useEffect(() => {
     refresh();
-    const now = Date.now();
-    calendarItems()
-      .then((items) =>
-        setWeek(
-          items
-            .filter((i) => !i.submitted && !i.graded)
-            .filter((i) => {
-              const t = new Date(i.dueAt).getTime();
-              return t > now && t < now + 7 * 86_400_000;
-            })
-            .slice(0, 8),
-        ),
-      )
-      .catch(() => {});
   }, [refresh]);
 
   /** Nickname-aware short label for a course. */
@@ -105,7 +90,6 @@ export default function Triage() {
   }, []);
 
   const visible = courses.filter((c) => !c.hidden && c.gradeable && c.active);
-  const missingTotal = visible.reduce((n, c) => n + c.missingCount, 0);
 
   const subtitle = new Date().toLocaleDateString(undefined, {
     weekday: "long",
@@ -129,15 +113,10 @@ export default function Triage() {
 
   return (
     <>
-      <ScreenHeader title="Today" subtitle={subtitle} />
       <TodayView
         rows={visibleRows}
         courses={visible}
-        openTotal={openTotal}
-        missingTotal={missingTotal}
-        overallPct={overallCurrentPct}
         weekRows={weekRows}
-        weekItems={week}
         labelOf={labelOf}
         userName={auth.validatedAs}
         onOpen={openSheet}

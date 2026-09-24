@@ -12,7 +12,6 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courseHsla } from "@/lib/courseColor";
 import { syllabi } from "@/lib/ipc";
@@ -23,19 +22,12 @@ import { guidesForCourse } from "@/study/loadGuides";
 import { daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
 import { useCourseData } from "@/hooks/useCourseStudy";
+import { DoNextLabel as Label, DoNextRow as Row } from "./DoNext";
 import { classify, isDone } from "@/lib/courseWork";
 import type { AssignmentDetail, CourseSummary, GroupDetail, InstructorRow } from "@/types";
 
 const DAY = 86_400_000;
 
-export type RowKind = "missing" | "soon" | "todo" | "study";
-
-const BADGE: Record<RowKind, { label: string; cls: string }> = {
-  missing: { label: "Missing", cls: "bg-critical/[0.12] text-critical-fg" },
-  soon: { label: "Due soon", cls: "bg-at-risk/15 text-at-risk-fg" },
-  todo: { label: "To do", cls: "bg-brand/10 text-brand-fg" },
-  study: { label: "Study", cls: "bg-[hsl(262_60%_60%/0.14)] text-[hsl(262_45%_45%)] dark:text-[hsl(262_70%_78%)]" },
-};
 
 function dayLabel(d: Date): string {
   return new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" }).format(d);
@@ -57,61 +49,6 @@ function weightText(a: AssignmentDetail): string | null {
   if (a.impactPct >= 1) return `${a.impactPct.toFixed(a.impactPct >= 10 ? 0 : 1)}% of grade`;
   if (a.pointsPossible) return `${a.pointsPossible} pts`;
   return null;
-}
-
-function Row({
-  color,
-  title,
-  sub,
-  kind,
-  onOpen,
-  to,
-  cta,
-}: {
-  color: string;
-  title: string;
-  sub: string;
-  kind: RowKind;
-  onOpen?: () => void;
-  to?: string;
-  cta: string;
-}) {
-  const body = (
-    <>
-      <span aria-hidden className="w-1 self-stretch rounded-full" style={{ backgroundColor: color }} />
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-[14.5px] font-medium leading-snug">{title}</span>
-        <span className="text-[12.5px] text-muted-foreground">{sub}</span>
-      </span>
-      <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold", BADGE[kind].cls)}>{BADGE[kind].label}</span>
-      <span className="flex h-8 shrink-0 items-center gap-1 rounded-lg border border-border px-3 text-[12.5px] font-medium text-foreground transition-colors duration-micro group-hover:bg-fill-ghost">
-        {cta}
-        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-      </span>
-    </>
-  );
-  const cls = "group flex w-full items-center gap-3.5 border-t border-border/50 px-1 py-3 text-left";
-  return to ? (
-    <Link to={to} className={cls}>
-      {body}
-    </Link>
-  ) : (
-    <button type="button" onClick={onOpen} className={cls}>
-      {body}
-    </button>
-  );
-}
-
-function Label({ children, tone }: { children: string; tone: RowKind }) {
-  const cls =
-    tone === "missing"
-      ? "text-critical-fg"
-      : tone === "soon"
-        ? "text-at-risk-fg"
-        : tone === "study"
-          ? "text-[hsl(262_45%_45%)] dark:text-[hsl(262_70%_78%)]"
-          : "text-brand-fg";
-  return <div className={cn("px-1 pb-0.5 pt-4 text-[11.5px] font-semibold uppercase tracking-wider", cls)}>{children}</div>;
 }
 
 const CARD = "flex flex-col gap-3 rounded-2xl border border-border/70 bg-card px-5 py-4 shadow-card";
