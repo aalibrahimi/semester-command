@@ -5,10 +5,10 @@
  * inbox", a clicked pop-up with no other destination).
  * Calls: lib/inbox (the store), InboxList, lib/ipc (mark all read, clear read).
  *
- * "Email a professor" opens the composer (components/inbox/EmailProfessor):
- * pick the course, a starting template, edit, then open it in Gmail.
- * /inbox?compose=<courseId> opens it on that course (the course page links
- * here).
+ * "New email" opens the composer (components/inbox/EmailComposer): to a
+ * professor, a classmate or anyone; pick a starting template, edit, then
+ * open it in Gmail. /inbox?compose=<courseId> opens it addressed to that
+ * course's professor (the course page links here).
  *
  * Filters stack: Unread narrows to what you haven't opened, a kind chip
  * narrows to one type. Read items older than 60 days clean themselves up
@@ -20,7 +20,7 @@ import { CheckCheck, Inbox as InboxIcon, Mail, Settings2, Trash2 } from "lucide-
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { Button } from "@/components/ui/button";
 import { InboxList } from "@/components/inbox/InboxList";
-import { EmailProfessorDialog } from "@/components/inbox/EmailProfessor";
+import { EmailComposer } from "@/components/inbox/EmailComposer";
 import { cn } from "@/lib/utils";
 import { KIND_FILTERS, kindMeta, markRead, patchInbox, useInbox } from "@/lib/inbox";
 import { inboxClearRead } from "@/lib/ipc";
@@ -60,7 +60,7 @@ export default function Inbox() {
         actions={
           <>
             <Button size="sm" onClick={() => setComposeOpen(true)}>
-              <Mail className="mr-1.5 h-3.5 w-3.5" /> Email a professor
+              <Mail className="mr-1.5 h-3.5 w-3.5" /> New email
             </Button>
             <Button variant="outline" size="sm" disabled={unread === 0} onClick={() => markRead(items.filter((i) => !i.readAt).map((i) => i.id))}>
               <CheckCheck className="mr-1.5 h-3.5 w-3.5" /> Mark all read
@@ -132,7 +132,7 @@ export default function Inbox() {
         </div>
       </div>
 
-      <EmailProfessorDialog open={composing} onOpenChange={(o) => (o ? setComposeOpen(true) : closeCompose())} initialCourseId={composeFor} />
+      <EmailComposer open={composing} onOpenChange={(o) => (o ? setComposeOpen(true) : closeCompose())} initialCourseId={composeFor} />
     </>
   );
 }
