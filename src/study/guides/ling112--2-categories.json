@@ -3,616 +3,822 @@
   "course": "ling112",
   "lessons": "Week 2",
   "title": "Syntactic categories by distribution",
-  "summary": "Label every word in a sentence with one of eleven categories and, for any word, give a morphological or syntactic test that proves the label — the way HW 1 and the oral exam require.",
-  "estimatedMinutes": 55,
-  "sourceNote": "Week 2 handout (Syntactic categories), the diagnostic quiz, Carnie videos 2.1–2.2 (Parts of Speech), HW 1.",
+  "summary": "From zero: what a category is, the eleven categories on Dr. Nie's list with what each one does, the two kinds of test (endings and neighbors) that prove a label, and how to label every word of a sentence with a reason, the way HW 1 and the oral exam ask.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Week 2 handout (Syntactic categories), the diagnostic quiz, Carnie videos 2.1 to 2.2 (Parts of Speech), HW 1. Rebuilt for readers who missed class: each term is defined before it is used.",
   "requires": [
-    "ling112/0-what-syntax-is"
+    "ling112/0-what-syntax-is",
+    "ling112/1-universals"
   ],
   "sections": [
     {
       "id": "why",
-      "heading": "Why not 'a noun is a person, place or thing'",
+      "heading": "Start here: what a category is, and why meaning can't find it",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Syntactic category",
+          "body": "A group of words that **behave the same way**: they take the same endings and show up in the same spots in a sentence. Noun, verb, adjective and so on. You may know them as 'parts of speech'.",
+          "slide": "Definition",
+          "id": "why.0e369e86"
+        },
+        {
           "type": "prose",
-          "label": "why",
-          "md": "**The handout's opening argument** 'I *walked* quickly around the park' and 'I took three quick *walks* around the park' describe the same event. Same meaning, but *walked* is a verb and *walks* is a noun. Tagalog does it the other way: *Matalino ang doktor* ('the doctor is smart') and *Doktor ang matalino* ('the smart one is a doctor') swap which word is the predicate. If meaning decided category, none of that could happen. So category is decided by ==distribution==: where the word can appear and what can attach to it.",
-          "slide": "Meaning can't tell you the category",
-          "id": "why.6e589af4"
+          "md": "**One example.** In *I walked around the park*, *walked* is a verb. In *I took three walks around the park*, *walks* is a noun. It's the same event, the same meaning. What changed is the **endings** (-ed vs plural -s) and the **neighbors** (after *I* vs after *three*). That's the whole idea of this chapter.",
+          "slide": "One word, two categories",
+          "id": "why.0d642b49"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>As a verb, 'walk' takes verb endings (-ed, -ing) and follows a subject or 'will'.</title><rect x='20' y='12' width='300' height='214' rx='14' fill='rgb(var(--accent-fg) / 0.06)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='36' y='40' font-size='16' font-weight='800' fill='rgb(var(--accent-fg))'>walk as a VERB</text><text x='36' y='62' font-size='12' font-style='italic' opacity='0.85'>I walked quickly around the park.</text><text x='36' y='92' font-size='10' font-weight='700' opacity='0.6'>ENDINGS IT TAKES</text><text x='36' y='110' font-size='12.5'>walk-s · walk-ed · walk-ing</text><text x='36' y='136' font-size='10' font-weight='700' opacity='0.6'>NEIGHBORS</text><text x='36' y='154' font-size='12.5'>after a subject: I walk · after will: will walk</text><text x='36' y='180' font-size='10' font-weight='700' opacity='0.6'>NEGATION</text><text x='36' y='198' font-size='12.5'>don't walk</text></g><g><title>As a noun, 'walk' takes plural -s and follows a determiner (three) and an adjective (quick).</title><rect x='340' y='12' width='300' height='214' rx='14' fill='rgb(var(--on-track) / 0.06)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='356' y='40' font-size='16' font-weight='800' fill='rgb(var(--on-track))'>walk as a NOUN</text><text x='356' y='62' font-size='12' font-style='italic' opacity='0.85'>I took three quick walks.</text><text x='356' y='92' font-size='10' font-weight='700' opacity='0.6'>ENDINGS IT TAKES</text><text x='356' y='110' font-size='12.5'>walk-s (plural) · walk's (possessive)</text><text x='356' y='136' font-size='10' font-weight='700' opacity='0.6'>NEIGHBORS</text><text x='356' y='154' font-size='12.5'>after the / a / three · after quick</text><text x='356' y='180' font-size='10' font-weight='700' opacity='0.6'>NEGATION</text><text x='356' y='198' font-size='12.5'>no walks</text></g><text x='330' y='246' text-anchor='middle' font-size='12' opacity='0.75'>Same word, same meaning, two categories. The endings and the neighbors decide, not the meaning.</text></g>",
+          "viewBox": "0 0 660 258",
+          "caption": "Every word carries two 'ID cards': the endings it can take and the neighbors it can have. Same word 'walk', two sets of cards, two categories. Hover each card.",
+          "slide": "The two ID cards",
+          "id": "why.0399817b"
         },
         {
           "type": "definition",
           "term": "Distribution",
-          "body": "The contexts a linguistic expression appears in. **Morphological distribution**: which morphemes (affixes) it can carry. **Syntactic distribution**: which other words it can co-occur with. The category of a word is determined by how it behaves, not what it means.",
-          "id": "why.84032a22"
+          "body": "Where a word can show up. Dr. Nie splits it in two. **Morphological distribution**: which endings (affixes) it can take. **Syntactic distribution**: which words it can sit next to. A category is decided by distribution, never by meaning.",
+          "id": "why.c4bcb5e2"
+        },
+        {
+          "type": "trap",
+          "body": "School says 'a noun is a person, place or thing'. It fails right away: *destruction* is an action, *happiness* is a feeling, and both are nouns (*the destruction*, *two happinesses*). On a test, 'it's a noun because it's a thing' earns nothing. 'It's a noun because it follows *the* and takes plural *-s*' earns full credit.",
+          "source": "Week 2 handout",
+          "points": null,
+          "slide": "Trap: never argue from meaning",
+          "id": "why.12323af0"
+        },
+        {
+          "type": "definition",
+          "term": "Two kinds of ending",
+          "body": "**Derivational** endings make a new word, often of a new category: *-tion* makes nouns (*isolat-ion*), *-ize* makes verbs (*real-ize*), *-able* makes adjectives (*read-able*). **Inflectional** endings just adjust a word and keep its category: plural *-s* on nouns, *-ed* / *-ing* on verbs, *-er* / *-est* on adjectives.",
+          "slide": "Derivational vs inflectional",
+          "id": "why.9a4d1f91"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Derivational",
+              "sub": "makes a new word",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Inflectional",
+              "sub": "adjusts the same word",
+              "tone": "amber"
+            },
+            "rows": [
+              {
+                "label": "Changes category?",
+                "left": "often: happy (Adj) → happi-ness (N)",
+                "right": "never: dog (N) → dog-s (N)"
+              },
+              {
+                "label": "Examples",
+                "left": "-tion, -ment, -ness, -ize, -ify, -able, -ful, -ly",
+                "right": "-s, -ed, -ing, -en, -er, -est, 's"
+              },
+              {
+                "label": "As a test",
+                "left": "-ness at the end → it's a noun",
+                "right": "takes -est → it's an adjective"
+              }
+            ]
+          },
+          "caption": "Both kinds of ending are evidence. If a word can take a noun ending, that's a reason to call it a noun.",
+          "slide": "The two kinds of ending",
+          "id": "why.083e4b1b"
+        },
+        {
+          "type": "check",
+          "prompt": "*Quickly*: which ending does it have, is it derivational or inflectional, and what category does it make?",
+          "answer": "*-ly*, derivational (it turns the adjective *quick* into a new word), and it makes an **adverb**.",
+          "sectionRef": "why",
+          "id": "why.f5d9630b"
         },
         {
           "type": "prose",
-          "md": "**Derivational** morphemes *create* a word of a category: -tion makes nouns (isolat-ion), -ize makes verbs (real-ize), -able makes adjectives (read-able). **Inflectional** morphemes attach to a category *without changing it*: plural -s on nouns, -ed/-ing/-s on verbs, -er/-est on adjectives. Both are tests: ##if a word takes -est, it's an adjective; if it takes plural -s, it's a noun##.",
-          "slide": "Two kinds of affix",
-          "id": "why.33da0b6b"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Part-of-speech tagging — this exact labeling task, automated — is the first stage of almost every NLP pipeline, and taggers fail exactly where the tests get interesting: words that live in two categories. A voice assistant hearing 'Book me a flight' must decide *book* is a verb before it can do anything else; a grammar checker flagging 'their going home' needs the category of *going* first. And LLMs, which are never told what a noun is, develop internal features that track category anyway — because ==distribution is precisely what a next-word predictor learns==. The tests in this chapter are the hand-run version of what those models induce from data.",
-          "id": "why.3f7d9a2c"
+          "md": "**Where you'll meet this** Part-of-speech tagging, this exact labeling job done by a program, is step one of almost every language app. A voice assistant hearing 'Book me a flight' has to decide *book* is a verb before it can do anything. Taggers fail exactly where the tests in this chapter disagree.",
+          "label": "world",
+          "id": "why.69c48d94"
         }
       ]
     },
     {
       "id": "list",
-      "heading": "The eleven categories",
+      "heading": "The eleven categories, one at a time",
       "blocks": [
         {
           "type": "prose",
-          "md": "**Lexical** categories carry content and are **open class** — new words get coined (the handout cites 'rage-bait', 'chopped'). **Functional** categories carry grammar and are **closed class** — you can't invent a new preposition. Functional words matter for tests because they create the *context* the lexical words appear in: ##a determiner tells you a noun is coming##.",
-          "slide": "Lexical vs functional",
-          "id": "list.ae31240f"
+          "md": "Dr. Nie's list has eleven categories. Here is each one with what it **does** in plain words, a few examples from the handout, and one quick test. Don't memorize the examples; learn the job and the test.",
+          "slide": "Her eleven categories",
+          "id": "list.7886a14b"
         },
         {
           "type": "table",
           "columns": [
             "Category",
-            "Abbrev.",
-            "Examples from the handout"
+            "Label",
+            "What it does",
+            "Examples",
+            "Quick test"
           ],
           "rows": [
             [
               "Noun",
               "N",
-              "granola, computer, party, joy, action, Jake, they, him, who, what"
+              "names a thing, person, idea, event",
+              "granola, party, joy, Jake, they, him, who",
+              "fits after *the*; takes plural *-s*"
             ],
             [
               "Verb",
               "V",
-              "run, arrive, laugh, know, love, think, say, spray"
+              "the action or state",
+              "run, arrive, know, think, spray",
+              "fits after *will*; takes *-ed* / *-ing*"
             ],
             [
               "Adjective",
               "Adj",
-              "big, yellow, stable, intelligent, legal, fake"
+              "describes a noun",
+              "big, yellow, stable, fake",
+              "fits in *the ___ dog*; takes *very*"
             ],
             [
               "Adverb",
               "Adv",
-              "badly, curiously, possibly, often, very, really, tomorrow"
+              "describes a verb, adjective, or the whole sentence",
+              "badly, often, very, tomorrow",
+              "*-ly* often; can't fit *the ___ dog*"
             ],
             [
               "Preposition",
               "P",
-              "on, of, by, through, into, from, for, to, with"
+              "a little relation word before a noun phrase",
+              "on, of, by, into, with, to",
+              "followed by a noun phrase: *on the table*"
             ],
             [
               "Determiner",
               "D",
-              "the, a, this, some, every, two, thirteen, his, our, which"
+              "comes first in a noun phrase: which one, how many, whose",
+              "the, a, this, every, two, his, which",
+              "fits in *___ dog barked*"
             ],
             [
               "Complementizer",
               "C",
-              "that, if, whether"
+              "introduces a whole clause inside a sentence",
+              "that, if, whether",
+              "*I think ___ it rained*"
             ],
             [
               "Auxiliary",
               "Aux",
-              "have, be, do"
+              "a helper verb",
+              "have, be, do",
+              "*She ___ eaten / eating*; moves in questions"
             ],
             [
               "Modal",
               "Mod",
-              "will, would, can, could, may, might, should"
+              "a helper that adds 'possible / necessary'",
+              "will, would, can, may, should",
+              "*They ___ leave*; never takes *-s*"
             ],
             [
               "Tense",
               "T",
-              "to (the infinitive marker)"
+              "the infinitive marker",
+              "to (only before a plain verb)",
+              "*to eat*, never *to Paris*"
             ],
             [
               "Negation",
               "Neg",
-              "not"
+              "makes it negative",
+              "not",
+              "*will not go*"
             ]
           ],
-          "slide": "Her list, verbatim",
-          "id": "list.c13917ef"
+          "title": "The eleven categories",
+          "slide": "The full list",
+          "id": "list.ca28aa03"
         },
         {
-          "type": "prose",
-          "md": "**Three traps in that list** Pronouns (they, him) and wh-words used as arguments (who, what) are **nouns**. Possessives (his, our) and numbers (two) are **determiners**. !!Infinitival *to* is T, not a preposition!! — 'to eat' vs 'to Paris': only the second is P.",
-          "id": "list.f728c4ad"
+          "type": "definition",
+          "term": "Lexical vs functional",
+          "body": "**Lexical** categories (N, V, Adj, Adv) carry content, and new words join them all the time (*rage-bait*, *to google*), so they're called **open class**. **Functional** categories (P, D, C, Aux, Mod, T, Neg) carry grammar, and you basically can't invent new ones, so they're **closed class**.",
+          "slide": "Open vs closed",
+          "id": "list.13e6e22c"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Lexical (open class)",
+              "sub": "N · V · Adj · Adv",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Functional (closed class)",
+              "sub": "P · D · C · Aux · Mod · T · Neg",
+              "tone": "amber"
+            },
+            "rows": [
+              {
+                "label": "Job",
+                "left": "carry meaning",
+                "right": "carry grammar"
+              },
+              {
+                "label": "New words?",
+                "left": "yes, every year",
+                "right": "almost never"
+              },
+              {
+                "label": "How you prove the label",
+                "left": "run a test (endings, frames)",
+                "right": "find it on her list"
+              }
+            ]
+          },
+          "caption": "The practical difference: test the lexical words, look up the functional ones.",
+          "slide": "Lexical vs functional",
+          "id": "list.cc8d732c"
+        },
+        {
+          "type": "trap",
+          "body": "**Three words that fool everyone.** Pronouns (*they*, *him*) and question words used as nouns (*who*, *what*) are **N** on her list. Possessives (*his*, *our*) and numbers (*two*) are **D**. And *to* before a plain verb is **T**, not P: *to eat* is T, *to Paris* is P.",
+          "source": "Week 2 handout",
+          "points": null,
+          "slide": "Trap: pronouns, possessives, to",
+          "id": "list.31590114"
+        },
+        {
+          "type": "check",
+          "prompt": "*Their* in *their new roof*: which category, and is it open or closed?",
+          "answer": "**D** (determiner): possessives are determiners on her list. Closed class.",
+          "sectionRef": "list",
+          "id": "list.5fecf24b"
+        },
+        {
+          "type": "check",
+          "prompt": "*To* in *I want to leave* vs *I went to Rome*?",
+          "answer": "*to leave*: **T** (before a plain verb). *to Rome*: **P** (before a noun phrase).",
+          "sectionRef": "list",
+          "id": "list.a7c305d1"
         }
       ]
     },
     {
       "id": "tests",
-      "heading": "The tests, category by category",
+      "heading": "The tests that prove a label",
       "blocks": [
+        {
+          "type": "definition",
+          "term": "Test frame",
+          "body": "A sentence with one blank. Every word that fits the blank naturally belongs to the same category. *The ___ slept* finds nouns. *They will ___* finds verbs. *the ___ dog* finds adjectives.",
+          "slide": "What a frame is",
+          "id": "tests.36db2829"
+        },
         {
           "type": "table",
           "columns": [
             "Category",
-            "Morphological (affixes it takes)",
-            "Syntactic (where it sits)"
+            "Endings it takes",
+            "Where it sits"
           ],
           "rows": [
             [
               "Verb",
-              "Deriv: -ate, -ize, -ify · Infl: -s, -ed, -ing, -en",
+              "Derivational: -ate, -ize, -ify · Inflectional: -s, -ed, -ing, -en",
               "follows a subject; follows Aux / Mod / T ('will run', 'to run'); follows adverbs; can be negated with 'not'"
             ],
             [
               "Noun",
-              "Deriv: -ment, -ness, -(i)ty, -(t)ion, -hood, -ism · Infl: plural -s, possessive 's",
+              "Derivational: -ment, -ness, -(i)ty, -(t)ion, -hood, -ism · Inflectional: plural -s, possessive 's",
               "follows determiners and adjectives ('the big __'); can be negated with 'no' ('no computers')"
             ],
             [
               "Adjective",
-              "Deriv: -ing, -ive, -able, -al, -ish, -some, -(i)an, -ful, -less, -y · Infl: -er, -est",
+              "Derivational: -ing, -ive, -able, -al, -ish, -some, -(i)an, -ful, -less, -y · Inflectional: -er, -est",
               "sits between D and N ('the __ dog'); follows degree adverbs ('very __')"
             ],
             [
               "Adverb",
-              "Deriv: -ly · Infl: none",
+              "Derivational: -ly · Inflectional: none",
               "CANNOT sit between D and N; follows degree adverbs ('very __')"
             ]
           ],
-          "slide": "The test table — this is what you cite",
-          "id": "tests.1c7244bc"
+          "slide": "The test table: this is what you cite",
+          "id": "tests.4bdab725"
         },
         {
-          "type": "trap",
-          "body": "**'very' doesn't separate Adj from Adv** 'very quick' and 'very quickly' both work. To split them use the D __ N frame: 'the quick run' ✓ vs '*the quickly run' ✗. Adjectives go between a determiner and a noun; adverbs never do. That one frame decides most of the diagnostic quiz.",
-          "source": "Quiz",
-          "points": null,
-          "id": "tests.46eed9b2"
+          "type": "prose",
+          "md": "**How to read that table.** Pick the row for the category you think it is. Show one ending from the middle column **or** one position from the right column. That's your proof. Two proofs is better than one.",
+          "id": "tests.1db07971"
         },
         {
           "type": "figure",
           "viewBox": "0 0 600 230",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The frame itself: a determiner, a blank, a noun. Whatever fits the blank is an adjective.</title><text x='300' y='30' text-anchor='middle' font-size='13' font-weight='600'>The frame: D ___ N</text></g><g><title>'quick' fits between 'the' and 'run' — it passes the frame, so it is an adjective.</title><rect x='110' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='80' text-anchor='middle' font-size='15'>the</text><rect x='200' y='55' width='130' height='40' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='265' y='80' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--on-track))'>quick</text><rect x='350' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='80' text-anchor='middle' font-size='15'>run</text><text x='445' y='80' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>✓ Adjective</text></g><g><title>'quickly' cannot sit between a determiner and a noun — the frame rejects it, so it is an adverb.</title><text x='96' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>*</text><rect x='110' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='150' text-anchor='middle' font-size='15'>the</text><rect x='200' y='125' width='130' height='40' rx='8' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='265' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>quickly</text><rect x='350' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='150' text-anchor='middle' font-size='15'>run</text><text x='445' y='150' font-size='14' font-weight='700' fill='rgb(var(--critical))'>✗ Adverb</text></g><g><title>'very quick' and 'very quickly' both work, so 'very' cannot separate the two categories — only this frame can.</title><text x='300' y='205' text-anchor='middle' font-size='11' opacity='0.7'>'very' passes both, so it proves nothing. The D ___ N frame is the one that decides.</text></g></g>",
-          "caption": "Her sharpest test, drawn. 'very' modifies both adjectives and adverbs, so it can't tell them apart — but only an adjective can stand between a determiner and its noun. 'The quick run' is fine; '*the quickly run' is out. When the quiz asks you to prove Adj vs Adv, this frame is the proof to cite. Hover any row.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>The frame itself: a determiner, a blank, a noun. Whatever fits the blank is an adjective.</title><text x='300' y='30' text-anchor='middle' font-size='13' font-weight='600'>The frame: D ___ N</text></g><g><title>'quick' fits between 'the' and 'run': it passes the frame, so it is an adjective.</title><rect x='110' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='80' text-anchor='middle' font-size='15'>the</text><rect x='200' y='55' width='130' height='40' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='265' y='80' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--on-track))'>quick</text><rect x='350' y='55' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='80' text-anchor='middle' font-size='15'>run</text><text x='445' y='80' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>✓ Adjective</text></g><g><title>'quickly' cannot sit between a determiner and a noun: the frame rejects it, so it is an adverb.</title><text x='96' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>*</text><rect x='110' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='145' y='150' text-anchor='middle' font-size='15'>the</text><rect x='200' y='125' width='130' height='40' rx='8' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='265' y='150' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--critical))'>quickly</text><rect x='350' y='125' width='70' height='40' rx='8' fill='none' stroke='currentColor' opacity='0.5'/><text x='385' y='150' text-anchor='middle' font-size='15'>run</text><text x='445' y='150' font-size='14' font-weight='700' fill='rgb(var(--critical))'>✗ Adverb</text></g><g><title>'very quick' and 'very quickly' both work, so 'very' cannot separate the two categories: only this frame can.</title><text x='300' y='205' text-anchor='middle' font-size='11' opacity='0.7'>'very' passes both, so it proves nothing. The D ___ N frame is the one that decides.</text></g></g>",
+          "caption": "Her sharpest test, drawn. 'very' modifies both adjectives and adverbs, so it can't tell them apart: but only an adjective can stand between a determiner and its noun. 'The quick run' is fine; '*the quickly run' is out. When the quiz asks you to prove Adj vs Adv, this frame is the proof to cite. Hover any row.",
           "slide": "The D ___ N frame",
-          "id": "tests.8e4b7c1d"
+          "id": "tests.3a8b1685"
+        },
+        {
+          "type": "trap",
+          "body": "*Very* does NOT separate adjectives from adverbs: *very quick* and *very quickly* both work. Use the **D ___ N** frame instead: *the quick run* ✓, '*the quickly run' ✗. Adjectives fit between a determiner and a noun; adverbs never do.",
+          "source": "Quiz",
+          "points": null,
+          "slide": "Trap: 'very' can't decide",
+          "id": "tests.d8905acb"
         },
         {
           "type": "stepper",
-          "title": "Labeling handout sentence (3) with a test per word",
+          "title": "Labeling handout sentence (3), one word at a time",
           "frames": [
             {
               "kind": "lines",
               "lines": [
-                "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That extremely leathery alligator greatly hopes to be eating us for dinner tonight."
               ],
               "active": 0,
-              "caption": "Handout sentence (3). We'll label left to right, giving a test for each — because 'it's a noun because it's a thing' is not an answer in this course."
+              "caption": "Handout sentence (3). Label each word and give a reason, left to right. Watch the list grow."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D"
               ],
               "active": 1,
-              "caption": "'That' is a determiner. Test: it's in the closed list (the, a, this, some, every…), and it's the slot before the adjectives."
+              "caption": "**That = D.** Test: on the closed list of determiners (the, a, this, that…); it comes before the adjectives and noun."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv"
               ],
               "active": 2,
-              "caption": "'extremely' ends in -ly and modifies the adjective after it. Adverb. Confirm with the D __ N frame: *'the extremely alligator' fails, so it's not an adjective."
+              "caption": "**extremely = Adv.** Test: ends in -ly; can't go between a determiner and a noun ('*the extremely alligator')."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj"
               ],
               "active": 3,
-              "caption": "'leathery': can sit between D and N ('that leathery alligator') and takes 'very'. Adjective. Also derivational -y."
+              "caption": "**leathery = Adj.** Test: fits between D and N ('that leathery alligator') and takes 'very'."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N"
               ],
               "active": 4,
-              "caption": "'alligator' follows a determiner and an adjective, and takes plural -s. Noun."
+              "caption": "**alligator = N.** Test: follows D + Adj; takes plural -s ('alligators')."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv"
               ],
               "active": 5,
-              "caption": "'greatly' is -ly, modifies 'hopes', and can't sit between D and N. Adverb (manner)."
+              "caption": "**greatly = Adv.** Test: ends in -ly and describes the verb 'hopes'."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V"
               ],
               "active": 6,
-              "caption": "'hopes' carries the 3SG -s inflection, follows the subject, and can be negated with 'not' via do-support. Verb."
+              "caption": "**hopes = V.** Test: has the -s ending for 'he/she/it'; follows the subject; negates as 'does not hope'."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T"
               ],
               "active": 7,
-              "caption": "'to' before a bare verb is the functional category T (tense/infinitive marker), not a preposition — no noun follows it."
+              "caption": "**to = T.** Test: 'to' right before a plain verb is the infinitive marker T, not a preposition."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux"
               ],
               "active": 8,
-              "caption": "'be' is an auxiliary. Aux is a functional category on her list (have, be, do)."
+              "caption": "**be = Aux.** Test: a helper verb: be, have, do are auxiliaries."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux",
+                "eating     → V"
               ],
               "active": 9,
-              "caption": "'eating' carries -ing and follows Aux 'be'. Verb."
+              "caption": "**eating = V.** Test: -ing ending; comes after the auxiliary 'be'."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux",
+                "eating     → V",
+                "us         → N"
               ],
               "active": 10,
-              "caption": "'us' is a pronoun. Her Week 2 list puts pronouns under N (they, him, who, what)."
+              "caption": "**us = N.** Test: a pronoun, and on Dr. Nie's list pronouns count as nouns."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux",
+                "eating     → V",
+                "us         → N",
+                "for        → P"
               ],
               "active": 11,
-              "caption": "'for' is a preposition — closed class, followed by a noun phrase."
+              "caption": "**for = P.** Test: a preposition: closed class, followed by a noun phrase."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux",
+                "eating     → V",
+                "us         → N",
+                "for        → P",
+                "dinner     → N"
               ],
               "active": 12,
-              "caption": "'dinner' follows P and takes plural -s. Noun."
+              "caption": "**dinner = N.** Test: follows the preposition; plural 'dinners' works."
             },
             {
               "kind": "lines",
               "lines": [
                 "That extremely leathery alligator greatly hopes to be eating us for dinner tonight.",
-                "That → D  (determiner: closed class; sits before adjectives and the noun)",
-                "extremely → Adv  (-ly; modifies an adjective; cannot go between D and N: *the extremely alligator)",
-                "leathery → Adj  (-y; sits between D and N; takes 'very': very leathery)",
-                "alligator → N  (follows D + Adj; takes plural -s: alligators)",
-                "greatly → Adv  (-ly; modifies the verb; *the greatly alligator)",
-                "hopes → V  (3SG -s; follows the subject; can be negated: does not hope)",
-                "to → T  (infinitival 'to', a functional category)",
-                "be → Aux  (auxiliary 'be')",
-                "eating → V  (-ing; follows Aux)",
-                "us → N  (pronoun: pronouns are nouns on her list)",
-                "for → P",
-                "dinner → N  (follows P; plural dinners)",
-                "tonight → Adv  (temporal)"
+                "That       → D",
+                "extremely  → Adv",
+                "leathery   → Adj",
+                "alligator  → N",
+                "greatly    → Adv",
+                "hopes      → V",
+                "to         → T",
+                "be         → Aux",
+                "eating     → V",
+                "us         → N",
+                "for        → P",
+                "dinner     → N",
+                "tonight    → Adv"
               ],
               "active": 13,
-              "caption": "'tonight' is a temporal adverb; it modifies the verb phrase and can't sit between D and N."
+              "caption": "**tonight = Adv.** Test: a time word that describes when; can't sit between D and N."
             }
           ],
           "slide": true,
-          "id": "tests.36413070"
+          "id": "tests.8dd184fb"
         },
         {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** These frames are, almost verbatim, the features early POS taggers ran on, and modern taggers still make their errors exactly where the frames conflict: 'her back', 'that', 'like'. When a grammar checker suggests 'quick → quickly' after a verb, it just ran the same distributional logic you ran on the alligator sentence. Headline double-takes — 'Police help dog bite victim' — happen because !!readers commit to a category early and refuse to re-assign it!!, the same failure pattern as a greedy tagger. And in any annotation job (LING 115 trains you for exactly this), the guidelines settle disputes by distribution tests, never by meaning.",
-          "id": "tests.5a9d3e7f"
+          "type": "check",
+          "prompt": "Prove that *fast* in *a fast car* is an adjective, not an adverb.",
+          "answer": "It fits the D ___ N frame (*a fast car*) and takes *-er* (*a faster car*). An adverb can't sit between *a* and *car*.",
+          "sectionRef": "tests",
+          "id": "tests.9c600d8a"
+        },
+        {
+          "type": "check",
+          "prompt": "Prove *arrival* is a noun with an ending test and a neighbor test.",
+          "answer": "Ending: *-al* here is a noun-making ending, and it takes plural *-s* (*arrivals*). Neighbor: it fits after *the* (*the arrival was late*).",
+          "sectionRef": "tests",
+          "id": "tests.1c00bcb7"
         }
       ]
     },
     {
       "id": "props",
-      "heading": "Grammatical properties (the cross-linguistic part)",
+      "heading": "Grammatical properties: what categories carry in any language",
       "blocks": [
         {
           "type": "prose",
-          "md": "The tests above are for English. The handout's second half lists the properties categories tend to have in *any* language, so you can identify categories in Zulu or Japanese data on a homework — and so you can explain, on the oral exam, ==what makes a verb a verb across languages==.",
+          "md": "The tests above are for English. The second half of the handout lists **properties** categories tend to carry in every language, so you can spot a verb in Zulu or a noun in Japanese on the homework. Two groups: what **verbs** carry, and what **nouns** carry.",
           "slide": "Why this section exists",
-          "id": "props.2caaf284"
+          "id": "props.e0e91e92"
         },
         {
           "type": "definition",
           "term": "Argument structure (valency)",
-          "body": "how many obligatory participants. Intransitive = 1 ('Ming sneezed'), transitive = 2 ('Sarah helped Ming'), ditransitive = 3 ('Taro gave the child a book'). Some verbs drop objects ('I ate').",
-          "id": "props.a639c065"
+          "body": "How many participants a verb **needs**. Intransitive = 1 (*Ming sneezed*), transitive = 2 (*Sarah helped Ming*), ditransitive = 3 (*Taro gave the child a book*).",
+          "slide": "Valency",
+          "id": "props.acf05025"
         },
         {
-          "type": "definition",
-          "term": "Tense",
-          "body": "past / present / future — where the event sits in time.",
-          "id": "props.71be06c3"
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>One participant: only the sneezer.</title><text x='20' y='45' font-size='13' font-weight='700'>Intransitive · 1</text><rect x='190' y='20' width='62' height='38' rx='19' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='221.0' y='44' text-anchor='middle' font-size='14'>Ming</text><rect x='264' y='20' width='89' height='38' rx='8' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='308.5' y='44' text-anchor='middle' font-size='14' font-weight='700'>sneezed</text></g><g><title>Two participants: a helper and someone helped.</title><text x='20' y='107' font-size='13' font-weight='700'>Transitive · 2</text><rect x='190' y='82' width='71' height='38' rx='19' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='225.5' y='106' text-anchor='middle' font-size='14'>Sarah</text><rect x='273' y='82' width='80' height='38' rx='8' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='313.0' y='106' text-anchor='middle' font-size='14' font-weight='700'>helped</text><rect x='365' y='82' width='62' height='38' rx='19' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='396.0' y='106' text-anchor='middle' font-size='14'>Ming</text></g><g><title>Three participants: a giver, a receiver, and a thing given.</title><text x='20' y='169' font-size='13' font-weight='700'>Ditransitive · 3</text><rect x='190' y='144' width='62' height='38' rx='19' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='221.0' y='168' text-anchor='middle' font-size='14'>Taro</text><rect x='264' y='144' width='62' height='38' rx='8' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='295.0' y='168' text-anchor='middle' font-size='14' font-weight='700'>gave</text><rect x='338' y='144' width='107' height='38' rx='19' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='391.5' y='168' text-anchor='middle' font-size='14'>the child</text><rect x='457' y='144' width='80' height='38' rx='19' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='497.0' y='168' text-anchor='middle' font-size='14'>a book</text></g><text x='330' y='212' text-anchor='middle' font-size='12' opacity='0.75'>Amber = the verb. Round bubbles = the participants it needs. Count the bubbles.</text></g>",
+          "viewBox": "0 0 660 222",
+          "caption": "Valency, counted. The amber box is the verb; the bubbles are the participants it can't do without. Hover each row.",
+          "slide": "Count the participants",
+          "id": "props.4b39a8ce"
         },
         {
-          "type": "definition",
-          "term": "Aspect",
-          "body": "ongoing vs completed — 'is helping' (progressive), 'has helped' (perfect).",
-          "id": "props.a623e1b0"
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Tense",
+                "lines": [
+                  "When it happened: past, present, future.",
+                  "*helped* vs *helps*"
+                ],
+                "badge": "verbs",
+                "tone": "brand"
+              },
+              {
+                "title": "Aspect",
+                "lines": [
+                  "Ongoing or finished.",
+                  "*is helping* (ongoing) vs *has helped* (finished)"
+                ],
+                "badge": "verbs",
+                "tone": "brand"
+              },
+              {
+                "title": "Agreement",
+                "lines": [
+                  "The verb copies a feature of a noun.",
+                  "*she helps*: the -s agrees with *she*"
+                ],
+                "badge": "verbs",
+                "tone": "brand"
+              },
+              {
+                "title": "Modality",
+                "lines": [
+                  "Possible, necessary, should.",
+                  "*should*, *must*, *might*"
+                ],
+                "badge": "verbs",
+                "tone": "brand"
+              }
+            ]
+          },
+          "caption": "Properties verbs carry. Zulu shows agreement dramatically: *aba-ntu ba-bona um-fana*, 'the people see the boy', where *ba-* on the verb agrees with 'people'.",
+          "slide": "What verbs carry",
+          "id": "props.56e8c4f6"
         },
         {
-          "type": "definition",
-          "term": "Agreement",
-          "body": "features of an argument copied onto the verb. English: 3SG -s. Zulu (handout (9)): noun-class prefixes on the verb — *aba-ntu **ba**-bona um-fana* 'the people see the boy', with *ba-* agreeing with class 2 'people'.",
-          "id": "props.beda459c"
-        },
-        {
-          "type": "definition",
-          "term": "Modality",
-          "body": "should, must — hypothetical scenarios.",
-          "id": "props.6923609f"
-        },
-        {
-          "type": "definition",
-          "term": "Definiteness",
-          "body": "a car / that car / Sarah's car.",
-          "id": "props.deeaed17"
-        },
-        {
-          "type": "definition",
-          "term": "Number",
-          "body": "singular/plural — and Hebrew has a **dual**: *yom* (day), *yomáyim* (two days), *yamim* (days).",
-          "id": "props.c65e2151"
-        },
-        {
-          "type": "definition",
-          "term": "Gender / noun class",
-          "body": "Italian *il libro* (M) / *la casa* (F) — grammatical, not always semantic.",
-          "id": "props.d8841cf0"
-        },
-        {
-          "type": "definition",
-          "term": "Case",
-          "body": "marks the noun's role. English only on pronouns (he/him). Japanese on every noun: *-ga* NOM, *-o* ACC, *-ni* DAT — which is why Japanese word order is free: *Hanako-ga Taro-o* and *Taro-o Hanako-ga* both mean Hanako hit Taro.",
-          "id": "props.9ee639ec"
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Definiteness",
+                "lines": [
+                  "Which one: known or new.",
+                  "*a car* vs *that car* vs *Sarah's car*"
+                ],
+                "badge": "nouns",
+                "tone": "green"
+              },
+              {
+                "title": "Number",
+                "lines": [
+                  "How many.",
+                  "singular, plural; Hebrew even has a dual: *yomáyim* 'two days'"
+                ],
+                "badge": "nouns",
+                "tone": "green"
+              },
+              {
+                "title": "Gender / noun class",
+                "lines": [
+                  "A grammatical group, not always about sex.",
+                  "Italian *il libro* (M), *la casa* (F)"
+                ],
+                "badge": "nouns",
+                "tone": "green"
+              },
+              {
+                "title": "Case",
+                "lines": [
+                  "The noun's job, marked on the noun.",
+                  "Japanese *-ga* subject, *-o* object; English only *he* / *him*"
+                ],
+                "badge": "nouns",
+                "tone": "green"
+              }
+            ]
+          },
+          "caption": "Properties nouns carry. Because Japanese marks case, *Hanako-ga Taro-o* and *Taro-o Hanako-ga* mean the same thing: Hanako hit Taro.",
+          "slide": "What nouns carry",
+          "id": "props.3ce8ffa0"
         },
         {
           "type": "prose",
-          "md": "- Adjectives: **predicative** ('the car is fast') vs **attributive** ('a fast car'); **agreement** (French *vin blanc* / *porte blanche*); **comparative/superlative** (heavier/heaviest, more/most beautiful); take **degree adverbs** (very, too, quite).\n- Adverb types: modal (possibly), manner (slowly), frequency (often), temporal (yesterday), degree (very). Only -ly derivation, no inflection.",
+          "md": "**Adjectives and adverbs have properties too.** Adjectives can be **attributive** (*a fast car*, before the noun) or **predicative** (*the car is fast*, after *be*); they can **agree** (French *vin blanc* / *porte blanche*); they have **comparative / superlative** forms (*heavier* / *heaviest*). Adverbs come in types: manner (*slowly*), frequency (*often*), time (*yesterday*), degree (*very*), modal (*possibly*).",
           "slide": "Adjectives and adverbs",
-          "id": "props.db5b4829"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** This checklist of properties is the feature inventory of modern language tech. Machine translation lives or dies on agreement and case: rendering 'the doctor… she' into Arabic forces a gender choice English never made, which is exactly where MT systems guess wrong. The Universal Dependencies treebanks tag every word with these properties (Tense=Past, Number=Dual, Case=Acc) so one parser design can run on a hundred languages. And morphologically rich languages — Arabic above all — are why NLP can't just split text on spaces: one Arabic word can carry ==definiteness, case, gender, and a possessor all at once==, which the glossed sentence in the trap below makes visible.",
-          "id": "props.2b6f8d4a"
+          "id": "props.bd960205"
         },
         {
           "type": "trap",
           "body": "**Arabic for the oral exam** Arabic shows nearly every property on the handout in one sentence: *al-bint-u l-ṣaġīr-at-u qaraʔ-at kitāb-a-hā* ('the little girl read her book'). Definiteness (*al-*), gender agreement on the adjective (*-at*), case (*-u* NOM, *-a* ACC), verb agreement (*-at* 3SG.F), a possessive clitic (*=hā*). Bring one glossed Arabic sentence and you can demonstrate five properties in a minute.",
           "source": "Oral exam",
           "points": null,
-          "id": "props.c4709b48"
+          "slide": "Your Arabic, five properties at once",
+          "id": "props.10521794"
+        },
+        {
+          "type": "check",
+          "prompt": "*Sarah gave Ming a book.* How many participants, and what's that called?",
+          "answer": "Three (Sarah, Ming, a book): **ditransitive**.",
+          "sectionRef": "props",
+          "id": "props.ef7bc825"
         }
       ]
     },
     {
       "id": "practice",
-      "heading": "Practice: the diagnostic quiz and handout (23)–(24)",
+      "heading": "Practice: the diagnostic quiz and handout (23) to (24)",
       "blocks": [
         {
           "type": "figure",
           "viewBox": "0 0 620 430",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='catflY' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='catflN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>Noun test: nouns take plural -s and possessive 's, and follow determiners.</title><rect x='40' y='30' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='50' text-anchor='middle' font-size='12'>takes plural -s or possessive 's?</text><text x='195' y='67' text-anchor='middle' font-size='12'>sits after 'the' ('the ___')?</text><path d='M352 54 L438 54' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='46' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='36' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='59' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Noun</text><path d='M195 78 L195 108' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='97' font-size='10' opacity='0.6'>no</text></g><g><title>Verb test: verbs inflect for tense and follow modals or infinitival 'to'.</title><rect x='40' y='114' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='134' text-anchor='middle' font-size='12'>takes -ed / -ing / 3SG -s?</text><text x='195' y='151' text-anchor='middle' font-size='12'>follows 'will ___' or 'to ___'?</text><path d='M352 138 L438 138' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='130' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='120' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='143' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Verb</text><path d='M195 162 L195 192' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='181' font-size='10' opacity='0.6'>no</text></g><g><title>Adjective test: the D ___ N frame plus 'very' and -er/-est.</title><rect x='40' y='198' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='218' text-anchor='middle' font-size='12'>fits 'the ___ dog' (D ___ N)?</text><text x='195' y='235' text-anchor='middle' font-size='12'>takes 'very', -er / -est?</text><path d='M352 222 L438 222' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='214' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='204' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='227' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adjective</text><path d='M195 246 L195 276' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='265' font-size='10' opacity='0.6'>no</text></g><g><title>Adverb test: takes 'very' but is blocked from the D ___ N slot; usually -ly.</title><rect x='40' y='282' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='302' text-anchor='middle' font-size='12'>takes 'very' but ✗ in D ___ N?</text><text x='195' y='319' text-anchor='middle' font-size='12'>usually ends in -ly?</text><path d='M352 306 L438 306' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='298' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='288' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='311' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adverb</text><path d='M195 330 L195 360' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='349' font-size='10' opacity='0.6'>no</text></g><g><title>No lexical test fired: the word is closed-class. Don't test it — find it on her list.</title><rect x='40' y='366' width='535' height='48' rx='10' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='307' y='386' text-anchor='middle' font-size='12'>none of these → the word is functional (closed class):</text><text x='307' y='403' text-anchor='middle' font-size='12' font-weight='600'>match it against her lists — D · P · C · Aux · Mod · T · Neg</text></g></g>",
-          "caption": "The quiz answer, as a decision path. Run the frames top to bottom and stop at the first yes — each arrow is a test you can name in your justification ('takes plural -s', 'fits D ___ N'). If nothing fires, the word is closed-class: find it on her list instead of testing it. Hover any step.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='catflY' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='catflN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>Noun test: nouns take plural -s and possessive 's, and follow determiners.</title><rect x='40' y='30' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='50' text-anchor='middle' font-size='12'>takes plural -s or possessive 's?</text><text x='195' y='67' text-anchor='middle' font-size='12'>sits after 'the' ('the ___')?</text><path d='M352 54 L438 54' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='46' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='36' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='59' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Noun</text><path d='M195 78 L195 108' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='97' font-size='10' opacity='0.6'>no</text></g><g><title>Verb test: verbs inflect for tense and follow modals or infinitival 'to'.</title><rect x='40' y='114' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='134' text-anchor='middle' font-size='12'>takes -ed / -ing / 3SG -s?</text><text x='195' y='151' text-anchor='middle' font-size='12'>follows 'will ___' or 'to ___'?</text><path d='M352 138 L438 138' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='130' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='120' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='143' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Verb</text><path d='M195 162 L195 192' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='181' font-size='10' opacity='0.6'>no</text></g><g><title>Adjective test: the D ___ N frame plus 'very' and -er/-est.</title><rect x='40' y='198' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='218' text-anchor='middle' font-size='12'>fits 'the ___ dog' (D ___ N)?</text><text x='195' y='235' text-anchor='middle' font-size='12'>takes 'very', -er / -est?</text><path d='M352 222 L438 222' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='214' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='204' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='227' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adjective</text><path d='M195 246 L195 276' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='265' font-size='10' opacity='0.6'>no</text></g><g><title>Adverb test: takes 'very' but is blocked from the D ___ N slot; usually -ly.</title><rect x='40' y='282' width='310' height='48' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='195' y='302' text-anchor='middle' font-size='12'>takes 'very' but ✗ in D ___ N?</text><text x='195' y='319' text-anchor='middle' font-size='12'>usually ends in -ly?</text><path d='M352 306 L438 306' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#catflY)'/><text x='395' y='298' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><rect x='445' y='288' width='130' height='36' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='510' y='311' text-anchor='middle' font-size='14' font-weight='700' fill='rgb(var(--on-track))'>Adverb</text><path d='M195 330 L195 360' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#catflN)'/><text x='208' y='349' font-size='10' opacity='0.6'>no</text></g><g><title>No lexical test fired: the word is closed-class. Don't test it: find it on her list.</title><rect x='40' y='366' width='535' height='48' rx='10' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='307' y='386' text-anchor='middle' font-size='12'>none of these → the word is functional (closed class):</text><text x='307' y='403' text-anchor='middle' font-size='12' font-weight='600'>match it against her lists: D · P · C · Aux · Mod · T · Neg</text></g></g>",
+          "caption": "The quiz answer, as a decision path. Run the frames top to bottom and stop at the first yes: each arrow is a test you can name in your justification ('takes plural -s', 'fits D ___ N'). If nothing fires, the word is closed-class: find it on her list instead of testing it. Hover any step.",
           "slide": "Which category? Run the frames in order",
-          "id": "practice.7c3e9b5d"
+          "id": "practice.6a88e0c4"
         },
         {
           "type": "example",
           "title": "Maurice very slowly dried the dishes with some worn red towels.",
           "body": "Label every word; justify the hard ones.\n\n1. Maurice N (proper noun; takes possessive 's) · very Adv (degree) · slowly Adv (-ly; *'the slowly dishes') · dried V (-ed; follows the subject) · the D · dishes N (plural -s; follows D) · with P · some D · worn Adj (between D and N; 'very worn') · red Adj (between D and N; 'redder') · towels N (plural; follows D + Adj + Adj).\n2. The diagnostic's Q2 asked for three multi-word constituents: 'the dishes', 'some worn red towels', 'with some worn red towels'. Why those count is Week 5's topic.",
           "slide": "Diagnostic quiz Q1",
-          "id": "practice.25787a76"
+          "id": "practice.fe5fd055"
         },
         {
           "type": "check",
           "prompt": "Handout (24): 'My anxious neighbors have just told me that their new roof caught on fire.' Label the functional categories.",
           "answer": "My D · have Aux · that C · their D · on P. (just is Adv; anxious, new Adj; neighbors, me, roof, fire N; told, caught V.)",
           "sectionRef": "practice",
-          "id": "practice.c809a986"
+          "id": "practice.d4910368"
         },
         {
           "type": "check",
           "prompt": "Handout (23): 'Every professor likely knows that students prefer to have shorter assignments.' What are 'likely', 'to', and 'shorter', with a test each?",
-          "answer": "likely = Adv (modal adverb; *'the likely professor' in this sense fails the D__N frame as an adverb — note 'likely' can also be an Adj elsewhere; here it modifies 'knows'). to = T (infinitive marker before bare 'have'). shorter = Adj (comparative -er; sits between D and N: 'the shorter assignments').",
+          "answer": "likely = Adv (modal adverb; *'the likely professor' in this sense fails the D__N frame as an adverb: note 'likely' can also be an Adj elsewhere; here it modifies 'knows'). to = T (infinitive marker before bare 'have'). shorter = Adj (comparative -er; sits between D and N: 'the shorter assignments').",
           "sectionRef": "practice",
-          "id": "practice.67a36bf1"
+          "id": "practice.ba83f5cb"
         },
         {
           "type": "check",
           "prompt": "'Book' in 'Book me a flight' vs 'the book with the yellow cover'. Same category?",
-          "answer": "No. First: V — follows nothing but takes an object, can be negated ('don't book'), takes -ed. Second: N — follows D, takes plural. Same form, two categories, decided by distribution. (This is also Ling 115's POS-tagging example.)",
+          "answer": "No. First: V: follows nothing but takes an object, can be negated ('don't book'), takes -ed. Second: N: follows D, takes plural. Same form, two categories, decided by distribution. (This is also Ling 115's POS-tagging example.)",
           "sectionRef": "practice",
-          "id": "practice.7457ae73"
-        },
+          "id": "practice.d87a0261"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
         {
-          "type": "definition",
-          "term": "Syntactic category",
-          "body": "A class of words that share a distribution — the same affixes and the same positions. Lexical categories (N, V, Adj, Adv) are open; functional categories (P, D, C, Aux, Mod, T, Neg) are closed. Every label you give must be backed by a morphological or syntactic test.",
-          "id": "practice.2330e646"
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Syntactic category",
+              "A group of words that take the same endings and fit the same spots."
+            ],
+            [
+              "Distribution",
+              "Where a word can appear: its endings (morphological) and neighbors (syntactic)."
+            ],
+            [
+              "Derivational ending",
+              "Makes a new word, often a new category (-ness, -ize, -able)."
+            ],
+            [
+              "Inflectional ending",
+              "Adjusts a word, same category (-s, -ed, -ing, -er)."
+            ],
+            [
+              "Test frame",
+              "A sentence with a blank; whatever fits shares a category."
+            ],
+            [
+              "Lexical / open class",
+              "N, V, Adj, Adv: content words, new ones added all the time."
+            ],
+            [
+              "Functional / closed class",
+              "P, D, C, Aux, Mod, T, Neg: grammar words, a fixed list."
+            ],
+            [
+              "Determiner",
+              "the, a, this, every, his, two: starts a noun phrase."
+            ],
+            [
+              "Complementizer",
+              "that, if, whether: introduces a clause inside a sentence."
+            ],
+            [
+              "Valency",
+              "How many participants a verb needs (1, 2 or 3)."
+            ],
+            [
+              "Tense / aspect",
+              "When it happened / whether it's ongoing or finished."
+            ],
+            [
+              "Agreement",
+              "A verb (or adjective) copying a feature of a noun."
+            ],
+            [
+              "Attributive / predicative",
+              "Adjective before a noun (a fast car) / after be (the car is fast)."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
@@ -624,16 +830,16 @@
       "prompt": "'The exhausted students will probably finish their difficult assignments before midnight.' Label each word with one of the eleven categories. Then, for *exhausted*, *probably*, and *before*, give one test each that proves the label.",
       "hints": [
         "Go word by word with the frames from the chapter: can it follow 'the'? take -s or -ed? take -er/-est or 'very'? sit between a determiner and a noun? take an NP after it?",
-        "The traps: *exhausted* looks like a verb (-ed) but here it sits between D and N and takes 'very' — that's the adjective frame. *probably* modifies the verb and can't be 'very probably… the probably student' — adverb. And 'will' is an auxiliary, not a verb.",
+        "The traps: *exhausted* looks like a verb (-ed) but here it sits between D and N and takes 'very': that's the adjective frame. *probably* modifies the verb and can't be 'very probably… the probably student': adverb. And 'will' is an auxiliary, not a verb.",
         "A test is only a proof if you show it *passes* here and would *fail* for the competing category. 'very exhausted' ✓ (Adj), '✱very finish' ✗ (V)."
       ],
       "solution": [
         "The D · exhausted Adj · students N · will Aux · probably Adv · finish V · their D · difficult Adj · assignments N · before P · midnight N.",
         "*exhausted* = Adj: fits D __ N ('the exhausted students'), takes 'very' ('very exhausted'), and can be predicative ('the students are exhausted'). As a verb it couldn't take 'very'.",
         "*probably* = Adv: modifies the verb/sentence, moves freely ('Probably the students will…'), and can't fit D __ N ('✱the probably students').",
-        "*before* = P here: it takes an NP complement ('before midnight') and the phrase answers 'when?'. (Note: 'before' can also be a C — 'before they left' — the complement decides.)"
+        "*before* = P here: it takes an NP complement ('before midnight') and the phrase answers 'when?'. (Note: 'before' can also be a C: 'before they left': the complement decides.)"
       ],
-      "why": "POS tagging (LING 115) is this exercise done a million times by a program, and the program's errors are exactly the cases where the tests conflict — 'exhausted', 'before', 'that'. Knowing the tests is knowing where the machine will fail.",
+      "why": "POS tagging (LING 115) is this exercise done a million times by a program, and the program's errors are exactly the cases where the tests conflict: 'exhausted', 'before', 'that'. Knowing the tests is knowing where the machine will fail.",
       "sectionRef": "list"
     },
     {
@@ -641,16 +847,186 @@
       "title": "Same word, different category",
       "prompt": "For each pair, say the category of the italic word in each sentence and the one test that separates them: (a) 'She will *run* tomorrow' / 'She went for a *run*'. (b) '*That* book is mine' / 'I know *that* she left'. (c) 'He walked *fast*' / 'a *fast* car'.",
       "hints": [
-        "Don't look at the word — look at what's around it. What precedes it? What follows it? Can you add a plural, a past tense, 'very', 'the'?",
+        "Don't look at the word: look at what's around it. What precedes it? What follows it? Can you add a plural, a past tense, 'very', 'the'?",
         "The mistake is answering from the dictionary ('run is a verb'). Categories are positions, not words. 'a run' after a determiner, taking a plural ('runs'), is a noun.",
         "For (b): a determiner 'that' sits before a noun and can be swapped for 'this'; a complementizer 'that' introduces a whole clause and can often be dropped ('I know she left')."
       ],
       "solution": [
         "(a) V / N. Test: 'a run' follows a determiner and pluralizes ('two runs'); 'will run' follows an auxiliary and takes tense ('ran').",
         "(b) D / C. Test: D 'that' swaps with 'this' and precedes a noun; C 'that' precedes a full clause with its own subject and verb and can be omitted.",
-        "(c) Adv / Adj. Test: 'a fast car' fits D __ N and takes 'very'/'faster'; 'walked fast' modifies the verb and can't fit D __ N ('✱a fast'). English 'fast' happens to have the same form in both categories — most adverbs would show -ly."
+        "(c) Adv / Adj. Test: 'a fast car' fits D __ N and takes 'very'/'faster'; 'walked fast' modifies the verb and can't fit D __ N ('✱a fast'). English 'fast' happens to have the same form in both categories: most adverbs would show -ly."
       ],
-      "why": "Every ambiguity in a headline ('Police help dog bite victim') and every failure of autocorrect comes from a word that lives in two categories. Resolving it by distribution — not by memory — is the skill."
+      "why": "Every ambiguity in a headline ('Police help dog bite victim') and every failure of autocorrect comes from a word that lives in two categories. Resolving it by distribution: not by memory: is the skill."
+    },
+    {
+      "id": "which-frame",
+      "title": "Which frame decides it?",
+      "prompt": "You need to prove *careful* is an adjective and not an adverb. Which frame settles it?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**the ___ driver.** *The careful driver* works; an adverb would not fit."
+      ],
+      "why": "Picking the one frame that separates the two candidates is exactly what the quiz grades.",
+      "choices": [
+        {
+          "text": "the ___ driver",
+          "feedback": "Yes: only adjectives fit between a determiner and a noun."
+        },
+        {
+          "text": "very ___",
+          "feedback": "Both adjectives and adverbs take 'very', so it can't decide."
+        },
+        {
+          "text": "She drove ___ .",
+          "feedback": "That frame finds adverbs; 'careful' fails it, which is a hint but not the positive proof."
+        },
+        {
+          "text": "___ -ly",
+          "feedback": "Adding -ly makes a different word (carefully)."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "tests"
+    },
+    {
+      "id": "to-T",
+      "title": "What is 'to' here?",
+      "prompt": "*She decided to stay.* What category is *to*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**T.** It sits right before the plain verb *stay*."
+      ],
+      "why": "One of the three traps on her list.",
+      "choices": [
+        {
+          "text": "T (infinitive marker)",
+          "feedback": "Yes: 'to' before a plain verb is T."
+        },
+        {
+          "text": "P (preposition)",
+          "feedback": "A preposition 'to' comes before a noun phrase (to Rome)."
+        },
+        {
+          "text": "C (complementizer)",
+          "feedback": "C is that, if, whether."
+        },
+        {
+          "text": "Adv",
+          "feedback": "It isn't describing anything."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "list"
+    },
+    {
+      "id": "his-D",
+      "title": "What is 'his'?",
+      "prompt": "*His old car broke down.* What category is *his*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**D.** Swap it for *the*: *The old car broke down.* Same slot."
+      ],
+      "why": "Swapping with 'the' is a fast way to prove D.",
+      "choices": [
+        {
+          "text": "D (determiner)",
+          "feedback": "Yes: possessives are determiners on her list."
+        },
+        {
+          "text": "N (pronoun)",
+          "feedback": "Pronouns like 'him' are N, but possessive 'his' fills the D slot (compare 'the old car')."
+        },
+        {
+          "text": "Adj",
+          "feedback": "It doesn't take 'very' or fit between D and N."
+        },
+        {
+          "text": "P",
+          "feedback": "It isn't followed by a noun phrase as a relation word."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "list"
+    },
+    {
+      "id": "valency-3",
+      "title": "Count the participants",
+      "prompt": "*The waiter handed me the bill.* What is the verb's valency?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Ditransitive.** Giver (the waiter), receiver (me), thing (the bill)."
+      ],
+      "why": "Valency comes back in Week 8 as theta roles.",
+      "choices": [
+        {
+          "text": "Ditransitive (3)",
+          "feedback": "Yes: the waiter, me, the bill."
+        },
+        {
+          "text": "Transitive (2)",
+          "feedback": "There's a third participant: the one who receives the bill."
+        },
+        {
+          "text": "Intransitive (1)",
+          "feedback": "More than one participant is needed."
+        },
+        {
+          "text": "Four",
+          "feedback": "Only three participants are involved."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "props"
+    },
+    {
+      "id": "deriv-infl",
+      "title": "Which kind of ending?",
+      "prompt": "*teach* → *teacher*. What kind of ending is *-er* here?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Derivational.** It turns the verb *teach* into the noun *teacher*."
+      ],
+      "why": "Same-looking endings can be different morphemes; the category of the root tells you which.",
+      "choices": [
+        {
+          "text": "Derivational: it makes a new noun",
+          "feedback": "Yes: a verb became a noun, so it's derivational."
+        },
+        {
+          "text": "Inflectional: it's the comparative -er",
+          "feedback": "Comparative -er goes on adjectives (tall-er); teach isn't an adjective."
+        },
+        {
+          "text": "Inflectional: plural",
+          "feedback": "Plural is -s."
+        },
+        {
+          "text": "Not an ending",
+          "feedback": "It is a suffix: teach + -er."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "why"
     }
   ]
 }
