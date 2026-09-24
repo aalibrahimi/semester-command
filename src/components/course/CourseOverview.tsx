@@ -154,7 +154,7 @@ export function CourseOverview({
         {study && <ExamCard study={study} studied={prog ? `${prog.mastered} of ${prog.total}` : null} pct={prog?.pct ?? 0} color={color} />}
         <WeekCard assignments={assignments} now={now} />
         <GradeMakeupCard groups={groups} study={study} courseId={s.id} />
-        <OfficeHoursCard officeHours={officeHours} instructors={instructors} study={study} courseCode={s.courseCode} />
+        <OfficeHoursCard officeHours={officeHours} instructors={instructors} study={study} courseCode={s.courseCode} courseId={s.id} />
       </div>
     </div>
   );
@@ -288,11 +288,13 @@ function OfficeHoursCard({
   instructors,
   study,
   courseCode,
+  courseId,
 }: {
   officeHours: string | null;
   instructors: InstructorRow[];
   study: Course | undefined;
   courseCode: string | null;
+  courseId: string;
 }) {
   const digest = digestFor(parseCourseLabel(courseCode).code);
   const prof = instructors.find((p) => p.starred) ?? instructors.find((p) => p.role === "teacher");
@@ -308,6 +310,9 @@ function OfficeHoursCard({
         {lines.length > 0 ? lines.map((l) => <span key={l}>{l}</span>) : <span>Not found in the syllabus yet. See the Syllabus tab.</span>}
       </div>
       {digest?.contactNote && <div className="text-[13px] leading-relaxed text-muted-foreground">{digest.contactNote}</div>}
+      <Link to={`/inbox?compose=${courseId}`} className="text-[13px] font-medium text-brand-fg hover:underline">
+        Email {name ? name.split(" ").slice(-1)[0] : "the professor"}
+      </Link>
     </section>
   );
 }

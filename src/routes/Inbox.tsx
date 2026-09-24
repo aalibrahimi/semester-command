@@ -5,16 +5,22 @@
  * inbox", a clicked pop-up with no other destination).
  * Calls: lib/inbox (the store), InboxList, lib/ipc (mark all read, clear read).
  *
+ * "Email a professor" opens the composer (components/inbox/EmailProfessor):
+ * pick the course, a starting template, edit, then open it in Gmail.
+ * /inbox?compose=<courseId> opens it on that course (the course page links
+ * here).
+ *
  * Filters stack: Unread narrows to what you haven't opened, a kind chip
  * narrows to one type. Read items older than 60 days clean themselves up
  * (inbox.rs prune), so "Clear read" is only for tidying by hand.
  */
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { CheckCheck, Inbox as InboxIcon, Settings2, Trash2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { CheckCheck, Inbox as InboxIcon, Mail, Settings2, Trash2 } from "lucide-react";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { Button } from "@/components/ui/button";
 import { InboxList } from "@/components/inbox/InboxList";
+import { EmailProfessorDialog } from "@/components/inbox/EmailProfessor";
 import { cn } from "@/lib/utils";
 import { KIND_FILTERS, kindMeta, markRead, patchInbox, useInbox } from "@/lib/inbox";
 import { inboxClearRead } from "@/lib/ipc";
@@ -23,6 +29,18 @@ export default function Inbox() {
   const { items, unread, loaded } = useInbox();
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [kind, setKind] = useState<string | null>(null);
+  const [params, setParams] = useSearchParams();
+  const composeFor = params.get("compose");
+  const [composeOpen, setComposeOpen] = useState(false);
+  const composing = composeOpen || composeFor !== null;
+  const closeCompose = () => {
+    setComposeOpen(false);
+    if (composeFor !== null) {
+      const next = new URLSearchParams(params);
+      next.delete("compose");
+      setParams(next, { replace: true });
+    }
+  };
 
   const shown = items.filter((i) => (!unreadOnly || !i.readAt) && (!kind || i.kind === kind));
   const counts = new Map<string, number>();
@@ -41,6 +59,9 @@ export default function Inbox() {
         subtitle={unread > 0 ? `${unread} unread · ${items.length} total` : "Everything the app has told you, in one place."}
         actions={
           <>
+            <Button size="sm" onClick={() => setComposeOpen(true)}>
+              <Mail className="mr-1.5 h-3.5 w-3.5" /> Email a professor
+            </Button>
             <Button variant="outline" size="sm" disabled={unread === 0} onClick={() => markRead(items.filter((i) => !i.readAt).map((i) => i.id))}>
               <CheckCheck className="mr-1.5 h-3.5 w-3.5" /> Mark all read
             </Button>
@@ -110,6 +131,8 @@ export default function Inbox() {
           )}
         </div>
       </div>
+
+      <EmailProfessorDialog open={composing} onOpenChange={(o) => (o ? setComposeOpen(true) : closeCompose())} initialCourseId={composeFor} />
     </>
   );
 }
