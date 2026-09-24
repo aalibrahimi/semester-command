@@ -3,62 +3,144 @@
   "course": "ling112",
   "lessons": "Week 5",
   "title": "Constituent structure and constituency tests",
-  "summary": "Given any sentence, find its constituents and PROVE each one with a named test — substitution, movement, or fragment answer — and use the tests to pull apart a structurally ambiguous sentence.",
+  "summary": "From zero: what a constituent is, the three tests that prove one (substitution, movement, fragment answer) with each term defined before it's used, how to use the tests to pull apart an ambiguous sentence, and how to write a full Quiz 2 answer.",
   "estimatedMinutes": 60,
-  "sourceNote": "Week 5 handout (Constituent structure), TrevTutor 'Constituents and Constituency Tests', the Sep 15 and 17 classes. Quiz 2 covers this.",
+  "sourceNote": "Week 5 handout (Constituent structure), TrevTutor 'Constituents and Constituency Tests', the Sep 15 and 17 classes. Quiz 2 covers this. Rebuilt for readers who missed class: pro-form, topicalization, cleft, N-bar and finiteness are each defined before they are used.",
   "requires": [
     "ling112/4-heads-dependents"
   ],
   "sections": [
     {
       "id": "why",
-      "heading": "What a constituent is",
+      "heading": "Start here: what a constituent is",
       "blocks": [
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**Which groups of words are real?** Week 4 said sentences are built from phrases. But look at 'Several large books fell to the ground with a loud thud' and ask: is 'books fell' a phrase? Is 'to the ground'? Is 'ground with'? You can't tell by looking — every adjacent pair of words *looks* like a group. You need a way to test whether a string of words actually ==behaves as one unit==. That test-based notion is what a constituent is.",
-          "slide": "The question",
-          "id": "why.031ea67f"
-        },
-        {
-          "id": "why.0412d4c1",
-          "type": "sim",
-          "sim": "tree",
-          "params": {},
-          "caption": "The handout sentence as a tree. Click NP, VP or PP to see exactly which words that node dominates and which test would prove it: pro-form, movement, fragment. Edit the brackets to draw your own.",
-          "slide": "Try it"
-        },
         {
           "type": "definition",
           "term": "Constituent",
-          "body": "Any linguistic expression that behaves as a syntactic unit. A single word is trivially a constituent; the tests are for multi-word strings. **Constituency tests** are diagnostics: substitution, movement, and fragment answer. Not every constituent passes every test — 'you may need to try multiple tests before you find one that works' — but a string that passes *any* test is a constituent.",
-          "id": "why.55eb7156"
+          "body": "A group of words that **behaves as one unit** in a sentence. You can't see it by looking; you prove it with a **test**. A single word always counts; the tests are for strings of two or more words.",
+          "slide": "Definition",
+          "id": "why.0d252716"
         },
         {
           "type": "prose",
-          "md": "The logic is the same as Week 2's: we defined categories by distribution, not meaning. Now we define units by ==behavior, not by looks==. If a string can be replaced by one word, moved as a block, or stand alone as an answer, the grammar is treating it as one thing.",
-          "id": "why.4fef3ebb"
+          "md": "**One example.** In *Those tall spies in the garden will quickly stash the evidence after midnight*, is *the evidence* a unit? Replace it with *it*: …will quickly stash **it** after midnight. Works. So yes. Is *stash the* a unit? Replace it with any one word: nothing works. So no. Every pair of neighbors **looks** like a group; only the tests tell you which ones are real.",
+          "slide": "The idea in one example",
+          "id": "why.abd0d820"
+        },
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Substitution",
+                "lines": [
+                  "Swap the string for one short word.",
+                  "*the evidence* → *it*"
+                ],
+                "badge": "#1",
+                "tone": "brand"
+              },
+              {
+                "title": "Movement",
+                "lines": [
+                  "Move the string somewhere else.",
+                  "*The evidence, they stashed.*"
+                ],
+                "badge": "#2",
+                "tone": "green"
+              },
+              {
+                "title": "Fragment answer",
+                "lines": [
+                  "Let it answer a question by itself.",
+                  "*What did they stash? The evidence.*"
+                ],
+                "badge": "#3",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "The three tests. Passing any one of them proves the string is a constituent.",
+          "slide": "The three tests",
+          "id": "why.0c2056ca"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "A test PASSES",
+              "sub": "the string works",
+              "tone": "green"
+            },
+            "right": {
+              "title": "A test FAILS",
+              "sub": "the string doesn't work",
+              "tone": "red"
+            },
+            "rows": [
+              {
+                "label": "What it proves",
+                "left": "Yes, it's a constituent",
+                "right": "Nothing yet: try another test"
+              },
+              {
+                "label": "Can you then say 'not a constituent'?",
+                "left": "No: it IS one",
+                "right": "Only if EVERY test fails"
+              }
+            ]
+          },
+          "caption": "The rule Dr. Nie stresses: a pass is proof, a fail is silence. Some real constituents fail one test and pass another.",
+          "slide": "Pass = proof, fail = try again",
+          "id": "why.08c566ab"
         },
         {
           "type": "figure",
           "viewBox": "0 0 660 300",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>S: the whole sentence — trivially a constituent.</title><text x='330' y='30' text-anchor='middle' font-size='14' font-weight='700'>S</text><line x1='330' y1='38' x2='135' y2='72' stroke='currentColor' opacity='0.5'/><line x1='330' y1='38' x2='275' y2='72' stroke='currentColor' opacity='0.5'/><line x1='330' y1='38' x2='455' y2='72' stroke='currentColor' opacity='0.5'/></g><g><title>The subject NP. Substitution proves it: 'THEY will quickly stash the evidence after midnight.' The triangle is her abbreviation for internal structure not drawn today.</title><text x='135' y='86' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><path d='M135 94 L38 138 L232 138 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='135' y='158' text-anchor='middle' font-size='11.5'>Those tall spies in the garden</text></g><g><title>The modal 'will' sits between subject and VP — and 'do so' replaces everything after it.</title><text x='275' y='86' text-anchor='middle' font-size='12' font-weight='600'>Mod</text><line x1='275' y1='94' x2='275' y2='142' stroke='currentColor' opacity='0.5'/><text x='275' y='160' text-anchor='middle' font-size='12'>will</text></g><g><title>The VP: 'will DO SO' replaces 'quickly stash the evidence after midnight', so all of this is one unit — adverb included.</title><text x='455' y='86' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='455' y1='94' x2='345' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='420' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='505' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='600' y2='168' stroke='currentColor' opacity='0.5'/><text x='345' y='182' text-anchor='middle' font-size='11' font-weight='600'>AdvP</text><line x1='345' y1='190' x2='345' y2='222' stroke='currentColor' opacity='0.5'/><text x='345' y='240' text-anchor='middle' font-size='11.5'>quickly</text><text x='420' y='182' text-anchor='middle' font-size='11' font-weight='600'>V</text><line x1='420' y1='190' x2='420' y2='222' stroke='currentColor' opacity='0.5'/><text x='420' y='240' text-anchor='middle' font-size='11.5'>stash</text></g><g><title>The object NP: 'the evidence' → 'IT'. Substitution again.</title><text x='505' y='182' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--on-track))'>NP</text><path d='M505 190 L462 224 L548 224 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='505' y='240' text-anchor='middle' font-size='11'>the evidence</text></g><g><title>The time PP: 'after midnight' → 'THEN', and it clefts: 'It's after midnight that…'.</title><text x='600' y='182' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--on-track))'>PP</text><path d='M600 190 L558 224 L642 224 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='600' y='240' text-anchor='middle' font-size='11'>after midnight</text><text x='330' y='278' text-anchor='middle' font-size='11' opacity='0.7'>every labeled node = a constituent = something a test can catch; 'spies in' has no node, and no test will save it</text></g></g>",
-          "caption": "Handout (3) as a tree — the picture the tests are secretly drawing. Triangles are her shorthand for 'this has internal structure we're not drawing today.' Every node is a claim that those words form a unit, and substitution ('they', 'it', 'then', 'do so'), movement, and fragment answers are how you defend each claim. Strings like 'spies in' or 'stash the' fail every test because no node covers exactly those words. Hover any node.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>S: the whole sentence: trivially a constituent.</title><text x='330' y='30' text-anchor='middle' font-size='14' font-weight='700'>S</text><line x1='330' y1='38' x2='135' y2='72' stroke='currentColor' opacity='0.5'/><line x1='330' y1='38' x2='275' y2='72' stroke='currentColor' opacity='0.5'/><line x1='330' y1='38' x2='455' y2='72' stroke='currentColor' opacity='0.5'/></g><g><title>The subject NP. Substitution proves it: 'THEY will quickly stash the evidence after midnight.' The triangle is her abbreviation for internal structure not drawn today.</title><text x='135' y='86' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><path d='M135 94 L38 138 L232 138 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='135' y='158' text-anchor='middle' font-size='11.5'>Those tall spies in the garden</text></g><g><title>The modal 'will' sits between subject and VP: and 'do so' replaces everything after it.</title><text x='275' y='86' text-anchor='middle' font-size='12' font-weight='600'>Mod</text><line x1='275' y1='94' x2='275' y2='142' stroke='currentColor' opacity='0.5'/><text x='275' y='160' text-anchor='middle' font-size='12'>will</text></g><g><title>The VP: 'will DO SO' replaces 'quickly stash the evidence after midnight', so all of this is one unit: adverb included.</title><text x='455' y='86' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='455' y1='94' x2='345' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='420' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='505' y2='168' stroke='currentColor' opacity='0.5'/><line x1='455' y1='94' x2='600' y2='168' stroke='currentColor' opacity='0.5'/><text x='345' y='182' text-anchor='middle' font-size='11' font-weight='600'>AdvP</text><line x1='345' y1='190' x2='345' y2='222' stroke='currentColor' opacity='0.5'/><text x='345' y='240' text-anchor='middle' font-size='11.5'>quickly</text><text x='420' y='182' text-anchor='middle' font-size='11' font-weight='600'>V</text><line x1='420' y1='190' x2='420' y2='222' stroke='currentColor' opacity='0.5'/><text x='420' y='240' text-anchor='middle' font-size='11.5'>stash</text></g><g><title>The object NP: 'the evidence' → 'IT'. Substitution again.</title><text x='505' y='182' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--on-track))'>NP</text><path d='M505 190 L462 224 L548 224 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='505' y='240' text-anchor='middle' font-size='11'>the evidence</text></g><g><title>The time PP: 'after midnight' → 'THEN', and it clefts: 'It's after midnight that…'.</title><text x='600' y='182' text-anchor='middle' font-size='11' font-weight='700' fill='rgb(var(--on-track))'>PP</text><path d='M600 190 L558 224 L642 224 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='600' y='240' text-anchor='middle' font-size='11'>after midnight</text><text x='330' y='278' text-anchor='middle' font-size='11' opacity='0.7'>every labeled node = a constituent = something a test can catch; 'spies in' has no node, and no test will save it</text></g></g>",
+          "caption": "Handout (3) as a tree: the picture the tests are secretly drawing. Triangles are her shorthand for 'this has internal structure we're not drawing today.' Every node is a claim that those words form a unit, and substitution ('they', 'it', 'then', 'do so'), movement, and fragment answers are how you defend each claim. Strings like 'spies in' or 'stash the' fail every test because no node covers exactly those words. Hover any node.",
           "slide": "What the tests are drawing",
-          "id": "why.8f3a6d2c"
+          "id": "why.1000461d"
         },
         {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Constituency is the load-bearing idea of language technology. Treebanks — corpora where every sentence carries a tree like the one above — trained the parsers inside grammar checkers, and every bracket in them was justified by exactly these tests. Voice assistants misparse commands when they build the wrong constituent: 'text Mom I love you' goes wrong depending on whether 'Mom I love you' is grouped as one message. And the striking recent result: ==LLMs are never shown trees, yet probing studies recover constituency from their internal states== — models treat 'in the garden' as a unit because treating it as one is the only way to predict text well. The tests you're learning are the human-run version of those probes.",
-          "id": "why.2e7b9c4a"
+          "type": "sim",
+          "sim": "tree",
+          "caption": "The handout sentence as a tree. Every node is a constituent. Click **NP**, **VP** or **PP** to see which words it covers and which test would prove it. Try to find a node that covers exactly *stash the*: there isn't one.",
+          "params": {
+            "bracket": "[TP [DP [D Those] [NP [AdjP [Adj tall]] [N spies] [PP [P in] [DP [D the] [NP [N garden]]]]]] [T will] [VP [AdvP [Adv quickly]] [V stash] [DP [D the] [NP [N evidence]]] [PP [P after] [DP [D ∅] [NP [N midnight]]]]]]"
+          },
+          "slide": "Try it",
+          "id": "why.c992b13e"
+        },
+        {
+          "type": "check",
+          "prompt": "*The dog chased the cat.* Is *chased the* a constituent? Try one test.",
+          "answer": "No. Substitution: no single word replaces *chased the* (*The dog **it** cat* is nonsense). Movement and fragment answers fail too.",
+          "sectionRef": "why",
+          "id": "why.397b17cf"
         }
       ]
     },
     {
       "id": "sub",
-      "heading": "Test 1 · Substitution with a pro-form",
+      "heading": "Test 1: substitution (swap it for one word)",
       "blocks": [
+        {
+          "type": "definition",
+          "term": "Pro-form",
+          "body": "A short word that stands in for a whole unit. *It*, *they*, *him* stand in for a noun phrase; *there*, *then* for a place or time phrase; *do so* for a verb phrase. 'Pro' means 'in place of', like pronoun.",
+          "slide": "Pro-form",
+          "id": "sub.c70ba624"
+        },
+        {
+          "type": "definition",
+          "term": "Substitution test",
+          "body": "Replace the string with one pro-form. If the sentence still works (and means the same thing), the string is a constituent. The pro-form also tells you what **kind** of phrase it is.",
+          "slide": "Substitution test",
+          "id": "sub.92e27567"
+        },
         {
           "type": "table",
           "columns": [
@@ -88,8 +170,15 @@
               "[in the garden] → there; [after midnight] → then"
             ]
           ],
-          "slide": "Pro-forms by constituent type (handout §1.1)",
-          "id": "sub.e2cec6e2"
+          "slide": "Which pro-form goes with which phrase",
+          "id": "sub.4b49c614"
+        },
+        {
+          "type": "definition",
+          "term": "N-bar (N′)",
+          "body": "A middle-sized unit: the noun **plus** what's attached to it, **minus** the determiner. In *those tall spies in the garden*, the N-bar is *tall spies in the garden*. Its pro-form is *one(s)*: those **ones**. It shows that a noun phrase has a layer inside it.",
+          "slide": "N-bar",
+          "id": "sub.bd322421"
         },
         {
           "type": "stepper",
@@ -123,7 +212,7 @@
                 "[spies in] → ???  ✗   [stash the] → ???  ✗   [evidence after] → ???  ✗"
               ],
               "active": 1,
-              "caption": "'They' replaces the whole subject. A pronoun stands in for a noun phrase, so 'those tall spies in the garden' is an NP constituent — including the PP inside it."
+              "caption": "'They' replaces the whole subject. A pronoun stands in for a noun phrase, so 'those tall spies in the garden' is an NP constituent: including the PP inside it."
             },
             {
               "kind": "lines",
@@ -138,7 +227,7 @@
                 "[spies in] → ???  ✗   [stash the] → ???  ✗   [evidence after] → ???  ✗"
               ],
               "active": 2,
-              "caption": "'ones' replaces 'spies in the garden' but leaves 'those tall' outside. That smaller unit — a noun with its complements/adjuncts but without the determiner — is what she calls an N (N-bar) constituent."
+              "caption": "'ones' replaces 'spies in the garden' but leaves 'those tall' outside. That smaller unit: a noun with its complements/adjuncts but without the determiner: is what she calls an N (N-bar) constituent."
             },
             {
               "kind": "lines",
@@ -168,7 +257,7 @@
                 "[spies in] → ???  ✗   [stash the] → ???  ✗   [evidence after] → ???  ✗"
               ],
               "active": 4,
-              "caption": "'do so' replaces everything after the modal 'will'. That's the verb phrase — the verb with all its dependents. Note: 'do so' also works for 'stash the evidence after midnight' without 'quickly': adverbs attach to the VP, so both are VPs."
+              "caption": "'do so' replaces everything after the modal 'will'. That's the verb phrase: the verb with all its dependents. Note: 'do so' also works for 'stash the evidence after midnight' without 'quickly': adverbs attach to the VP, so both are VPs."
             },
             {
               "kind": "lines",
@@ -213,186 +302,384 @@
                 "[spies in] → ???  ✗   [stash the] → ???  ✗   [evidence after] → ???  ✗"
               ],
               "active": 7,
-              "caption": "No pro-form stands for 'spies in', 'stash the', or 'evidence after'. They aren't units. Substitution fails, and — spoiler — so will every other test."
+              "caption": "No pro-form stands for 'spies in', 'stash the', or 'evidence after'. They aren't units. Substitution fails, and: spoiler: so will every other test."
             }
           ],
-          "slide": true,
-          "id": "sub.7f9cea74"
+          "slide": "Running substitution on handout (3)",
+          "id": "sub.534a0c98"
         },
         {
-          "type": "prose",
-          "md": "**The 'ones' trap** !!'ones' never swallows the determiner!! — it replaces the noun and everything attached to it *except* D: 'those tall ones' works, but '*ones in the garden' for 'those tall spies in the garden' does not. That's why she distinguishes NP (with D) from N-bar (without). It's also the first sign that 'tall' and 'in the garden' attach at a level below the determiner — which becomes X-bar theory in Week 7.",
-          "id": "sub.b708b3ab"
+          "type": "trap",
+          "body": "**'ones' never takes the determiner.** Those tall **ones** works; '*ones in the garden' for the whole phrase does not. That's why NP (with *the*/*those*) and N-bar (without) are two different units.",
+          "source": "Week 5 handout",
+          "points": null,
+          "slide": "Trap: 'ones' leaves D behind",
+          "id": "sub.0dd67dfa"
         },
         {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Pro-form substitution is coreference resolution — the NLP task of deciding what 'it', 'they', and 'do so' point back at — and systems get it right only when they respect constituent boundaries: 'it' can stand for 'the evidence' but never for 'stash the'. Writing tools that offer 'replace with pronoun' run this test invisibly. Your own editing instinct uses it too: when a sentence feels bloated, ##the strings you can collapse to one word are exactly the constituents## — 'do so', 'there', and 'then' are a writer's compression toolkit as much as a linguist's diagnostic.",
-          "id": "sub.6a1f4d8e"
+          "type": "check",
+          "prompt": "*She met the new teacher from Ohio.* Replace *teacher from Ohio* with one word. What does that prove?",
+          "answer": "She met the new **one**. One word replaced *teacher from Ohio*, so it's a unit: an N-bar. *the* stays outside, as always.",
+          "sectionRef": "sub",
+          "id": "sub.e5fa1a0b"
         }
       ]
     },
     {
       "id": "move",
-      "heading": "Test 2 · Movement",
+      "heading": "Test 2: movement (can it travel as a block?)",
       "blocks": [
         {
-          "type": "prose",
-          "md": "Move the string somewhere else in the sentence. If the result is grammatical, the string traveled as a unit — which means it *is* a unit. Two ways to move things in English:",
-          "slide": "If it moves as a block, it's a block",
-          "id": "move.229cb46e"
+          "type": "definition",
+          "term": "Movement test",
+          "body": "Pick up the string and put it somewhere else in the sentence. If the result is grammatical, the words traveled together, so they're one unit. English has two easy ways to move things: topicalization and clefting.",
+          "slide": "Movement test",
+          "id": "move.77dd565b"
         },
         {
           "type": "definition",
           "term": "Topicalization",
-          "body": "put the string at the front: 'The evidence, those tall spies will quickly stash after midnight.' ✓ (NP). 'After midnight, those tall spies will stash the evidence.' ✓ (PP). '*Stash the, those spies will evidence after midnight.' ✗",
-          "id": "move.02be6b0a"
+          "body": "Move the string to the **front**, followed by a comma: *The evidence, the spies will stash after midnight.* It sounds a bit dramatic, but it's grammatical.",
+          "id": "move.d148c5ca"
         },
         {
           "type": "definition",
-          "term": "It-clefting",
-          "body": "'It's X that/who Y': 'It's the evidence that those spies will stash after midnight.' ✓. 'It's after midnight that they'll stash it.' ✓. 'It's in the garden that the spies are.' ✓ (PP). '*It's spies in that those tall the garden will…' ✗",
-          "id": "move.a78a3664"
+          "term": "It-cleft",
+          "body": "Put the string in the frame **It's ___ that…**: *It's the evidence that the spies will stash.* 'Cleft' means split: the sentence is split around the string.",
+          "id": "move.2afac934"
+        },
+        {
+          "type": "stepper",
+          "title": "Running movement on handout (3)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight."
+              ],
+              "active": 0,
+              "caption": "Test 2 is movement: pick up a string and put it somewhere else. If the sentence still works, the string moved as one block."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "The evidence, those tall spies will quickly stash after midnight.  ✓"
+              ],
+              "active": 1,
+              "caption": "Topicalization: move 'the evidence' to the front. Works, so 'the evidence' is a unit."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "The evidence, those tall spies will quickly stash after midnight.  ✓",
+                "After midnight, those tall spies will quickly stash the evidence.  ✓"
+              ],
+              "active": 2,
+              "caption": "Front 'after midnight'. Works too."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "It's the evidence that those tall spies will quickly stash after midnight.  ✓"
+              ],
+              "active": 1,
+              "caption": "Clefting: wrap it in 'It's ___ that…'. 'the evidence' fits the slot, so it's a unit."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "*Stash the, those tall spies will quickly evidence after midnight.  ✗"
+              ],
+              "active": 1,
+              "caption": "Now a fake unit: 'stash the'. It can't move. Every piece of evidence says it's not a constituent."
+            }
+          ],
+          "slide": true,
+          "id": "move.017d3cf0"
         },
         {
           "type": "prose",
-          "md": "**A failed movement test proves nothing** Handout: 'Some constituents are too deeply embedded within other constituents to undergo movement.' '*The garden, those tall spies in will stash the evidence' fails — but 'the garden' IS a constituent (substitution: 'in it'). ==Movement can only give you a yes.== If it says no, try another test before concluding anything.",
-          "id": "move.6d57d3e8"
+          "md": "**A failed movement test proves nothing** Handout: 'Some constituents are too deeply embedded within other constituents to undergo movement.' '*The garden, those tall spies in will stash the evidence' fails: but 'the garden' IS a constituent (substitution: 'in it'). ==Movement can only give you a yes.== If it says no, try another test before concluding anything.",
+          "id": "move.1e9b5e10"
+        },
+        {
+          "type": "check",
+          "prompt": "Use a cleft to prove *after midnight* is a constituent.",
+          "answer": "*It's after midnight that those tall spies will stash the evidence.* ✓",
+          "sectionRef": "move",
+          "id": "move.7a191793"
         }
       ]
     },
     {
       "id": "frag",
-      "heading": "Test 3 · Fragment answer",
+      "heading": "Test 3: fragment answer (can it answer alone?)",
       "blocks": [
         {
-          "type": "prose",
-          "md": "Ask a wh-question about the sentence. If the string can be the whole answer, standing alone, it's a constituent — because only units can be pronounced in isolation.",
-          "slide": "Can it answer a question alone?",
-          "id": "frag.057c1dc2"
+          "type": "definition",
+          "term": "Fragment answer test",
+          "body": "Ask a question about the sentence (who, what, where, when, what did they do). If the string can be the **whole answer**, said on its own, it's a constituent. Only units can stand alone like that.",
+          "slide": "Fragment answer test",
+          "id": "frag.bf0fac26"
+        },
+        {
+          "type": "stepper",
+          "title": "Asking questions about handout (3)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight."
+              ],
+              "active": 0,
+              "caption": "Test 3 is the fragment answer: ask a question about the sentence. If the string can be the whole answer by itself, it's a unit."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "Q: Who will stash the evidence?",
+                "A: Those tall spies in the garden.  ✓"
+              ],
+              "active": 2,
+              "caption": "The whole subject answers 'who?'. NP constituent."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "Q: Where are the spies?",
+                "A: In the garden.  ✓"
+              ],
+              "active": 2,
+              "caption": "'where?' is answered by the PP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "Q: What will they do?",
+                "A: Quickly stash the evidence after midnight.  ✓"
+              ],
+              "active": 2,
+              "caption": "'what will they do?' is answered by a whole VP."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Those tall spies in the garden will quickly stash the evidence after midnight.",
+                "Q: ???",
+                "A: *Stash the.  ✗"
+              ],
+              "active": 2,
+              "caption": "No question in English has 'stash the' as its answer. Not a unit."
+            }
+          ],
+          "slide": true,
+          "id": "frag.a3f3c4c6"
         },
         {
           "type": "example",
           "title": "Question → fragment",
-          "body": "Those tall spies in the garden will quickly stash the evidence after midnight.\n\n1. Who will stash the evidence? — 'Those tall spies in the garden.' ✓ NP\n2. Where are the spies? — 'In the garden.' ✓ PP\n3. What will they stash? — 'The evidence.' ✓ NP\n4. When? — 'After midnight.' ✓ PP\n5. What will they do? — 'Quickly stash the evidence after midnight.' ✓ VP (and 'Stash the evidence after midnight.' ✓ — the smaller VP)\n6. *'Stash the.' — no question has that answer. ✗",
-          "slide": "Fragment answers for handout (3)",
-          "id": "frag.bcb9162e"
+          "body": "Those tall spies in the garden will quickly stash the evidence after midnight.\n\n1. Who will stash the evidence?: 'Those tall spies in the garden.' ✓ NP\n2. Where are the spies?: 'In the garden.' ✓ PP\n3. What will they stash?: 'The evidence.' ✓ NP\n4. When?: 'After midnight.' ✓ PP\n5. What will they do?: 'Quickly stash the evidence after midnight.' ✓ VP (and 'Stash the evidence after midnight.' ✓: the smaller VP)\n6. *'Stash the.': no question has that answer. ✗",
+          "slide": "All the fragment answers for handout (3)",
+          "id": "frag.cf385e69"
+        },
+        {
+          "type": "check",
+          "prompt": "*Mia left her keys on the counter.* Prove *on the counter* is a constituent with a fragment answer.",
+          "answer": "*Where did Mia leave her keys?* *On the counter.* ✓",
+          "sectionRef": "frag",
+          "id": "frag.b3c0de34"
         }
       ]
     },
     {
       "id": "ambig",
-      "heading": "Structural ambiguity: the tests pull two structures apart",
+      "heading": "Using the tests on an ambiguous sentence",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Structural ambiguity",
+          "body": "One word order, **two groupings**, two meanings. The words aren't ambiguous; the structure is. The tests let you prove each grouping exists.",
+          "slide": "Definition",
+          "id": "ambig.9c9fc7d2"
+        },
+        {
           "type": "prose",
-          "md": "'The thief tripped that unlucky man with a cane.' Two meanings: the thief used a cane, or the man carries a cane. Chapter 0 showed these as two trees. Now you can *prove* both trees exist with tests — ==each reading passes a test the other fails==.",
+          "md": "'The thief tripped that unlucky man with a cane.' Two meanings: the thief used a cane, or the man carries a cane. Chapter 0 showed these as two trees. Now you can *prove* both trees exist with tests: ==each reading passes a test the other fails==.",
           "slide": "Handout (7)",
-          "id": "ambig.6ccc92dd"
+          "id": "ambig.cebc810b"
         },
         {
           "type": "figure",
           "viewBox": "0 0 660 300",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Reading A: 'with a cane' is the verb's own dependent, sister to the object NP — the instrument of tripping.</title><text x='36' y='20' font-size='12' font-weight='600'>Reading A: tripped [NP] [PP]</text><text x='150' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='150' y1='60' x2='55' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='150' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='258' y2='112' stroke='currentColor' opacity='0.5'/><text x='55' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='55' y1='132' x2='55' y2='164' stroke='currentColor' opacity='0.5'/><text x='55' y='182' text-anchor='middle' font-size='12'>tripped</text><text x='150' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M150 132 L102 164 L198 164 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='150' y='181' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>The test that proves reading A: the PP moves alone. 'It's with a cane that the thief tripped that unlucky man' — a constituent OUTSIDE the NP can cleft away from it.</title><text x='258' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M258 132 L214 164 L302 164 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='258' y='181' text-anchor='middle' font-size='10.5'>with a cane</text><text x='160' y='232' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>✓ cleft: 'It's with a cane that the</text><text x='160' y='248' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>thief tripped that unlucky man.'</text><text x='160' y='272' text-anchor='middle' font-size='10.5' opacity='0.7'>…and 'did so with a rope' leaves it outside</text></g><line x1='330' y1='14' x2='330' y2='282' stroke='currentColor' opacity='0.12'/><g><title>Reading B: the verb has one object, a bigger NP with the PP tucked inside it — the man who carries a cane.</title><text x='366' y='20' font-size='12' font-weight='600'>Reading B: tripped [NP … [PP]]</text><text x='475' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='475' y1='60' x2='390' y2='112' stroke='currentColor' opacity='0.5'/><line x1='475' y1='60' x2='520' y2='112' stroke='currentColor' opacity='0.5'/><text x='390' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='390' y1='132' x2='390' y2='196' stroke='currentColor' opacity='0.5'/><text x='390' y='214' text-anchor='middle' font-size='12'>tripped</text></g><g><title>The test that proves reading B: pronoun substitution takes the PP along. 'The thief tripped HIM' — cane included — so the PP is inside the NP.</title><text x='520' y='126' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><line x1='520' y1='132' x2='455' y2='166' stroke='currentColor' opacity='0.5'/><line x1='520' y1='132' x2='592' y2='166' stroke='currentColor' opacity='0.5'/><text x='455' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M455 184 L408 216 L502 216 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='455' y='233' text-anchor='middle' font-size='10.5'>that unlucky man</text><text x='592' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M592 184 L550 216 L634 216 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='592' y='233' text-anchor='middle' font-size='10.5'>with a cane</text><text x='495' y='258' text-anchor='middle' font-size='10.5' fill='rgb(var(--on-track))'>✓ substitution: 'The thief tripped him.'</text><text x='495' y='274' text-anchor='middle' font-size='10.5' opacity='0.7'>'him' = the whole NP, cane and all — and it topicalizes as one block</text></g></g>",
-          "caption": "Handout (7), both structures, each with the test that proves it exists. Left: 'with a cane' hangs off the VP — clefting it away works, and 'did so with a rope' leaves the instrument outside. Right: the PP lives inside the object NP — pronoun substitution takes it along, and the whole thing fronts as one block. One test result at a time, you recover which tree the speaker built. Hover any node.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Reading A: 'with a cane' is the verb's own dependent, sister to the object NP: the instrument of tripping.</title><text x='36' y='20' font-size='12' font-weight='600'>Reading A: tripped [NP] [PP]</text><text x='150' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='150' y1='60' x2='55' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='150' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='258' y2='112' stroke='currentColor' opacity='0.5'/><text x='55' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='55' y1='132' x2='55' y2='164' stroke='currentColor' opacity='0.5'/><text x='55' y='182' text-anchor='middle' font-size='12'>tripped</text><text x='150' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M150 132 L102 164 L198 164 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='150' y='181' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>The test that proves reading A: the PP moves alone. 'It's with a cane that the thief tripped that unlucky man': a constituent OUTSIDE the NP can cleft away from it.</title><text x='258' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M258 132 L214 164 L302 164 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='258' y='181' text-anchor='middle' font-size='10.5'>with a cane</text><text x='160' y='232' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>✓ cleft: 'It's with a cane that the</text><text x='160' y='248' text-anchor='middle' font-size='10.5' fill='rgb(var(--accent-fg))'>thief tripped that unlucky man.'</text><text x='160' y='272' text-anchor='middle' font-size='10.5' opacity='0.7'>…and 'did so with a rope' leaves it outside</text></g><line x1='330' y1='14' x2='330' y2='282' stroke='currentColor' opacity='0.12'/><g><title>Reading B: the verb has one object, a bigger NP with the PP tucked inside it: the man who carries a cane.</title><text x='366' y='20' font-size='12' font-weight='600'>Reading B: tripped [NP … [PP]]</text><text x='475' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='475' y1='60' x2='390' y2='112' stroke='currentColor' opacity='0.5'/><line x1='475' y1='60' x2='520' y2='112' stroke='currentColor' opacity='0.5'/><text x='390' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='390' y1='132' x2='390' y2='196' stroke='currentColor' opacity='0.5'/><text x='390' y='214' text-anchor='middle' font-size='12'>tripped</text></g><g><title>The test that proves reading B: pronoun substitution takes the PP along. 'The thief tripped HIM': cane included: so the PP is inside the NP.</title><text x='520' y='126' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><line x1='520' y1='132' x2='455' y2='166' stroke='currentColor' opacity='0.5'/><line x1='520' y1='132' x2='592' y2='166' stroke='currentColor' opacity='0.5'/><text x='455' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M455 184 L408 216 L502 216 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='455' y='233' text-anchor='middle' font-size='10.5'>that unlucky man</text><text x='592' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M592 184 L550 216 L634 216 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='592' y='233' text-anchor='middle' font-size='10.5'>with a cane</text><text x='495' y='258' text-anchor='middle' font-size='10.5' fill='rgb(var(--on-track))'>✓ substitution: 'The thief tripped him.'</text><text x='495' y='274' text-anchor='middle' font-size='10.5' opacity='0.7'>'him' = the whole NP, cane and all: and it topicalizes as one block</text></g></g>",
+          "caption": "Handout (7), both structures, each with the test that proves it exists. Left: 'with a cane' hangs off the VP: clefting it away works, and 'did so with a rope' leaves the instrument outside. Right: the PP lives inside the object NP: pronoun substitution takes it along, and the whole thing fronts as one block. One test result at a time, you recover which tree the speaker built. Hover any node.",
           "slide": "Two trees, and the tests that tell them apart",
-          "id": "ambig.7d4e2b9f"
+          "id": "ambig.94ccf7c3"
         },
         {
           "type": "example",
           "title": "'with a cane' attaches to the verb",
-          "body": "Show 'with a cane' is a separate constituent from the NP.\n\n1. Cleft: 'It's with a cane that the thief tripped that unlucky man.' ✓ — the PP moved away from 'man', so it wasn't inside the NP.\n2. Substitution: 'The thief tripped him with a cane.' ✓ — 'him' replaces 'that unlucky man' and leaves 'with a cane' behind.\n3. Do-so: 'The thief tripped that unlucky man with a cane, and the burglar did so with a rope.' ✓ — 'did so' = 'tripped that unlucky man', and the instrument is outside it.",
+          "body": "Show 'with a cane' is a separate constituent from the NP.\n\n1. Cleft: 'It's with a cane that the thief tripped that unlucky man.' ✓: the PP moved away from 'man', so it wasn't inside the NP.\n2. Substitution: 'The thief tripped him with a cane.' ✓: 'him' replaces 'that unlucky man' and leaves 'with a cane' behind.\n3. Do-so: 'The thief tripped that unlucky man with a cane, and the burglar did so with a rope.' ✓: 'did so' = 'tripped that unlucky man', and the instrument is outside it.",
           "slide": "Reading A: the cane is the instrument",
-          "id": "ambig.f92e84be"
+          "id": "ambig.8167feef"
         },
         {
           "type": "example",
           "title": "'with a cane' attaches to the noun",
-          "body": "Show 'that unlucky man with a cane' is one NP.\n\n1. Substitution: 'The thief tripped him.' ✓ where 'him' = 'that unlucky man with a cane' — the whole thing, cane included.\n2. Fragment: 'Who did the thief trip?' — 'That unlucky man with a cane.' ✓\n3. Topicalization: 'That unlucky man with a cane, the thief tripped.' ✓ — the PP moved along with the NP, so it's inside it.",
+          "body": "Show 'that unlucky man with a cane' is one NP.\n\n1. Substitution: 'The thief tripped him.' ✓ where 'him' = 'that unlucky man with a cane': the whole thing, cane included.\n2. Fragment: 'Who did the thief trip?': 'That unlucky man with a cane.' ✓\n3. Topicalization: 'That unlucky man with a cane, the thief tripped.' ✓: the PP moved along with the NP, so it's inside it.",
           "answer": "Same string, two constituent structures. Each test result is evidence for one of them.",
           "slide": "Reading B: the man has the cane",
-          "id": "ambig.5b5d8605"
+          "id": "ambig.ddc81ada"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** PP-attachment is the ambiguity that runs the world's worst headlines — editors call them ==crash blossoms==, after the real headline 'Violinist linked to JAL crash blossoms' — and the lurch you feel reading one is you attaching a constituent early, then re-parsing. It's a live NLP benchmark: parsers still misattach PPs, which is why a photo search for 'man with telescope' returns both readings. And it's a genuine legal problem: contract disputes turn on whether a trailing modifier ('…within 30 days') attaches to the last item or the whole list, and courts run named canons (the 'last-antecedent rule') that are constituency claims in robes. The tests you just ran on the cane sentence are how you'd brief that argument.",
-          "id": "ambig.3c8a5f1d"
+          "md": "**Where you'll meet this after the exam** PP-attachment is the ambiguity that runs the world's worst headlines: editors call them ==crash blossoms==, after the real headline 'Violinist linked to JAL crash blossoms': and the lurch you feel reading one is you attaching a constituent early, then re-parsing. It's a live NLP benchmark: parsers still misattach PPs, which is why a photo search for 'man with telescope' returns both readings. And it's a genuine legal problem: contract disputes turn on whether a trailing modifier ('…within 30 days') attaches to the last item or the whole list, and courts run named canons (the 'last-antecedent rule') that are constituency claims in robes. The tests you just ran on the cane sentence are how you'd brief that argument.",
+          "id": "ambig.ce9bdb53"
         }
       ]
     },
     {
       "id": "finite",
-      "heading": "The finiteness note (handout (8)–(9))",
+      "heading": "A note on tense: finite vs non-finite verb phrases",
       "blocks": [
         {
-          "type": "prose",
-          "md": "'Farah **will submit** the assignment' — the VP after the modal is **non-finite** (no tense on 'submit'). Substitution: 'Farah will do so.' ✓ Fragment: 'What will Farah do? — Submit the assignment.' ✓ Clean.",
-          "slide": "Finite vs non-finite VPs behave differently",
-          "id": "finite.75776839"
+          "type": "definition",
+          "term": "Finite / non-finite",
+          "body": "A verb is **finite** when it carries tense itself (*submitted*, *submits*). It's **non-finite** when it doesn't, usually because a helper like *will* carries the tense instead (*will **submit***).",
+          "slide": "Finite vs non-finite",
+          "id": "finite.1a6b57cf"
         },
         {
           "type": "prose",
-          "md": "'Farah **submitted** the assignment' — the VP is **finite** (tense is on the verb). Substitution needs do-support to carry the tense: 'Farah did so.' ✓ Fragment answer: 'What did Farah do? — *Submitted the assignment' is marginal; the natural fragment is 'Submit the assignment', with the tense stripped. Her point: ==some tests interact with tense==, so say which kind of VP you're testing.",
-          "id": "finite.93409973"
+          "md": "'Farah **will submit** the assignment': the VP after the modal is **non-finite** (no tense on 'submit'). Substitution: 'Farah will do so.' ✓ Fragment: 'What will Farah do?: Submit the assignment.' ✓ Clean.",
+          "slide": "Finite vs non-finite VPs behave differently",
+          "id": "finite.6942ec41"
+        },
+        {
+          "type": "prose",
+          "md": "'Farah **submitted** the assignment': the VP is **finite** (tense is on the verb). Substitution needs do-support to carry the tense: 'Farah did so.' ✓ Fragment answer: 'What did Farah do?: *Submitted the assignment' is marginal; the natural fragment is 'Submit the assignment', with the tense stripped. Her point: ==some tests interact with tense==, so say which kind of VP you're testing.",
+          "id": "finite.467ecc1f"
         }
       ]
     },
     {
       "id": "practice",
-      "heading": "Practice (handout (4)–(6)) — this is Quiz 2 territory",
+      "heading": "Practice: a full Quiz 2 answer (handout (4) to (6))",
       "blocks": [
         {
           "type": "prose",
           "md": "**What she asks** 'Identify all syntactic categories. Identify constituents in each sentence, using each type of constituency test (substitution, movement, fragment answer) at least once.' So a full answer = ==labels + at least three constituents, each with a named test and the actual test sentence written out==.",
-          "id": "practice.64b07ee6"
+          "id": "practice.0c5f9b3e"
         },
         {
           "type": "figure",
           "viewBox": "0 0 620 440",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='ctfY' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='ctfN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>The question every bracket on Quiz 2 asks.</title><rect x='150' y='20' width='320' height='40' rx='10' fill='none' stroke='currentColor' opacity='0.7'/><text x='310' y='45' text-anchor='middle' font-size='13' font-weight='600'>Is this string a constituent?</text><path d='M310 60 L310 86' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/></g><g><title>Substitution is the quickest test: one pro-form for the whole string. 'in the garden' → 'there'; 'the evidence' → 'it'; a VP → 'do so'.</title><rect x='60' y='92' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='114' text-anchor='middle' font-size='12' font-weight='600'>1 · SUBSTITUTION — can ONE pro-form replace it?</text><text x='230' y='133' text-anchor='middle' font-size='11' opacity='0.75'>it / they / one(s) / do so / there / then</text><path d='M402 120 C 435 120, 445 165, 466 185' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='112' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 148 L230 178' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='167' font-size='10' opacity='0.6'>no</text></g><g><title>Movement: front it (topicalization) or cleft it. A string that travels as a block is a block.</title><rect x='60' y='184' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='206' text-anchor='middle' font-size='12' font-weight='600'>2 · MOVEMENT — topicalize or cleft it</text><text x='230' y='225' text-anchor='middle' font-size='11' opacity='0.75'>'X, they will…' / 'It's X that they will…'</text><path d='M402 212 L466 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='200' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 240 L230 270' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='259' font-size='10' opacity='0.6'>no</text></g><g><title>Fragment answer: ask a wh-question the string alone can answer. 'Where did they hide?' — 'In the garden.'</title><rect x='60' y='276' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='298' text-anchor='middle' font-size='12' font-weight='600'>3 · FRAGMENT — can it answer a wh-question</text><text x='230' y='317' text-anchor='middle' font-size='11' opacity='0.75'>all by itself? ('Where…?' — 'In the garden.')</text><path d='M402 304 C 435 304, 445 245, 466 222' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='296' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 332 L230 362' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='351' font-size='10' opacity='0.6'>no</text></g><g><title>One passing test is enough — write out the actual test sentence as your evidence and stop.</title><rect x='470' y='172' width='130' height='62' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='535' y='198' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--on-track))'>✓ constituent</text><text x='535' y='217' text-anchor='middle' font-size='9.5' fill='rgb(var(--on-track))'>one pass is enough</text></g><g><title>The rule students forget: a failure is silence, not a 'no'. Deep embedding blocks movement for real constituents ('the garden'). Only a string that fails everything AND straddles two phrases gets called a non-constituent.</title><rect x='60' y='368' width='540' height='56' rx='10' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='330' y='390' text-anchor='middle' font-size='11.5'>three fails ≠ proof — deep embedding can block movement ('the garden' still passed 'in it')</text><text x='330' y='409' text-anchor='middle' font-size='11.5' font-weight='600'>but a straddling string like 'spies in' or 'stash the' that fails everything: not a unit</text></g></g>",
-          "caption": "Quiz 2's inner loop. Run the tests in this order — substitution is quickest, movement is the flashiest evidence, fragment answers rescue strings the others miss. Land in the green box once and you're done: write the actual test sentence, name the test, move on. The amber box is the graded subtlety: a failed test is silence, not a 'no' — only a string that fails everything while straddling two phrases gets declared a non-constituent. Hover any step.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='ctfY' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker><marker id='ctfN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>The question every bracket on Quiz 2 asks.</title><rect x='150' y='20' width='320' height='40' rx='10' fill='none' stroke='currentColor' opacity='0.7'/><text x='310' y='45' text-anchor='middle' font-size='13' font-weight='600'>Is this string a constituent?</text><path d='M310 60 L310 86' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/></g><g><title>Substitution is the quickest test: one pro-form for the whole string. 'in the garden' → 'there'; 'the evidence' → 'it'; a VP → 'do so'.</title><rect x='60' y='92' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='114' text-anchor='middle' font-size='12' font-weight='600'>1 · SUBSTITUTION: can ONE pro-form replace it?</text><text x='230' y='133' text-anchor='middle' font-size='11' opacity='0.75'>it / they / one(s) / do so / there / then</text><path d='M402 120 C 435 120, 445 165, 466 185' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='112' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 148 L230 178' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='167' font-size='10' opacity='0.6'>no</text></g><g><title>Movement: front it (topicalization) or cleft it. A string that travels as a block is a block.</title><rect x='60' y='184' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='206' text-anchor='middle' font-size='12' font-weight='600'>2 · MOVEMENT: topicalize or cleft it</text><text x='230' y='225' text-anchor='middle' font-size='11' opacity='0.75'>'X, they will…' / 'It's X that they will…'</text><path d='M402 212 L466 205' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='200' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 240 L230 270' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='259' font-size='10' opacity='0.6'>no</text></g><g><title>Fragment answer: ask a wh-question the string alone can answer. 'Where did they hide?': 'In the garden.'</title><rect x='60' y='276' width='340' height='56' rx='10' fill='none' stroke='currentColor' opacity='0.6'/><text x='230' y='298' text-anchor='middle' font-size='12' font-weight='600'>3 · FRAGMENT: can it answer a wh-question</text><text x='230' y='317' text-anchor='middle' font-size='11' opacity='0.75'>all by itself? ('Where…?': 'In the garden.')</text><path d='M402 304 C 435 304, 445 245, 466 222' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#ctfY)'/><text x='428' y='296' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>yes</text><path d='M230 332 L230 362' stroke='currentColor' stroke-width='1.4' fill='none' marker-end='url(#ctfN)'/><text x='243' y='351' font-size='10' opacity='0.6'>no</text></g><g><title>One passing test is enough: write out the actual test sentence as your evidence and stop.</title><rect x='470' y='172' width='130' height='62' rx='10' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='535' y='198' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--on-track))'>✓ constituent</text><text x='535' y='217' text-anchor='middle' font-size='9.5' fill='rgb(var(--on-track))'>one pass is enough</text></g><g><title>The rule students forget: a failure is silence, not a 'no'. Deep embedding blocks movement for real constituents ('the garden'). Only a string that fails everything AND straddles two phrases gets called a non-constituent.</title><rect x='60' y='368' width='540' height='56' rx='10' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='330' y='390' text-anchor='middle' font-size='11.5'>three fails ≠ proof: deep embedding can block movement ('the garden' still passed 'in it')</text><text x='330' y='409' text-anchor='middle' font-size='11.5' font-weight='600'>but a straddling string like 'spies in' or 'stash the' that fails everything: not a unit</text></g></g>",
+          "caption": "Quiz 2's inner loop. Run the tests in this order: substitution is quickest, movement is the flashiest evidence, fragment answers rescue strings the others miss. Land in the green box once and you're done: write the actual test sentence, name the test, move on. The amber box is the graded subtlety: a failed test is silence, not a 'no': only a string that fails everything while straddling two phrases gets declared a non-constituent. Hover any step.",
           "slide": "The test loop: substitute → move → fragment",
-          "id": "practice.9e6b3a7c"
+          "id": "practice.5123fb00"
         },
         {
           "type": "example",
           "title": "That officer from the precinct sauntered away very slowly.",
-          "body": "Categories, then three constituents with three different tests.\n\n1. Categories: That D · officer N · from P · the D · precinct N · sauntered V · away Adv (particle) · very Adv · slowly Adv.\n2. Substitution: [That officer from the precinct] → 'He sauntered away very slowly.' ✓ NP.\n3. Movement (cleft): [very slowly] → 'It was very slowly that that officer sauntered away.' ✓ AdvP.\n4. Fragment: 'What did the officer do?' — [Sauntered away very slowly.] ✓ VP.\n5. Bonus: [from the precinct] → 'It's from the precinct that the officer is' / fragment 'From where?' — 'From the precinct.' ✓ PP.",
+          "body": "Categories, then three constituents with three different tests.\n\n1. Categories: That D · officer N · from P · the D · precinct N · sauntered V · away Adv (particle) · very Adv · slowly Adv.\n2. Substitution: [That officer from the precinct] → 'He sauntered away very slowly.' ✓ NP.\n3. Movement (cleft): [very slowly] → 'It was very slowly that that officer sauntered away.' ✓ AdvP.\n4. Fragment: 'What did the officer do?': [Sauntered away very slowly.] ✓ VP.\n5. Bonus: [from the precinct] → 'It's from the precinct that the officer is' / fragment 'From where?': 'From the precinct.' ✓ PP.",
           "slide": "Handout (4)",
-          "id": "practice.10a38037"
+          "id": "practice.6388bd44"
         },
         {
           "type": "example",
           "title": "I will invest in some cryptocurrency to fund my globe-trotting lifestyle.",
-          "body": "Three constituents, three tests.\n\n1. Categories: I N · will Mod · invest V · in P · some D · cryptocurrency N · to T · fund V · my D · globe-trotting Adj · lifestyle N.\n2. Substitution (do so): 'I will [do so] to fund my lifestyle.' ✓ → 'invest in some cryptocurrency' is a VP.\n3. Movement (cleft): 'It's to fund my globe-trotting lifestyle that I will invest in some cryptocurrency.' ✓ → the purpose clause is a constituent (an adjunct).\n4. Fragment: 'In what will you invest?' — 'In some cryptocurrency.' ✓ PP.\n5. Substitution: [my globe-trotting lifestyle] → 'to fund it' ✓ NP.",
+          "body": "Three constituents, three tests.\n\n1. Categories: I N · will Mod · invest V · in P · some D · cryptocurrency N · to T · fund V · my D · globe-trotting Adj · lifestyle N.\n2. Substitution (do so): 'I will [do so] to fund my lifestyle.' ✓ → 'invest in some cryptocurrency' is a VP.\n3. Movement (cleft): 'It's to fund my globe-trotting lifestyle that I will invest in some cryptocurrency.' ✓ → the purpose clause is a constituent (an adjunct).\n4. Fragment: 'In what will you invest?': 'In some cryptocurrency.' ✓ PP.\n5. Substitution: [my globe-trotting lifestyle] → 'to fund it' ✓ NP.",
           "slide": "Handout (5)",
-          "id": "practice.154457af"
+          "id": "practice.75842ec4"
         },
         {
           "type": "example",
           "title": "Lee paraded his favorite new motorbikes around town.",
-          "body": "Is 'motorbikes around town' a constituent?\n\n1. Try substitution: 'them' replaces 'his favorite new motorbikes' — 'Lee paraded them around town' ✓ — but that leaves 'around town' outside. No pro-form covers 'motorbikes around town' alone.\n2. Try movement: '*Motorbikes around town, Lee paraded his favorite new.' ✗\n3. Try fragment: 'What did Lee parade?' — 'His favorite new motorbikes.' ✓ — the answer stops before 'around town'. '*Motorbikes around town' is not an answer to any question.\n4. Conclusion: 'motorbikes around town' is NOT a constituent. 'around town' is a PP adjunct of the verb ('It's around town that Lee paraded them' ✓), sister to the object NP, not inside it. Compare reading A of the cane sentence.",
+          "body": "Is 'motorbikes around town' a constituent?\n\n1. Try substitution: 'them' replaces 'his favorite new motorbikes': 'Lee paraded them around town' ✓: but that leaves 'around town' outside. No pro-form covers 'motorbikes around town' alone.\n2. Try movement: '*Motorbikes around town, Lee paraded his favorite new.' ✗\n3. Try fragment: 'What did Lee parade?': 'His favorite new motorbikes.' ✓: the answer stops before 'around town'. '*Motorbikes around town' is not an answer to any question.\n4. Conclusion: 'motorbikes around town' is NOT a constituent. 'around town' is a PP adjunct of the verb ('It's around town that Lee paraded them' ✓), sister to the object NP, not inside it. Compare reading A of the cane sentence.",
           "slide": "Handout (6)",
-          "id": "practice.929febcd"
+          "id": "practice.dd1fe0a4"
         },
         {
           "type": "check",
           "prompt": "'The spies hid in the garden.' Prove 'in the garden' is a constituent three ways.",
-          "answer": "Substitution: 'The spies hid there.' Cleft: 'It's in the garden that the spies hid.' Fragment: 'Where did the spies hide?' — 'In the garden.'",
+          "answer": "Substitution: 'The spies hid there.' Cleft: 'It's in the garden that the spies hid.' Fragment: 'Where did the spies hide?': 'In the garden.'",
           "sectionRef": "practice",
-          "id": "practice.144e377c"
+          "id": "practice.24d93a2a"
         },
         {
           "type": "check",
           "prompt": "Is 'hid in' a constituent?",
           "answer": "No. No pro-form ('*The spies did-so the garden'), can't move ('*Hid in, the spies the garden'), can't answer a question. The verb and the preposition belong to different phrases: 'in' heads the PP 'in the garden', which is a dependent of 'hid'.",
           "sectionRef": "practice",
-          "id": "practice.3c134055"
+          "id": "practice.5a3f3137"
         },
         {
           "type": "definition",
           "term": "The three tests, in one line each",
           "body": "**Substitution**: replace the string with one pro-form (pronoun / one(s) / do so / there, then). **Movement**: topicalize it or cleft it ('It's X that…'). **Fragment answer**: let it answer a wh-question alone. Pass any one → constituent. Fail one → try another.",
-          "id": "practice.d9adccb2"
+          "id": "practice.8d0603f2"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Constituent",
+              "A group of words that behaves as one unit; proven by a test."
+            ],
+            [
+              "Pro-form",
+              "A short word standing in for a unit: it, they, there, then, do so, one(s)."
+            ],
+            [
+              "Substitution",
+              "Test 1: swap the string for one pro-form."
+            ],
+            [
+              "Topicalization",
+              "Move the string to the front: The evidence, they stashed."
+            ],
+            [
+              "It-cleft",
+              "Put the string in 'It's ___ that…'."
+            ],
+            [
+              "Fragment answer",
+              "Test 3: the string answers a question by itself."
+            ],
+            [
+              "N-bar (N′)",
+              "A noun plus its attachments, without the determiner; replaced by one(s)."
+            ],
+            [
+              "Structural ambiguity",
+              "One word order, two groupings, two meanings."
+            ],
+            [
+              "Finite / non-finite",
+              "The verb carries tense itself / a helper like 'will' carries it."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
@@ -410,8 +697,8 @@
       "solution": [
         "Substitution: 'The children found a wallet *there*.' ✓",
         "Movement (fronting): '*Under the old bridge*, the children found a wallet.' ✓ Cleft: 'It was under the old bridge that the children found a wallet.' ✓",
-        "Fragment: 'Where did the children find a wallet?' — 'Under the old bridge.' ✓",
-        "*a wallet under*: no pro-form replaces it ('✱The children found it the old bridge'); can't move ('✱A wallet under, the children found the old bridge'); can't answer a question. Not a constituent — it straddles the NP and the PP."
+        "Fragment: 'Where did the children find a wallet?': 'Under the old bridge.' ✓",
+        "*a wallet under*: no pro-form replaces it ('✱The children found it the old bridge'); can't move ('✱A wallet under, the children found the old bridge'); can't answer a question. Not a constituent: it straddles the NP and the PP."
       ],
       "why": "Constituency tests are how syntacticians settle arguments without appealing to intuition alone, and they're the reasoning behind every bracket in a treebank. They're also the oral exam's core: the examiner wants to see you *run* the test, not name it.",
       "sectionRef": "why"
@@ -419,19 +706,155 @@
     {
       "id": "ambiguity",
       "title": "Pull apart a structural ambiguity",
-      "prompt": "'She watched the man with the binoculars.' Give the two meanings, then use one constituency test to show which structure each meaning has — a test that succeeds under one reading and fails under the other.",
+      "prompt": "'She watched the man with the binoculars.' Give the two meanings, then use one constituency test to show which structure each meaning has: a test that succeeds under one reading and fails under the other.",
       "hints": [
         "Meaning 1: she used the binoculars. Meaning 2: the man had them. The question is whether 'with the binoculars' groups with 'the man' (inside the NP) or with 'watched' (a separate phrase in the VP).",
         "The error is picking a test that gives the same result for both readings. Substitution of the NP with a pronoun is the sharp one: if 'him' replaces 'the man with the binoculars', the PP was inside the NP.",
-        "Try: 'She watched him.' Under which reading does 'him' still mean 'the man with the binoculars'? Then try fronting the PP: 'With the binoculars, she watched the man' — which reading survives?"
+        "Try: 'She watched him.' Under which reading does 'him' still mean 'the man with the binoculars'? Then try fronting the PP: 'With the binoculars, she watched the man': which reading survives?"
       ],
       "solution": [
         "Reading A (instrument): she used binoculars to watch. Reading B (modifier): the man who had binoculars.",
-        "Pronoun substitution: 'She watched him' can mean B ('him' = the man with the binoculars) — so under B, [the man with the binoculars] is one NP constituent. Under A the PP isn't part of 'him'.",
-        "PP fronting: 'With the binoculars, she watched the man' has only reading A — so under A, [with the binoculars] is a separate VP-level constituent that can move; under B it's stuck inside the NP.",
+        "Pronoun substitution: 'She watched him' can mean B ('him' = the man with the binoculars): so under B, [the man with the binoculars] is one NP constituent. Under A the PP isn't part of 'him'.",
+        "PP fronting: 'With the binoculars, she watched the man' has only reading A: so under A, [with the binoculars] is a separate VP-level constituent that can move; under B it's stuck inside the NP.",
         "Two structures: A = watched [the man] [with the binoculars]; B = watched [the man [with the binoculars]]."
       ],
-      "why": "PP-attachment ambiguity is the single most common structural ambiguity in English and one of the hardest problems in parsing — every NLP system gets some of these wrong. Knowing how the tests separate the readings is how you'd debug one, and it's the same argument that settles what a trailing modifier attaches to in a contract clause."
+      "why": "PP-attachment ambiguity is the single most common structural ambiguity in English and one of the hardest problems in parsing: every NLP system gets some of these wrong. Knowing how the tests separate the readings is how you'd debug one, and it's the same argument that settles what a trailing modifier attaches to in a contract clause."
+    },
+    {
+      "id": "which-proform",
+      "title": "Pick the pro-form",
+      "prompt": "Which pro-form tests whether *in the kitchen* is a constituent in *We ate in the kitchen*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**there.** *We ate there.* ✓"
+      ],
+      "why": "Choosing the right pro-form also tells you the phrase type.",
+      "choices": [
+        {
+          "text": "there",
+          "feedback": "Yes: a place phrase (PP) is replaced by 'there'."
+        },
+        {
+          "text": "it",
+          "feedback": "'it' replaces noun phrases."
+        },
+        {
+          "text": "do so",
+          "feedback": "'do so' replaces verb phrases."
+        },
+        {
+          "text": "one",
+          "feedback": "'one' replaces an N-bar."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "sub"
+    },
+    {
+      "id": "fail-means",
+      "title": "What does a failed test mean?",
+      "prompt": "*The garden* fails the movement test in *Those spies in the garden will stash it* ('*The garden, those spies in will stash it'). What can you conclude?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Nothing yet.** Try substitution: the spies in **it**. ✓ So it is a constituent."
+      ],
+      "why": "Dr. Nie: 'you may need to try multiple tests before you find one that works'.",
+      "choices": [
+        {
+          "text": "Nothing yet: try another test",
+          "feedback": "Right. A fail is silence. Substitution ('in it') shows it IS a constituent."
+        },
+        {
+          "text": "It's not a constituent",
+          "feedback": "One failed test never proves that; it's too deeply embedded to move."
+        },
+        {
+          "text": "It's an adjunct",
+          "feedback": "Movement doesn't test for adjuncts."
+        },
+        {
+          "text": "The sentence is ambiguous",
+          "feedback": "Nothing here has two meanings."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "move"
+    },
+    {
+      "id": "cleft-which",
+      "title": "Which cleft works?",
+      "prompt": "Which cleft proves a constituent in *Ana bought a red bike yesterday*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**It was a red bike that Ana bought yesterday.**"
+      ],
+      "why": "Writing out the actual test sentence is what earns the points on Quiz 2.",
+      "choices": [
+        {
+          "text": "It was a red bike that Ana bought yesterday.",
+          "feedback": "Yes: 'a red bike' fits the slot, so it's a unit."
+        },
+        {
+          "text": "It was bought a that Ana red bike yesterday.",
+          "feedback": "'bought a' isn't a unit."
+        },
+        {
+          "text": "It was Ana bought that a red bike yesterday.",
+          "feedback": "The frame is broken: 'Ana bought' isn't what goes in the slot here."
+        },
+        {
+          "text": "It was red bike yesterday that Ana bought a.",
+          "feedback": "'red bike yesterday' crosses two phrases."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "move"
+    },
+    {
+      "id": "frag-q",
+      "title": "Which question?",
+      "prompt": "To prove *to her sister* is a constituent in *Jo sent a card to her sister*, which question do you ask?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Who did Jo send a card to?** → *To her sister.* ✓"
+      ],
+      "why": "Pick the question whose natural answer is exactly the string.",
+      "choices": [
+        {
+          "text": "Who did Jo send a card to?",
+          "feedback": "Yes: the answer 'To her sister.' stands alone."
+        },
+        {
+          "text": "What did Jo send?",
+          "feedback": "That question is answered by 'a card'."
+        },
+        {
+          "text": "Did Jo send a card?",
+          "feedback": "A yes/no question is answered by yes or no, not a fragment."
+        },
+        {
+          "text": "When did Jo send it?",
+          "feedback": "That asks about time, which isn't in the sentence."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "frag"
     }
   ]
 }
