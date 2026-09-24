@@ -85,52 +85,53 @@ export default function Calendar() {
     localStorage.setItem(VIEW_KEY, next);
   };
 
+  const controls = (
+    <div className="flex items-center gap-2">
+      <Tabs value={view} onValueChange={pickView}>
+        <TabsList className="h-8">
+          <TabsTrigger value="agenda" className="text-xs">
+            Agenda
+          </TabsTrigger>
+          <TabsTrigger value="week" className="text-xs">
+            Week
+          </TabsTrigger>
+          <TabsTrigger value="month" className="text-xs">
+            Month
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          // Stable UIDs mean re-importing after a sync UPDATES events
+          // in the user's real calendar instead of duplicating them.
+          void saveFileDialog({
+            defaultPath: "semester-command.ics",
+            filters: [{ name: "Calendar", extensions: ["ics"] }],
+          }).then((path) => {
+            if (!path) return;
+            exportSemesterIcs(path)
+              .then((n) =>
+                toast.success(
+                  `Exported ${n} due date${n === 1 ? "" : "s"}. Import the file into Google Calendar or Outlook. Re-exporting later updates the same events.`,
+                ),
+              )
+              .catch(() => toast.error("Export failed."));
+          });
+        }}
+      >
+        <Download className="mr-1.5 h-3.5 w-3.5" /> Export (.ics)
+      </Button>
+    </div>
+  );
+  const monthMode = view === "month" && items !== null && items.length > 0;
+
   return (
     <>
-      <ScreenHeader
-        title="Calendar"
-        subtitle="Every due date across every course."
-        actions={
-          <div className="flex items-center gap-2">
-            <Tabs value={view} onValueChange={pickView}>
-              <TabsList className="h-8">
-                <TabsTrigger value="agenda" className="text-xs">
-                  Agenda
-                </TabsTrigger>
-                <TabsTrigger value="week" className="text-xs">
-                  Week
-                </TabsTrigger>
-                <TabsTrigger value="month" className="text-xs">
-                  Month
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Stable UIDs mean re-importing after a sync UPDATES events
-                // in the user's real calendar instead of duplicating them.
-                void saveFileDialog({
-                  defaultPath: "semester-command.ics",
-                  filters: [{ name: "Calendar", extensions: ["ics"] }],
-                }).then((path) => {
-                  if (!path) return;
-                  exportSemesterIcs(path)
-                    .then((n) =>
-                      toast.success(
-                        `Exported ${n} due date${n === 1 ? "" : "s"}. Import the file into Google Calendar or Outlook — re-exporting later updates the same events.`,
-                      ),
-                    )
-                    .catch(() => toast.error("Export failed."));
-                });
-              }}
-            >
-              <Download className="mr-1.5 h-3.5 w-3.5" /> Export (.ics)
-            </Button>
-          </div>
-        }
-      />
+      {!monthMode && (
+        <ScreenHeader title="Calendar" subtitle="Every due date across every course." actions={controls} />
+      )}
 
       {items === null ? (
         <div className="mx-8 flex flex-col gap-3">
@@ -151,7 +152,7 @@ export default function Calendar() {
       ) : view === "agenda" ? (
         <AgendaView items={items} />
       ) : (
-        <MonthView items={items} />
+        <MonthView items={items} controls={controls} />
       )}
     </>
   );
@@ -308,7 +309,7 @@ const STATE_CHIP: Record<DueState, string> = {
  * missed work turns red. Hover any chip for the full details; a crowded day
  * opens its whole list from "+N more". The legend doubles as a filter.
  */
-function MonthView({ items }: { items: CalendarItem[] }) {
+function MonthView({ items, controls }: { items: CalendarItem[]; controls: React.ReactNode }) {
   const [anchor, setAnchor] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -377,16 +378,18 @@ function MonthView({ items }: { items: CalendarItem[] }) {
   const MAX = 4;
 
   return (
-    <div className="mx-6 mb-8 flex flex-col gap-4" style={{ minHeight: "max(720px, calc(100dvh - 11.5rem))" }}>
-      {/* Month bar: title and navigation on the left, the month in numbers on the right. */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+    <div className="mx-6 mb-8 mt-6 flex flex-col gap-4" style={{ minHeight: "max(720px, calc(100dvh - 7rem))" }}>
+      {/* One header row: the month and its navigation, the month in
+          numbers, then the view switch and export. Replaces the screen
+          title block so the grid gets the height. */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Previous month" onClick={() => setAnchor(new Date(year, month - 1, 1))}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h2 className="min-w-[12.5rem] text-center font-display text-2xl font-semibold tracking-tight">
+          <h1 className="min-w-[13rem] text-center font-display text-2xl font-semibold tracking-tight">
             {monthName} <span className="font-normal text-muted-foreground">{year}</span>
-          </h2>
+          </h1>
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Next month" onClick={() => setAnchor(new Date(year, month + 1, 1))}>
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -394,7 +397,7 @@ function MonthView({ items }: { items: CalendarItem[] }) {
             Today
           </Button>
         </div>
-        <div className="ml-auto flex flex-wrap items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full bg-brand/10 px-3 py-1 font-medium text-brand-fg">
             <span data-numeric className="font-mono font-semibold tabular-nums">{left}</span> still to do
           </span>
@@ -408,6 +411,7 @@ function MonthView({ items }: { items: CalendarItem[] }) {
             <span data-numeric className="font-mono font-semibold tabular-nums">{doneCount}</span> done
           </span>
         </div>
+        <div className="ml-auto">{controls}</div>
       </div>
 
       {/* Legend and filter: one chip per course, in its color. */}
