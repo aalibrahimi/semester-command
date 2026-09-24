@@ -3,245 +3,512 @@
   "course": "ling112",
   "lessons": "Chapter 0 · Week 1",
   "title": "What syntax studies, and how to read a gloss",
-  "summary": "Say what a sentence's 'structure' is and why linguists believe in it; read and write a three-line gloss for an Arabic sentence; recognize the word-order and movement parameters Dr. Nie uses.",
-  "estimatedMinutes": 45,
-  "sourceNote": "Week 1 handout (Introduction), Tallerman 2011 ch. 1.2 (interlinear glossing), Chomsky 1957 ch. 1–2, the Aug 20 lecture.",
+  "summary": "From zero: the handful of words every lecture assumes (morpheme, subject, object, *, #), why linguists say sentences have structure, how the world's languages differ (word order and the other parameters), and how to read and write the three-line gloss used for every non-English example.",
+  "estimatedMinutes": 55,
+  "sourceNote": "Week 1 handout (Introduction), Tallerman 2011 ch. 1.2 (interlinear glossing), Chomsky 1957 ch. 1 to 2, the Aug 20 lecture. Rebuilt for readers who missed the lecture: every term the handout takes for granted is defined before it is used.",
   "requires": [],
   "sections": [
     {
-      "id": "why",
-      "heading": "Why sentences have structure (and not just order)",
+      "id": "start",
+      "heading": "Start here: the words every lecture assumes you know",
       "blocks": [
         {
           "type": "prose",
-          "md": "The obvious view of a sentence is that it's a list of words in a row: *the cat in the hat sat on the mat*. Reverse the list and it's garbage — *mat the on sat hat the in cat the* — which the handout marks with an asterisk: `*` means **ungrammatical**, a sentence that violates a rule of the language. So order clearly matters. Syntax is the claim that ==order isn't the whole story==: words are grouped into units, and the units are nested inside bigger units, like a tree.",
-          "slide": "The obvious view, and why it's wrong",
-          "id": "why.5d3ce763"
-        },
-        {
-          "type": "prose",
-          "label": "why",
-          "md": "**Dr. Nie's proof from the handout** 'Sherlock will ask Watson to destroy the evidence' is fine. 'Will Sherlock ask Watson to destroy?' is not — the verb *destroy* needs an object. But 'What will Sherlock ask Watson to destroy?' IS fine, and *destroy* still has no word after it. The object is *what*, sitting eight words away at the front. If sentences were only linear strings, the same string 'ask Watson to destroy' couldn't be good in one case and bad in another. Something links 'what' to the empty slot after 'destroy' across all that distance. That something is ==structure==.",
-          "slide": "The evidence: long-distance dependencies",
-          "id": "why.91ba15dc"
-        },
-        {
-          "type": "figure",
-          "viewBox": "0 0 640 240",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='lddA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The filler: 'what' is pronounced at the front, far from the verb that needs it.</title><rect x='30' y='118' width='60' height='30' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='60' y='139' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--accent-fg))'>What</text><text x='60' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>filler</text></g><g><title>Eight words separate the filler from the verb it belongs to.</title><text x='130' y='139' text-anchor='middle' font-size='15'>will</text><text x='210' y='139' text-anchor='middle' font-size='15'>Sherlock</text><text x='285' y='139' text-anchor='middle' font-size='15'>ask</text><text x='350' y='139' text-anchor='middle' font-size='15'>Watson</text><text x='405' y='139' text-anchor='middle' font-size='15'>to</text><text x='465' y='139' text-anchor='middle' font-size='15'>destroy</text></g><g><title>The gap: the object slot of 'destroy' is empty, and the grammar knows 'what' fills it.</title><rect x='515' y='118' width='50' height='30' rx='6' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' stroke-dasharray='5 4'/><text x='540' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>the gap</text><path d='M60 112 C 150 34, 450 34, 536 114' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#lddA)'/><text x='300' y='40' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>'what' is the object of 'destroy' — linked across the whole sentence</text></g><g><title>Remove the filler and the same string of words becomes ungrammatical: the gap must be filled by something.</title><text x='40' y='207' font-size='13' fill='rgb(var(--critical))'>*Will Sherlock ask Watson to destroy?</text><text x='40' y='227' font-size='11' opacity='0.7'>Same words after 'ask' — bad alone, fine with a filler. Only structure can link the two positions.</text></g></g>",
-          "caption": "Dr. Nie's Sherlock argument, drawn. 'Destroy' needs an object; in the question there is nothing after it, because the object — 'what' — sits at the front. The dependency (blue arrow) crosses eight words. A flat word-list grammar has no way to say 'this empty slot is filled by that word over there'; a grammar with structure does. Hover any part.",
-          "slide": "The Sherlock sentence: filler and gap",
-          "id": "why.b7d21f4e"
-        },
-        {
-          "type": "prose",
-          "md": "Two more things the handout wants you to hold. **Ungrammatical is not the same as unlikely**: 'Colorless green ideas sleep furiously' (Chomsky's example) is grammatical nonsense, and 'I want that you leave' is ungrammatical English even though you understand it perfectly — !!judging sentences by whether they sound sensible instead of whether they follow the rules!! is the classic Week 1 error. **Most rules are unconscious**: you were never taught the rule that blocks *'Will Sherlock ask Watson to destroy?', yet you know it instantly. Syntax is the project of writing down the rules you already follow.",
-          "id": "why.97dd1383"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Every grammar checker and every NLP parser is built on this chapter's claim: they build a tree over your sentence, not a list. Voice assistants misparse commands for exactly the reasons named here — 'Call me an ambulance' famously fails because two structures fit one string, and the assistant picks the naming one. Headline writers fight ==crash blossoms== — headlines like 'Squad helps dog bite victim' that go viral because readers build the wrong tree. And large language models, which are never shown a tree, turn out to rediscover structure on their own: probing studies find filler–gap links like the Sherlock arrow encoded inside them, because predicting the next word well is impossible without them.",
-          "id": "why.8ac4e9d1"
+          "md": "The Week 1 handout was written for people sitting in the room, so it uses some words without explaining them. Here they are, one at a time. Once these are clear, the rest of the chapter (and the rest of the course) reads much easier.",
+          "slide": "Why start here",
+          "id": "start.b32ec292"
         },
         {
           "type": "definition",
           "term": "Syntax",
-          "body": "The study of the structure of phrases and sentences — how words combine into units and units into sentences — and of the rules that make some combinations grammatical and others not.",
-          "id": "why.315e548b"
+          "body": "The study of how words combine into phrases and sentences, and the rules that decide which combinations are allowed. Not what words mean (that's semantics), not how they sound (phonology): how they **fit together**.",
+          "slide": "Syntax",
+          "id": "start.da62744b"
+        },
+        {
+          "type": "definition",
+          "term": "Morpheme",
+          "body": "The smallest piece of a word that has its own meaning or job. *Unhappiness* has three: *un-* (not) + *happi* (happy) + *-ness* (turns it into a noun). A word can be one morpheme (*dog*) or many.",
+          "id": "start.3f9f212b"
+        },
+        {
+          "type": "definition",
+          "term": "Root and affix",
+          "body": "The **root** carries the main meaning (*happy*, *bint* 'girl'). An **affix** is a piece glued onto a root that can't stand alone. A **prefix** goes in front (*un-*, Arabic *al-* 'the'); a **suffix** goes at the end (*-ness*, *-ed*, Arabic *-u*).",
+          "id": "start.b4a03aab"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='55' font-size='13' font-weight='700'>English</text><g><title>'un-' is a prefix: an affix glued to the FRONT. It means 'not'.</title><rect x='110' y='30' width='52' height='38' rx='8' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.5'/><text x='136' y='55' text-anchor='middle' font-size='17' font-weight='600'>un</text><text x='136' y='86' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--at-risk))'>prefix</text></g><text x='171' y='56' text-anchor='middle' font-size='20' font-weight='700' opacity='0.6'>-</text><g><title>The root carries the main meaning: happy.</title><rect x='180' y='30' width='73' height='38' rx='8' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='217' y='55' text-anchor='middle' font-size='17' font-weight='600'>happi</text><text x='217' y='86' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--accent-fg))'>root</text></g><text x='262' y='56' text-anchor='middle' font-size='20' font-weight='700' opacity='0.6'>-</text><g><title>'-ness' is a suffix: an affix glued to the END. It turns an adjective into a noun.</title><rect x='271' y='30' width='63' height='38' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='303' y='55' text-anchor='middle' font-size='17' font-weight='600'>ness</text><text x='303' y='86' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--on-track))'>suffix</text></g><text x='356' y='55' font-size='12.5' opacity='0.75'>'unhappiness' = 3 morphemes</text><text x='20' y='151' font-size='13' font-weight='700'>Arabic</text><g><title>'al-' means 'the'. It is glued to the front of the noun.</title><rect x='110' y='126' width='97' height='38' rx='8' fill='rgb(var(--at-risk) / 0.12)' stroke='rgb(var(--at-risk))' stroke-width='1.5'/><text x='159' y='151' text-anchor='middle' font-size='17' font-weight='600'>al</text><text x='159' y='182' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--at-risk))'>prefix: 'the'</text></g><text x='216' y='152' text-anchor='middle' font-size='20' font-weight='700' opacity='0.6'>-</text><g><title>The root: bint, 'girl'.</title><rect x='225' y='126' width='78' height='38' rx='8' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='264' y='151' text-anchor='middle' font-size='17' font-weight='600'>bint</text><text x='264' y='182' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--accent-fg))'>root: girl</text></g><text x='312' y='152' text-anchor='middle' font-size='20' font-weight='700' opacity='0.6'>-</text><g><title>'-u' marks the noun as the SUBJECT (nominative case).</title><rect x='321' y='126' width='110' height='38' rx='8' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='376' y='151' text-anchor='middle' font-size='17' font-weight='600'>u</text><text x='376' y='182' text-anchor='middle' font-size='10.5' font-weight='700' fill='rgb(var(--on-track))'>suffix: subject</text></g><text x='453' y='151' font-size='12.5' opacity='0.75'>'al-bintu' = 'the girl' (as subject)</text><text x='330' y='218' text-anchor='middle' font-size='12' opacity='0.75'>A hyphen in a gloss marks exactly these seams between morphemes.</text></g>",
+          "viewBox": "0 0 660 222",
+          "caption": "Words split into morphemes. The blue piece is the root; the others are affixes. In a gloss you'll draw a hyphen at every seam. Hover each piece.",
+          "slide": "Morphemes, drawn",
+          "id": "start.f2f78e77"
+        },
+        {
+          "type": "definition",
+          "term": "Subject, verb, object",
+          "body": "The three main jobs in a basic sentence. The **verb** is the action or state (*read*). The **subject** is usually the doer (*Naomi*). The **object** is usually what the action happens to (*the letter*). In *Naomi read the letter*: S = Naomi, V = read, O = the letter.",
+          "slide": "Subject, verb, object",
+          "id": "start.6b7cd9b2"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='24' font-size='12' opacity='0.8'>Same three jobs, different order:</text><rect x='250' y='12' width='12' height='12' rx='3' fill='rgb(var(--accent-fg))'/><text x='267' y='23' font-size='11.5'>subject (doer)</text><rect x='386' y='12' width='12' height='12' rx='3' fill='rgb(var(--at-risk))'/><text x='403' y='23' font-size='11.5'>verb (action)</text><rect x='522' y='12' width='12' height='12' rx='3' fill='rgb(var(--on-track))'/><text x='539' y='23' font-size='11.5'>object (receiver)</text><text x='20' y='71' font-size='13' font-weight='700'>English · SVO</text><g><title>Subject (doer): 'Naomi'.</title><rect x='190' y='46' width='92' height='40' rx='9' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='200' y='62' font-size='10' font-weight='800' fill='rgb(var(--accent-fg))'>S</text><text x='242' y='73' text-anchor='middle' font-size='15'>Naomi</text></g><g><title>Verb (action): 'read'.</title><rect x='292' y='46' width='92' height='40' rx='9' fill='rgb(var(--at-risk) / 0.13)' stroke='rgb(var(--at-risk))' stroke-width='1.5'/><text x='302' y='62' font-size='10' font-weight='800' fill='rgb(var(--at-risk))'>V</text><text x='344' y='73' text-anchor='middle' font-size='15'>read</text></g><g><title>Object (receiver): 'the letter'.</title><rect x='394' y='46' width='124' height='40' rx='9' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='404' y='62' font-size='10' font-weight='800' fill='rgb(var(--on-track))'>O</text><text x='462' y='73' text-anchor='middle' font-size='15'>the letter</text></g><text x='20' y='129' font-size='13' font-weight='700'>Japanese · SOV</text><g><title>Subject (doer): 'Naomi-ga'.</title><rect x='190' y='104' width='105' height='40' rx='9' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='200' y='120' font-size='10' font-weight='800' fill='rgb(var(--accent-fg))'>S</text><text x='249' y='131' text-anchor='middle' font-size='15'>Naomi-ga</text></g><g><title>Object (receiver): 'tegami-o'.</title><rect x='305' y='104' width='105' height='40' rx='9' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='315' y='120' font-size='10' font-weight='800' fill='rgb(var(--on-track))'>O</text><text x='364' y='131' text-anchor='middle' font-size='15'>tegami-o</text></g><g><title>Verb (action): 'yon-da'.</title><rect x='420' y='104' width='92' height='40' rx='9' fill='rgb(var(--at-risk) / 0.13)' stroke='rgb(var(--at-risk))' stroke-width='1.5'/><text x='430' y='120' font-size='10' font-weight='800' fill='rgb(var(--at-risk))'>V</text><text x='472' y='131' text-anchor='middle' font-size='15'>yon-da</text></g><text x='20' y='187' font-size='13' font-weight='700'>Arabic (MSA) · VSO</text><g><title>Verb (action): 'qaraʔa'.</title><rect x='190' y='162' width='92' height='40' rx='9' fill='rgb(var(--at-risk) / 0.13)' stroke='rgb(var(--at-risk))' stroke-width='1.5'/><text x='200' y='178' font-size='10' font-weight='800' fill='rgb(var(--at-risk))'>V</text><text x='242' y='189' text-anchor='middle' font-size='15'>qaraʔa</text></g><g><title>Subject (doer): 'l-waladu'.</title><rect x='292' y='162' width='105' height='40' rx='9' fill='rgb(var(--accent-fg) / 0.13)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='302' y='178' font-size='10' font-weight='800' fill='rgb(var(--accent-fg))'>S</text><text x='351' y='189' text-anchor='middle' font-size='15'>l-waladu</text></g><g><title>Object (receiver): 'l-kitāba'.</title><rect x='407' y='162' width='105' height='40' rx='9' fill='rgb(var(--on-track) / 0.13)' stroke='rgb(var(--on-track))' stroke-width='1.5'/><text x='417' y='178' font-size='10' font-weight='800' fill='rgb(var(--on-track))'>O</text><text x='466' y='189' text-anchor='middle' font-size='15'>l-kitāba</text></g><text x='330' y='230' text-anchor='middle' font-size='12' opacity='0.75'>All three mean 'Naomi / the boy read the letter / book'. Only the ORDER of S, V, O changes.</text></g>",
+          "viewBox": "0 0 660 238",
+          "caption": "The same three jobs in three languages. English puts them S V O, Japanese S O V, Arabic V S O. Linguists compare languages by writing these three letters. Hover each box.",
+          "slide": "S, V and O across languages",
+          "id": "start.09a5b164"
+        },
+        {
+          "type": "definition",
+          "term": "Grammatical vs ungrammatical",
+          "body": "A sentence is **grammatical** if it follows the rules native speakers carry in their heads, and **ungrammatical** if it breaks one. This is not about school rules (*don't end a sentence with a preposition*); it's about what real speakers accept.",
+          "id": "start.5884edfe"
+        },
+        {
+          "type": "definition",
+          "term": "The star * and the hash #",
+          "body": "`*` in front of a sentence means **ungrammatical**: `*Cat the sat.` `#` means **grammatical but weird in meaning**: `#The rock ate lunch.` Dr. Nie uses both on every handout, so read them as labels, not typos.",
+          "id": "start.80a2db76"
+        },
+        {
+          "type": "trap",
+          "body": "Ungrammatical is not the same as nonsense. *Colorless green ideas sleep furiously* (Chomsky) makes no sense, but every rule is followed, so it's grammatical. *I want that you leave* makes perfect sense, but English doesn't allow it, so it gets a `*`.",
+          "source": "Week 1 handout",
+          "points": null,
+          "slide": "Trap: sense vs rules",
+          "id": "start.d6f1944e"
+        },
+        {
+          "type": "check",
+          "prompt": "Split *replayed* into morphemes and name each one.",
+          "answer": "*re-* (prefix, 'again') + *play* (root) + *-ed* (suffix, past tense). Three morphemes.",
+          "sectionRef": "start",
+          "id": "start.e5706b4a"
+        },
+        {
+          "type": "check",
+          "prompt": "In *The dog chased the cat*, which is the subject and which is the object?",
+          "answer": "Subject: *the dog* (the doer). Object: *the cat* (what the chasing happens to). Verb: *chased*.",
+          "sectionRef": "start",
+          "id": "start.a5177db1"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "heading": "Why linguists say sentences have structure",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The obvious view** is that a sentence is just words in a row. Order clearly matters: *the cat sat on the mat* is fine, `*mat the on sat cat the` is garbage. But syntax makes a bigger claim: the words are **grouped into units**, and the units sit inside bigger units, like boxes in boxes. That grouping is what linguists call **structure**.",
+          "slide": "Order isn't the whole story",
+          "id": "why.4d3355f2"
+        },
+        {
+          "type": "prose",
+          "md": "**Evidence 1: one word order, two meanings.** *I saw the man with the telescope.* Did I use the telescope, or did the man have it? The words are in exactly the same order either way. If a sentence were only a row of words, one row could only mean one thing. So the two meanings must come from two **groupings**.",
+          "id": "why.f92c30f0"
+        },
+        {
+          "type": "prose",
+          "md": "**Evidence 2: words that belong together can be far apart.** Dr. Nie's handout example: *Sherlock will ask Watson to destroy the evidence* is fine. Drop the object and it breaks: `*Will Sherlock ask Watson to destroy?` But *What will Sherlock ask Watson to destroy?* is fine again, even though nothing comes after *destroy*. The object is still there: it's *what*, moved to the front, eight words away. Something links *what* to the empty spot after *destroy*. That link runs through the structure, not the row.",
+          "id": "why.d5da04d4"
+        },
+        {
+          "type": "figure",
+          "viewBox": "0 0 640 240",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='lddA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The filler: 'what' is pronounced at the front, far from the verb that needs it.</title><rect x='30' y='118' width='60' height='30' rx='6' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.5'/><text x='60' y='139' text-anchor='middle' font-size='15' font-weight='700' fill='rgb(var(--accent-fg))'>What</text><text x='60' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>filler</text></g><g><title>Eight words separate the filler from the verb it belongs to.</title><text x='130' y='139' text-anchor='middle' font-size='15'>will</text><text x='210' y='139' text-anchor='middle' font-size='15'>Sherlock</text><text x='285' y='139' text-anchor='middle' font-size='15'>ask</text><text x='350' y='139' text-anchor='middle' font-size='15'>Watson</text><text x='405' y='139' text-anchor='middle' font-size='15'>to</text><text x='465' y='139' text-anchor='middle' font-size='15'>destroy</text></g><g><title>The gap: the object slot of 'destroy' is empty, and the grammar knows 'what' fills it.</title><rect x='515' y='118' width='50' height='30' rx='6' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.5' stroke-dasharray='5 4'/><text x='540' y='168' text-anchor='middle' font-size='10' fill='rgb(var(--accent-fg))'>the gap</text><path d='M60 112 C 150 34, 450 34, 536 114' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#lddA)'/><text x='300' y='40' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))'>'what' is the object of 'destroy': linked across the whole sentence</text></g><g><title>Remove the filler and the same string of words becomes ungrammatical: the gap must be filled by something.</title><text x='40' y='207' font-size='13' fill='rgb(var(--critical))'>*Will Sherlock ask Watson to destroy?</text><text x='40' y='227' font-size='11' opacity='0.7'>Same words after 'ask': bad alone, fine with a filler. Only structure can link the two positions.</text></g></g>",
+          "caption": "Dr. Nie's Sherlock argument, drawn. 'Destroy' needs an object; in the question there is nothing after it, because the object: 'what': sits at the front. The dependency (blue arrow) crosses eight words. A flat word-list grammar has no way to say 'this empty slot is filled by that word over there'; a grammar with structure does. Hover any part.",
+          "slide": "The Sherlock sentence: filler and gap",
+          "id": "why.b4fe6dd8"
+        },
+        {
+          "type": "stepper",
+          "title": "Why a 'row of words' grammar fails on Sherlock",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Sherlock will ask Watson to destroy the evidence.  ✓"
+              ],
+              "active": 0,
+              "caption": "Normal sentence. 'destroy' has its object: 'the evidence'."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Sherlock will ask Watson to destroy the evidence.  ✓",
+                "*Will Sherlock ask Watson to destroy?  ✗"
+              ],
+              "active": 1,
+              "caption": "Take the object away: broken. 'destroy' needs an object."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Sherlock will ask Watson to destroy the evidence.  ✓",
+                "*Will Sherlock ask Watson to destroy?  ✗",
+                "What will Sherlock ask Watson to destroy?  ✓"
+              ],
+              "active": 2,
+              "caption": "Same ending, still no word after 'destroy', but now it's fine. Why?"
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "What will Sherlock ask Watson to destroy ___ ?",
+                "   ^ filler                                  ^ gap"
+              ],
+              "active": 0,
+              "caption": "Because 'what' IS the object. It was pronounced at the front and left a gap. The grammar connects filler and gap across the whole sentence: that connection needs structure."
+            }
+          ],
+          "slide": true,
+          "id": "why.1f5c3b67"
+        },
+        {
+          "type": "prose",
+          "md": "**Evidence 3: you know rules nobody taught you.** No teacher ever told you that `*Will Sherlock ask Watson to destroy?` is wrong, yet you knew instantly. Syntax is the project of writing down the rules you already follow without noticing.",
+          "id": "why.296a5560"
+        },
+        {
+          "type": "definition",
+          "term": "Structure",
+          "body": "The way the words of a sentence are grouped into units, and those units into bigger units. It's invisible in the written row of words, but speakers compute it every time they understand a sentence.",
+          "id": "why.99219985"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you'll meet this** Every grammar checker and voice assistant builds a tree over your sentence, not a list. 'Call me an ambulance' is a joke because two structures fit one string. Headline writers fight 'crash blossoms' like *Squad helps dog bite victim*, where readers build the wrong grouping.",
+          "label": "world",
+          "id": "why.0e390f55"
+        },
+        {
+          "type": "check",
+          "prompt": "Give the two meanings of *Visiting relatives can be boring* and say what that proves.",
+          "answer": "(1) Relatives who visit you can be boring. (2) Going to visit relatives can be boring. Same words, same order, two meanings: so meaning depends on grouping (structure), not just order.",
+          "sectionRef": "why",
+          "id": "why.5f06ce2c"
         }
       ]
     },
     {
       "id": "universals",
-      "heading": "Four properties of every human language",
+      "heading": "Five properties every human language has",
       "blocks": [
         {
           "type": "prose",
-          "md": "**Missed this lecture?** The next chapter, *Which universal is this?*, walks through all five from zero, one at a time, with pictures, trees you can click, and a practice set that has you name the property from an example.",
-          "id": "universals.da0744a7"
+          "md": "Every language, from English to Arabic to sign languages, shares five properties: **categories**, **constituents**, **sentence types**, **hierarchy**, and **recursion**. They have their own chapter, **Which universal is this?**, with pictures, trees and practice for each. Read that one next. Here is the one-line version so you know the names.",
+          "slide": "The five, in one line each",
+          "id": "universals.56a003d2"
         },
         {
-          "type": "definition",
-          "term": "Words belong to syntactic categories",
-          "body": "(parts of speech): noun, verb, adjective… — Week 2.",
-          "id": "universals.cf86c35d"
-        },
-        {
-          "type": "definition",
-          "term": "Words combine into larger units",
-          "body": "called **constituents** — Weeks 4–5. A constituent is a group of words that behaves as a single unit; 'in the hat' is one, 'hat sat' is not.",
-          "id": "universals.a9e22ea2"
-        },
-        {
-          "type": "definition",
-          "term": "Constituents combine into sentence types",
-          "body": "declarative, interrogative, imperative.",
-          "id": "universals.4d43eb6c"
-        },
-        {
-          "type": "definition",
-          "term": "Hierarchy and recursion. Hierarchy",
-          "body": "the *order in which* words group matters — 'the thief tripped that unlucky man with a cane' means two different things depending on whether *with a cane* groups with *tripped* or with *man*. Recursion: a unit can contain another unit of the same kind, without limit — 'I remember that [John told me that [the Times reported that [Sarah won]]].'",
-          "id": "universals.38c3334f"
-        },
-        {
-          "type": "figure",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>Reading A: the verb phrase has three daughters — the verb, the object NP, and the PP. The cane belongs to the tripping.</title><text x='40' y='20' font-size='12' font-weight='600'>Reading A: tripped [with a cane]</text><text x='150' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='150' y1='60' x2='55' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='150' y2='112' stroke='currentColor' opacity='0.5'/><line x1='150' y1='60' x2='258' y2='112' stroke='currentColor' opacity='0.5'/><text x='55' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='55' y1='132' x2='55' y2='164' stroke='currentColor' opacity='0.5'/><text x='55' y='182' text-anchor='middle' font-size='12'>tripped</text><text x='150' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M150 132 L102 164 L198 164 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='150' y='181' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>In reading A the PP attaches to the VP, beside the object: it answers 'tripped HOW?' — with a cane, the instrument.</title><text x='258' y='126' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M258 132 L214 164 L302 164 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='258' y='181' text-anchor='middle' font-size='10.5'>with a cane</text><text x='160' y='258' text-anchor='middle' font-size='11' opacity='0.7'>the thief used the cane</text></g><line x1='330' y1='14' x2='330' y2='266' stroke='currentColor' opacity='0.12'/><g><title>Reading B: the verb has only ONE dependent — a bigger NP that contains the PP inside it.</title><text x='370' y='20' font-size='12' font-weight='600'>Reading B: [that unlucky man with a cane]</text><text x='475' y='52' text-anchor='middle' font-size='13' font-weight='700' fill='rgb(var(--accent-fg))'>VP</text><line x1='475' y1='60' x2='390' y2='112' stroke='currentColor' opacity='0.5'/><line x1='475' y1='60' x2='520' y2='112' stroke='currentColor' opacity='0.5'/><text x='390' y='126' text-anchor='middle' font-size='12' font-weight='600'>V</text><line x1='390' y1='132' x2='390' y2='196' stroke='currentColor' opacity='0.5'/><text x='390' y='214' text-anchor='middle' font-size='12'>tripped</text></g><g><title>The whole object NP: 'that unlucky man with a cane'. Because the PP sits inside it, the man is the one holding the cane.</title><text x='520' y='126' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>NP</text><line x1='520' y1='132' x2='455' y2='166' stroke='currentColor' opacity='0.5'/><line x1='520' y1='132' x2='592' y2='166' stroke='currentColor' opacity='0.5'/><text x='455' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--on-track))'>NP</text><path d='M455 184 L408 216 L502 216 Z' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='455' y='233' text-anchor='middle' font-size='10.5'>that unlucky man</text></g><g><title>In reading B the PP attaches inside the NP: it answers 'WHICH man?' — the one with a cane.</title><text x='592' y='178' text-anchor='middle' font-size='12' font-weight='600' fill='rgb(var(--accent-fg))'>PP</text><path d='M592 184 L550 216 L634 216 Z' fill='rgb(var(--accent-fg) / 0.12)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='592' y='233' text-anchor='middle' font-size='10.5'>with a cane</text><text x='490' y='258' text-anchor='middle' font-size='11' opacity='0.7'>the man carries the cane</text></g></g>",
-          "viewBox": "0 0 660 280",
-          "caption": "'The thief tripped that unlucky man with a cane.' One string, two trees. Left: the PP is the verb's own dependent — the cane is the instrument of tripping. Right: the same PP sits inside the object NP — the cane is the man's. Nothing about the word order changed; only the grouping did, and the meaning followed it. Hover any node.",
-          "slide": "Hierarchy: the same words, two structures",
-          "id": "universals.aa4a2660"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** Hierarchy and recursion are the two properties that make language look like code, and computer scientists noticed: the grammar formalism behind every programming-language parser (context-free grammars) came out of Chomsky's work on exactly this nesting. Attachment ambiguity — the cane figure above — is still ==the single most common parse error in NLP systems==, and it has real teeth in contracts: disputes turn on whether a trailing phrase groups with the last item or the whole list. Recursion is also why no grammar checker can work from a fixed list of sentence patterns: 'the house that Jack built that the rat ate' can grow forever, so the checker needs rules that nest, not templates.",
-          "id": "universals.6d2f8b3a"
-        },
-        {
-          "type": "check",
-          "prompt": "Which of these shows recursion: (a) 'big red ball', (b) 'the house that Jack built that the rat ate', (c) 'quickly ran'?",
-          "answer": "(b). A relative clause ('that Jack built') contains another relative clause ('that the rat ate…') — a unit inside a unit of the same type. (a) is just two adjectives; (c) is an adverb and a verb.",
-          "sectionRef": "universals",
-          "id": "universals.ae7f3903"
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Categories",
+                "lines": [
+                  "Words come in kinds: noun, verb, adjective…",
+                  "Found by which slot a word fits."
+                ],
+                "badge": "Week 2",
+                "tone": "brand"
+              },
+              {
+                "title": "Constituents",
+                "lines": [
+                  "Words group into units that act as one piece.",
+                  "'in the hat' is one; 'hat sat' is not."
+                ],
+                "badge": "Weeks 4 to 5",
+                "tone": "green"
+              },
+              {
+                "title": "Sentence types",
+                "lines": [
+                  "Statement, question, command.",
+                  "Every language can ask and order."
+                ],
+                "badge": "Week 1",
+                "tone": "amber"
+              },
+              {
+                "title": "Hierarchy + recursion",
+                "lines": [
+                  "Units sit inside units; grouping decides meaning.",
+                  "A unit can hold another of the same kind, forever."
+                ],
+                "badge": "Week 6",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The five universals. Hierarchy and recursion share a card here; the next chapter separates them.",
+          "slide": "The five universals",
+          "id": "universals.82b33a09"
         }
       ]
     },
     {
       "id": "variation",
-      "heading": "How languages differ: the parameters (handout §3)",
+      "heading": "How languages differ: the parameters",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Parameter",
+          "body": "A yes/no or either/or choice that languages make differently, like a setting on a switch. All languages share the universals; they differ in their parameter settings. Example: does the verb come before or after its object?",
+          "slide": "What a parameter is",
+          "id": "variation.55f1a6af"
+        },
+        {
           "type": "prose",
-          "md": "The 'dominant' word order is the most common, neutral order of Subject, Object and Verb. Dr. Nie's WALS numbers: **SOV 41%** (Japanese: *Naomi-ga tegami-o yon-da*, 'Naomi letter read'), **SVO 35%** (English, French), **VSO 7%** (Tagalog: *Binasa ni Naomi ang liham*, 'read Naomi the-letter'), VOS 2%, OVS/OSV 1%, and 14% with no dominant order.",
-          "slide": "Word order",
-          "id": "variation.dcd2a006"
+          "md": "**The biggest parameter: basic word order.** Take the three jobs from the start of the chapter (S, V, O). Every language has a most common, neutral order for them, called its **dominant word order**. English is SVO (*Naomi read the letter*), Japanese is SOV (*Naomi-ga tegami-o yon-da*, 'Naomi letter read'), Tagalog is VSO (*Binasa ni Naomi ang liham*, 'read Naomi the-letter').",
+          "id": "variation.26169c7f"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><g><title>SOV: about 41% of the world's languages (Japanese, Korean, Hindi).</title><text x='96' y='35' text-anchor='end' font-size='13' font-weight='700'>SOV</text><rect x='106' y='20' width='328' height='22' rx='5' fill='rgb(var(--accent-fg))' fill-opacity='0.75'/><text x='440' y='35' font-size='12.5' font-weight='700'>41%</text><text x='484' y='35' font-size='11.5' opacity='0.7'>Japanese, Korean, Hindi</text></g><g><title>SVO: about 35% of the world's languages (English, French, Mandarin).</title><text x='96' y='69' text-anchor='end' font-size='13' font-weight='700'>SVO</text><rect x='106' y='54' width='280' height='22' rx='5' fill='rgb(var(--on-track))' fill-opacity='0.75'/><text x='392' y='69' font-size='12.5' font-weight='700'>35%</text><text x='436' y='69' font-size='11.5' opacity='0.7'>English, French, Mandarin</text></g><g><title>none: about 14% of the world's languages (no single dominant order).</title><text x='96' y='103' text-anchor='end' font-size='13' font-weight='700'>none</text><rect x='106' y='88' width='112' height='22' rx='5' fill='currentColor' fill-opacity='0.75'/><text x='224' y='103' font-size='12.5' font-weight='700'>14%</text><text x='268' y='103' font-size='11.5' opacity='0.7'>no single dominant order</text></g><g><title>VSO: about 7% of the world's languages (Tagalog, MSA Arabic, Irish).</title><text x='96' y='137' text-anchor='end' font-size='13' font-weight='700'>VSO</text><rect x='106' y='122' width='56' height='22' rx='5' fill='rgb(var(--at-risk))' fill-opacity='0.75'/><text x='168' y='137' font-size='12.5' font-weight='700'>7%</text><text x='212' y='137' font-size='11.5' opacity='0.7'>Tagalog, MSA Arabic, Irish</text></g><g><title>VOS: about 2% of the world's languages (Malagasy).</title><text x='96' y='171' text-anchor='end' font-size='13' font-weight='700'>VOS</text><rect x='106' y='156' width='16' height='22' rx='5' fill='rgb(var(--critical))' fill-opacity='0.75'/><text x='128' y='171' font-size='12.5' font-weight='700'>2%</text><text x='172' y='171' font-size='11.5' opacity='0.7'>Malagasy</text></g><g><title>OVS/OSV: about 1% of the world's languages (very rare).</title><text x='96' y='205' text-anchor='end' font-size='13' font-weight='700'>OVS/OSV</text><rect x='106' y='190' width='8' height='22' rx='5' fill='rgb(var(--critical))' fill-opacity='0.75'/><text x='120' y='205' font-size='12.5' font-weight='700'>1%</text><text x='164' y='205' font-size='11.5' opacity='0.7'>very rare</text></g></g>",
+          "viewBox": "0 0 660 222",
+          "caption": "How common each dominant order is across the world's languages (WALS numbers from the Week 1 handout). SOV and SVO together cover three quarters of languages. Hover each bar.",
+          "slide": "Word order around the world",
+          "id": "variation.33d42872"
+        },
+        {
+          "type": "prose",
+          "md": "**Four more parameters on the handout.** Each one is a single choice. Read the definition, then the example.",
+          "slide": "The other parameters",
+          "id": "variation.20e7d64f"
         },
         {
           "type": "table",
           "columns": [
             "Parameter",
-            "Options",
-            "Examples from the handout"
+            "What it means",
+            "Setting A",
+            "Setting B"
           ],
           "rows": [
             [
-              "Adjective–noun",
-              "Adj-N (27%) vs N-Adj (64%)",
-              "English 'big red ball' / Vietnamese 'quả bóng đỏ lớn' (ball red big); Spanish mostly N-Adj"
+              "Adjective and noun",
+              "Does the describing word go before or after the noun?",
+              "Adj-N: English *big red ball*",
+              "N-Adj: Vietnamese *quả bóng đỏ lớn* (ball red big), Arabic *kitāb kabīr* (book big)"
             ],
             [
               "Adposition",
-              "Preposition vs postposition",
-              "English 'in the room' / Korean 'bang-eseo' (room-in)"
+              "An **adposition** is a little word like *in*, *on*, *to*. Before the noun = **preposition**, after = **postposition**.",
+              "Preposition: English *in the room*",
+              "Postposition: Korean *bang-eseo* (room-in)"
             ],
             [
               "Subject pronouns",
-              "Overt vs null-subject",
-              "Spanish 'Habla español' = '(s/he) speaks Spanish' — no pronoun needed"
+              "Must the subject be said out loud, or can it be dropped because the verb ending already tells you?",
+              "Overt: English needs *he* in *He speaks*",
+              "Null subject: Spanish *Habla español* = '(he/she) speaks Spanish'"
             ],
             [
               "Wh-questions",
-              "Wh-movement vs wh-in-situ",
-              "Syrian Arabic moves 'šu' (what) to the front; Mandarin leaves 'shénme' in the object slot"
+              "A **wh-word** is who, what, where, when, why, how. Does it move to the front of the question, or stay where the answer would go?",
+              "Wh-movement: English *What did you buy __?*",
+              "Wh-in-situ ('in place'): Mandarin *Nǐ mǎi le shénme?* (you buy PAST what)"
             ]
           ],
-          "slide": "The other parameters",
-          "id": "variation.44501fa7"
+          "title": "The parameters, defined",
+          "slide": "The parameter table",
+          "id": "variation.999969da"
         },
         {
           "type": "trap",
-          "body": "**Your Arabic, on this table** MSA: neutral order is **VSO** (*qaraʔa l-walad-u l-kitāb-a*, 'read the-boy the-book'), with SVO common in speech and in topic-first sentences. **N-Adj**: *kitāb kabīr* (book big). **Prepositions**: *fī l-bayt* (in the-house). **Null subject**: *yatakallam* alone means 'he speaks'. **Wh-movement**: *māḏā qaraʔa l-walad?* 'what read the-boy?' — the wh-word fronts, like the Syrian example on the handout. You can fill every row of Dr. Nie's table from a language you speak — that's a ready-made oral-exam example set.",
+          "body": "**Your Arabic fills every row.** MSA: neutral order **VSO** (*qaraʔa l-walad-u l-kitāb-a*, 'read the-boy the-book'), SVO common in speech. **N-Adj**: *kitāb kabīr* (book big). **Prepositions**: *fī l-bayt* (in the-house). **Null subject**: *yatakallam* alone means 'he speaks'. **Wh-movement**: *māḏā qaraʔa l-walad?* 'what read the-boy?'. That's a ready-made oral-exam example set from a language you speak.",
           "source": "Exam",
           "points": null,
-          "id": "variation.4d81abbc"
+          "slide": "Your Arabic on the table",
+          "id": "variation.496d91ac"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Parameters are the reason machine translation is harder than word substitution: going from English to Japanese means ==reversing the order of head and complement in nearly every phrase==, which is why early systems produced word salad and modern ones learn reordering. They're also a localization bug generator: UI templates that glue 'You' + verb break in null-subject languages that conjugate instead, while a bare 'Sent!' translates cleanly into Spanish precisely because the subject can drop. When a voice assistant supports a wh-in-situ language, even its question detection has to change — there's no fronted 'what' to listen for.",
-          "id": "variation.9e7c1b5f"
+          "md": "**Where you'll meet this** Parameters are why machine translation is more than swapping words: English to Japanese means flipping the order inside almost every phrase. They also break app interfaces: a template that glues 'You' + verb falls apart in null-subject languages.",
+          "label": "world",
+          "id": "variation.28331bbe"
+        },
+        {
+          "type": "check",
+          "prompt": "Korean *hakkyo-e* means 'to school' (literally 'school-to'). Which parameter, and which setting?",
+          "answer": "Adposition: Korean uses a **postposition** (the 'to' word comes after the noun).",
+          "sectionRef": "variation",
+          "id": "variation.7c3a5b5b"
+        },
+        {
+          "type": "check",
+          "prompt": "Spanish *Llueve* means 'It rains', with no word for 'it'. Which parameter?",
+          "answer": "Subject pronouns: Spanish is a **null-subject** language; the verb ending does the work.",
+          "sectionRef": "variation",
+          "id": "variation.13c74972"
         }
       ]
     },
     {
       "id": "gloss",
-      "heading": "Reading and writing an interlinear gloss (Tallerman 1.2)",
+      "heading": "Reading and writing an interlinear gloss",
       "blocks": [
         {
+          "type": "definition",
+          "term": "Interlinear gloss",
+          "body": "The standard **three-line** format for showing a sentence from another language. **Line 1**: the sentence, with hyphens between morphemes. **Line 2**: the meaning of each morpheme, lined up underneath it. **Line 3**: a normal translation in quotes. 'Interlinear' just means 'between the lines'.",
+          "slide": "What a gloss is",
+          "id": "gloss.77a25d65"
+        },
+        {
           "type": "prose",
+          "md": "**Why it exists** If Dr. Nie shows you a Japanese sentence, you can't tell which word is the subject. The gloss lets anyone read the **structure** of any language without speaking it. Every non-English example in this course is written this way, and your homework answers in Arabic must be too.",
           "label": "why",
-          "md": "**Why this exists** If Dr. Nie shows you a Japanese sentence, you can't tell which word is the subject. A gloss is ==the standard three-line format that lets anyone read the structure of any language without speaking it==. Every non-English example in this course — on handouts, homework, and the oral exam — is in this format, and homework answers in Arabic must be too.",
           "slide": "Why linguists gloss",
-          "id": "gloss.cb03fdda"
+          "id": "gloss.fca4ffab"
         },
         {
-          "type": "example",
-          "title": "Line 1: the sentence with morpheme boundaries. Line 2: one gloss per morpheme, aligned under it. Line 3: a free translation in quotes.",
-          "body": "Naomi-ga    tegami-o    yon-da.          ← line 1: the language, morphemes split with hyphens\nNaomi-NOM   letter-ACC  read-PAST        ← line 2: gloss, one item per morpheme, aligned\n'Naomi read the letter.'                 ← line 3: translation, in single quotes",
-          "slide": "The three lines",
-          "id": "gloss.7818d49e"
+          "type": "stepper",
+          "title": "Building a gloss, one line at a time",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Naomi-ga tegami-o yon-da."
+              ],
+              "active": 0,
+              "caption": "Line 1: the Japanese sentence, with a hyphen at each seam between morphemes. -ga, -o and -da are suffixes."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Naomi-ga    tegami-o    yon-da.",
+                "Naomi-NOM   letter-ACC  read-PAST"
+              ],
+              "active": 1,
+              "caption": "Line 2: one meaning per morpheme, lined up underneath. Word meanings in lowercase (letter, read); grammar labels in CAPITALS (NOM, ACC, PAST)."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Naomi-ga    tegami-o    yon-da.",
+                "Naomi-NOM   letter-ACC  read-PAST",
+                "'Naomi read the letter.'"
+              ],
+              "active": 2,
+              "caption": "Line 3: a natural translation, in quotes."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Naomi-ga    tegami-o    yon-da.",
+                "Naomi-NOM   letter-ACC  read-PAST",
+                "'Naomi read the letter.'",
+                "check: 3 words = 3 words · each hyphen above has one below"
+              ],
+              "active": 3,
+              "caption": "Last step: check alignment. Same number of words on lines 1 and 2, and the same number of hyphens inside each word."
+            }
+          ],
+          "slide": true,
+          "id": "gloss.db7b23f2"
         },
         {
           "type": "definition",
-          "term": "Hyphens for affixes, = for clitics. *tegami-o*",
-          "body": "the accusative suffix is an affix, so a hyphen. English *I'm* would be *I=m*.",
-          "id": "gloss.ddae5dd2"
+          "term": "Case",
+          "body": "A marker on a noun (usually a suffix) that tells you its **job** in the sentence: subject, object, and so on. English only shows it on pronouns (*he* vs *him*). Japanese and Arabic mark it on nouns (*-ga*/*-o*, *-u*/*-a*), which is why their word order can move around without changing who did what.",
+          "id": "gloss.08fb20ac"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Label",
+            "Stands for",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "NOM",
+              "nominative case",
+              "marks the subject (the doer)"
+            ],
+            [
+              "ACC",
+              "accusative case",
+              "marks the object (the receiver)"
+            ],
+            [
+              "DAT / GEN",
+              "dative / genitive",
+              "'to someone' / 'of someone'"
+            ],
+            [
+              "PAST, PRES",
+              "past, present tense",
+              "when it happened"
+            ],
+            [
+              "1, 2, 3 + SG, PL",
+              "person + number",
+              "1SG = I, 2SG = you, 3PL = they"
+            ],
+            [
+              "M, F",
+              "masculine, feminine",
+              "grammatical gender"
+            ],
+            [
+              "DEF, INDEF",
+              "definite, indefinite",
+              "'the' vs 'a'"
+            ]
+          ],
+          "title": "The labels you'll see most",
+          "slide": "Gloss labels",
+          "id": "gloss.f977815c"
         },
         {
           "type": "definition",
-          "term": "Grammatical labels in SMALL CAPS",
-          "body": "(or all caps when you can't): NOM (nominative), ACC (accusative), DAT (dative), GEN (genitive), ERG (ergative), PAST, PRES, PFV (perfective), 1SG/2SG/3SG (person.number), PL, M/F (gender), DEF, CL (classifier). Lexical meanings in lowercase: *letter*, *read*.",
-          "id": "gloss.06abbe70"
+          "term": "Hyphen vs =",
+          "body": "A **hyphen** joins an affix to its root (*tegami-o*). An **equals sign** marks a **clitic**: a short word that leans on its neighbor in pronunciation but is still its own word, like English *'m* in *I'm*, written *I=m*.",
+          "id": "gloss.4e0c00f8"
         },
         {
           "type": "definition",
-          "term": "One-to-one alignment",
-          "body": "every morpheme in line 1 has exactly one gloss in line 2, in the same order. If one morpheme carries two meanings, join them with a period: *read.3.PAST* (French *a lu* on the handout is glossed *read.3.PAST*).",
-          "id": "gloss.9f0f90aa"
-        },
-        {
-          "type": "definition",
-          "term": "Line 3 is a translation, not a gloss",
-          "body": "natural English, in quotes.",
-          "id": "gloss.eabe746f"
-        },
-        {
-          "type": "definition",
-          "term": "Lit.",
-          "body": "for a literal reading when the free translation hides the structure: Tagalog *Doktor ang matalino*, 'The smart is doctor' (Lit.), 'The smart one is a doctor.'",
-          "id": "gloss.e35b5495"
+          "term": "Two meanings in one piece",
+          "body": "If one morpheme carries two or more meanings at once, join the glosses with a period: French *a lu* is glossed *read.3.PAST*. The period means 'these are fused, you can't split them'.",
+          "id": "gloss.24aa2f5b"
         },
         {
           "type": "example",
           "title": "'The girl read the book' in MSA",
-          "body": "qaraʔat al-bintu al-kitāba. Build the three lines.\n\n1. Segment: *qaraʔ-at* (read + 3SG feminine past), *al-bint-u* (the + girl + NOM), *al-kitāb-a* (the + book + ACC).\n2. Line 1: qaraʔ-at   al-bint-u   al-kitāb-a\n3. Line 2: read-3SG.F.PAST   DEF-girl-NOM   DEF-book-ACC   ← the verb suffix carries three features, joined with periods\n4. Line 3: 'The girl read the book.'\n5. Check alignment: three words, three glosses; each hyphen in line 1 has a hyphen in line 2. Order is V S O — which is the VSO parameter from the previous section, visible in your own data.",
+          "body": "qaraʔat al-bintu al-kitāba. Build the three lines.\n\n1. Split into morphemes: qaraʔ-at (read + 3rd person feminine past), al-bint-u (the + girl + subject case), al-kitāb-a (the + book + object case).\n2. Line 1: qaraʔ-at   al-bint-u   al-kitāb-a\n3. Line 2: read-3SG.F.PAST   DEF-girl-NOM   DEF-book-ACC  (the verb ending carries three meanings, joined with periods)\n4. Line 3: 'The girl read the book.'\n5. Check: three words and three glosses; every hyphen above has one below. The order is V S O: the VSO parameter, in your own data.",
           "slide": "Glossing an Arabic sentence, step by step",
-          "id": "gloss.fb69ef6c"
+          "id": "gloss.a026524e"
         },
         {
           "type": "trap",
-          "body": "**Dialect words are fine — consistency is what she grades** You've been mixing MSA with dialect ('dablah' for table). That's allowed. What loses points is a gloss that doesn't match its line 1 — a case suffix glossed on a dialect word that doesn't carry case, or a dropped morpheme. Pick one register per example and gloss exactly what's there.",
+          "body": "**Dialect words are fine; consistency is what she grades.** Mixing MSA with a dialect word (like *dablah* for table) is allowed. What loses points is a line 2 that doesn't match line 1: a case suffix glossed on a word that doesn't have one, or a morpheme left out. Gloss exactly what's there.",
           "source": "Exam",
           "points": null,
-          "id": "gloss.00ada89d"
-        },
-        {
-          "type": "prose",
-          "md": "**Where you'll meet this after the exam** The gloss is the interchange format of the whole field: every dataset of the world's languages — from fieldwork archives to the Universal Dependencies treebanks that train multilingual NLP models — stores its examples this way. If you ever work on low-resource NLP (where Arabic dialect work lives), glossed data is often all the data there is. Translation QA teams use glosses to argue about what a source sentence actually says without trusting either side's fluency. And in this course the return is immediate: ##every homework example you gloss correctly is an oral-exam example you already own##.",
-          "id": "gloss.4f8a2c6d"
+          "slide": "Trap: match line 1",
+          "id": "gloss.4dd24aa0"
         },
         {
           "type": "check",
-          "prompt": "Gloss the Japanese example from the Week 2 handout: *Hanako-ga Taro-o tatai-ta.* ('Hanako hit Taro.')",
-          "answer": "Line 1: Hanako-ga  Taro-o  tatai-ta. Line 2: Hanako-NOM  Taro-ACC  hit-PAST. Line 3: 'Hanako hit Taro.' Note that *Taro-o Hanako-ga tatai-ta* means the same thing — the case suffixes, not the order, say who hit whom. That's why Japanese can move words around and English can't.",
+          "prompt": "Gloss the Japanese sentence *Hanako-ga Taro-o tatai-ta* ('Hanako hit Taro').",
+          "answer": "Line 1: Hanako-ga  Taro-o  tatai-ta. Line 2: Hanako-NOM  Taro-ACC  hit-PAST. Line 3: 'Hanako hit Taro.' Note: *Taro-o Hanako-ga tatai-ta* means the same thing, because the case suffixes (not the order) say who hit whom.",
           "sectionRef": "gloss",
-          "id": "gloss.084010c1"
+          "id": "gloss.1416a90c"
         },
         {
           "type": "check",
           "prompt": "Gloss Spanish *Está lloviendo* ('It's raining').",
-          "answer": "Line 1: Está  lloviendo. Line 2: be.PRES.3SG  raining. Line 3: 'It's raining.' No subject pronoun — Spanish is a null-subject language (handout (15c)).",
+          "answer": "Line 1: Está  lloviendo. Line 2: be.PRES.3SG  raining. Line 3: 'It's raining.' There is no 'it' in line 1, so none in line 2: Spanish is null-subject.",
           "sectionRef": "gloss",
-          "id": "gloss.af68b282"
+          "id": "gloss.a94be8d0"
         }
       ]
     },
@@ -253,43 +520,117 @@
           "type": "definition",
           "term": "Before class",
           "body": "watch the assigned Carnie or TrevTutor video or read the Tallerman pages (20–30 min). The syllabus schedule lists them per day.",
-          "id": "how-class-works.d993e28b"
+          "id": "how-class-works.1fea85cb"
         },
         {
           "type": "definition",
           "term": "In class",
-          "body": "you get a paper packet — the same PDF that's on Canvas — full of blanks, and you fill it in groups. The blanks are the content. If you miss class, two classmates post their filled packets to the 'Class notes repository' discussion.",
-          "id": "how-class-works.38941867"
+          "body": "you get a paper packet: the same PDF that's on Canvas: full of blanks, and you fill it in groups. The blanks are the content. If you miss class, two classmates post their filled packets to the 'Class notes repository' discussion.",
+          "id": "how-class-works.dc0d82a7"
         },
         {
           "type": "definition",
           "term": "After class",
-          "body": "post-mortem the packet. For every answer, write one sentence of 'how I know' — which test. That sentence is the oral exam.",
-          "id": "how-class-works.4277c54e"
+          "body": "post-mortem the packet. For every answer, write one sentence of 'how I know': which test. That sentence is the oral exam.",
+          "id": "how-class-works.1e130a8e"
         },
         {
           "type": "definition",
           "term": "Homework",
           "body": "(6, 45%): Google Doc problem sets, typed, submitted as PDF named 'Alibrahimi A - LING112 - HW#'. Collaborate, but write your own; list collaborators. Due Mondays noon, no penalty until the next class starts.",
-          "id": "how-class-works.9d6d5e22"
+          "id": "how-class-works.6dc3c2e2"
         },
         {
           "type": "definition",
           "term": "Quizzes",
           "body": "(6, 10%): open-book, short, on Canvas or in class. Quiz 2 is due Mon Sep 21 noon.",
-          "id": "how-class-works.f70cf43d"
+          "id": "how-class-works.b0ac3bfd"
         },
         {
           "type": "definition",
           "term": "Oral exams",
           "body": "(2, 20%): explain a concept you chose, then apply it live. Chapter on that later.",
-          "id": "how-class-works.d13e7da8"
+          "id": "how-class-works.f84648e8"
         },
         {
           "type": "definition",
           "term": "* and #",
           "body": "`*` marks an ungrammatical sentence (breaks a rule). `#` marks a sentence that is grammatical but semantically odd ('#The earthquake informed the audience'). She uses both on every handout.",
-          "id": "how-class-works.81048466"
+          "id": "how-class-works.8ff03826"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Syntax",
+              "How words combine into phrases and sentences, and the rules for it."
+            ],
+            [
+              "Morpheme",
+              "The smallest piece of a word with its own meaning or job (un-, happy, -ness)."
+            ],
+            [
+              "Root / affix",
+              "The main-meaning piece / a piece glued on (prefix in front, suffix at the end)."
+            ],
+            [
+              "Subject, verb, object",
+              "The doer, the action, the receiver: S, V, O."
+            ],
+            [
+              "* and #",
+              "* = ungrammatical (breaks a rule). # = grammatical but odd in meaning."
+            ],
+            [
+              "Structure",
+              "How words group into units inside bigger units."
+            ],
+            [
+              "Filler and gap",
+              "A word pronounced in one place (what) that fills an empty spot somewhere else."
+            ],
+            [
+              "Parameter",
+              "An either/or choice languages make differently (word order, pre/postpositions…)."
+            ],
+            [
+              "Adposition",
+              "A word like in/on/to: preposition if before the noun, postposition if after."
+            ],
+            [
+              "Null subject",
+              "A language can drop the subject pronoun (Spanish, Arabic)."
+            ],
+            [
+              "Wh-movement / in-situ",
+              "The question word moves to the front / stays in place."
+            ],
+            [
+              "Interlinear gloss",
+              "Three lines: sentence with hyphens, meaning of each piece, translation."
+            ],
+            [
+              "Case",
+              "A marker on a noun telling its job (NOM = subject, ACC = object)."
+            ],
+            [
+              "Clitic",
+              "A small word that leans on its neighbor; written with = (I=m)."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
         }
       ]
     }
@@ -298,7 +639,7 @@
     {
       "id": "gloss-arabic",
       "title": "Write a three-line gloss",
-      "prompt": "Gloss this Arabic sentence in three lines (original with morpheme breaks · morpheme-by-morpheme with grammatical labels in small caps · free translation): *katab-at al-bint-u risaalat-an* — 'The girl wrote a letter.' (katab = write, -at = 3rd person feminine singular past, al- = the, bint = girl, -u = nominative, risaalat = letter, -an = accusative indefinite.)",
+      "prompt": "Gloss this Arabic sentence in three lines (original with morpheme breaks · morpheme-by-morpheme with grammatical labels in small caps · free translation): *katab-at al-bint-u risaalat-an*: 'The girl wrote a letter.' (katab = write, -at = 3rd person feminine singular past, al- = the, bint = girl, -u = nominative, risaalat = letter, -an = accusative indefinite.)",
       "hints": [
         "Line 1 is the sentence with hyphens at every morpheme boundary. Line 2 has exactly as many hyphenated pieces, aligned under them, with lexical meaning in lowercase and grammar in SMALL CAPS. Line 3 is plain English in quotes.",
         "The mistake that costs the most is misaligning: line 2 must have the same number of words as line 1, and the same number of hyphens inside each word. Don't merge 'the' and 'girl' into one word in the gloss.",
@@ -308,15 +649,15 @@
         "Line 1: katab-at   al-bint-u   risaalat-an",
         "Line 2: write-3F.SG.PAST   DEF-girl-NOM   letter-ACC.INDEF",
         "Line 3: 'The girl wrote a letter.'",
-        "Notice what the gloss reveals: the verb comes first (VSO), the subject is marked by -u and the object by -an — Arabic tells you who did what by case endings, so word order can vary without changing meaning."
+        "Notice what the gloss reveals: the verb comes first (VSO), the subject is marked by -u and the object by -an: Arabic tells you who did what by case endings, so word order can vary without changing meaning."
       ],
-      "why": "Interlinear glossing is how every language in the world gets documented and how corpus linguists (LING 115's morphological annotation) store it. If you ever work on a language you don't speak — in NLP, in fieldwork, in translation QA — the gloss is the only thing that tells you what the data says.",
+      "why": "Interlinear glossing is how every language in the world gets documented and how corpus linguists (LING 115's morphological annotation) store it. If you ever work on a language you don't speak: in NLP, in fieldwork, in translation QA: the gloss is the only thing that tells you what the data says.",
       "sectionRef": "gloss"
     },
     {
       "id": "structure-evidence",
       "title": "Argue that structure exists",
-      "prompt": "A friend says: 'Sentences are just words in a row — there's no hidden structure.' Give two pieces of evidence from the chapter that there *is* structure, each in two sentences: the phenomenon, then why plain word order can't explain it.",
+      "prompt": "A friend says: 'Sentences are just words in a row: there's no hidden structure.' Give two pieces of evidence from the chapter that there *is* structure, each in two sentences: the phenomenon, then why plain word order can't explain it.",
       "hints": [
         "Think about sentences where the same string of words means two different things, and about rules that seem to skip over words (like question formation moving 'is' from the right place).",
         "The weak answer is 'because linguists say so'. The strong answer names a fact about English that word-by-word order can't predict: ambiguity, or a dependency between non-adjacent words.",
@@ -324,10 +665,146 @@
       ],
       "solution": [
         "Structural ambiguity: 'I saw the man with the telescope' has one word order but two meanings (I used the telescope / the man had it). If meaning came only from the row of words, one row could only have one meaning. The two meanings are two different groupings.",
-        "Structure-dependent rules: to make a yes/no question from 'The man who is tall is happy', you move the *second* 'is', not the first: 'Is the man who is tall happy?' A rule stated on the word row ('move the first auxiliary') gives the wrong sentence. The rule refers to the main clause's auxiliary — a structural notion.",
+        "Structure-dependent rules: to make a yes/no question from 'The man who is tall is happy', you move the *second* 'is', not the first: 'Is the man who is tall happy?' A rule stated on the word row ('move the first auxiliary') gives the wrong sentence. The rule refers to the main clause's auxiliary: a structural notion.",
         "Both show that speakers compute groupings (constituents) that aren't visible in the string."
       ],
       "why": "This is the argument behind every parser and every grammar checker: they build a tree, not a list. It's also the exam's favorite 'explain why' question, because it's the reason the course exists."
+    },
+    {
+      "id": "star-hash",
+      "title": "* or #?",
+      "prompt": "Which label does *The chair laughed at my joke* get?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**#.** The grammar is perfect; only the meaning is odd."
+      ],
+      "why": "Mixing up * and # is the most common Week 1 slip, and it changes what a handout example is testing.",
+      "choices": [
+        {
+          "text": "# (grammatical but odd meaning)",
+          "feedback": "Yes. Every rule is followed; chairs just don't laugh."
+        },
+        {
+          "text": "* (ungrammatical)",
+          "feedback": "Nothing breaks a rule here: subject, verb, and phrase are all in order."
+        },
+        {
+          "text": "No label: it's fine",
+          "feedback": "It's grammatical, but the meaning is strange, so it gets #."
+        },
+        {
+          "text": "Both * and #",
+          "feedback": "A sentence is either rule-breaking (*) or just odd (#), not both here."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "start"
+    },
+    {
+      "id": "svo-arabic",
+      "title": "Name the order",
+      "prompt": "*Kataba l-waladu risālatan* ('The boy wrote a letter'): *kataba* = wrote, *l-waladu* = the boy, *risālatan* = a letter. What is the order?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**VSO.** Wrote (V), the boy (S), a letter (O)."
+      ],
+      "why": "Word order is the first parameter Dr. Nie asks about for any language example.",
+      "choices": [
+        {
+          "text": "VSO",
+          "feedback": "Yes: verb (wrote), subject (the boy), object (a letter)."
+        },
+        {
+          "text": "SVO",
+          "feedback": "SVO would start with the boy."
+        },
+        {
+          "text": "SOV",
+          "feedback": "SOV would end with the verb."
+        },
+        {
+          "text": "VOS",
+          "feedback": "VOS would put the letter before the boy."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "variation"
+    },
+    {
+      "id": "postposition",
+      "title": "Which setting?",
+      "prompt": "Japanese *Tōkyō-ni* means 'to Tokyo' (literally 'Tokyo-to'). Which parameter setting is that?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Postposition.**"
+      ],
+      "why": "Adposition order tends to line up with verb-object order: SOV languages like Japanese usually have postpositions.",
+      "choices": [
+        {
+          "text": "Postposition",
+          "feedback": "Yes: the 'to' word comes after the noun."
+        },
+        {
+          "text": "Preposition",
+          "feedback": "A preposition would come before: 'to Tokyo'."
+        },
+        {
+          "text": "Null subject",
+          "feedback": "Null subject is about dropping the subject, not about 'to'."
+        },
+        {
+          "text": "Wh-in-situ",
+          "feedback": "Wh-in-situ is about question words."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "variation"
+    },
+    {
+      "id": "morph-count",
+      "title": "Count the morphemes",
+      "prompt": "How many morphemes are in *unbreakable*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**3:** *un-* (not) + *break* (root) + *-able* (can be done)."
+      ],
+      "why": "Glossing starts with splitting morphemes; a wrong split makes every line after it wrong.",
+      "choices": [
+        {
+          "text": "3",
+          "feedback": "Yes: un- + break + -able."
+        },
+        {
+          "text": "1",
+          "feedback": "It's more than one word-piece: 'un' and 'able' each add meaning."
+        },
+        {
+          "text": "2",
+          "feedback": "Count again: un-, break, -able."
+        },
+        {
+          "text": "4",
+          "feedback": "There are only three meaningful pieces."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "start"
     }
   ]
 }
