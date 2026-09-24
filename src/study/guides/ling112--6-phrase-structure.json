@@ -7,6 +7,7 @@
   "estimatedMinutes": 60,
   "sourceNote": "Week 6 handout 'Phrase structure' (Dr. Nie, sentences (1) to (11)); Carnie, Syntax: A Generative Introduction ch. 3; builds on the Week 5 constituency tests. Quiz 3 territory.",
   "requires": [
+    "ling112/1-universals",
     "ling112/4-heads-dependents",
     "ling112/5-constituency-tests"
   ],
@@ -33,6 +34,75 @@
           "md": "**Why it matters outside this class** A short list of rules can build an endless number of sentences, because a rule can reuse itself: a DP can contain a PP, which contains another DP, which can contain another PP (*the key to the door of the house on the hill*). This is the same idea as a **context-free grammar** in CS 154, and it is how grammar checkers, voice assistants and programming-language compilers read input: they check it against rules like these and build a tree.",
           "slide": "Same idea as CS 154 grammars",
           "id": "why.18d1fe06"
+        }
+      ]
+    },
+    {
+      "id": "trees",
+      "heading": "Start here: how to read a tree",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Week 6 is where drawings of sentences begin, and the lecture uses words like node and dominate without stopping. Here they are, one at a time, on the smallest tree possible.",
+          "slide": "Why start here",
+          "id": "trees.c7568e31"
+        },
+        {
+          "type": "definition",
+          "term": "Tree",
+          "body": "A drawing of a sentence's structure (its hierarchy). The whole sentence is at the top, each phrase splits into its pieces below, and the words sit at the bottom. It's the boxes-inside-boxes picture from the universals chapter, drawn upside down like a family tree.",
+          "slide": "Tree",
+          "id": "trees.816b1d28"
+        },
+        {
+          "type": "definition",
+          "term": "Node and label",
+          "body": "Each point in the tree is a **node**. Its **label** says what kind of unit it is: TP (sentence), DP, NP, VP, PP, or a single-word category like N or V. Every node is a constituent.",
+          "id": "trees.75571a87"
+        },
+        {
+          "type": "definition",
+          "term": "Mother, daughter, sister",
+          "body": "A node directly above another is its **mother**; the node below is its **daughter**. Daughters of the same mother are **sisters**. A line from mother to daughter is a **branch**.",
+          "id": "trees.8eb0c4e7"
+        },
+        {
+          "type": "definition",
+          "term": "Dominate",
+          "body": "A node **dominates** everything below it on its branches. The VP in *the dog barked* dominates *barked*; the TP at the top dominates every word. 'Which words does this node dominate?' is the same question as 'which words make up this constituent?'",
+          "id": "trees.0f030c59"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><line x1='330' y1='48' x2='170' y2='94' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><line x1='330' y1='48' x2='330' y2='94' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><line x1='330' y1='48' x2='490' y2='94' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><line x1='170' y1='118' x2='120' y2='164' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><line x1='170' y1='118' x2='220' y2='164' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><line x1='490' y1='118' x2='490' y2='164' stroke='currentColor' stroke-opacity='0.45' stroke-width='1.4'/><g><title>A node labeled TP.</title><text x='330' y='40' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--accent-fg))'>TP</text></g><g><title>A node labeled DP.</title><text x='170' y='110' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--on-track))'>DP</text></g><g><title>A node labeled T.</title><text x='330' y='110' text-anchor='middle' font-size='15' font-weight='800' fill='currentColor'>T</text></g><line x1='330' y1='116' x2='330' y2='140' stroke='currentColor' stroke-opacity='0.35'/><text x='330' y='156' text-anchor='middle' font-size='14' font-style='italic'>PAST</text><g><title>A node labeled VP.</title><text x='490' y='110' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--at-risk))'>VP</text></g><g><title>A node labeled D.</title><text x='120' y='180' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--on-track))'>D</text></g><line x1='120' y1='186' x2='120' y2='210' stroke='currentColor' stroke-opacity='0.35'/><text x='120' y='226' text-anchor='middle' font-size='14' font-style='italic'>the</text><g><title>A node labeled NP.</title><text x='220' y='180' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--on-track))'>NP</text></g><line x1='220' y1='186' x2='220' y2='210' stroke='currentColor' stroke-opacity='0.35'/><text x='220' y='226' text-anchor='middle' font-size='14' font-style='italic'>dog</text><g><title>A node labeled V.</title><text x='490' y='180' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--at-risk))'>V</text></g><line x1='490' y1='186' x2='490' y2='210' stroke='currentColor' stroke-opacity='0.35'/><text x='490' y='226' text-anchor='middle' font-size='14' font-style='italic'>barked</text><g><title>The top node is the mother of DP, T and VP. It dominates every word below it.</title><text x='420' y='30' font-size='11.5' fill='rgb(var(--accent-fg))'>← mother of DP, T, VP (the root)</text></g><g><title>DP, T and VP share a mother, so they are sisters.</title><text x='330' y='254' text-anchor='middle' font-size='11.5' opacity='0.8'>DP, T and VP are daughters of TP, and sisters of each other</text></g><g><title>A branch is a line from a mother down to a daughter.</title><text x='40' y='70' font-size='11.5' opacity='0.8'>each line = a branch</text><line x1='112' y1='66' x2='236' y2='80' stroke='currentColor' stroke-opacity='0.3' stroke-dasharray='3 3'/></g><text x='330' y='286' text-anchor='middle' font-size='13.5' font-family='ui-monospace, monospace'>[TP [DP [D the] [NP dog]] [T PAST] [VP [V barked]]]</text><text x='330' y='308' text-anchor='middle' font-size='11.5' opacity='0.75'>Same tree as brackets: every [ opens a node, its label comes first, and ] closes it.</text></g>",
+          "viewBox": "0 0 660 320",
+          "caption": "The smallest full tree in this class, labeled. Hover each part. Below it: the same tree written as brackets, which is how you'll type trees on the homework.",
+          "slide": "Tree words, labeled",
+          "id": "trees.bf584665"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Type your own. Change *barked* to *chased the cat*: add [DP [D the] [NP [N cat]]] inside the VP and watch a new branch appear. Click any node to see what it dominates.",
+          "params": {
+            "bracket": "[TP [DP [D the] [NP [N dog]]] [T PAST] [VP [V barked]]]"
+          },
+          "slide": "Try it",
+          "id": "trees.c847fdbe"
+        },
+        {
+          "type": "check",
+          "prompt": "In [TP [DP [D the] [NP dog]] [T PAST] [VP [V barked]]], what are the sisters of T?",
+          "answer": "DP and VP: all three are daughters of TP.",
+          "sectionRef": "trees",
+          "id": "trees.af6cf8f0"
+        },
+        {
+          "type": "check",
+          "prompt": "Which words does the DP dominate?",
+          "answer": "*the dog*.",
+          "sectionRef": "trees",
+          "id": "trees.75e6ca2d"
         }
       ]
     },
@@ -323,7 +393,7 @@
         {
           "type": "check",
           "prompt": "In *We heard a dubious rumor that he threw the game*, is the CP inside the VP directly, or inside the object DP?",
-          "answer": "Inside the object DP (in its NP, after *rumor*). Test: *We heard **it*** replaces *a dubious rumor that he threw the game* as one piece.",
+          "answer": "Inside the object DP (in its NP, after *rumor*). Test: We heard **it** replaces *a dubious rumor that he threw the game* as one piece.",
           "sectionRef": "cp",
           "id": "cp.b658e2cd"
         }
@@ -507,9 +577,9 @@
         },
         {
           "type": "prose",
-          "md": "**Prove each tree with a test** (Week 5): replace the object with *him*. *The thief tripped **him** with a cane* keeps the PP outside, so it matches reading A. For reading B, the pronoun swallows the PP: *The thief tripped **him*** (him = the man with the cane). Fragment answer works too: *Who did the thief trip?* *That unlucky man with a cane.* works only for B.",
+          "md": "**Prove each tree with a test** (Week 5): replace the object with *him*. *The thief tripped **him** with a cane* keeps the PP outside, so it matches reading A. For reading B, the pronoun swallows the PP: The thief tripped **him** (him = the man with the cane). Fragment answer works too: *Who did the thief trip?* *That unlucky man with a cane.* works only for B.",
           "slide": "The tests pull them apart",
-          "id": "ambig.ce510abb"
+          "id": "ambig.e138bb51"
         },
         {
           "type": "check",
@@ -560,7 +630,7 @@
         {
           "type": "check",
           "prompt": "Why is *in her collection* inside the NP in (7), and not in the VP?",
-          "answer": "It says which piece (a description of the noun), not how or where the adoring happens. Test: *The owner adores **it*** means the piece in her collection, so the PP went with the pronoun.",
+          "answer": "It says which piece (a description of the noun), not how or where the adoring happens. Test: The owner adores **it** means the piece in her collection, so the PP went with the pronoun.",
           "sectionRef": "practice",
           "id": "practice.8169a3a2"
         }
@@ -632,6 +702,108 @@
       ],
       "why": "Once you can bracket, drawing the tree is mechanical, and so is checking your own answer before you hand it in.",
       "sectionRef": "draw"
+    },
+    {
+      "id": "tree-sister",
+      "title": "Sisters",
+      "prompt": "In [VP [V hand] [DP a vase] [PP to the buyer]], which nodes are sisters of V?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**DP and PP.** All three hang from the same VP."
+      ],
+      "why": "Sisterhood is how Week 7 tells complements (sister of the head) from adjuncts.",
+      "choices": [
+        {
+          "text": "DP and PP",
+          "feedback": "Yes: V, DP and PP are all daughters of the same VP."
+        },
+        {
+          "text": "Only DP",
+          "feedback": "PP shares the same mother too."
+        },
+        {
+          "text": "VP",
+          "feedback": "VP is their mother, not a sister."
+        },
+        {
+          "text": "PP only",
+          "feedback": "DP shares the same mother too."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "trees"
+    },
+    {
+      "id": "null-d",
+      "title": "Where is the D?",
+      "prompt": "How do you bracket the DP *Nadia*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**[DP [D ∅] [NP [N Nadia]]].**"
+      ],
+      "why": "Forgetting the ∅ is the most common point loss on Week 6 trees.",
+      "choices": [
+        {
+          "text": "[DP [D ∅] [NP [N Nadia]]]",
+          "feedback": "Yes: every nominal is a DP, with a silent D when you can't hear one."
+        },
+        {
+          "text": "[NP [N Nadia]]",
+          "feedback": "Missing the DP layer: in this class every nominal is a DP."
+        },
+        {
+          "text": "[DP [D Nadia]]",
+          "feedback": "A name is a noun, not a determiner."
+        },
+        {
+          "text": "[N Nadia]",
+          "feedback": "A bare N can't be an argument on its own in these trees."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "dp"
+    },
+    {
+      "id": "t-value",
+      "title": "Fill T",
+      "prompt": "*The cat chased the mouse.* What goes in T?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**PAST.** *chased* stays in V."
+      ],
+      "why": "TP → DP T VP needs a T in every sentence.",
+      "choices": [
+        {
+          "text": "PAST",
+          "feedback": "Yes: no auxiliary, past tense, so T = PAST."
+        },
+        {
+          "text": "chased",
+          "feedback": "The verb stays in V; only its tense shows up in T."
+        },
+        {
+          "text": "the cat",
+          "feedback": "That's the subject DP."
+        },
+        {
+          "text": "nothing",
+          "feedback": "Every TP has a T; it's never empty."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "tp"
     }
   ]
 }
