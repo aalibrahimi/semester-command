@@ -309,7 +309,7 @@ const STATE_CHIP: Record<DueState, string> = {
   overdue: "bg-critical/15 text-critical-fg",
   past: "bg-foreground/[0.07] text-muted-foreground",
   soon: "bg-at-risk/15 text-at-risk-fg",
-  upcoming: "bg-brand/12 text-brand-fg",
+  upcoming: "bg-brand/[0.12] text-brand-fg",
 };
 
 /**
@@ -421,12 +421,12 @@ function MonthView({ items, controls }: { items: CalendarItem[]; controls: React
             <span data-numeric className="font-mono font-semibold tabular-nums">{left}</span> still to do
           </span>
           {missing > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-critical/12 px-3 py-1 font-medium text-critical-fg">
+            <span className="flex items-center gap-1 rounded-full bg-critical/[0.12] px-3 py-1 font-medium text-critical-fg">
               <AlertCircle className="h-3.5 w-3.5" />
               <span data-numeric className="font-mono font-semibold tabular-nums">{missing}</span> missing
             </span>
           )}
-          <span className="rounded-full bg-on-track/12 px-3 py-1 font-medium text-on-track-fg">
+          <span className="rounded-full bg-on-track/[0.12] px-3 py-1 font-medium text-on-track-fg">
             <span data-numeric className="font-mono font-semibold tabular-nums">{doneCount}</span> done
           </span>
         </div>
@@ -542,7 +542,7 @@ function MonthView({ items, controls }: { items: CalendarItem[]; controls: React
                       {day.getDate()}
                     </span>
                     {open > 0 && inMonth && (
-                      <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-semibold", isPast ? "bg-critical/12 text-critical-fg" : "bg-foreground/[0.06] text-muted-foreground")}>
+                      <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-semibold", isPast ? "bg-critical/[0.12] text-critical-fg" : "bg-foreground/[0.06] text-muted-foreground")}>
                         {open} due
                       </span>
                     )}

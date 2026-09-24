@@ -432,3 +432,73 @@ function SyllabusViewer({
     </div>
   );
 }
+
+/**
+ * One course's syllabus, for the Syllabus tab of that course's page
+ * (CourseDetail). Same viewer as the hub, without the course rail; the
+ * search box and policy chips keep their own state here.
+ */
+export function CourseSyllabusPanel({ courseId, courseCode }: { courseId: string; courseCode: string | null }) {
+  const [course, setCourse] = useState<CourseSyllabus | null | undefined>(undefined);
+  const [activeTerms, setActiveTerms] = useState<string[]>([]);
+  const [activeChip, setActiveChip] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
+  const refresh = useCallback(async () => {
+    let data: CourseSyllabus[];
+    try {
+      data = withDigests(await syllabi());
+    } catch {
+      data = withDigests([]);
+    }
+    // A synced course matches by id; a digest-only one by its course code.
+    const code = courseShort(courseCode);
+    setCourse(
+      data.find((c) => c.courseId === courseId) ??
+        data.find((c) => c.courseId.startsWith("digest:") && courseShort(c.courseCode ?? c.courseName ?? "") === code) ??
+        null,
+    );
+  }, [courseId, courseCode]);
+
+  useEffect(() => {
+    // Synchronising with the Rust backend; the fetch resolves into state.
+    // oxlint-disable-next-line set-state-in-effect
+    void refresh();
+  }, [refresh]);
+
+  if (course === undefined) return <Skeleton className="h-96 rounded-2xl" />;
+  if (course === null) {
+    return (
+      <EmptyState
+        icon={BookOpen}
+        title="No syllabus for this course yet"
+        description="Import it from the Syllabi hub; office hours, grade weights and late rules then show up here and on the Overview."
+      />
+    );
+  }
+  const terms = query.trim().length >= 2 ? [query.trim()] : activeTerms;
+  return (
+    <div className="flex">
+      <SyllabusViewer
+        key={course.courseId}
+        course={course}
+        digest={digestOf(course)}
+        terms={terms}
+        activeChip={activeChip}
+        query={query}
+        onQuery={setQuery}
+        onChip={(label, chipTerms) => {
+          setQuery("");
+          if (activeChip === label) {
+            setActiveChip(null);
+            setActiveTerms([]);
+          } else {
+            setActiveChip(label);
+            setActiveTerms(chipTerms);
+          }
+        }}
+        onChanged={() => void refresh()}
+      />
+    </div>
+  );
+}

@@ -147,7 +147,7 @@ function CodeCount({ d }: { d: Record<string, unknown> }) {
             <div key={k} className="group flex items-center gap-3 px-4 py-1.5 hover:bg-fill-ghost/60">
               <span className="w-4 shrink-0 text-right font-mono text-[11px] text-muted-foreground/60">{k + 1}</span>
               <code className="min-w-0 flex-1 whitespace-pre font-mono text-[13.5px]">{S(l.code)}</code>
-              {l.count !== undefined && <span className="shrink-0 rounded-md bg-brand/12 px-2 py-0.5 font-mono text-xs font-semibold text-brand-fg">{S(l.count)}</span>}
+              {l.count !== undefined && <span className="shrink-0 rounded-md bg-brand/[0.12] px-2 py-0.5 font-mono text-xs font-semibold text-brand-fg">{S(l.count)}</span>}
             </div>
           ))}
         </div>

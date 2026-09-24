@@ -11,7 +11,7 @@
  * sections (click one to jump in), then the lectures still to be written.
  * Exam tab: format, alerts, checklist, with the dates in the rail.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
   AlertTriangle,
@@ -36,32 +36,15 @@ import { guidesForCourse } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
 import type { Guide } from "@/study/guide";
-import { attemptsRecent, examsRecent, reviewsAll, sectionsAll, type SectionStatus } from "@/study/mastery";
-import { plan, type Action } from "@/study/plan";
-import { ago, courseProgress, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
+import type { SectionStatus } from "@/study/mastery";
+import type { Action } from "@/study/plan";
+import { ago, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { courseTick } from "./Study";
+import { useCourseData } from "@/hooks/useCourseStudy";
 
 const KIND_LABEL: Record<Action["kind"], string> = { drill: "Drill", recall: "Recall", reread: "Reread", read: "Read", mock: "Mock", mistakes: "Mistakes" };
 
-/** Progress and the plan, for this one course. */
-function useCourseData(c: Course | undefined, guides: Guide[]): { prog: CourseProgress | null; actions: Action[] } {
-  const [state, setState] = useState<{ prog: CourseProgress | null; actions: Action[] }>({ prog: null, actions: [] });
-  useEffect(() => {
-    if (!c) return;
-    let alive = true;
-    void Promise.all([sectionsAll(), attemptsRecent(2000), reviewsAll(), examsRecent()]).then(([sections, attempts, reviews, exams]) => {
-      if (!alive) return;
-      const prog = courseProgress(guides, sections);
-      const actions = plan({ courses: [c], guidesByCourse: { [c.slug]: guides }, sections, attempts, reviews, exams }, 4);
-      setState({ prog, actions });
-    });
-    return () => {
-      alive = false;
-    };
-  }, [c, guides]);
-  return state;
-}
 
 const H2 = "text-2xs font-semibold uppercase tracking-wider text-foreground/70";
 const CARD = "rounded-xl border border-foreground/15 bg-card shadow-sm";
@@ -69,13 +52,7 @@ const CARD = "rounded-xl border border-foreground/15 bg-card shadow-sm";
 export default function StudyCourse() {
   const { course: slug } = useParams();
   const c = courseBySlug(slug);
-  const [guides] = useState(() => (c ? guidesForCourse(c.slug, c.guides) : []));
-  const [tab, setTab] = useState<"lectures" | "exam">("lectures");
-  const { prog, actions } = useCourseData(c, guides);
   if (!c) return <Navigate to="/study" replace />;
-
-  const warns = c.alerts?.filter((a) => a.kind === "warn") ?? [];
-  const infos = c.alerts?.filter((a) => a.kind === "info") ?? [];
 
   return (
     <div className="mx-auto w-full max-w-[1280px] px-8 pb-16 pt-6">
@@ -93,7 +70,27 @@ export default function StudyCourse() {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-1 border-b border-foreground/15">
+      <StudyCourseView key={c.slug} c={c} />
+    </div>
+  );
+}
+
+/**
+ * The course's study material: Lectures / Exam tabs, the chapter list and
+ * the rail. Used by the /study/:course page and, embedded, by the Study tab
+ * of a course's page (CourseDetail).
+ */
+export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean }) {
+  const [guides] = useState(() => guidesForCourse(c.slug, c.guides));
+  const [tab, setTab] = useState<"lectures" | "exam">("lectures");
+  const { prog, actions } = useCourseData(c, guides);
+
+  const warns = c.alerts?.filter((a) => a.kind === "warn") ?? [];
+  const infos = c.alerts?.filter((a) => a.kind === "info") ?? [];
+
+  return (
+    <div>
+      <div className={cn("flex gap-1 border-b border-foreground/15", embedded ? "mt-0" : "mt-6")}>
         {(["lectures", "exam"] as const).map((t) => (
           <button
             key={t}

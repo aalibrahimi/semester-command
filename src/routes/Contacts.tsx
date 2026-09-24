@@ -26,7 +26,7 @@
  * syllabi carry email, phone and office hours — cards show what the shared
  * syllabus miner finds, labelled with its source.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, ChevronDown, Clock, Mail, Phone, Star, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -403,5 +403,70 @@ function StarButton({
         {starred ? "Unstar" : "This is my professor"}
       </TooltipContent>
     </Tooltip>
+  );
+}
+
+/**
+ * The People tab of one course's page (CourseDetail): its professor as a
+ * full card, everyone else Canvas lists as compact rows with the star to
+ * promote them. Same data and rules as the Contacts screen.
+ */
+export function CoursePeoplePanel({ course, label }: { course: CourseSummary; label: string }) {
+  const [instructors, setInstructors] = useState<InstructorRow[] | null>(null);
+  const [info, setInfo] = useState<SyllabusFacts | undefined>(undefined);
+
+  const refresh = useCallback(() => {
+    listInstructors()
+      .then((all) => setInstructors(all.filter((i) => i.courseId === course.id)))
+      .catch(() => setInstructors([]));
+  }, [course.id]);
+
+  useEffect(() => {
+    refresh();
+    syllabi()
+      .then((all) => {
+        const c = all.find((x) => x.courseId === course.id);
+        const text = c?.files.map((f) => f.extractedText ?? "").join("\n") ?? "";
+        setInfo(text.trim() ? extractFacts(text) : undefined);
+      })
+      .catch(() => {});
+  }, [course.id, refresh]);
+
+  if (instructors === null) return <Skeleton className="h-44 rounded-2xl" />;
+  if (instructors.length === 0) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="No instructors synced for this course"
+        description="Names and roles come from Canvas; emails and office hours come from the syllabus."
+      />
+    );
+  }
+  const starred = instructors.filter((p) => p.starred);
+  const teachers = instructors.filter((p) => p.role === "teacher");
+  const professors = starred.length > 0 ? starred : teachers.length === 1 ? teachers : [];
+  const rest = instructors.filter((p) => !professors.includes(p));
+  return (
+    <div className="flex flex-col gap-5">
+      {professors.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {professors.map((p) => (
+            <ProfessorCard key={p.id} person={p} course={course} label={label} info={info} onToggleStar={() => toggleStar(p, refresh)} />
+          ))}
+        </div>
+      )}
+      {rest.length > 0 && (
+        <section>
+          <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            {professors.length === 0 ? "Which one is your professor? Star them." : "Everyone else Canvas lists"}
+          </h2>
+          <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
+            {rest.map((p) => (
+              <CompactRow key={p.id} person={p} onToggleStar={() => toggleStar(p, refresh)} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

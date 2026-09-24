@@ -6,7 +6,19 @@
  * Calls: ipc `course_detail` / `what_do_i_need` / `set_target`; localPrefs
  * for the nickname.
  *
- * Design-review layout:
+ * One page per course, five tabs (the tab is in the URL, ?tab=…):
+ * - **Overview** (default): Today's layout for this one course. A "Do next"
+ *   list (missing, due this week, coming up, study next) and a column of
+ *   small cards: next exam, this week, how the grade is made, office hours.
+ *   See components/course/CourseOverview.tsx.
+ * - **Study**: the course's study guide (StudyCourseView, embedded).
+ * - **Syllabus**: the Syllabi hub's viewer for this course only.
+ * - **Grades**: target, grade scale, hide, and the layout below.
+ * - **People**: the Contacts cards for this course only.
+ * The header carries the state as pills (missing, next due, next exam) and
+ * the solver button; warnings sit above every tab.
+ *
+ * Grades tab layout (design review):
  * - **Grade hero** — current vs projected + the gap bar, but ONLY once at
  *   least one item is graded. Before that: "No grades posted yet" and when
  *   the first graded work lands. Never 0.0%, never a projected F, never an
@@ -25,7 +37,7 @@
  * Every percentage came out of `grades.rs` (§10); this file arranges.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
   BookOpen,
@@ -45,8 +57,8 @@ import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { GradeGapBar } from "@/components/grade/GradeGapBar";
 import { AssignmentSheet } from "@/components/grade/AssignmentSheet";
-import { CourseBrief } from "@/components/grade/CourseBrief";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CourseOverview } from "@/components/course/CourseOverview";
+import { classify, dueWhen } from "@/lib/courseWork";
 import { ImpactBar } from "@/components/triage/ImpactBar";
 import { urgencyTier } from "@/lib/urgency";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -76,108 +88,28 @@ import {
   setCourseHidden,
   setGradeScale,
   setTarget,
-  syllabi,
   whatDoINeed,
 } from "@/lib/ipc";
 import { stripShouting } from "@/lib/stripShouting";
-import { extractFacts } from "@/lib/syllabusFacts";
 import { announceCoursesChanged } from "@/hooks/useCourses";
 import { floorForCanvasCourse } from "@/lib/gradeFloors";
-import { parseCourseLabel } from "@/lib/courseLabel";
+import { courseShort, parseCourseLabel } from "@/lib/courseLabel";
+import { courseHsla } from "@/lib/courseColor";
+import { digestFor } from "@/lib/syllabusDigest";
+import { courseBySlug, daysUntil } from "@/study";
+import type { Course as StudyCourseDef } from "@/study/types";
+import { StudyCourseView } from "./StudyCourse";
+import { CourseSyllabusPanel } from "./Syllabi";
+import { CoursePeoplePanel } from "./Contacts";
 import { setNickname, useNicknames } from "@/lib/localPrefs";
 import { dueShort, pct, points } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type {
   AssignmentDetail,
   CourseDetailPayload,
-  CourseSyllabus,
   GroupDetail,
   SolverAnswer,
 } from "@/types";
-
-/** What the imported syllabus says about this course — office hours and
- *  policies, mined by the shared parser so it matches Contacts word for
- *  word. No syllabus yet → a pointer at the hub, because that one import
- *  also unlocks class-time detection on the Calendar. */
-function SyllabusCard({ courseId }: { courseId: string }) {
-  const [syl, setSyl] = useState<CourseSyllabus | null | undefined>(undefined);
-
-  useEffect(() => {
-    let alive = true;
-    syllabi()
-      .then((all) => {
-        if (alive) setSyl(all.find((c) => c.courseId === courseId) ?? null);
-      })
-      .catch(() => {
-        if (alive) setSyl(null);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [courseId]);
-
-  if (syl === undefined) return null;
-
-  const files = syl?.files ?? [];
-  const text = files.map((f) => f.extractedText ?? "").join("\n");
-  const facts = text.trim() ? extractFacts(text) : null;
-
-  if (files.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-border/60 px-4 py-3 text-xs text-muted-foreground">
-        <BookOpen className="mr-1.5 inline h-3.5 w-3.5 align-[-2px]" />
-        No syllabus imported for this course.{" "}
-        <Link to="/syllabi" className="font-medium text-brand-fg hover:underline">
-          Import it in the Syllabi hub
-        </Link>{" "}
-        to see office hours and late policies here — and to let the Calendar detect class
-        meeting times.
-      </div>
-    );
-  }
-
-  const rows: { label: string; value: string }[] = facts
-    ? [
-        facts.officeHours && { label: "Office hours", value: facts.officeHours },
-        facts.latePolicy && { label: "Late work", value: facts.latePolicy },
-        facts.makeupPolicy && { label: "Make-up", value: facts.makeupPolicy },
-      ].filter((r): r is { label: string; value: string } => Boolean(r))
-    : [];
-
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
-          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            From the syllabus
-          </h2>
-          <Link
-            to="/syllabi"
-            className="ml-auto text-2xs text-muted-foreground hover:text-foreground hover:underline"
-          >
-            Open in Syllabi hub →
-          </Link>
-        </div>
-        {rows.length > 0 ? (
-          <dl className="flex flex-col gap-1.5">
-            {rows.map((r) => (
-              <div key={r.label} className="grid grid-cols-[92px_1fr] gap-2 text-xs">
-                <dt className="text-muted-foreground">{r.label}</dt>
-                <dd className="min-w-0">{r.value}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            {files.length} document{files.length === 1 ? "" : "s"} stored, but no office-hours or
-            policy lines matched — search the full text in the Syllabi hub.
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 /** Letter → percent options for the target picker, from THIS course's scale
  *  (custom cutoffs included — §4.4). D-range targets are left out; nobody
@@ -196,8 +128,16 @@ function targetsFrom(scale: [number, string][]): [string, number][] {
  *  identity colors, applied per group here. */
 const SEGMENT_HUES = [217, 330, 172, 282, 48, 255, 200];
 
-/** localStorage key for the Brief/Everything preference. */
-const COURSE_LAYOUT_KEY = "course-layout";
+/** The course page's tabs, in order. */
+const COURSE_TABS = ["overview", "study", "syllabus", "grades", "people"] as const;
+type CourseTab = (typeof COURSE_TABS)[number];
+const TAB_LABEL: Record<CourseTab, string> = { overview: "Overview", study: "Study", syllabus: "Syllabus", grades: "Grades", people: "People" };
+
+/** This Canvas course's study guide, if one exists ("CS-146" → cs146). */
+function studyCourseFor(courseCode: string | null): StudyCourseDef | undefined {
+  const code = parseCourseLabel(courseCode).code;
+  return code ? courseBySlug(code.toLowerCase().replace(/[^a-z0-9]/g, "")) : undefined;
+}
 
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -210,18 +150,17 @@ export default function CourseDetail() {
   const [openAssignmentId, setOpenAssignmentId] = useState<string | null>(null);
   const [hoverGroupId, setHoverGroupId] = useState<string | null>(null);
   const [filterGroupId, setFilterGroupId] = useState<string | null>(null);
-  // "brief" = the course talked through + a clean homework list (default —
-  // the first thing loading a course should show is the homework).
-  // "full" = the hero, donut, and grouped table. One preference, all courses.
-  const [mode, setMode] = useState<"brief" | "full">(() =>
-    localStorage.getItem(COURSE_LAYOUT_KEY) === "full" ? "full" : "brief",
-  );
-  const nicknames = useNicknames();
-
-  const pickMode = (m: "brief" | "full") => {
-    setMode(m);
-    localStorage.setItem(COURSE_LAYOUT_KEY, m);
+  // The page's tabs live in the URL (?tab=study) so a link can open one.
+  const tabParam = searchParams.get("tab");
+  const tab: CourseTab = (COURSE_TABS as readonly string[]).includes(tabParam ?? "") ? (tabParam as CourseTab) : "overview";
+  const pickTab = (t: CourseTab) => {
+    const next = new URLSearchParams(searchParams);
+    if (t === "overview") next.delete("tab");
+    else next.set("tab", t);
+    setSearchParams(next, { replace: true });
   };
+  const nicknames = useNicknames();
+  const [now] = useState(() => Date.now());
 
   const refresh = useCallback(() => {
     if (!courseId) return;
@@ -245,7 +184,9 @@ export default function CourseDetail() {
     if (searchParams.get("solver") === "1") {
       // oxlint-disable-next-line set-state-in-effect
       setSolverOpen(true);
-      setSearchParams({}, { replace: true });
+      const next = new URLSearchParams(searchParams);
+      next.delete("solver");
+      setSearchParams(next, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 
@@ -294,89 +235,59 @@ export default function CourseDetail() {
       .catch(() => toast.error("Could not save the target."));
   };
 
-  return (
-    <>
-      <ScreenHeader
-        title={
-          <TitleWithNickname
-            courseId={s.id}
-            nickname={nickname}
-            fallback={label.code ?? label.title}
-          />
-        }
-        subtitle={label.code && label.title !== label.code ? label.title : undefined}
-        actions={
-          <div className="flex items-center gap-2">
-            <Tabs value={mode} onValueChange={(v) => pickMode(v === "full" ? "full" : "brief")}>
-              <TabsList className="h-8">
-                <TabsTrigger value="brief" className="text-xs">
-                  Brief
-                </TabsTrigger>
-                <TabsTrigger value="full" className="text-xs">
-                  Everything
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                if (!courseId) return;
-                setCourseHidden(courseId, !s.hidden)
-                  .then(() => {
-                    announceCoursesChanged();
-                    refresh();
-                    toast.success(
-                      s.hidden
-                        ? "Course restored everywhere."
-                        : "Course hidden — its data stays synced. Unhide from Courses.",
-                    );
-                  })
-                  .catch(() => toast.error("Could not update the course."));
-              }}
-              title={s.hidden ? "Unhide this course" : "Hide this course everywhere"}
-            >
-              {s.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-            <Select value={s.targetLetter} onValueChange={pickTarget}>
-              <SelectTrigger className="h-8 w-36 text-xs">
-                <Target className="mr-1 h-3.5 w-3.5 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {targets.map(([letter, cutoff]) => (
-                  <SelectItem key={letter} value={letter}>
-                    Target {letter} ({cutoff}%)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setScaleOpen(true)}
-              title={
-                data.customScale
-                  ? "Custom grade scale in use — edit it"
-                  : "Edit this course's grade scale (professor curves, custom cutoffs)"
-              }
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              {data.customScale && (
-                <span className="ml-1 text-2xs text-brand-fg">custom</span>
-              )}
-            </Button>
-            <Button size="sm" onClick={() => setSolverOpen(true)} disabled={!s.gradeable}>
-              <Calculator className="mr-1.5 h-3.5 w-3.5" />
-              What do I need?
-            </Button>
-          </div>
-        }
-      />
+  const study = studyCourseFor(s.courseCode);
+  const color = courseHsla(s.id, 0.95);
+  const shortCode = label.code ?? courseShort(s.courseCode ?? s.name);
+  const prof = data.instructors.find((p) => p.starred) ?? data.instructors.find((p) => p.role === "teacher");
+  const digest = digestFor(label.code);
+  const profName = prof?.name ?? digest?.instructor ?? study?.instructor ?? null;
+  const { missing, soon } = classify(assignments, now);
+  const nextDue = soon[0];
+  const examDays = study ? daysUntil(study.exam.date) : null;
 
-      {/* Warnings live above BOTH layouts — a degree-floor problem or a
+  return (
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-5 px-8 pb-12 pt-7">
+      {/* ── Header: who and when on a small line, the name big, the
+          state of things as pills on the right. ─────────────────── */}
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className="flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
+            <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+            <span className="font-medium text-foreground/80">{shortCode}</span>
+            {profName && <span>· {profName}</span>}
+            {digest && <span>· {digest.meets}{digest.room ? `, ${digest.room}` : ""}</span>}
+            {s.hidden && <span className="rounded-full bg-fill-ghost px-2 py-px text-2xs">hidden</span>}
+          </span>
+          <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight">
+            <TitleWithNickname courseId={s.id} nickname={nickname} fallback={label.title || shortCode} />
+          </h1>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-2 text-[13px]">
+          {missing.length > 0 && (
+            <button type="button" onClick={() => pickTab("overview")} className="rounded-full bg-critical/[0.12] px-3 py-1.5 font-semibold text-critical-fg">
+              {missing.length} missing
+            </button>
+          )}
+          {nextDue && (
+            <span className="max-w-[20rem] truncate rounded-full bg-at-risk/15 px-3 py-1.5 font-semibold text-at-risk-fg">
+              {nextDue.name ?? "Next item"} {dueWhen(nextDue.dueAt as string, now)}
+            </span>
+          )}
+          {study && examDays !== null && examDays >= 0 && (
+            <span className="rounded-full bg-foreground/[0.06] px-3 py-1.5 font-semibold text-muted-foreground">
+              {study.exam.label.replace(/\s*\(.*\)$/, "")} in {examDays} day{examDays === 1 ? "" : "s"}
+            </span>
+          )}
+          <Button size="sm" variant="outline" className="h-8 rounded-full" onClick={() => setSolverOpen(true)} disabled={!s.gradeable}>
+            <Calculator className="mr-1.5 h-3.5 w-3.5" />
+            What do I need?
+          </Button>
+        </div>
+      </div>
+
+      {/* Warnings live above every tab — a degree-floor problem or a
           math mismatch must be unmissable whichever view is on. */}
-      <div className="mx-8 mb-4 flex flex-col gap-3 empty:hidden">
+      <div className="flex flex-col gap-3 empty:hidden">
         {/* Degree-floor warning: class grade and DEGREE are different ledgers. */}
         {(currentBelowFloor || maxBelowFloor) && floor && (
           <Alert className="border-critical/50">
@@ -430,10 +341,98 @@ export default function CourseDetail() {
         )}
       </div>
 
-      {mode === "brief" ? (
-        <CourseBrief summary={s} assignments={assignments} onOpen={setOpenAssignmentId} />
-      ) : (
-      <div className="mx-8 mb-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
+
+      {/* ── Tabs ─────────────────────────────────────────────────── */}
+      <div role="tablist" aria-label="Course sections" className="flex w-fit items-center gap-1 rounded-full bg-fill-ghost p-1">
+        {COURSE_TABS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            role="tab"
+            aria-selected={tab === t}
+            onClick={() => pickTab(t)}
+            className={cn(
+              "flex h-8 items-center gap-1.5 rounded-full px-4 text-[13.5px] transition-colors duration-micro",
+              tab === t ? "bg-card font-semibold text-foreground shadow-card" : "font-medium text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {TAB_LABEL[t]}
+            {t === "overview" && missing.length > 0 && <span className="h-1.5 w-1.5 rounded-full bg-critical" />}
+          </button>
+        ))}
+      </div>
+
+      {tab === "overview" && (
+        <CourseOverview
+          summary={s}
+          label={nickname ?? shortCode}
+          assignments={assignments}
+          groups={groups}
+          instructors={data.instructors}
+          study={study}
+          onOpen={setOpenAssignmentId}
+          onSeeAll={() => pickTab("grades")}
+        />
+      )}
+
+      {tab === "study" &&
+        (study ? (
+          <StudyCourseView key={study.slug} c={study} embedded />
+        ) : (
+          <EmptyState icon={BookOpen} title="No study guide for this course yet" description="Study guides are written per course from its lectures; this one hasn't been started." />
+        ))}
+
+      {tab === "syllabus" && <CourseSyllabusPanel courseId={s.id} courseCode={s.courseCode} />}
+
+      {tab === "people" && <CoursePeoplePanel course={s} label={nickname ?? shortCode} />}
+
+      {tab === "grades" && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={s.targetLetter} onValueChange={pickTarget}>
+              <SelectTrigger className="h-8 w-40 text-xs">
+                <Target className="mr-1 h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {targets.map(([letter, cutoff]) => (
+                  <SelectItem key={letter} value={letter}>
+                    Target {letter} ({cutoff}%)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setScaleOpen(true)}
+              title={data.customScale ? "Custom grade scale in use: edit it" : "Edit this course's grade scale (professor curves, custom cutoffs)"}
+            >
+              <SlidersHorizontal className="mr-1.5 h-4 w-4" />
+              Grade scale
+              {data.customScale && <span className="ml-1 text-2xs text-brand-fg">custom</span>}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto"
+              onClick={() => {
+                if (!courseId) return;
+                setCourseHidden(courseId, !s.hidden)
+                  .then(() => {
+                    announceCoursesChanged();
+                    refresh();
+                    toast.success(s.hidden ? "Course restored everywhere." : "Course hidden. Its data stays synced; unhide it from Courses.");
+                  })
+                  .catch(() => toast.error("Could not update the course."));
+              }}
+              title={s.hidden ? "Unhide this course" : "Hide this course everywhere"}
+            >
+              {s.hidden ? <Eye className="mr-1.5 h-4 w-4" /> : <EyeOff className="mr-1.5 h-4 w-4" />}
+              {s.hidden ? "Unhide course" : "Hide course"}
+            </Button>
+          </div>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* ── Grade hero (§ design review: honest empty state) ──────────── */}
         <Card
           className={cn(
@@ -535,10 +534,8 @@ export default function CourseDetail() {
           onOpen={setOpenAssignmentId}
           onAdd={() => setAddOpen(true)}
         />
-
-        {/* ── Syllabus knowledge (mined from imported documents) ────────── */}
-        <SyllabusCard courseId={s.id} />
       </div>
+        </div>
       )}
 
       <SolverDialog
@@ -580,7 +577,7 @@ export default function CourseDetail() {
         onOpenChange={(open) => !open && setOpenAssignmentId(null)}
         onChanged={refresh}
       />
-    </>
+    </div>
   );
 }
 

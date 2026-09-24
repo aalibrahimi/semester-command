@@ -528,7 +528,7 @@ export function FrameView({ frame, large, caption, minH = 0 }: { frame: Frame; l
               className={cn(
                 "rounded-lg px-3 py-2 font-mono transition-colors duration-500",
                 large ? "text-sm" : "text-[13px]",
-                i === frame.active ? "bg-brand/12 text-foreground ring-1 ring-brand/40 animate-in fade-in-0 motion-reduce:animate-none" : i < frame.active ? "text-foreground/70" : "text-muted-foreground/40",
+                i === frame.active ? "bg-brand/[0.12] text-foreground ring-1 ring-brand/40 animate-in fade-in-0 motion-reduce:animate-none" : i < frame.active ? "text-foreground/70" : "text-muted-foreground/40",
               )}
             >
               {line}
