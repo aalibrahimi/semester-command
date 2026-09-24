@@ -730,6 +730,13 @@
           "id": "practice.fe5fd055"
         },
         {
+          "type": "example",
+          "title": "Handout (4): She did not say whether those computers in her office are currently working.",
+          "body": "Label every word, with a reason for the tricky ones.\n\n1. She N (a pronoun: pronouns are N on her list)\n2. did Aux (the helper 'do'; it carries the past tense)\n3. not Neg\n4. say V (follows the auxiliary; plain form after 'did')\n5. whether C (introduces a whole clause: 'whether those computers… are working')\n6. those D (fits '___ dog barked'; comes first in the noun phrase)\n7. computers N (follows D; plural -s)\n8. in P (followed by the noun phrase 'her office')\n9. her D (a possessive: possessives are D)\n10. office N (follows D)\n11. are Aux (helper 'be' before the -ing verb)\n12. currently Adv (-ly; '*the currently computers' fails the D ___ N frame)\n13. working V (-ing ending, follows the auxiliary 'are')",
+          "slide": "Handout (4), every word labeled",
+          "id": "practice.14b489df"
+        },
+        {
           "type": "check",
           "prompt": "Handout (24): 'My anxious neighbors have just told me that their new roof caught on fire.' Label the functional categories.",
           "answer": "My D · have Aux · that C · their D · on P. (just is Adv; anxious, new Adj; neighbors, me, roof, fire N; told, caught V.)",

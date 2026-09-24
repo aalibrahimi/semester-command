@@ -101,6 +101,12 @@
         },
         {
           "type": "prose",
+          "md": "**Handout (5), same idea:** *After evacuating, the audience congregated in the hallway* is fine, but *#After evacuating, the speaker congregated* is odd: *congregate* needs a group as its subject, and one speaker can't gather together.",
+          "slide": "Handout (5)",
+          "id": "why.97a251ce"
+        },
+        {
+          "type": "prose",
           "md": "**Heads can pick meaning too.** *The speaker informed the audience* is fine, but *#The earthquake informed the audience* is odd: *inform* wants someone who can mean to tell you something. That's why it gets `#` (grammatical, but strange), not `*`.",
           "id": "why.b472e419"
         },
@@ -198,6 +204,13 @@
           ],
           "slide": true,
           "id": "args.475992f4"
+        },
+        {
+          "type": "example",
+          "title": "Handout (6b): [The bear] [very suddenly] awoke [in the middle of the night].",
+          "body": "Which brackets can go?\n\n1. Drop 'very suddenly': 'The bear awoke in the middle of the night.' ✓ Optional: adjunct.\n2. Drop 'in the middle of the night': 'The bear very suddenly awoke.' ✓ Optional: adjunct.\n3. Drop 'the bear': '*Very suddenly awoke in the middle of the night.' ✗ Required: argument.\n4. So 'awake' takes one argument (intransitive, like 'sneeze') and two adjuncts.",
+          "slide": "Handout (6b)",
+          "id": "args.f004af86"
         },
         {
           "type": "prose",
@@ -501,6 +514,13 @@
           "answer": "Root: savored. Dependents of savored: bear (subject; bear → the, brown), slowly (adjunct), dinner (complement; dinner → a, huge, of; of → berries; berries → round (→ very), red).",
           "sectionRef": "dep",
           "id": "dep.8ba12e39"
+        },
+        {
+          "type": "example",
+          "title": "Handout (9): My usually nosy neighbors actually respected our request for privacy.",
+          "body": "Find the root, then work outward.\n\n1. Root: respected (the main verb, no arrow coming in).\n2. respected → neighbors (subject), respected → actually (adjunct), respected → request (complement).\n3. neighbors → My, neighbors → nosy; nosy → usually (usually describes how nosy).\n4. request → our, request → for; for → privacy.\n5. Check: 10 words, 9 arrows, one root. Every word except 'respected' has exactly one arrow in.",
+          "slide": "Handout (9) as arrows",
+          "id": "dep.9bde5de1"
         }
       ]
     },

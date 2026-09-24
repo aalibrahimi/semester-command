@@ -73,6 +73,12 @@
           "id": "start.80a2db76"
         },
         {
+          "type": "prose",
+          "md": "**Rare is not the same as wrong.** The handout's point: sentences you almost never hear can still be grammatical, and most rules are **unconscious** (you follow them without being able to say them). A sentence gets `*` only when it breaks a rule, never just because it sounds unusual.",
+          "slide": "Rare is not wrong",
+          "id": "start.7e683afc"
+        },
+        {
           "type": "trap",
           "body": "Ungrammatical is not the same as nonsense. *Colorless green ideas sleep furiously* (Chomsky) makes no sense, but every rule is followed, so it's grammatical. *I want that you leave* makes perfect sense, but English doesn't allow it, so it gets a `*`.",
           "source": "Week 1 handout",
@@ -266,8 +272,8 @@
         },
         {
           "type": "prose",
-          "md": "**The biggest parameter: basic word order.** Take the three jobs from the start of the chapter (S, V, O). Every language has a most common, neutral order for them, called its **dominant word order**. English is SVO (*Naomi read the letter*), Japanese is SOV (*Naomi-ga tegami-o yon-da*, 'Naomi letter read'), Tagalog is VSO (*Binasa ni Naomi ang liham*, 'read Naomi the-letter').",
-          "id": "variation.26169c7f"
+          "md": "**The biggest parameter: basic word order.** Take the three jobs from the start of the chapter (S, V, O). Every language has a most common, neutral order for them, called its **dominant word order**. English is SVO (*Naomi read the letter*), Japanese is SOV (*Naomi-ga tegami-o yon-da*, 'Naomi letter read'), Tagalog is VSO (*B⟨in⟩asa ni Naomi ang liham*, 'read Naomi the-letter'; the *⟨in⟩* is an **infix**, an affix placed inside the root, here marking a completed action).",
+          "id": "variation.4defe86d"
         },
         {
           "type": "figure",
@@ -313,8 +319,8 @@
             [
               "Wh-questions",
               "A **wh-word** is who, what, where, when, why, how. Does it move to the front of the question, or stay where the answer would go?",
-              "Wh-movement: English *What did you buy __?*",
-              "Wh-in-situ ('in place'): Mandarin *Nǐ mǎi le shénme?* (you buy PAST what)"
+              "Wh-movement: Syrian Arabic *šw khals-et ħaneen?* 'what finished Haneen?' (the object *šw* 'what' moves to the front; English does the same)",
+              "Wh-in-situ ('in place'): Mandarin *tāmen zài wán shénme yóuxì?* 'they are playing what game?'; Hindi/Urdu *sita-ne kıs=ko dekh-a th-a?* 'Sita who-ACC seen had?'"
             ]
           ],
           "title": "The parameters, defined",

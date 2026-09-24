@@ -15,6 +15,20 @@
       "heading": "Start here: what a constituent is",
       "blocks": [
         {
+          "type": "prose",
+          "md": "**Dr. Nie opens Week 5 with a review.** Define phrase, head, dependent, complement, adjunct and head directionality (all from Week 4), then say which ones a dependency diagram shows clearly. Answer below; open it after you try.",
+          "slide": "The warm-up",
+          "id": "why.8f4b14ba"
+        },
+        {
+          "type": "example",
+          "title": "Warm-up: what do dependency diagrams show well?",
+          "body": "Which Week 4 ideas can you read straight off the arrows, and which can't you?",
+          "answer": "**Shown clearly:** head and dependent (every arrow goes head → dependent), and head directionality (do the arrows to complements point right or left?).\n\n**Not shown clearly:** phrases (you have to collect a head and everything under it yourself), and complement vs adjunct (both are just arrows; nothing marks which is which).\n\nThat gap is why Week 5 switches to constituents and Week 6 to trees, where phrases are visible as nodes.",
+          "slide": "Warm-up answer",
+          "id": "why.b1a3b702"
+        },
+        {
           "type": "definition",
           "term": "Constituent",
           "body": "A group of words that **behaves as one unit** in a sentence. You can't see it by looking; you prove it with a **test**. A single word always counts; the tests are for strings of two or more words.",
