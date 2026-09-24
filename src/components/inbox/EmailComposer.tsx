@@ -27,7 +27,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { Copy, ExternalLink, Mail, Plus, X } from "lucide-react";
+import { Copy, ExternalLink, Mail, Plus, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -97,10 +97,10 @@ const PROF_TEMPLATES: { id: TemplateId; label: string }[] = [
   { id: "blank", label: "Blank" },
 ];
 const PEER_TEMPLATES: { id: TemplateId; label: string }[] = [
+  { id: "hello", label: "Quick message" },
   { id: "group", label: "Study group" },
   { id: "notes", label: "Ask for notes or help" },
   { id: "question", label: "Question about an assignment" },
-  { id: "hello", label: "Quick message" },
   { id: "blank", label: "Blank" },
 ];
 
@@ -303,6 +303,14 @@ export function EmailComposer({
 
   const toProfessor = to.some((p) => p.professor);
   const templates = toProfessor || to.length === 0 ? PROF_TEMPLATES : PEER_TEMPLATES;
+  // Switching audience resets to that audience's first template, so a
+  // classmate doesn't get the professor's "question about [assignment]".
+  const [audience, setAudience] = useState<"prof" | "peer">("prof");
+  const nextAudience = toProfessor || to.length === 0 ? "prof" : "peer";
+  if (nextAudience !== audience) {
+    setAudience(nextAudience);
+    setTemplate(nextAudience === "prof" ? "question" : "hello");
+  }
   const tpl = templates.some((t) => t.id === template) ? template : templates[0].id;
   const code = courseId === "none" ? "" : codeOf(courseId);
   const courseItems = rows.filter((r) => r.courseId === courseId);
@@ -517,7 +525,8 @@ export function EmailComposer({
 
           <div className="flex flex-wrap items-center gap-2 pt-1">
             <Button disabled={!ready} onClick={() => go(gmailUrl())}>
-              <ExternalLink className="mr-1.5 h-4 w-4" /> Open in Gmail
+              <Send className="mr-1.5 h-4 w-4" /> Send with Gmail
+              <ExternalLink className="ml-1.5 h-3.5 w-3.5 opacity-70" />
             </Button>
             <Button variant="outline" disabled={!ready} onClick={() => go(mailtoUrl())}>
               <Mail className="mr-1.5 h-4 w-4" /> Open in Mail app
@@ -534,7 +543,11 @@ export function EmailComposer({
             >
               <Copy className="mr-1.5 h-4 w-4" /> Copy
             </Button>
-            {!ready && <span className="text-xs text-muted-foreground">Add a recipient and a subject to send.</span>}
+            <span className="basis-full text-xs text-muted-foreground">
+              {ready
+                ? "Gmail opens with this email ready to go. Check it, then click Send in Gmail. (The app can't send on its own; that needs Google's permission.)"
+                : "Add a recipient and a subject to send."}
+            </span>
           </div>
         </div>
       </DialogContent>
