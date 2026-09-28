@@ -11,7 +11,7 @@
  * guides, related terms name real definitions, and every course's guide
  * list resolves.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { courses } from "../src/study/courses";
 import { SIM_NAMES } from "../src/study/sims";
@@ -69,11 +69,27 @@ for (const f of readdirSync(dir)) {
         case "stepper":
           if (!isStr(b.title) || !isArr(b.frames) || !b.frames.length) at(`${id}: stepper title/frames`);
           else for (const fr of b.frames as Record<string, unknown>[]) if (!["array", "rows", "heap", "tree", "lines", "timeline"].includes(fr.kind as string) || !isStr(fr.caption)) at(`${id}: bad frame`);
+          if (b.trace !== undefined) {
+            const tr = b.trace as Record<string, unknown>;
+            const n = isArr(b.frames) ? (b.frames as unknown[]).length : 0;
+            const nLines = isStr(tr.code) ? (tr.code as string).replace(/\n$/, "").split("\n").length : 0;
+            if (!isStr(tr.code) || !isArr(tr.lines) || (tr.lines as unknown[]).length !== n) at(`${id}: trace needs code and one lines[] entry per frame`);
+            else if (!(tr.lines as unknown[]).every((l) => isArr(l) && (l as unknown[]).every((x) => typeof x === "number" && x >= 1 && x <= nLines))) at(`${id}: trace.lines out of range (1..${nLines})`);
+            if (tr.vars !== undefined && (!isArr(tr.vars) || (tr.vars as unknown[]).length !== n)) at(`${id}: trace.vars needs one entry per frame`);
+          }
           break;
         case "diagram":
           if (!(DIAGRAM_KINDS as readonly unknown[]).includes(b.kind) || !isStr(b.caption) || typeof b.data !== "object" || b.data === null) at(`${id}: diagram kind/data/caption`);
           break;
         case "figure": if (!isStr(b.svg) || !isStr(b.viewBox) || !isStr(b.caption)) at(`${id}: figure`); break;
+        case "video":
+          if (!isStr(b.src) || !(b.src as string).startsWith("/study-videos/") || !isStr(b.caption)) at(`${id}: video src (/study-videos/…) and caption`);
+          else for (const ext of [".mp4", ".webm", ".jpg"]) {
+            const f = (b.src as string).replace(/\.mp4$/, ext);
+            if (!existsSync(join(process.cwd(), "public", f))) at(`${id}: video file missing: public${f}`);
+          }
+          if (b.chapters !== undefined && (!isArr(b.chapters) || !(b.chapters as Record<string, unknown>[]).every((c) => typeof c.t === "number" && isStr(c.label)))) at(`${id}: video.chapters`);
+          break;
         case "sim":
           if (!isStr(b.sim) || !isStr(b.caption)) at(`${id}: sim name/caption`);
           else if (!(SIM_NAMES as readonly string[]).includes(b.sim)) at(`${id}: unknown sim "${b.sim}" (see src/study/sims.ts)`);

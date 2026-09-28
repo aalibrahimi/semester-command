@@ -41,6 +41,8 @@ function blockText(b: GuideBlock): string {
     case "figure":
     case "diagram":
       return plain(b.caption);
+    case "video":
+      return `Watch the animation. ${plain(b.caption)}`;
     case "sim":
       return `Try it yourself. ${plain(b.caption)}`;
     case "stepper":
@@ -110,7 +112,7 @@ export function isEssential(slide: Slide): boolean {
   if (c.kind !== "block") return true;
   const b = c.block;
   if (slide.title) return true;
-  if (b.type === "figure" || b.type === "diagram" || b.type === "sim" || b.type === "trap" || b.type === "definition" || b.type === "table") return true;
+  if (b.type === "figure" || b.type === "video" || b.type === "diagram" || b.type === "sim" || b.type === "trap" || b.type === "definition" || b.type === "table") return true;
   if (b.type === "prose" && b.label) return true;
   return false;
 }

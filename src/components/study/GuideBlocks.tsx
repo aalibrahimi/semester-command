@@ -11,6 +11,7 @@
  *   table       bordered table
  *   stepper     the existing click-through Stepper
  *   figure      inline SVG with caption
+ *   video       an MP4 animation with chapter chips and speed control
  *   sim         an interactive simulator from sims/ (dials, machines, sound)
  *   code        a Python cell you edit and run in the app (PyCell)
  *   check       not rendered here — the right rail's "Test me" owns checks
@@ -18,7 +19,7 @@
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
  * Consecutive definition/trap cards are laid out in a two-column grid.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { GuideBlock, ProseLabel } from "@/study/guide";
@@ -190,12 +191,15 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
     case "stepper":
       return (
         <div id={block.id} className="scroll-mt-6">
-          <Stepper title={block.title} frames={block.frames} />
+          <Stepper title={block.title} frames={block.frames} trace={block.trace} />
         </div>
       );
 
     case "figure":
       return <FigureView id={block.id} svg={block.svg} viewBox={block.viewBox} caption={block.caption} />;
+
+    case "video":
+      return <VideoView id={block.id} src={block.src} caption={block.caption} chapters={block.chapters ?? []} />;
 
     case "diagram":
       return (
@@ -262,6 +266,77 @@ export function GuideBlocks({ blocks }: { blocks: GuideBlock[] }) {
         ),
       )}
     </div>
+  );
+}
+
+const SPEEDS = [0.75, 1, 1.25, 1.5] as const;
+
+/**
+ * An MP4 walkthrough. The native controls handle play/pause/scrub; under
+ * the player, chapter chips jump to a scene (the current one is lit) and a
+ * speed toggle slows it down for a first watch.
+ */
+function VideoView({ id, src, caption, chapters }: { id: string; src: string; caption: string; chapters: { t: number; label: string }[] }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [now, setNow] = useState(0);
+  const [speed, setSpeed] = useState(1);
+  const base = src.replace(/\.mp4$/, "");
+  const current = chapters.reduce((acc, c, i) => (now + 0.05 >= c.t ? i : acc), -1);
+  const jump = (t: number) => {
+    const v = ref.current;
+    if (!v) return;
+    v.currentTime = t;
+    void v.play();
+  };
+  const changeSpeed = (s: number) => {
+    setSpeed(s);
+    if (ref.current) ref.current.playbackRate = s;
+  };
+  return (
+    <figure id={id} className="scroll-mt-6 overflow-hidden rounded-xl border border-border/70 bg-card">
+      <video ref={ref} controls preload="metadata" playsInline poster={`${base}.jpg`} className="block aspect-video w-full bg-black" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}>
+        {/* H.264 for WebKit (the Tauri window), VP9 for builds without H.264. */}
+        <source src={`${base}.mp4`} type="video/mp4" />
+        <source src={`${base}.webm`} type="video/webm" />
+      </video>
+      <div className="flex flex-col gap-3 px-5 py-4">
+        {chapters.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {chapters.map((c, i) => (
+              <button
+                key={c.t}
+                type="button"
+                onClick={() => jump(c.t)}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-xs transition-colors duration-micro",
+                  i === current ? "border-transparent bg-brand-solid text-white" : "border-border/80 text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
+                )}
+              >
+                <span className="mr-1.5 font-mono opacity-70">{Math.floor(c.t / 60)}:{String(Math.floor(c.t % 60)).padStart(2, "0")}</span>
+                {c.label}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="flex items-center justify-between gap-3">
+          <figcaption className="text-sm leading-relaxed text-muted-foreground">
+            <Inline text={caption} />
+          </figcaption>
+          <div className="flex shrink-0 items-center gap-1" role="group" aria-label="Playback speed">
+            {SPEEDS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => changeSpeed(s)}
+                className={cn("rounded-md px-2 py-1 font-mono text-2xs", s === speed ? "bg-fill-ghost text-foreground" : "text-muted-foreground hover:text-foreground")}
+              >
+                {s}×
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </figure>
   );
 }
 

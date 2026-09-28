@@ -20,7 +20,7 @@ import type { ReactNode } from "react";
 
 /** One combined regex; alternation order = precedence. */
 const TOKEN =
-  /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\b(?:public|private|protected|static|final|void|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|default|break|continue|throw|throws|try|catch|finally|this|super|null|true|false|int|long|double|float|boolean|char|byte|short|import|package|const|let|var|function|def|elif|lambda|in|and|or|not|assert)\b)|(\b\d[\d_]*(?:\.\d+)?\b)|(\b[A-Z][A-Za-z0-9_]*\b)|([a-z_][A-Za-z0-9_]*(?=\s*\())/g;
+  /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\b(?:public|private|protected|static|final|void|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|default|break|continue|throw|throws|try|catch|finally|this|super|null|true|false|int|long|double|float|boolean|char|byte|short|import|package|const|let|var|function|def|elif|lambda|in|and|or|not|assert)\b)|(\b\d[\d_]*(?:\.\d+)?\b)|(\b[A-Z][A-Za-z0-9_]*\b)|([a-z_][A-Za-z0-9_]*(?=\s*\())/g;
 
 const CLS: Record<number, string | undefined> = {
   1: "italic text-muted-foreground", // comment
@@ -41,9 +41,10 @@ export function looksLikeCode(text: string): boolean {
   return /^\s*(for\b|if\b|while\b|return\b|def\b|public\b|private\b|int\b|else\b|swap\b|[a-z]\w*\(.*\):\s*$)/m.test(text);
 }
 
-/** The body of a code block, tokenized into colored spans. */
-export function CodeHighlight({ text }: { text: string }) {
-  if (!looksLikeCode(text)) return <>{text}</>;
+/** The body of a code block, tokenized into colored spans. `force` skips
+ *  the looks-like-code gate (for single lines of a known program). */
+export function CodeHighlight({ text, force }: { text: string; force?: boolean }) {
+  if (!force && !looksLikeCode(text)) return <>{text}</>;
   const out: ReactNode[] = [];
   let last = 0;
   let key = 0;

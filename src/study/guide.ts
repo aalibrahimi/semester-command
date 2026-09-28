@@ -57,6 +57,7 @@ export type GuideBlock =
   | CheckBlock
   | StepperBlock
   | FigureBlock
+  | VideoBlock
   | DiagramBlock
   | SimBlock
   | CodeBlock;
@@ -111,6 +112,12 @@ export interface StepperBlock extends BlockBase {
   type: "stepper";
   title: string;
   frames: Frame[];
+  /**
+   * Optional code trace: the stepper splits into the program (left, the
+   * executing line lit) and the picture (right). `lines[i]` are the 1-based
+   * line numbers running in frame i; `vars[i]` the variables to show.
+   */
+  trace?: { code: string; lines: number[][]; vars?: Record<string, string>[] };
 }
 
 /** An inline SVG diagram. `svg` is the inner markup; `viewBox` sizes it. */
@@ -119,6 +126,19 @@ export interface FigureBlock extends BlockBase {
   svg: string;
   viewBox: string;
   caption: string;
+}
+
+/**
+ * A narrated-by-captions animation rendered to MP4 and shipped in
+ * public/study-videos/. `src` is the public path ("/study-videos/x.mp4");
+ * x.webm (VP9 fallback) and x.jpg (poster) must sit next to it.
+ * `chapters` are jump points in seconds, shown as chips under the player.
+ */
+export interface VideoBlock extends BlockBase {
+  type: "video";
+  src: string;
+  caption: string;
+  chapters?: { t: number; label: string }[];
 }
 
 /** The kinds components/study/Diagram.tsx can draw. */

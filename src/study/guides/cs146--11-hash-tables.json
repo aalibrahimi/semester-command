@@ -64,6 +64,47 @@
           "id": "map.3370abf4"
         },
         {
+          "type": "video",
+          "src": "/study-videos/cs146-hash-tables.mp4",
+          "slide": "Watch it first",
+          "caption": "The whole lecture as a 2.5-minute animation: the librarian's three phases, the six-key chaining trace, a search, and a resize. Use the chips to jump to a scene, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 5,
+              "label": "Phase 1: waste"
+            },
+            {
+              "t": 17,
+              "label": "Phase 2: collisions"
+            },
+            {
+              "t": 45,
+              "label": "Phase 3: chains"
+            },
+            {
+              "t": 66,
+              "label": "Story → CS"
+            },
+            {
+              "t": 76,
+              "label": "Chaining trace"
+            },
+            {
+              "t": 112,
+              "label": "search(17)"
+            },
+            {
+              "t": 124,
+              "label": "Load factor + resize"
+            },
+            {
+              "t": 146,
+              "label": "Bottom line"
+            }
+          ],
+          "id": "map.69cac10f"
+        },
+        {
           "type": "prose",
           "md": "**Why it matters** Hash tables are probably the most used data structure in real software. Every time a website checks if your username is taken, a browser checks if it already downloaded an image, or your code does `obj[key]`, a hash table answers in constant time. If you understand this chapter, you understand why `map.get(key)` is fast and when it isn't.",
           "label": "why",
@@ -1504,8 +1545,14 @@
           "id": "chaining.942b2601"
         },
         {
+          "type": "prose",
+          "md": "**Now follow the actual code.** The next player runs `insert` and `search` line by line. The left side lights up the line that is executing; the right side shows what that line just did to the table; the chips under the code are the variables at that moment. Pause any time, or open it full screen.",
+          "slide": "Code, line by line",
+          "id": "chaining.4b0aee4c"
+        },
+        {
           "type": "stepper",
-          "title": "Searching a chained table",
+          "title": "insert and search, line by line",
           "frames": [
             {
               "kind": "rows",
@@ -1529,8 +1576,8 @@
                 {
                   "label": "T[2]",
                   "cells": [
-                    "82",
-                    "42",
+                    null,
+                    null,
                     null
                   ]
                 },
@@ -1553,7 +1600,7 @@
                 {
                   "label": "T[5]",
                   "cells": [
-                    "55",
+                    null,
                     null,
                     null
                   ]
@@ -1569,8 +1616,8 @@
                 {
                   "label": "T[7]",
                   "cells": [
-                    "37",
-                    "17",
+                    null,
+                    null,
                     null
                   ]
                 },
@@ -1585,13 +1632,1120 @@
                 {
                   "label": "T[9]",
                   "cells": [
-                    "99",
+                    null,
                     null,
                     null
                   ]
                 }
               ],
-              "caption": "search(17). Step 1: compute the slot. h(17) = 17 mod 10 = 7."
+              "caption": "An empty table of m = 10 chains. Watch the lit line on the left: that's the line running right now."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(42, 'a'): first compute the slot. h(42) = 42 % 10 = **2**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Make a new node holding (42, 'a'). It isn't in the table yet."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "node.next = T[2]: chain 2 is empty, so next is null."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "T[2] = node: the new node is now the head of chain 2. Two pointer moves, no walking: **O(1)**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(17, 'b'): first compute the slot. h(17) = 17 % 10 = **7**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Make a new node holding (17, 'b'). It isn't in the table yet."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "node.next = T[7]: chain 7 is empty, so next is null."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "T[7] = node: the new node is now the head of chain 7. Two pointer moves, no walking: **O(1)**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(82, 'c'): first compute the slot. h(82) = 82 % 10 = **2**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "82",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Make a new node holding (82, 'c'). It isn't in the table yet."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "42",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "node.next = T[2]: the new node points at the old head, 42. Nothing is overwritten."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "T[2] = node: the new node is now the head of chain 2. Two pointer moves, no walking: **O(1)**."
             },
             {
               "kind": "rows",
@@ -1639,7 +2793,287 @@
                 {
                   "label": "T[5]",
                   "cells": [
-                    "55",
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(37, 'd'): first compute the slot. h(37) = 37 % 10 = **7**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "37",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Make a new node holding (37, 'd'). It isn't in the table yet."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "node",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "node.next = T[7]: the new node points at the old head, 17. Nothing is overwritten."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
                     null,
                     null
                   ]
@@ -1674,13 +3108,13 @@
                 {
                   "label": "T[9]",
                   "cells": [
-                    "99",
+                    null,
                     null,
                     null
                   ]
                 }
               ],
-              "caption": "Step 2: look at the head of chain 7. Its key is 37. Not 17, so follow the next pointer."
+              "caption": "T[7] = node: the new node is now the head of chain 7. Two pointer moves, no walking: **O(1)**."
             },
             {
               "kind": "rows",
@@ -1728,7 +3162,271 @@
                 {
                   "label": "T[5]",
                   "cells": [
-                    "55",
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "search(17): compute the slot. h(17) = 17 % 10 = **7**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "node = T[7]: start at the head of chain 7, which is 37."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "node isn't null, so check it: is 37 == 17? No."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
                     null,
                     null
                   ]
@@ -1750,9 +3448,6 @@
                   ],
                   "hl": [
                     1
-                  ],
-                  "dim": [
-                    0
                   ]
                 },
                 {
@@ -1766,13 +3461,13 @@
                 {
                   "label": "T[9]",
                   "cells": [
-                    "99",
+                    null,
                     null,
                     null
                   ]
                 }
               ],
-              "caption": "Step 3: the next node's key is 17. Found it: return (17, 'b'). Two looks, because chain 7 has length 2."
+              "caption": "node = node.next: move one step down the chain, to 17."
             },
             {
               "kind": "rows",
@@ -1815,15 +3510,101 @@
                     null,
                     null,
                     null
-                  ],
-                  "hl": [
-                    0
                   ]
                 },
                 {
                   "label": "T[5]",
                   "cells": [
-                    "55",
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Is 17 == 17? Yes: return 'b'. It took 2 looks because chain 7 has length 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
                     null,
                     null
                   ]
@@ -1855,17 +3636,322 @@
                 {
                   "label": "T[9]",
                   "cells": [
-                    "99",
+                    null,
                     null,
                     null
                   ]
                 }
               ],
-              "caption": "search(64): h(64) = 4. Chain 4 is empty, so return null right away. One look."
+              "caption": "search(64): h(64) = 4, and T[4] is empty, so node = null."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    "82",
+                    "42",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "37",
+                    "17",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[8]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[9]",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "The while loop never runs: return None. An empty chain costs one look."
             }
           ],
           "slide": true,
-          "id": "chaining.47785fb1"
+          "trace": {
+            "code": "def h(k):\n    return k % m        # m = 10\n\ndef insert(k, v):\n    j = h(k)\n    node = Node(k, v)\n    node.next = T[j]    # old head\n    T[j] = node         # new head\n\ndef search(k):\n    j = h(k)\n    node = T[j]\n    while node is not None:\n        if node.key == k:\n            return node.value\n        node = node.next\n    return None\n",
+            "lines": [
+              [
+                1,
+                2
+              ],
+              [
+                4,
+                5,
+                1,
+                2
+              ],
+              [
+                6
+              ],
+              [
+                7
+              ],
+              [
+                8
+              ],
+              [
+                4,
+                5,
+                1,
+                2
+              ],
+              [
+                6
+              ],
+              [
+                7
+              ],
+              [
+                8
+              ],
+              [
+                4,
+                5,
+                1,
+                2
+              ],
+              [
+                6
+              ],
+              [
+                7
+              ],
+              [
+                8
+              ],
+              [
+                4,
+                5,
+                1,
+                2
+              ],
+              [
+                6
+              ],
+              [
+                7
+              ],
+              [
+                8
+              ],
+              [
+                10,
+                11,
+                1,
+                2
+              ],
+              [
+                12
+              ],
+              [
+                13,
+                14
+              ],
+              [
+                16
+              ],
+              [
+                13,
+                14,
+                15
+              ],
+              [
+                10,
+                11,
+                12
+              ],
+              [
+                13,
+                17
+              ]
+            ],
+            "vars": [
+              {
+                "m": "10"
+              },
+              {
+                "k": "42",
+                "v": "'a'",
+                "j": "2"
+              },
+              {
+                "k": "42",
+                "v": "'a'",
+                "j": "2",
+                "node": "(42, 'a')"
+              },
+              {
+                "k": "42",
+                "j": "2",
+                "node.next": "null"
+              },
+              {
+                "k": "42",
+                "j": "2",
+                "T[2]": "42"
+              },
+              {
+                "k": "17",
+                "v": "'b'",
+                "j": "7"
+              },
+              {
+                "k": "17",
+                "v": "'b'",
+                "j": "7",
+                "node": "(17, 'b')"
+              },
+              {
+                "k": "17",
+                "j": "7",
+                "node.next": "null"
+              },
+              {
+                "k": "17",
+                "j": "7",
+                "T[7]": "17"
+              },
+              {
+                "k": "82",
+                "v": "'c'",
+                "j": "2"
+              },
+              {
+                "k": "82",
+                "v": "'c'",
+                "j": "2",
+                "node": "(82, 'c')"
+              },
+              {
+                "k": "82",
+                "j": "2",
+                "node.next": "42"
+              },
+              {
+                "k": "82",
+                "j": "2",
+                "T[2]": "82 → 42"
+              },
+              {
+                "k": "37",
+                "v": "'d'",
+                "j": "7"
+              },
+              {
+                "k": "37",
+                "v": "'d'",
+                "j": "7",
+                "node": "(37, 'd')"
+              },
+              {
+                "k": "37",
+                "j": "7",
+                "node.next": "17"
+              },
+              {
+                "k": "37",
+                "j": "7",
+                "T[7]": "37 → 17"
+              },
+              {
+                "k": "17",
+                "j": "7"
+              },
+              {
+                "k": "17",
+                "j": "7",
+                "node": "37"
+              },
+              {
+                "k": "17",
+                "node.key": "37"
+              },
+              {
+                "k": "17",
+                "node": "17"
+              },
+              {
+                "k": "17",
+                "node.key": "17",
+                "return": "'b'"
+              },
+              {
+                "k": "64",
+                "j": "4",
+                "node": "null"
+              },
+              {
+                "k": "64",
+                "return": "None"
+              }
+            ]
+          },
+          "id": "chaining.3cca7b61"
         },
         {
           "type": "example",
@@ -1958,7 +4044,7 @@
         },
         {
           "type": "stepper",
-          "title": "Watching a resize happen",
+          "title": "Resizing, line by line",
           "frames": [
             {
               "kind": "rows",
@@ -1967,14 +4053,12 @@
                   "label": "T[0]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[1]",
                   "cells": [
-                    null,
                     null,
                     null
                   ]
@@ -1983,7 +4067,6 @@
                   "label": "T[2]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 },
@@ -1991,12 +4074,11 @@
                   "label": "T[3]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 }
               ],
-              "caption": "Start small: m = 4 slots, and we'll resize whenever α = n/m goes above α_max = 0.75."
+              "caption": "Start with m = 4 empty chains and α_max = 0.75. We'll insert 5, 12, 7, then 20."
             },
             {
               "kind": "rows",
@@ -2005,14 +4087,12 @@
                   "label": "T[0]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[1]",
                   "cells": [
-                    "5",
                     null,
                     null
                   ]
@@ -2021,6 +4101,42 @@
                   "label": "T[2]",
                   "cells": [
                     null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(5): check first. (n + 1) / m = 1/4 = 0.25. Not above 0.75, so no resize."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
                     null,
                     null
                   ]
@@ -2029,12 +4145,45 @@
                   "label": "T[3]",
                   "cells": [
                     null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "j = 5 % 4 = 1. Put 5 at the head of chain 1, and n becomes 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
                     null,
                     null
                   ]
                 }
               ],
-              "caption": "insert 5: h(5) = 5 mod 4 = 1. n = 1, α = 1/4 = 0.25. Still ≤ 0.75, fine."
+              "caption": "insert(12): check first. (n + 1) / m = 2/4 = 0.50. Not above 0.75, so no resize."
             },
             {
               "kind": "rows",
@@ -2043,22 +4192,22 @@
                   "label": "T[0]",
                   "cells": [
                     "12",
-                    null,
                     null
+                  ],
+                  "hl": [
+                    0
                   ]
                 },
                 {
                   "label": "T[1]",
                   "cells": [
                     "5",
-                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[2]",
                   "cells": [
-                    null,
                     null,
                     null
                   ]
@@ -2067,12 +4216,11 @@
                   "label": "T[3]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 }
               ],
-              "caption": "insert 12: h(12) = 12 mod 4 = 0. n = 2, α = 2/4 = 0.50. Still ≤ 0.75, fine."
+              "caption": "j = 12 % 4 = 0. Put 12 at the head of chain 0, and n becomes 2."
             },
             {
               "kind": "rows",
@@ -2081,7 +4229,6 @@
                   "label": "T[0]",
                   "cells": [
                     "12",
-                    null,
                     null
                   ]
                 },
@@ -2089,7 +4236,6 @@
                   "label": "T[1]",
                   "cells": [
                     "5",
-                    null,
                     null
                   ]
                 },
@@ -2097,6 +4243,39 @@
                   "label": "T[2]",
                   "cells": [
                     null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "insert(7): check first. (n + 1) / m = 3/4 = 0.75. Not above 0.75, so no resize."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    "12",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
                     null,
                     null
                   ]
@@ -2105,12 +4284,14 @@
                   "label": "T[3]",
                   "cells": [
                     "7",
-                    null,
                     null
+                  ],
+                  "hl": [
+                    0
                   ]
                 }
               ],
-              "caption": "insert 7: h(7) = 7 mod 4 = 3. n = 3, α = 3/4 = 0.75. Still ≤ 0.75, fine."
+              "caption": "j = 7 % 4 = 3. Put 7 at the head of chain 3, and n becomes 3."
             },
             {
               "kind": "rows",
@@ -2118,7 +4299,6 @@
                 {
                   "label": "T[0]",
                   "cells": [
-                    "20",
                     "12",
                     null
                   ]
@@ -2127,14 +4307,12 @@
                   "label": "T[1]",
                   "cells": [
                     "5",
-                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[2]",
                   "cells": [
-                    null,
                     null,
                     null
                   ]
@@ -2143,12 +4321,11 @@
                   "label": "T[3]",
                   "cells": [
                     "7",
-                    null,
                     null
                   ]
                 }
               ],
-              "caption": "insert 20: h(20) = 0. n = 4, α = 4/4 = 1.00 > 0.75. **Too full: time to resize.**"
+              "caption": "insert(20): (n + 1) / m = 4/4 = 1.00. That's above 0.75: this insert would overfill the table."
             },
             {
               "kind": "rows",
@@ -2156,7 +4333,84 @@
                 {
                   "label": "T[0]",
                   "cells": [
+                    "12",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
                     null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    "7",
+                    null
+                  ]
+                }
+              ],
+              "caption": "So call resize(2 * m) = resize(8) BEFORE inserting 20."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "old[0]",
+                  "cells": [
+                    "12",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "old[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "old[2]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[3]",
+                  "cells": [
+                    "7",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "",
+                  "cells": [
+                    ""
+                  ]
+                },
+                {
+                  "label": "T[0]",
+                  "cells": [
                     null,
                     null
                   ]
@@ -2165,7 +4419,6 @@
                   "label": "T[1]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 },
@@ -2173,14 +4426,12 @@
                   "label": "T[2]",
                   "cells": [
                     null,
-                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[3]",
                   "cells": [
-                    null,
                     null,
                     null
                   ]
@@ -2188,15 +4439,13 @@
                 {
                   "label": "T[4]",
                   "cells": [
-                    "20",
-                    "12",
+                    null,
                     null
                   ]
                 },
                 {
                   "label": "T[5]",
                   "cells": [
-                    "5",
                     null,
                     null
                   ]
@@ -2205,6 +4454,317 @@
                   "label": "T[6]",
                   "cells": [
                     null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Keep the old chains as `old`, make 8 new empty chains, set m = 8. Every key has to be re-hashed, because k % 8 is not k % 4."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "old[0]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[1]",
+                  "cells": [
+                    "5",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "old[2]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[3]",
+                  "cells": [
+                    "7",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "",
+                  "cells": [
+                    ""
+                  ]
+                },
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    "12",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Re-insert 12: 12 % 8 = 4 (it was in slot 0 before). Every key is copied once: resize is **O(n)**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "old[0]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[1]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[2]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[3]",
+                  "cells": [
+                    "7",
+                    null
+                  ],
+                  "dim": [
+                    0
+                  ]
+                },
+                {
+                  "label": "",
+                  "cells": [
+                    ""
+                  ]
+                },
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    "12",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    "5",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Re-insert 5: 5 % 8 = 5 (it was in slot 1 before). Every key is copied once: resize is **O(n)**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "old[0]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[1]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[2]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "old[3]",
+                  "cells": [
+                    null,
+                    null
+                  ],
+                  "dim": []
+                },
+                {
+                  "label": "",
+                  "cells": [
+                    ""
+                  ]
+                },
+                {
+                  "label": "T[0]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    "12",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    "5",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
                     null,
                     null
                   ]
@@ -2213,16 +4773,220 @@
                   "label": "T[7]",
                   "cells": [
                     "7",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Re-insert 7: 7 % 8 = 7 (it was in slot 3 before). Every key is copied once: resize is **O(n)**."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "T[0]",
+                  "cells": [
                     null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[1]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[2]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[3]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[4]",
+                  "cells": [
+                    "20",
+                    "12"
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "T[5]",
+                  "cells": [
+                    "5",
+                    null
+                  ]
+                },
+                {
+                  "label": "T[6]",
+                  "cells": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "T[7]",
+                  "cells": [
+                    "7",
                     null
                   ]
                 }
               ],
-              "caption": "Resize: make a new table with m = 8 and **re-insert every key** with the new h(k) = k mod 8 (the slots change!). That copy is O(n). Now α = 4/8 = 0.5 again."
+              "caption": "Back in insert: j = 20 % 8 = 4, add 20 at the head, n = 4. Now α = 4/8 = 0.50: short chains again."
             }
           ],
           "slide": true,
-          "id": "runtime.bb9cd774"
+          "trace": {
+            "code": "def insert(k, v):\n    global n\n    if (n + 1) / m > 0.75:   # too full?\n        resize(2 * m)\n    j = k % m\n    T[j].insert(0, (k, v))   # at head\n    n += 1\n\ndef resize(new_m):\n    global T, m\n    old = T\n    T = [[] for _ in range(new_m)]\n    m = new_m\n    for chain in old:\n        for (k, v) in chain:\n            T[k % m].insert(0, (k, v))\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                3
+              ],
+              [
+                5,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                5,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                5,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                4,
+                9
+              ],
+              [
+                11,
+                12,
+                13
+              ],
+              [
+                14,
+                15,
+                16
+              ],
+              [
+                14,
+                15,
+                16
+              ],
+              [
+                14,
+                15,
+                16
+              ],
+              [
+                5,
+                6,
+                7
+              ]
+            ],
+            "vars": [
+              {
+                "n": "0",
+                "m": "4"
+              },
+              {
+                "k": "5",
+                "n": "0",
+                "m": "4",
+                "(n+1)/m": "0.25"
+              },
+              {
+                "k": "5",
+                "j": "1",
+                "n": "1",
+                "α": "1/4 = 0.25"
+              },
+              {
+                "k": "12",
+                "n": "1",
+                "m": "4",
+                "(n+1)/m": "0.50"
+              },
+              {
+                "k": "12",
+                "j": "0",
+                "n": "2",
+                "α": "2/4 = 0.50"
+              },
+              {
+                "k": "7",
+                "n": "2",
+                "m": "4",
+                "(n+1)/m": "0.75"
+              },
+              {
+                "k": "7",
+                "j": "3",
+                "n": "3",
+                "α": "3/4 = 0.75"
+              },
+              {
+                "k": "20",
+                "n": "3",
+                "m": "4",
+                "(n+1)/m": "1.00"
+              },
+              {
+                "new_m": "8"
+              },
+              {
+                "m": "8",
+                "old": "4 chains"
+              },
+              {
+                "k": "12",
+                "k % 8": "4"
+              },
+              {
+                "k": "5",
+                "k % 8": "5"
+              },
+              {
+                "k": "7",
+                "k % 8": "7"
+              },
+              {
+                "k": "20",
+                "j": "4",
+                "n": "4",
+                "α": "0.50"
+              }
+            ]
+          },
+          "id": "runtime.37a86afa"
         },
         {
           "type": "definition",

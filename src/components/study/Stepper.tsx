@@ -26,10 +26,11 @@
  * segmented bar is the whole animation; the current segment fills.
  */
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Frame } from "@/study/types";
 import { Inline } from "./Blocks";
+import { CodeHighlight } from "./CodeHighlight";
 
 const EASE = "duration-700 ease-[cubic-bezier(.33,1,.68,1)] motion-reduce:transition-none";
 
@@ -557,7 +558,66 @@ function prefersReducedMotion(): boolean {
   }
 }
 
-export function Stepper({ title, frames }: { title: string; frames: Frame[] }) {
+/**
+ * The code half of a code-trace stepper: every line numbered, the lines the
+ * current frame is executing lit (brand bar + tint), earlier-run lines
+ * untouched, and the variables for this step as chips underneath. The lit
+ * line scrolls into view inside the panel, never the page.
+ */
+function CodePanel({ code, lit, vars, large }: { code: string; lit: number[]; vars?: Record<string, string>; large?: boolean }) {
+  const box = useRef<HTMLDivElement>(null);
+  const lines = code.replace(/\n$/, "").split("\n");
+  useEffect(() => {
+    const el = box.current?.querySelector<HTMLElement>("[data-lit='1']");
+    const b = box.current;
+    if (!el || !b) return;
+    const top = el.offsetTop - b.clientHeight / 2 + el.clientHeight / 2;
+    b.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, [lit]);
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <div ref={box} className={cn("relative overflow-auto rounded-xl border border-border/70 bg-background/60 py-2 font-mono", large ? "max-h-[62vh] text-sm" : "max-h-[420px] text-xs")}>
+        {lines.map((ln, k) => {
+          const on = lit.includes(k + 1);
+          return (
+            <div
+              key={k}
+              data-lit={on ? "1" : undefined}
+              className={cn("flex whitespace-pre border-l-[3px] pr-3 leading-6 transition-colors duration-300", on ? "border-brand bg-brand/[0.14] text-foreground" : "border-transparent text-foreground/75")}
+            >
+              <span className={cn("w-9 shrink-0 select-none pr-3 text-right", on ? "text-brand-fg" : "text-muted-foreground/50")}>{k + 1}</span>
+              <span className="min-w-0">
+                <CodeHighlight text={ln || " "} force />
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      {vars && Object.keys(vars).length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {Object.entries(vars).map(([k, v]) => (
+            <span key={k} className="rounded-md border border-border/80 bg-card px-2 py-0.5 font-mono text-2xs">
+              <span className="text-muted-foreground">{k} = </span>
+              <span className="font-semibold text-foreground">{v}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export interface CodeTrace {
+  /** The program, one string; lines are numbered from 1. */
+  code: string;
+  /** For each frame, the line(s) being executed. */
+  lines: number[][];
+  /** For each frame, the variables worth watching (optional). */
+  vars?: Record<string, string>[];
+}
+
+export function Stepper({ title, frames, trace }: { title: string; frames: Frame[]; trace?: CodeTrace }) {
+  const [wide, setWide] = useState(false);
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(() => !prefersReducedMotion());
   const [visible, setVisible] = useState(() => typeof IntersectionObserver === "undefined");
@@ -585,25 +645,60 @@ export function Stepper({ title, frames }: { title: string; frames: Frame[] }) {
     return () => clearTimeout(t);
   }, [running, i, dwell, frames.length]);
 
+  useEffect(() => {
+    if (!wide) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setWide(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [wide]);
+
   const go = (k: number) => {
     setPlaying(false);
     setI(((k % frames.length) + frames.length) % frames.length);
   };
 
   return (
-    <div ref={ref} className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card">
+    <div ref={ref} className={cn("overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card", wide && "fixed inset-4 z-50 flex flex-col overflow-auto shadow-elevated")}>
       <div className="flex items-center gap-3 px-5 pb-1 pt-4">
         <span className="flex items-center gap-1.5 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-fg">
           <span className={cn("h-1.5 w-1.5 rounded-full", running ? "animate-pulse bg-brand" : "bg-muted-foreground/50")} />
-          Animation
+          {trace ? "Code + animation" : "Animation"}
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-semibold">{title}</span>
+        {trace && (
+          <button
+            type="button"
+            onClick={() => setWide((w) => !w)}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-fill-ghost hover:text-foreground"
+            aria-label={wide ? "Exit full screen" : "Full screen"}
+            title={wide ? "Exit full screen (Esc)" : "Full screen"}
+          >
+            {wide ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          </button>
+        )}
       </div>
 
-      {/* The stage: a faint dot grid, the bubble, the picture. */}
-      <div className="px-5 pb-6 pt-3" style={{ backgroundImage: "radial-gradient(rgb(var(--foreground) / 0.07) 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
-        <FrameView frame={frame} caption={frame.caption} minH={minH} />
-      </div>
+      {/* The stage: a faint dot grid, the bubble, the picture. With a code
+          trace it splits: the program on the left, the picture on the right,
+          and the caption spans both underneath. */}
+      {trace ? (
+        <div className="px-5 pb-5 pt-3">
+          <div className={cn("grid items-start gap-4", wide ? "grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : "grid-cols-1 md:grid-cols-2")}>
+            <CodePanel code={trace.code} lit={trace.lines[i] ?? []} vars={trace.vars?.[i]} large={wide} />
+            <div className="min-w-0 rounded-xl px-2 py-3" style={{ backgroundImage: "radial-gradient(rgb(var(--foreground) / 0.07) 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
+              <FrameView frame={frame} large={wide} />
+            </div>
+          </div>
+          <div className="mt-4 rounded-xl border border-border/70 bg-background/50 px-4 py-3 text-sm leading-relaxed" style={{ minHeight: minH }}>
+            <span className="mr-2 font-mono text-2xs text-brand-fg">line {(trace.lines[i] ?? []).join(", ") || "·"}</span>
+            <Inline text={frame.caption} />
+          </div>
+        </div>
+      ) : (
+        <div className="px-5 pb-6 pt-3" style={{ backgroundImage: "radial-gradient(rgb(var(--foreground) / 0.07) 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
+          <FrameView frame={frame} caption={frame.caption} minH={minH} />
+        </div>
+      )}
 
       {/* Controls */}
       <div className="flex items-center gap-2 border-t border-border/60 bg-fill-ghost/30 px-4 py-3">
