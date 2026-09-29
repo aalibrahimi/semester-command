@@ -188,7 +188,10 @@ function ExamCard({ study, studied, pct, color }: { study: Course; studied: stri
         </div>
       )}
       <div className="flex gap-4 text-[13px] font-medium">
-        <Link to={`/study/${study.slug}/exam`} className="text-brand-fg hover:underline">
+        <Link to={`/study/${study.slug}/ready`} className="text-brand-fg hover:underline">
+          Am I ready?
+        </Link>
+        <Link to={`/study/${study.slug}/exam`} className="text-muted-foreground hover:text-foreground hover:underline">
           Take a mock exam
         </Link>
         <Link to={`/study/${study.slug}/recall`} className="text-muted-foreground hover:text-foreground hover:underline">

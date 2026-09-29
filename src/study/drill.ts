@@ -107,6 +107,9 @@ export interface Drill {
   /** What being able to do this proves, in one line. Shown under the title. */
   skill: string;
   gen: (r: Rng) => DrillInstance;
+  /** After repeated misses, the block to show again: a piece of its title or
+   *  caption. Unset = the section's best picture (study/reteach.ts). */
+  reteach?: string;
 }
 
 /* ── Grading ───────────────────────────────────────────────────────────── */

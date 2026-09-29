@@ -1,0 +1,299 @@
+/**
+ * oral.ts: practice material for oral exams ("explain a concept, then
+ * apply it live"). One list of concepts per course that has an oral exam.
+ *
+ * Called by: routes/StudyOral.tsx.
+ *
+ * Each concept has the question you'll be asked, the points a complete
+ * explanation covers (the checklist you tick after speaking), and fresh
+ * problems to apply it to, each with its own checklist and a model answer.
+ * Everything here restates what the chapters teach, in their terms, so
+ * practice and reading never disagree.
+ */
+
+export interface OralPoint {
+  label: string;
+  detail: string;
+}
+
+export interface OralProblem {
+  task: string;
+  checklist: string[];
+  model: string;
+}
+
+export interface OralConcept {
+  id: string;
+  title: string;
+  /** The question as the examiner would put it. */
+  prompt: string;
+  /** Where the chapter teaches it (for "review this first"). */
+  guideId: string;
+  sectionId: string;
+  points: OralPoint[];
+  problems: OralProblem[];
+}
+
+export const ORAL_EXPLAIN_SECONDS = 120;
+export const ORAL_APPLY_SECONDS = 180;
+
+const LING112: OralConcept[] = [
+  {
+    id: "heads",
+    title: "Heads, complements and adjuncts",
+    prompt: "What is the head of a phrase, and how do you tell a complement from an adjunct?",
+    guideId: "ling112/4-heads-dependents",
+    sectionId: "comp",
+    points: [
+      { label: "Definition", detail: "A phrase has exactly one head; it decides the category and core meaning. The other words are dependents." },
+      { label: "Why it matters", detail: "'several large books' acts like a noun because its head is a noun; heads select their dependents (*the loudly yawn)." },
+      { label: "Two kinds of dependent", detail: "Complements are selected, limited in number, adjacent to the head, usually obligatory. Adjuncts are optional, unlimited, and can move." },
+      { label: "An example of each", detail: "'fond OF music' (fond selects 'of': complement) vs 'quietly serenaded his beloved in the garden' (quietly, in the garden: adjuncts)." },
+      { label: "The exception", detail: "Subjects are arguments but not complements: they are required, but they sit outside the VP." },
+      { label: "How you know", detail: "Name the test you used: drop it, stack more, move it, check whether the head picks the exact word." },
+    ],
+    problems: [
+      {
+        task: "In 'Maya carefully placed the vase on the shelf yesterday', find the head verb, its complements and its adjuncts. Prove each one.",
+        checklist: [
+          "Head: placed",
+          "Complements: 'the vase' and 'on the shelf' ('place' needs both: *Maya placed the vase)",
+          "Adjuncts: 'carefully' and 'yesterday' (drop either, still fine)",
+          "Movement proof: 'Yesterday, Maya carefully placed the vase on the shelf'",
+          "Subject 'Maya': an argument, but not a complement",
+        ],
+        model: "The head is 'placed'. 'Place' needs a thing and a location, so 'the vase' and 'on the shelf' are both complements: drop the PP and you get *Maya placed the vase, which is incomplete. 'Carefully' and 'yesterday' are adjuncts: I can drop them, I could stack more (in the morning, with gloves), and 'yesterday' moves to the front. 'Maya' is the subject: required, so an argument, but not a complement.",
+      },
+      {
+        task: "In 'a student of physics with long hair', which PP is the complement of 'student' and which is the adjunct? How do you know?",
+        checklist: [
+          "Complement: 'of physics' (what is studied, selected by 'student')",
+          "Adjunct: 'with long hair' (just describes)",
+          "Order test: *a student with long hair of physics is bad",
+          "Complements hug the head; adjuncts come after them",
+          "Stacking: you can add more adjuncts (with a backpack), not more 'of' complements",
+        ],
+        model: "'Of physics' is the complement: it names what is studied, 'student' selects it, and it has to sit right next to the head. 'With long hair' is an adjunct. The order test proves it: *a student with long hair of physics sounds wrong, because the complement must hug the head and adjuncts go outside it. I can also stack adjuncts, 'with long hair with a backpack', but not a second 'of' phrase.",
+      },
+      {
+        task: "Draw the dependency arrows for 'The tired dog slept on the porch' and label each dependent of 'slept' as complement or adjunct.",
+        checklist: [
+          "Root: slept (no arrow comes in)",
+          "slept → dog (subject), dog → the, dog → tired",
+          "slept → on, on → porch, porch → the",
+          "'on the porch' is an adjunct: 'sleep' needs no location (The dog slept is fine)",
+          "Every word except the root has exactly one incoming arrow",
+        ],
+        model: "The root is 'slept'. Arrows: slept → dog; dog → the and dog → tired; slept → on; on → porch; porch → the. 'Sleep' is intransitive, so it takes no complement: 'on the porch' is an adjunct, since 'The tired dog slept' is complete. 'Dog' is the subject, an argument. Each word has exactly one arrow coming in, except the root.",
+      },
+    ],
+  },
+  {
+    id: "constituency",
+    title: "Constituency tests",
+    prompt: "What is a constituent, and how do you prove that a string of words is one?",
+    guideId: "ling112/5-constituency-tests",
+    sectionId: "sub",
+    points: [
+      { label: "Definition", detail: "A group of words that behaves as one unit. You can't see it; you prove it with a test." },
+      { label: "Substitution", detail: "Replace the string with one pro-form (they, it, one(s), do so, there, then). The pro-form also tells you what kind of phrase it is." },
+      { label: "Movement", detail: "Topicalize it (move it to the front with a comma) or cleft it: 'It's ___ that…'. Only units can travel." },
+      { label: "Fragment answer", detail: "Ask a wh-question; if the string can be the whole answer alone, it's a unit." },
+      { label: "The logic", detail: "Passing one test is enough to show a constituent. Failing one isn't proof it isn't one: try another test." },
+      { label: "Why it matters", detail: "Constituents are what rules move and replace, and they explain structural ambiguity." },
+    ],
+    problems: [
+      {
+        task: "Is 'the old map' a constituent in 'Ana found the old map in the attic'? Use two tests.",
+        checklist: [
+          "Substitution: 'Ana found it in the attic' works",
+          "Movement: 'The old map, Ana found in the attic' or 'It's the old map that Ana found in the attic'",
+          "Fragment: 'What did Ana find?' 'The old map.'",
+          "Conclusion: yes, a constituent (a DP)",
+        ],
+        model: "Yes. Substitution: 'Ana found it in the attic' keeps the meaning, and 'it' stands in for a DP. Clefting: 'It's the old map that Ana found in the attic' is grammatical. Either test is enough, so 'the old map' is a constituent, a DP.",
+      },
+      {
+        task: "Is 'found the old' a constituent in the same sentence? Show how you know.",
+        checklist: [
+          "Substitution fails: no single pro-form replaces 'found the old'",
+          "Movement fails: *Found the old, Ana map in the attic",
+          "Fragment fails: no question gets 'found the old' as its answer",
+          "Conclusion: not a constituent; it cuts the DP 'the old map' in half",
+        ],
+        model: "No. There's no pro-form for it, *'Found the old, Ana map in the attic' is terrible, and no question has 'found the old' as its answer. All three tests fail, and I can see why: the string splits the DP 'the old map' down the middle, so it can't be a unit.",
+      },
+      {
+        task: "In 'those tall spies in the garden', show that 'tall spies in the garden' is a unit smaller than the whole phrase.",
+        checklist: [
+          "It's an N-bar: the noun and its describers, minus the determiner",
+          "Its pro-form is one(s): 'those ones'",
+          "'I like these tall spies in the garden more than those ones'",
+          "Shows the DP has a layer inside it",
+        ],
+        model: "Use substitution with 'ones': 'I prefer these tall spies in the garden to those ones.' 'Ones' replaces 'tall spies in the garden' but leaves 'those' behind. So that string is a unit smaller than the DP: the N-bar, the noun plus what's attached to it, minus the determiner.",
+      },
+    ],
+  },
+  {
+    id: "categories",
+    title: "Syntactic categories by distribution",
+    prompt: "How do you decide what category a word belongs to?",
+    guideId: "ling112/2-categories",
+    sectionId: "tests",
+    points: [
+      { label: "Definition", detail: "A category is a group of words that behave the same way: same endings, same slots." },
+      { label: "Never by meaning", detail: "Meaning fails: 'destruction' is an action but a noun; 'run' can be a noun or a verb." },
+      { label: "Morphological distribution", detail: "Which endings it takes: nouns take plural -s, verbs take -ed / -ing, adjectives take -er / -est." },
+      { label: "Syntactic distribution", detail: "Which slots it fits: test frames like 'The ___ slept' (N), 'They will ___' (V), 'the ___ dog' (Adj)." },
+      { label: "Lexical vs functional", detail: "N, V, Adj, Adv are open classes; P, D, C, Aux, Mod, T, Neg are closed functional classes." },
+    ],
+    problems: [
+      {
+        task: "What category is 'fast' in 'She runs fast' and in 'a fast car'? Prove each with distribution.",
+        checklist: [
+          "'a fast car': adjective (fits 'the ___ dog'; takes -er: a faster car)",
+          "'runs fast': adverb (modifies the verb; fits after an intransitive verb like 'quickly')",
+          "Same form, two categories: category comes from the slot, not the word's look",
+          "Meaning alone can't decide it",
+        ],
+        model: "In 'a fast car', 'fast' is an adjective: it fits the frame 'the ___ dog' and takes '-er', 'a faster car'. In 'She runs fast', it's an adverb: it sits in the same slot as 'quickly' after the verb and modifies the running. Same spelling, two categories, which is exactly why we decide by distribution, not by the word itself.",
+      },
+      {
+        task: "Is 'destruction' a noun or a verb? Explain why meaning is the wrong way to decide.",
+        checklist: [
+          "Noun",
+          "Frame: 'The ___ was total' works; 'They will ___' fails",
+          "Morphology: -tion is a derivational ending that makes nouns",
+          "It names an action, so meaning would wrongly say verb",
+        ],
+        model: "It's a noun. It fits 'The ___ was total' but not 'They will ___', and '-tion' is a derivational suffix that makes nouns. Meaning would mislead me: destruction is an action, so a meaning-based rule says verb. That's why categories are defined by distribution.",
+      },
+      {
+        task: "Give the category of each word in 'The students will not leave early' with one test for each.",
+        checklist: [
+          "the: D (determiner)",
+          "students: N (plural -s; 'The ___ slept')",
+          "will: Mod / T (carries the tense; 'They ___ leave')",
+          "not: Neg",
+          "leave: V ('They will ___')",
+          "early: Adv (modifies the verb, like 'quickly')",
+        ],
+        model: "'The' is D. 'Students' is N: it takes plural -s and fits 'The ___ slept'. 'Will' is a modal in T: it carries the tense. 'Not' is Neg. 'Leave' is V: it fits 'They will ___'. 'Early' is an adverb here: it fills the same slot as 'quickly' after the verb.",
+      },
+    ],
+  },
+  {
+    id: "trees",
+    title: "Phrase structure rules and trees",
+    prompt: "What does a phrase structure rule say, and how do you use the rules to draw a tree?",
+    guideId: "ling112/6-phrase-structure",
+    sectionId: "rules",
+    points: [
+      { label: "Definition", detail: "A rule says what a phrase is made of and in what order: PP → P DP." },
+      { label: "Reading notation", detail: "Parentheses mean optional; + means one or more." },
+      { label: "DP, not NP", detail: "Every nominal is a DP: DP → (DP) D NP. Names and bare plurals get a silent determiner ∅." },
+      { label: "TP, not S", detail: "TP → DP T VP, and T is never empty: a modal or auxiliary, or PAST / PRES." },
+      { label: "Clauses in clauses", detail: "CP → C TP: 'that she had left'." },
+      { label: "The drawing order", detail: "Find the verb and T, split subject from predicate, build each DP and PP, check that every word hangs from one node." },
+    ],
+    problems: [
+      {
+        task: "Draw the tree for 'Sarah will read the letter' in bracket form.",
+        checklist: [
+          "[TP [DP [D ∅] [NP [N Sarah]]] [T will] [VP [V read] [DP [D the] [NP [N letter]]]]]",
+          "Sarah is a DP with a null determiner",
+          "'will' sits in T",
+          "'the letter' is a DP inside the VP",
+        ],
+        model: "[TP [DP [D ∅] [NP [N Sarah]]] [T will] [VP [V read] [DP [D the] [NP [N letter]]]]]. 'Sarah' is a DP with a silent D, 'will' fills T, and the VP holds the verb and its object DP.",
+      },
+      {
+        task: "Draw 'The dog barked' in bracket form. What goes in T?",
+        checklist: [
+          "No modal or auxiliary, so T holds PAST",
+          "[TP [DP [D the] [NP [N dog]]] [T PAST] [VP [V barked]]]",
+          "T is never empty",
+        ],
+        model: "There's no auxiliary, so T holds the tense itself: [TP [DP [D the] [NP [N dog]]] [T PAST] [VP [V barked]]]. T is never empty in this class.",
+      },
+      {
+        task: "Draw 'Ming said that Taro left' in bracket form.",
+        checklist: [
+          "Main TP: [DP Ming] [T PAST] [VP said CP]",
+          "CP → C TP: [CP [C that] [TP [DP Taro] [T PAST] [VP left]]]",
+          "Both clauses get their own T",
+          "Names are DPs with a null D",
+        ],
+        model: "[TP [DP [D ∅] [NP Ming]] [T PAST] [VP [V said] [CP [C that] [TP [DP [D ∅] [NP Taro]] [T PAST] [VP [V left]]]]]]. The embedded clause is a CP: the complementizer 'that' plus a full TP with its own T.",
+      },
+    ],
+  },
+  {
+    id: "direction",
+    title: "Head directionality",
+    prompt: "What is head directionality, and why is it called a parameter?",
+    guideId: "ling112/4-heads-dependents",
+    sectionId: "dir",
+    points: [
+      { label: "Definition", detail: "The order of a head and its complement: head-initial (head first) or head-final (head last)." },
+      { label: "Languages", detail: "English, Spanish and Arabic are head-initial; Japanese, Hindi/Urdu and Turkish are head-final." },
+      { label: "A pair", detail: "English 'ate an apple' vs Japanese 'ringo-o tabe-ta' (apple-ACC eat-PAST)." },
+      { label: "Consistency", detail: "The setting holds across phrase types: Japanese has postpositions ('Tokyo e'), English prepositions ('to Tokyo')." },
+      { label: "Parameter", detail: "A switch set once per language: learn it from one pair and predict the rest." },
+    ],
+    problems: [
+      {
+        task: "A language has 'house-in' for 'in the house'. Predict its verb and object order and explain.",
+        checklist: [
+          "'house-in' is a postposition: head-final",
+          "Predict object before verb (SOV)",
+          "Because directionality is consistent across heads",
+          "Compare Japanese",
+        ],
+        model: "'House-in' puts the head, the adposition, after its complement, so it's a postposition and the language is head-final. Directionality is a parameter set once, so I predict the verb also comes after its object: SOV, like Japanese.",
+      },
+      {
+        task: "Gloss the Japanese phrase 'robotto no shasin' and say what it shows about headedness.",
+        checklist: [
+          "robotto no shasin = robot of picture",
+          "'a picture of a robot'",
+          "The head noun 'shasin' comes last",
+          "Head-final, like the verb in 'ringo-o tabe-ta'",
+        ],
+        model: "Word by word it's 'robot of picture': 'a picture of a robot'. The head noun 'shasin' comes after its complement, so the noun phrase is head-final too, just like the verb after its object in 'ringo-o tabe-ta'.",
+      },
+    ],
+  },
+  {
+    id: "ambiguity",
+    title: "Structural ambiguity",
+    prompt: "What is structural ambiguity, and how do you prove a sentence has two structures?",
+    guideId: "ling112/5-constituency-tests",
+    sectionId: "ambig",
+    points: [
+      { label: "Definition", detail: "One string of words, two groupings, two meanings. The words aren't ambiguous; the structure is." },
+      { label: "Example", detail: "'I saw the spy with the telescope': the PP attaches to the verb (I used it) or to the noun (the spy had it)." },
+      { label: "Proof", detail: "Constituency tests pull the two readings apart: each test result goes with one meaning." },
+      { label: "Trees", detail: "Two trees: the PP inside the DP vs the PP as a sister of the V." },
+    ],
+    problems: [
+      {
+        task: "Explain the two readings of 'Chris hit the man with the umbrella' and prove one with a test.",
+        checklist: [
+          "Reading 1: Chris used the umbrella (PP attaches to the VP)",
+          "Reading 2: the man had the umbrella (PP inside the DP)",
+          "Substitution: replace 'the man with the umbrella' with 'him': only reading 2 survives",
+          "Movement: 'With the umbrella, Chris hit the man' forces reading 1",
+        ],
+        model: "Two groupings. If 'with the umbrella' attaches to the verb phrase, Chris used the umbrella; if it's inside the DP, the man was holding it. Fronting proves reading 1: 'With the umbrella, Chris hit the man' can only mean Chris used it, because the PP moved as its own unit. Replacing 'the man with the umbrella' with 'him' proves reading 2.",
+      },
+    ],
+  },
+];
+
+const BY_COURSE: Record<string, OralConcept[]> = { ling112: LING112 };
+
+export function oralConcepts(course: string | undefined): OralConcept[] {
+  return (course && BY_COURSE[course]) || [];
+}

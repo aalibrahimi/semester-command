@@ -12,12 +12,19 @@
  * run of GOAL correct answers in a section offers "Got it".
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Eye, Lightbulb, Maximize2, RotateCcw, Target, X, Zap } from "lucide-react";
+import { ArrowRight, Check, Eye, GraduationCap, Lightbulb, Maximize2, RotateCcw, Target, X, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Drill, DrillAnswer, DrillInstance, GradeResult } from "@/study/drill";
 import { grade as gradeAnswer, randomSeed, rng } from "@/study/drill";
 import { drillStats, recordAttempt, setSectionStatus, type GuideMastery } from "@/study/mastery";
+import type { GuideSection } from "@/study/guide";
+import { missCount, needsReteach, reteachBlock } from "@/study/reteach";
 import { Inline } from "./Blocks";
+import { GuideBlockView } from "./GuideBlocks";
+
+/** What a drill needs to know about its guide: the id, and the sections when a
+ *  reteach block may be shown. */
+type GuideRef = { id: string; sections?: GuideSection[] };
 
 /** Correct answers in a row that count as "you can do this section". */
 export const GOAL = 5;
@@ -183,7 +190,7 @@ export function DrillCard({
   source = "read",
   replay,
 }: {
-  guide: { id: string };
+  guide: GuideRef;
   sectionId: string;
   drills: Drill[];
   mastery: GuideMastery;
@@ -218,6 +225,18 @@ export function DrillCard({
     setWhy(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionId, drills, replay?.drillId, replay?.seed]);
+
+  /** Same drill, new numbers: the "try again" after a reteach. */
+  const fresh = useCallback(() => {
+    setCard(make(card.drill));
+    setValue("");
+    setPhase("answering");
+    setResult(null);
+    setDiagnosis(undefined);
+    setRetries(0);
+    setHint(false);
+    setWhy(false);
+  }, [card.drill]);
 
   const next = useCallback(() => {
     setCard(make(pickNext(drills, mastery, sectionId, card.drill.id)));
@@ -271,6 +290,8 @@ export function DrillCard({
   const fb = a.kind === "choice" && result ? a.feedback?.[Number(value)] : undefined;
   const missing = a.kind === "checklist" && phase === "wrong" ? a.items.filter((_, i) => !value.split(",").map(Number).includes(i)) : [];
   const stats = drillStats(mastery, sectionId, card.drill.id);
+  const showReteach = (phase === "wrong" || phase === "revealed") && needsReteach(mastery.attempts, sectionId, card.drill.id);
+  const reteach = showReteach ? reteachBlock(guide.sections, sectionId, card.drill.reteach) : undefined;
 
   return (
     <div className="rounded-xl border border-border/70 bg-card shadow-card">
@@ -374,6 +395,27 @@ export function DrillCard({
           </div>
         )}
 
+        {/* Missed this drill twice: teach it again, then a fresh variant */}
+        {showReteach && (
+          <div className="rounded-xl border border-brand/40 bg-brand/[0.05] px-4 py-4">
+            <div className="mb-1 flex items-center gap-2 text-sm font-medium text-brand-fg">
+              <GraduationCap className="h-4 w-4" /> Let's go over this one again
+            </div>
+            <p className="mb-3 text-sm leading-relaxed text-foreground/85">
+              You've missed this drill {missCount(mastery.attempts, sectionId, card.drill.id)} times, so here is the part of the chapter that teaches it.
+              {reteach ? " Go through it once, then try a fresh one with new numbers." : " Read the working above line by line, then try a fresh one with new numbers."}
+            </p>
+            {reteach && (
+              <div className="mb-3">
+                <GuideBlockView block={reteach} />
+              </div>
+            )}
+            <button type="button" onClick={fresh} className="flex items-center gap-1.5 rounded-lg bg-brand-solid px-3.5 py-2 text-xs font-medium text-primary-foreground hover:opacity-90">
+              <RotateCcw className="h-3.5 w-3.5" /> Try a fresh one
+            </button>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-2">
           {phase === "answering" && (
@@ -472,7 +514,7 @@ export function DrillPanel({
   onFocus,
   replay,
 }: {
-  guide: { id: string };
+  guide: GuideRef;
   sectionId: string;
   drills: Drill[];
   mastery: GuideMastery;
@@ -534,7 +576,7 @@ export function DrillFocus({
   mastery,
   onExit,
 }: {
-  guide: { id: string; title: string };
+  guide: GuideRef & { title: string };
   sectionHeading: string;
   sectionId: string;
   drills: Drill[];

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Oral exam practice records your answer so you can play it back.
+       Audio never leaves this computer. Tauri merges this into the app bundle. -->
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Semester Command records your spoken answers during oral exam practice so you can play them back. The audio stays on this computer.</string>
+</dict>
+</plist>

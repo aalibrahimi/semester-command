@@ -34,6 +34,8 @@ import StudyRecall from "@/routes/StudyRecall";
 import StudyMap from "@/routes/StudyMap";
 import StudySlides from "@/routes/StudySlides";
 import StudyExam from "@/routes/StudyExam";
+import StudyReady from "@/routes/StudyReady";
+import StudyOral from "@/routes/StudyOral";
 import StudyMistakes from "@/routes/StudyMistakes";
 import Settings from "@/routes/Settings";
 import Inbox from "@/routes/Inbox";
@@ -62,6 +64,8 @@ export default function App() {
               <Route path="study/:course" element={<StudyCourse />} />
               <Route path="study/mistakes" element={<StudyMistakes />} />
               <Route path="study/:course/exam" element={<StudyExam />} />
+              <Route path="study/:course/ready" element={<StudyReady />} />
+              <Route path="study/:course/oral" element={<StudyOral />} />
               <Route path="study/:course/recall" element={<StudyRecall />} />
               <Route path="study/:course/:chapter" element={<StudyRead />} />
               <Route path="study/:course/:chapter/cheatsheet" element={<StudyCheatSheet />} />

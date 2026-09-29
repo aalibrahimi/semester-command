@@ -213,8 +213,11 @@ export default function StudyRead() {
   const idx = Math.max(0, sections.findIndex((s) => s.id === wanted));
   const section = sections[idx];
   const drills = useMemo(() => drillsFor(guide ? drillsForGuide(guide.id) : undefined, section?.id ?? ""), [guide, section?.id]);
-  const [focus, setFocus] = useState(false);
-  useEffect(() => setFocus(false), [section?.id]);
+  // Focus mode belongs to one section: moving on closes it. "?focus=1" (the
+  // readiness plan's drill step) opens it on arrival.
+  const [focusFor, setFocusFor] = useState<string | null>(() => (params.get("focus") ? wanted : null));
+  const focus = focusFor !== null && focusFor === section?.id;
+  const setFocus = (on: boolean) => setFocusFor(on ? (section?.id ?? null) : null);
   // From the mistake log: reopen the exact problem (same drill, same seed).
   const replayDrill = params.get("drill");
   const replaySeed = Number(params.get("seed"));

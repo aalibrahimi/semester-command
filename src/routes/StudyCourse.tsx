@@ -13,30 +13,14 @@
  */
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  CalendarClock,
-  CheckCircle2,
-  ChevronRight,
-  Circle,
-  CircleDot,
-  Clock,
-  Info,
-  PencilLine,
-  Presentation,
-  RotateCcw,
-  Target,
-  Timer,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Circle, CircleDot, Clock, Gauge, Info, Mic, PencilLine, Presentation, RotateCcw, Target, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { prefetchGuide, summariesForCourse, useGuideIndexVersion, type GuideSummary } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
 import type { SectionStatus } from "@/study/mastery";
 import type { Action } from "@/study/plan";
+import { oralConcepts } from "@/study/oral";
 import { ago, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { courseTick } from "@/components/study/courseTick";
@@ -423,6 +407,14 @@ function ExamCard({ c }: { c: Course }) {
         <Link to={`/study/${c.slug}/recall`} className="flex items-center justify-center gap-1.5 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-medium hover:bg-fill-ghost">
           <RotateCcw className="h-3.5 w-3.5" /> Recall all
         </Link>
+        <Link to={`/study/${c.slug}/ready`} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-brand/40 bg-brand/[0.06] px-3 py-1.5 text-xs font-medium text-brand-fg hover:bg-brand/[0.1]">
+          <Gauge className="h-3.5 w-3.5" /> Am I ready? Topic by topic
+        </Link>
+        {oralConcepts(c.slug).length > 0 && (
+          <Link to={`/study/${c.slug}/oral`} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-foreground/20 px-3 py-1.5 text-xs font-medium hover:bg-fill-ghost">
+            <Mic className="h-3.5 w-3.5" /> Oral exam practice
+          </Link>
+        )}
       </div>
     </section>
   );
