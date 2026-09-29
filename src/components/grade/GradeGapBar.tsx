@@ -120,7 +120,7 @@ export function GradeGapBar({
             />
           </TooltipTrigger>
           <TooltipContent side="top">
-            Earned — projected {earned.toFixed(1)}% if you stop here
+            Earned: projected {earned.toFixed(1)}% if you stop here
           </TooltipContent>
         </Tooltip>
 
@@ -158,7 +158,7 @@ export function GradeGapBar({
               </motion.div>
             </TooltipTrigger>
             <TooltipContent side="top">
-              Still winnable — up to {winnableEnd.toFixed(1)}% is in play
+              Still winnable: up to {winnableEnd.toFixed(1)}% is in play
             </TooltipContent>
           </Tooltip>
         )}
@@ -171,7 +171,7 @@ export function GradeGapBar({
               <div className="h-full flex-1 bg-locked/40" />
             </TooltipTrigger>
             <TooltipContent side="top">
-              Lost — {lost.toFixed(1)} points already forfeited
+              Lost{lost.toFixed(1)} points already forfeited
             </TooltipContent>
           </Tooltip>
         )}
@@ -212,7 +212,7 @@ export function GradeGapBar({
             />
           </TooltipTrigger>
           <TooltipContent side="top">
-            Target {targetPct.toFixed(0)}%{hitTarget ? " — met" : ""}
+            Target {targetPct.toFixed(0)}%{hitTarget ? ": met" : ""}
           </TooltipContent>
         </Tooltip>
       )}

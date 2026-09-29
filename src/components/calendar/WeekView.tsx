@@ -117,7 +117,7 @@ export function WeekView({ items }: { items: CalendarItem[] }) {
         .catch(() => {
           if (auto) return;
           setDetect(null);
-          toast.error("Detection failed — try again after a sync.");
+          toast.error("Detection failed: try again after a sync.");
         });
     },
     [blocks],
@@ -298,7 +298,7 @@ export function WeekView({ items }: { items: CalendarItem[] }) {
 
       {blocks.filter((b) => b.kind === "class").length === 0 && (
         <div className="mb-2 rounded-lg border border-dashed border-border/60 px-3 py-2 text-xs text-muted-foreground">
-          No class meeting times yet — hit{" "}
+          No class meeting times yet: hit{" "}
           <span className="font-medium text-foreground/80">Detect class times</span> to pull them
           from Canvas events and imported syllabi, or click any empty slot to add one by hand.
         </div>
@@ -349,7 +349,7 @@ export function WeekView({ items }: { items: CalendarItem[] }) {
                         ? "bg-at-risk/10 text-at-risk-fg"
                         : "bg-fill-ghost text-muted-foreground",
                     )}
-                    title={s.noClasses ? `${s.label} — no class meetings` : s.label}
+                    title={s.noClasses ? `${s.label}: no class meetings` : s.label}
                   >
                     {s.label}
                     {s.noClasses && s.kind !== "break" ? " · no class" : ""}
@@ -556,7 +556,7 @@ export function WeekView({ items }: { items: CalendarItem[] }) {
       </div>
 
       <p className="mt-2 text-2xs text-muted-foreground">
-        Click any empty slot to add a class meeting, a study session, or a personal block — a
+        Click any empty slot to add a class meeting, a study session, or a personal block: a
         two-hour gap is a gym or homework session waiting to be claimed. Class times repeat
         weekly; study and personal blocks can be one-off or weekly.
       </p>

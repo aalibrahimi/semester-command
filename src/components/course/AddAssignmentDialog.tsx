@@ -61,7 +61,7 @@ export function AddAssignmentDialog({
       return;
     }
     if (weighted && groupId === NO_GROUP) {
-      toast.error("Pick a group — ungrouped work can't count in a weighted course.");
+      toast.error("Pick a group: ungrouped work can't count in a weighted course.");
       return;
     }
     setSaving(true);
@@ -114,7 +114,7 @@ export function AddAssignmentDialog({
         <DialogHeader>
           <DialogTitle>Add an assignment</DialogTitle>
           <DialogDescription>
-            For work the syllabus knows about but Canvas doesn't show yet — or everything, if
+            For work the syllabus knows about but Canvas doesn't show yet, or everything, if
             you're running on the calendar feed. Manual rows survive every sync.
           </DialogDescription>
         </DialogHeader>

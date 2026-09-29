@@ -68,7 +68,7 @@ g = {
     O.block("sub.e2cec6e2", slide="Which pro-form goes with which phrase"),
     D("N-bar (N′)", "A middle-sized unit: the noun **plus** what's attached to it, **minus** the determiner. In *those tall spies in the garden*, the N-bar is *tall spies in the garden*. Its pro-form is *one(s)*: those **ones**. It shows that a noun phrase has a layer inside it.", slide="N-bar"),
     ob(lambda b: b["type"] == "stepper" and "substitution" in b["title"].lower(), slide="Running substitution on handout (3)"),
-    TRAP("**'ones' never takes the determiner.** Those tall **ones** works; '*ones in the garden' for the whole phrase does not. That's why NP (with *the*/*those*) and N-bar (without) are two different units.", "Week 5 handout", slide="Trap: 'ones' leaves D behind"),
+    TRAP("**'ones' never takes the determiner.** Those tall **ones** works; `*ones in the garden` for the whole phrase does not. That's why NP (with *the*/*those*) and N-bar (without) are two different units.", "Week 5 handout", slide="Trap: 'ones' leaves D behind"),
     C("*She met the new teacher from Ohio.* Replace *teacher from Ohio* with one word. What does that prove?", "She met the new **one**. One word replaced *teacher from Ohio*, so it's a unit: an N-bar. *the* stays outside, as always."),
   ]},
   {"id": "move", "heading": "Test 2: movement (can it travel as a block?)", "blocks": [
@@ -94,7 +94,7 @@ g = {
     ob(lambda b: b["id"].startswith("ambig.") and b["type"] == "prose" and b["md"].startswith("**Where")),
   ]},
   {"id": "finite", "heading": "A note on tense: finite vs non-finite verb phrases", "blocks": [
-    D("Finite / non-finite", "A verb is **finite** when it carries tense itself (*submitted*, *submits*). It's **non-finite** when it doesn't, usually because a helper like *will* carries the tense instead (*will **submit***).", slide="Finite vs non-finite"),
+    D("Finite / non-finite", "A verb is **finite** when it carries tense itself (*submitted*, *submits*). It's **non-finite** when it doesn't, usually because a helper like *will* carries the tense instead (*will* **submit**).", slide="Finite vs non-finite"),
     O.block("finite.75776839"),
     O.block("finite.93409973"),
   ]},

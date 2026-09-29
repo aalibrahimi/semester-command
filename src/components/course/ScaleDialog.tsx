@@ -60,7 +60,7 @@ export function ScaleDialog({
       .then(() => {
         onOpenChange(false);
         onSaved();
-        toast.success("Scale saved — every letter in this course now uses it.");
+        toast.success("Scale saved: every letter in this course now uses it.");
       })
       .catch((e: unknown) => toast.error(String(e)));
   };

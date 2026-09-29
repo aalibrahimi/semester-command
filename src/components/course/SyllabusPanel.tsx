@@ -57,7 +57,7 @@ function offerDetectedClassTimes() {
       if (fresh.length === 0) return;
       resetAutoDetect();
       toast.info(
-        `Found ${fresh.length} class meeting time${fresh.length === 1 ? "" : "s"} in this syllabus — open Calendar → Week to confirm them.`,
+        `Found ${fresh.length} class meeting time${fresh.length === 1 ? "" : "s"} in this syllabus: open Calendar → Week to confirm them.`,
         { duration: 8000 },
       );
     })
@@ -118,14 +118,14 @@ function SyllabusViewer({
         toast[n > 0 ? "success" : "info"](
           n > 0
             ? `Stored ${n} document${n === 1 ? "" : "s"} from Canvas.`
-            : "Canvas has no visible syllabus files for this course — import it below.",
+            : "Canvas has no visible syllabus files for this course: import it below.",
         );
         if (n > 0) {
           onChanged();
           offerDetectedClassTimes();
         }
       })
-      .catch(() => toast.error("Could not reach Canvas — check the connection."))
+      .catch(() => toast.error("Could not reach Canvas: check the connection."))
       .finally(() => setFetching(false));
   };
 
@@ -139,8 +139,8 @@ function SyllabusViewer({
         .then((row) => {
           toast.success(
             row.extractedText
-              ? `Imported ${row.filename} — text extracted and searchable.`
-              : `Imported ${row.filename} — stored, but this format isn't text-searchable yet.`,
+              ? `Imported ${row.filename}: text extracted and searchable.`
+              : `Imported ${row.filename}: stored, but this format isn't text-searchable yet.`,
           );
           onChanged();
           if (row.extractedText) offerDetectedClassTimes();
@@ -279,7 +279,7 @@ function SyllabusViewer({
             {!fullText && course.files.length > 0 && (
               <p className="text-xs text-muted-foreground">
                 Documents are stored but not text-searchable (extraction unsupported for this
-                format) — open them with the buttons above.
+                format): open them with the buttons above.
               </p>
             )}
           </div>
@@ -293,7 +293,7 @@ function SyllabusViewer({
         <div className="rounded-lg border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
           Nothing here yet. <strong>Fetch from Canvas</strong> looks for files named “syllabus”
           in this course; if the professor keeps files hidden, download the syllabus from Canvas
-          yourself and <strong>Import file</strong> — the text becomes searchable either way.
+          yourself and <strong>Import file</strong> the text becomes searchable either way.
         </div>
       )}
     </div>

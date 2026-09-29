@@ -324,11 +324,11 @@
         },
         {
           "type": "trap",
-          "body": "**'ones' never takes the determiner.** Those tall **ones** works; '*ones in the garden' for the whole phrase does not. That's why NP (with *the*/*those*) and N-bar (without) are two different units.",
+          "body": "**'ones' never takes the determiner.** Those tall **ones** works; `*ones in the garden` for the whole phrase does not. That's why NP (with *the*/*those*) and N-bar (without) are two different units.",
           "source": "Week 5 handout",
           "points": null,
           "slide": "Trap: 'ones' leaves D behind",
-          "id": "sub.0dd67dfa"
+          "id": "sub.9689a992"
         },
         {
           "type": "check",
@@ -566,7 +566,7 @@
         {
           "type": "definition",
           "term": "Finite / non-finite",
-          "body": "A verb is **finite** when it carries tense itself (*submitted*, *submits*). It's **non-finite** when it doesn't, usually because a helper like *will* carries the tense instead (*will **submit***).",
+          "body": "A verb is **finite** when it carries tense itself (*submitted*, *submits*). It's **non-finite** when it doesn't, usually because a helper like *will* carries the tense instead (*will* **submit**).",
           "slide": "Finite vs non-finite",
           "id": "finite.1a6b57cf"
         },

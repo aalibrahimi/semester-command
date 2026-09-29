@@ -32,7 +32,7 @@ export function offeringLabel(o: Offering): string {
   const seasons = [o.fall && "Fall", o.spring && "Spring", o.summer && "Summer"].filter(
     Boolean,
   ) as string[];
-  if (seasons.length === 0) return "—";
+  if (seasons.length === 0) return "–";
   const base = seasons.join(" / ");
   return o.parity ? `${base} (${o.parity} yrs)` : base;
 }

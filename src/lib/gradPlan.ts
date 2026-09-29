@@ -85,7 +85,7 @@ export const PENDING_ADVISOR: { code: string; reason: string }[] = [
   {
     code: "CS 133",
     reason:
-      "Was filling a second major-elective slot the audit can't confirm exists — Major Electives demands 12 units but itemises only 6. Parked until an advisor itemises the block; placing it would assume the answer.",
+      "Was filling a second major-elective slot the audit can't confirm exists: Major Electives demands 12 units but itemises only 6. Parked until an advisor itemises the block; placing it would assume the answer.",
   },
 ];
 
@@ -94,7 +94,7 @@ export const DANGER_PAIRS: { pair: string; why: string }[] = [
   { pair: "MATH 42 + MATH 31", why: "Two math-heavy courses overlapping. If MATH 42 isn't fully closed, Calc II's pace will compound the deficit." },
   { pair: "CS 146 + CS 154", why: "DS&A and Formal Languages are both proof-heavy CS gateway weed-outs. Stacking them is the standard SJSU GPA killer." },
   { pair: "CS 156 + MATH 161A", why: "AI sits on top of probability theory. Taking it the same term as the underlying stats course doubles workload on the same concepts." },
-  { pair: "LING 165 without LING 115/124 background", why: "Not a prerequisite — the audit shows LING 165's enforced prereq is LING 101 (done Fall 2025, B+). But Corpus Linguistics and Speech Tech are the intended preparation: taking NLP cold raises workload, not eligibility." },
+  { pair: "LING 165 without LING 115/124 background", why: "Not a prerequisite: the audit shows LING 165's enforced prereq is LING 101 (done Fall 2025, B+). But Corpus Linguistics and Speech Tech are the intended preparation: taking NLP cold raises workload, not eligibility." },
   { pair: "Two upper-div Math in summer", why: "Compressed summer terms move at 2× pace. Pairing 161A-tier math with anything quantitative is a forced W." },
   { pair: "LLD 100W + heavy STEM stack", why: "Writing-intensive (4–6 essays + revisions) does not cohabit with two CS cores." },
 ];
@@ -394,7 +394,7 @@ export function mergePlan(
       breaks.push({
         kind: "after-target",
         code: r.code,
-        detail: `${r.code} is scheduled ${t.label} — after the ${primaryTarget.label} graduation target.`,
+        detail: `${r.code} is scheduled ${t.label}: after the ${primaryTarget.label} graduation target.`,
       });
     }
   }
@@ -433,7 +433,7 @@ export function mergePlan(
     breaks.push({
       kind: "unslotted",
       code: r.code,
-      detail: `${r.code} is still owed but its slot (${TERMS.find((t) => t.id === r.plannedTerm)?.label ?? r.plannedTerm}) already ended — it needs a new term.`,
+      detail: `${r.code} is still owed but its slot (${TERMS.find((t) => t.id === r.plannedTerm)?.label ?? r.plannedTerm}) already ended: it needs a new term.`,
     });
   }
   for (const req of requirements) {
@@ -451,7 +451,7 @@ export function mergePlan(
 
   if (breaks.length > 0) {
     console.error(
-      `[gradPlan] plan validation FAILED — ${breaks.length} break(s) against ${primaryTarget.label}:`,
+      `[gradPlan] plan validation FAILED: ${breaks.length} break(s) against ${primaryTarget.label}:`,
       breaks.map((b) => b.detail),
     );
   }

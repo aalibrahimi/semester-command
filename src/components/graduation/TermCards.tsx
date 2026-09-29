@@ -91,7 +91,7 @@ export function TermCard({
               <button
                 type="button"
                 onClick={() => onCycleStatus(row)}
-                title={`${STATUS_PILL[row.status].label} — click to mark: auto → passed → failed → dropped`}
+                title={`${STATUS_PILL[row.status].label}: click to mark: auto → passed → failed → dropped`}
                 className={cn("h-2.5 w-2.5 shrink-0 rounded-full", STATUS_DOT[row.status])}
               />
               <button

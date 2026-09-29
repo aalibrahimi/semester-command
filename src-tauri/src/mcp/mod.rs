@@ -117,7 +117,7 @@ fn app_data_dir() -> Result<std::path::PathBuf, String> {
     const IDENTIFIER: &str = "dev.codewithali.semester-command";
     fn env(key: &str) -> Result<String, String> {
         std::env::var(key).map_err(|_| {
-            format!("{key} is not set — launch the MCP server with a normal user environment")
+            format!("{key} is not set: launch the MCP server with a normal user environment")
         })
     }
     #[cfg(target_os = "windows")]
@@ -142,7 +142,7 @@ async fn open_db_read_only() -> Result<Db, Box<dyn std::error::Error>> {
     let path = app_data_dir()?.join("semester-command.db");
     if !path.exists() {
         return Err(format!(
-            "no database at {} — run the Semester Command app and sync once first",
+            "no database at {}: run the Semester Command app and sync once first",
             path.display()
         )
         .into());
@@ -179,7 +179,7 @@ fn tool_definitions() -> Value {
         },
         {
             "name": "what_do_i_need",
-            "description": "Solve for the score needed to hit a target grade in a course — averaged over everything remaining, or on one named assignment with everything else held at zero. Give the target as a letter or a percentage.",
+            "description": "Solve for the score needed to hit a target grade in a course: averaged over everything remaining, or on one named assignment with everything else held at zero. Give the target as a letter or a percentage.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -290,7 +290,7 @@ fn find_course<'a>(
 }
 
 fn fmt_pct(p: Option<f64>) -> String {
-    p.map(|v| format!("{v:.1}%")).unwrap_or_else(|| "—".into())
+    p.map(|v| format!("{v:.1}%")).unwrap_or_else(|| "–".into())
 }
 
 fn list_courses(bundle: &Bundle) -> String {
@@ -314,7 +314,7 @@ fn list_courses(bundle: &Bundle) -> String {
         let s = grades::standing(&input);
         let (target, letter) = bundle.target_of(&c.id);
         out.push_str(&format!(
-            "{} — {}\n  current {} · projected {:.1}% · best possible {:.1}% · target {} ({}%) · {} open\n",
+            "{}: {}\n  current {} · projected {:.1}% · best possible {:.1}% · target {} ({}%) · {} open\n",
             c.course_code.as_deref().unwrap_or("?"),
             c.name.as_deref().unwrap_or(""),
             fmt_pct(s.current_pct),
@@ -330,7 +330,7 @@ fn list_courses(bundle: &Bundle) -> String {
     }
     if !dormant.is_empty() {
         out.push_str(&format!(
-            "\n({} dormant/hidden not shown: {} — ask get_course_grades by name if needed)\n",
+            "\n({} dormant/hidden not shown: {}: ask get_course_grades by name if needed)\n",
             dormant.len(),
             dormant.join(", ")
         ));
@@ -343,7 +343,7 @@ fn course_grades(bundle: &Bundle, needle: &str) -> Result<String, String> {
     let input = bundle.course_input(&c.id);
     let s = grades::standing(&input);
     let mut out = format!(
-        "{} — {}\ncurrent {} (Canvas says {}) · projected {:.1}% · best possible {:.1}%\n\n",
+        "{}: {}\ncurrent {} (Canvas says {}) · projected {:.1}% · best possible {:.1}%\n\n",
         c.course_code.as_deref().unwrap_or("?"),
         c.name.as_deref().unwrap_or(""),
         fmt_pct(s.current_pct),
@@ -357,7 +357,7 @@ fn course_grades(bundle: &Bundle, needle: &str) -> Result<String, String> {
             g.name.as_deref().unwrap_or("group"),
             g.group_weight
                 .map(|w| format!("{w:.0}%"))
-                .unwrap_or_else(|| "—".into()),
+                .unwrap_or_else(|| "–".into()),
         ));
         for a in bundle
             .assignments
@@ -366,14 +366,14 @@ fn course_grades(bundle: &Bundle, needle: &str) -> Result<String, String> {
         {
             let sub = bundle.submissions.get(&a.id);
             out.push_str(&format!(
-                "  {} — {} / {}\n",
+                "  {}: {} / {}\n",
                 a.name.as_deref().unwrap_or("?"),
                 sub.and_then(|s| s.score)
                     .map(|v| format!("{v}"))
                     .unwrap_or_else(|| "ungraded".into()),
                 a.points_possible
                     .map(|v| format!("{v}"))
-                    .unwrap_or_else(|| "—".into()),
+                    .unwrap_or_else(|| "–".into()),
             ));
         }
     }
@@ -453,7 +453,7 @@ fn what_do_i_need(
             "Not reachable. Best possible from here: {best_possible_pct:.1}% ({best_possible_letter})."
         ),
         grades::SolverAnswer::AlreadyLocked { floor_pct, floor_letter } => format!(
-            "Already locked in — even scoring zero on everything left you finish at {floor_pct:.1}% ({floor_letter})."
+            "Already locked in: even scoring zero on everything left you finish at {floor_pct:.1}% ({floor_letter})."
         ),
     })
 }
@@ -493,7 +493,7 @@ fn upcoming(bundle: &Bundle, days: f64) -> String {
         rows.push((
             a.due_at.clone().unwrap_or_default(),
             format!(
-                "{} · {} — due {} ({state})",
+                "{} · {}: due {} ({state})",
                 code,
                 a.name.as_deref().unwrap_or("?"),
                 due.format("%a %b %-d %H:%M UTC"),
@@ -514,14 +514,14 @@ fn upcoming(bundle: &Bundle, days: f64) -> String {
 fn triage(bundle: &Bundle, n: usize) -> String {
     let rows = crate::triage::rank(bundle, chrono::Utc::now());
     if rows.is_empty() {
-        return "Nothing to triage — everything gradeable is submitted.".into();
+        return "Nothing to triage: everything gradeable is submitted.".into();
     }
     rows.iter()
         .take(n)
         .enumerate()
         .map(|(i, r)| {
             format!(
-                "{}. {} · {} — worth {:.1}% of final grade, due {}{}",
+                "{}. {} · {}: worth {:.1}% of final grade, due {}{}",
                 i + 1,
                 r.course_code.as_deref().unwrap_or("?"),
                 r.name.as_deref().unwrap_or("?"),
@@ -578,7 +578,7 @@ async fn syllabus_search(db: &Db, query: &str) -> Result<String, String> {
                 .map(|(i, _)| at + i)
                 .unwrap_or(text.len());
             out.push_str(&format!(
-                "— {} ({}):\n…{}…\n\n",
+                "{} ({}):\n…{}…\n\n",
                 codes
                     .get(&course_id)
                     .map(String::as_str)

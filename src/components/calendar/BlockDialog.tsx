@@ -76,7 +76,7 @@ export function BlockDialog({
     const startMin = inputToMin(start);
     const endMin = inputToMin(end);
     if (startMin === null || endMin === null) {
-      toast.error("Times look wrong — use HH:MM.");
+      toast.error("Times look wrong: use HH:MM.");
       return;
     }
     if (kind === "class" && courseId === "") {
@@ -127,7 +127,7 @@ export function BlockDialog({
           <DialogTitle>{editing ? "Edit block" : "Add to your week"}</DialogTitle>
           <DialogDescription>
             Class meetings repeat weekly and wear their course color. Study sessions go purple,
-            personal blocks green — gym, work, anything.
+            personal blocks green: gym, work, anything.
           </DialogDescription>
         </DialogHeader>
 
@@ -163,7 +163,7 @@ export function BlockDialog({
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={kind === "study" ? "Study — CS 146 · review session…" : "Gym · work · …"}
+                placeholder={kind === "study" ? "Study: CS 146 · review session…" : "Gym · work · …"}
                 className="flex-1 rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             )}
@@ -173,7 +173,7 @@ export function BlockDialog({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Label (optional — defaults to the course name)"
+              placeholder="Label (optional: defaults to the course name)"
               className="rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           )}
@@ -192,8 +192,8 @@ export function BlockDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="personal">Personal</SelectItem>
-                <SelectItem value="fitness">Fitness — gym, runs</SelectItem>
-                <SelectItem value="work">Work — shifts, internship</SelectItem>
+                <SelectItem value="fitness">Fitness: gym, runs</SelectItem>
+                <SelectItem value="work">Work: shifts, internship</SelectItem>
               </SelectContent>
             </Select>
           )}
@@ -209,7 +209,7 @@ export function BlockDialog({
                 <SelectValue placeholder="Course (for the color)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={NO_COURSE}>No course — general study</SelectItem>
+                <SelectItem value={NO_COURSE}>No course: general study</SelectItem>
                 {courses.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {courseLabel(c)}
@@ -278,7 +278,7 @@ export function BlockDialog({
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location (optional) — MacQuarrie Hall 225, SRAC…"
+            placeholder="Location (optional): MacQuarrie Hall 225, SRAC…"
             className="rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>

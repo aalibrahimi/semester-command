@@ -109,7 +109,7 @@ function SheetBody({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
         </>
       ) : (
         <p className="mt-4 rounded-lg bg-fill-ghost/60 p-3 text-xs text-muted-foreground">
-          No description on this assignment{a.htmlUrl ? " — check the Canvas page" : ""}.
+          No description on this assignment{a.htmlUrl ? ": check the Canvas page" : ""}.
         </p>
       )}
 
@@ -167,7 +167,7 @@ function ScoreStat({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
   const save = () => {
     const score = value.trim() === "" ? null : Number.parseFloat(value);
     if (score !== null && (Number.isNaN(score) || score < 0)) {
-      toast.error("Scores are points — plain non-negative numbers.");
+      toast.error("Scores are points: plain non-negative numbers.");
       return;
     }
     saveManualScore(a.id, score)
@@ -209,14 +209,14 @@ function ScoreStat({ a, onChanged }: { a: AssignmentDetail; onChanged: () => voi
         setEditing(true);
       }}
       className="rounded-xl bg-fill-ghost/60 px-3 py-2 text-left transition-colors duration-micro hover:bg-fill-ghost"
-      title="Click to record a score by hand — marked manual until Canvas confirms"
+      title="Click to record a score by hand: marked manual until Canvas confirms"
     >
       <div className="text-2xs uppercase tracking-wide text-muted-foreground">score</div>
       <div data-numeric className="font-mono text-sm font-medium tabular-nums">
         {points(a.score, a.pointsPossible)}
       </div>
       <div className="text-2xs text-muted-foreground">
-        {a.score === null ? "not graded — click to record" : "recorded by hand"}
+        {a.score === null ? "not graded: click to record" : "recorded by hand"}
       </div>
     </button>
   );
@@ -230,7 +230,7 @@ function EstimateStat({ a, onChanged }: { a: AssignmentDetail; onChanged: () => 
   const save = () => {
     const mins = value.trim() === "" ? null : Number.parseInt(value, 10);
     if (mins !== null && (Number.isNaN(mins) || mins < 0)) {
-      toast.error("Estimates are minutes — plain numbers only.");
+      toast.error("Estimates are minutes: plain numbers only.");
       return;
     }
     setEstimate(a.id, mins)

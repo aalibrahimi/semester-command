@@ -472,7 +472,7 @@
    },
    {
     "id": "reading",
-    "heading": "Reading { … | … } — the notation that was costing you points"
+    "heading": "Reading { … | … }: the notation that was costing you points"
    },
    {
     "id": "sets",
@@ -496,13 +496,13 @@
    }
   ],
   "exerciseCount": 3,
-  "sha": "4d28f82a8ba81488273c4e1bd428cb9318d10928fbb1cdf84b3694a62b21862d"
+  "sha": "b28785ad6b3faf3d189db1dd09bfc455930b0d07304dc3694a0d2087feeea1a1"
  },
  {
   "id": "cs154/3-strings-languages",
   "course": "cs154",
   "lessons": "Lessons 3–4",
-  "title": "Alphabets, strings, formal languages — and the notation that costs points",
+  "title": "Alphabets, strings, formal languages, and the notation that costs points",
   "summary": "Define alphabet, string, language in Chen's words; compute lengths, exponents, reverses, prefixes; tell λ, ϕ, {λ} apart; translate English ↔ set-builder for 'at least / exactly / starts with' languages and their complements; compute L₁L₂ and Lⁿ with independent indices.",
   "estimatedMinutes": 60,
   "requires": [
@@ -531,7 +531,7 @@
    }
   ],
   "exerciseCount": 3,
-  "sha": "3295a4afc69fff2df02a8ce1458e7863753232d134f9a76d3428c38ddd689f7d"
+  "sha": "ce60a47c50931638d48b2e848b2fb8a49d3dc155ae82b3f4d52f57380e7b24a5"
  },
  {
   "id": "cs154/5-dfa",
@@ -570,7 +570,7 @@
    }
   ],
   "exerciseCount": 3,
-  "sha": "3e1923e3c4f5c7a6c8988d819484d864693d60e2523d2ae8e441fa86b699ab51"
+  "sha": "7f72965d9274e3330c503cdbf781c0db584cac602899e3060d08d4d35c2b7684"
  },
  {
   "id": "cs154/8-nfa-intro",
@@ -1063,7 +1063,7 @@
    }
   ],
   "exerciseCount": 6,
-  "sha": "050c42e20e90ed0a37bc013b9f8a3eaa5c98f28aa3f65f76e2d56c3647eaec02"
+  "sha": "fdc625d64562374a15c964256e0682e7fc32dded9eb4b6fe59a67fd2f0e81959"
  },
  {
   "id": "ling112/6-phrase-structure",
@@ -1120,7 +1120,7 @@
    }
   ],
   "exerciseCount": 6,
-  "sha": "e8c0322e9a4f1afacaadff55d3d430de6a906247f43026379dff7e81136b1d13"
+  "sha": "fb65b8d93b5c14116a370b19267fce6df14ea6b8f4bb6b0659b9f8bcc9767514"
  },
  {
   "id": "ling112/7-x-bar",
@@ -1186,7 +1186,7 @@
    }
   ],
   "exerciseCount": 1,
-  "sha": "ce6f15c4012c00594afcdb6b10cded7a809c1ce5685a21408bbc4f5967e9471b"
+  "sha": "ec6a8a83f971a557ceb51b7e405d5eb0496c37cd3c2168534553a74af2a8ac2c"
  },
  {
   "id": "ling115/4-regex",
@@ -1211,7 +1211,7 @@
    }
   ],
   "exerciseCount": 2,
-  "sha": "31316472b9a5aaa213175d90cdb3b8b950d2a744921431599691ae0f0a82806f"
+  "sha": "2e92e4ec3f91bb0cb75287cee4d2408ef66722f891fd55b65535f2c109d703b7"
  },
  {
   "id": "ling115/5-words-tokens-normalization",
@@ -1246,7 +1246,7 @@
    }
   ],
   "exerciseCount": 2,
-  "sha": "7021ac8bc96f92a6b28b57602ee12c3ef38b1d4348e1e098ac2e22b1af4dd914"
+  "sha": "90cf9ddf6c4161652469130f4a146f15337441bf2b3b5b5eef3ce291d363fd44"
  },
  {
   "id": "ling115/7-annotation-pos",
@@ -1281,7 +1281,7 @@
    }
   ],
   "exerciseCount": 2,
-  "sha": "0b7510d1484dafd288bb426b0fdb2bb7c8ef9914ac6fe0e450f56104845acab0"
+  "sha": "e98cd49b08652bf06251d74b57246158383032fae07c441fa04c7e3f23078c44"
  },
  {
   "id": "ling115/9-frequency-keyness",

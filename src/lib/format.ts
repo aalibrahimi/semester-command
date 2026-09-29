@@ -22,7 +22,7 @@
  * @param pct  0–100, or null when nothing is graded yet
  */
 export function pct(pct: number | null | undefined): string {
-  if (pct === null || pct === undefined || Number.isNaN(pct)) return "—";
+  if (pct === null || pct === undefined || Number.isNaN(pct)) return "–";
   return `${pct.toFixed(1)}%`;
 }
 
@@ -31,7 +31,7 @@ export function pct(pct: number | null | undefined): string {
  * abstract and "you need 43 of 50 points" is not (§4.3).
  */
 export function points(earned: number | null | undefined, possible: number | null | undefined): string {
-  if (earned === null || earned === undefined) return possible == null ? "—" : `—/${trimNum(possible)}`;
+  if (earned === null || earned === undefined) return possible == null ? "–" : `: /${trimNum(possible)}`;
   if (possible === null || possible === undefined) return trimNum(earned);
   return `${trimNum(earned)}/${trimNum(possible)}`;
 }
@@ -58,7 +58,7 @@ function trimNum(n: number): string {
 export function dateTime(iso: string | null | undefined): string {
   if (!iso) return "No due date";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "–";
   return new Intl.DateTimeFormat(undefined, {
     weekday: "short",
     month: "short",
@@ -80,9 +80,9 @@ export function dateTime(iso: string | null | undefined): string {
  * @param now   injectable for tests; defaults to the wall clock
  */
 export function relativeDue(iso: string | null | undefined, now: Date = new Date()): string {
-  if (!iso) return "—";
+  if (!iso) return "–";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "–";
 
   const ms = d.getTime() - now.getTime();
   const overdue = ms < 0;
@@ -108,7 +108,7 @@ export function relativeDue(iso: string | null | undefined, now: Date = new Date
 export function dueShort(iso: string | null | undefined): string {
   if (!iso) return "no date yet";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "–";
   const h = d.getHours();
   const hour12 = h % 12 === 0 ? 12 : h % 12;
   const suffix = h >= 12 ? "p" : "a";
@@ -147,7 +147,7 @@ export function sinceSync(iso: string | null | undefined, now: Date = new Date()
  * estimate and "no estimate yet" is the state we actually mean.
  */
 export function minutes(mins: number | null | undefined): string {
-  if (!mins) return "—";
+  if (!mins) return "–";
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   if (h === 0) return `${m}m`;

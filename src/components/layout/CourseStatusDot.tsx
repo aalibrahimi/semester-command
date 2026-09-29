@@ -30,10 +30,10 @@ const FILL: Record<SignalStatus, string> = {
 /** Screen-reader and tooltip wording. Colour alone must never be the only
  *  channel carrying the meaning (§9.7). */
 const LABEL: Record<SignalStatus, string> = {
-  onTrack: "On track — projected grade meets your target",
-  atRisk: "At risk — within 5 points of falling short",
-  critical: "Critical — target no longer reachable, or work is missing",
-  locked: "Locked — graded and final",
+  onTrack: "On track: projected grade meets your target",
+  atRisk: "At risk: within 5 points of falling short",
+  critical: "Critical: target no longer reachable, or work is missing",
+  locked: "Locked: graded and final",
 };
 
 export interface CourseStatusDotProps {

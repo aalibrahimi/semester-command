@@ -133,7 +133,7 @@ function ProfessorCard({
         </div>
       ) : (
         <p className="text-2xs text-muted-foreground/70">
-          No contact info yet — it usually lives in the syllabus.
+          No contact info yet: it usually lives in the syllabus.
         </p>
       )}
 

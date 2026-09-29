@@ -94,7 +94,7 @@ export default function Courses() {
           {dormant.length > 0 && (
             <details className="mt-2">
               <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-                {dormant.length} dormant — no recent due dates or grading
+                {dormant.length} dormant: no recent due dates or grading
               </summary>
               <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {dormant.map((c) => (
@@ -174,7 +174,7 @@ function AddCourseDialog({
       onOpenChange(false);
       announceCoursesChanged();
       await onSaved();
-      toast.success("Course created — add its groups and assignments from the detail page.");
+      toast.success("Course created: add its groups and assignments from the detail page.");
       navigate(`/courses/${id}`);
     } catch (e) {
       toast.error(String(e));
@@ -189,7 +189,7 @@ function AddCourseDialog({
         <DialogHeader>
           <DialogTitle>Add a course</DialogTitle>
           <DialogDescription>
-            For anything Canvas can't see — running on the calendar feed, a course on another
+            For anything Canvas can't see: running on the calendar feed, a course on another
             platform, or planning ahead. Manual courses survive every sync.
           </DialogDescription>
         </DialogHeader>
@@ -204,7 +204,7 @@ function AddCourseDialog({
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder="Code (e.g. CS-146) — optional"
+            placeholder="Code (e.g. CS-146): optional"
             className="rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-brand"
           />
           <label className="flex items-center justify-between rounded-md border border-border/60 px-2.5 py-2 text-sm">
@@ -311,7 +311,7 @@ function CourseCard({ course: c, featured }: { course: CourseSummary; featured?:
         </>
       ) : (
         <p className="text-xs text-muted-foreground">
-          No graded work — announcements or resources only.
+          No graded work: announcements or resources only.
         </p>
       )}
     </Link>

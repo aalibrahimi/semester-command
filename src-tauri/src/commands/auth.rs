@@ -263,7 +263,7 @@ pub async fn handle_session_death(app: AppHandle) {
     }
     emit_status(
         &app,
-        Some("Your Canvas session expired — sign in again.".into()),
+        Some("Your Canvas session expired: sign in again.".into()),
     )
     .await;
 }
@@ -380,7 +380,7 @@ async fn poll_for_session(app: AppHandle, silent: bool) -> bool {
                         tracing::error!(error = %e, "could not persist session; it will last until app close");
                         emit_status(
                             &app,
-                            Some("Signed in, but the session could not be saved — you'll need to sign in again next launch.".into()),
+                            Some("Signed in, but the session could not be saved: you'll need to sign in again next launch.".into()),
                         )
                         .await;
                         ctx.client.set_auth(candidate).await;

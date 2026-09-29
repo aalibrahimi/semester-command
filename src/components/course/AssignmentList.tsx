@@ -89,7 +89,7 @@ export function GroupedAssignments({
           <button
             type="button"
             onClick={onAdd}
-            title="Add an assignment by hand — the syllabus knows things Canvas doesn't yet"
+            title="Add an assignment by hand: the syllabus knows things Canvas doesn't yet"
             className="flex items-center gap-1 text-2xs text-muted-foreground transition-colors duration-micro hover:text-foreground"
           >
             <Plus className="h-3 w-3" /> Add
@@ -188,7 +188,7 @@ function rowStatus(a: AssignmentDetail): { cls: string; label: string; settled: 
     return { cls: "bg-muted-foreground/30", label: "Excused", settled: true };
   if (a.score !== null) return { cls: "bg-on-track", label: "Graded", settled: true };
   if (a.submitted)
-    return { cls: "bg-brand", label: "Submitted — awaiting grade", settled: true };
+    return { cls: "bg-brand", label: "Submitted: awaiting grade", settled: true };
   const overdue = a.dueAt !== null && new Date(a.dueAt).getTime() < Date.now();
   if (a.missing || overdue) return { cls: "bg-critical", label: "Not turned in", settled: false };
   if (urgencyTier("open", a.dueAt) === "soon")
@@ -259,7 +259,7 @@ function AssignmentRow({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void 
           a.dueAt ? dueTone : "text-muted-foreground/40",
         )}
       >
-        {a.dueAt ? dueShort(a.dueAt) : "—"}
+        {a.dueAt ? dueShort(a.dueAt) : "–"}
       </span>
       <span className="hidden justify-end md:flex">
         {a.impactPct > 0.05 ? (
@@ -271,7 +271,7 @@ function AssignmentRow({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void 
         ) : (
           /* Zero impact is the absence of a fact — a dash, not "0.0%". */
           <span data-numeric className="font-mono text-xs tabular-nums text-muted-foreground/40">
-            —
+            –
           </span>
         )}
       </span>
@@ -282,7 +282,7 @@ function AssignmentRow({ a, onOpen }: { a: AssignmentDetail; onOpen: () => void 
           a.score === null && "text-muted-foreground",
         )}
       >
-        {a.score === null && !a.pointsPossible ? "—" : points(a.score, a.pointsPossible)}
+        {a.score === null && !a.pointsPossible ? "–" : points(a.score, a.pointsPossible)}
       </span>
     </button>
   );

@@ -57,7 +57,7 @@ pub type IcsItem = (String, Option<String>, Option<String>, String, Option<f64>)
 /// can use by week four.
 pub fn build_semester_ics(items: &[IcsItem]) -> String {
     let mut calendar = Calendar::new();
-    calendar.name("Semester Command — due dates");
+    calendar.name("Semester Command: due dates");
 
     for (assignment_id, course_code, name, due_at, points) in items {
         let Ok(due) = chrono::DateTime::parse_from_rfc3339(due_at) else {

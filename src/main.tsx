@@ -28,7 +28,7 @@ const isToastWindow = IS_TAURI
 
 const container = document.getElementById("root");
 if (!container) {
-  throw new Error("index.html is missing #root — the app cannot mount");
+  throw new Error("index.html is missing #root: the app cannot mount");
 }
 
 createRoot(container).render(isToastWindow ? <ToastApp /> : <App />);

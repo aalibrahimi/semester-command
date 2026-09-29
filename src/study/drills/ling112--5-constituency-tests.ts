@@ -107,7 +107,7 @@ export const drills: Drill[] = [
         },
         {
           s: "Those spies stashed the evidence in the garden.",
-          test: "Fragment: 'What did they stash?' — 'The evidence in the garden.'",
+          test: "Fragment: 'What did they stash?': 'The evidence in the garden.'",
           ok: "[the evidence in the garden] is one NP: the evidence that was in the garden",
           bad: ["'In the garden' says where the stashing happened", "The fragment shows nothing about attachment"],
         },

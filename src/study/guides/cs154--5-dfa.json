@@ -17,7 +17,7 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**The idea** Imagine the simplest possible machine that reads a string and answers **yes or no**. It reads one symbol at a time, left to right, never going back. It has no notepad, no counter, no memory of what it read — except for one thing: ==which of a handful of states it's currently in==. Each symbol it reads moves it from its current state to another, following fixed rules. When the string runs out, it looks at which state it's standing in: if that's one of the marked 'yes' states, the answer is yes. That's a **deterministic finite automaton**. It's the weakest machine in the course, and the point of Lessons 5–7 is to see exactly what such a thing can and can't do.",
+          "md": "**The idea** Imagine the simplest possible machine that reads a string and answers **yes or no**. It reads one symbol at a time, left to right, never going back. It has no notepad, no counter, no memory of what it read: except for one thing: ==which of a handful of states it's currently in==. Each symbol it reads moves it from its current state to another, following fixed rules. When the string runs out, it looks at which state it's standing in: if that's one of the marked 'yes' states, the answer is yes. That's a **deterministic finite automaton**. It's the weakest machine in the course, and the point of Lessons 5–7 is to see exactly what such a thing can and can't do.",
           "slide": "A yes/no machine with no memory",
           "id": "why.49847f0d"
         },
@@ -29,7 +29,7 @@
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** DFAs are the rare theory object you have already run today. `grep` compiles your pattern into exactly this machine and streams the file through it; RE2 — Google's regex engine, used wherever untrusted patterns run — deliberately refuses any feature a finite automaton can't handle, so matching stays one table lookup per symbol with no blowups. The lexer at the front of every compiler, the thing that turns `int x = 42;` into tokens, is a DFA. And 'design a state machine for X' — a turnstile, an elevator, a traffic light — is a standing interview genre. ==A DFA is the simplest machine that remembers anything==, which is why it is everywhere.",
+          "md": "**Where you'll meet this after the exam** DFAs are the rare theory object you have already run today. `grep` compiles your pattern into exactly this machine and streams the file through it; RE2, Google's regex engine, used wherever untrusted patterns run, deliberately refuses any feature a finite automaton can't handle, so matching stays one table lookup per symbol with no blowups. The lexer at the front of every compiler, the thing that turns `int x = 42;` into tokens, is a DFA. And 'design a state machine for X', a turnstile, an elevator, a traffic light, is a standing interview genre. ==A DFA is the simplest machine that remembers anything==, which is why it is everywhere.",
           "id": "why.a3f19c2b"
         },
         {
@@ -52,7 +52,7 @@
         },
         {
           "type": "trap",
-          "body": "**Chen's template — he will reuse it for NFA, PDA, and TM** Every machine class gets the same seven-part treatment: (1) justification and name, (2) structure, (3) workflow — start configuration, each timeframe, halting, accept/reject, (4) examples — in action, analyze, design, (5) formal definition, (6) power versus the previous class, (7) what's next. Learn this order once and every later lesson is familiar.",
+          "body": "**Chen's template, he will reuse it for NFA, PDA, and TM** Every machine class gets the same seven-part treatment: (1) justification and name, (2) structure, (3) workflow, start configuration, each timeframe, halting, accept/reject, (4) examples: in action, analyze, design, (5) formal definition, (6) power versus the previous class, (7) what's next. Learn this order once and every later lesson is familiar.",
           "source": "Exam",
           "points": null,
           "id": "why.66ef8d33"
@@ -66,13 +66,13 @@
         {
           "type": "definition",
           "term": "Input tape",
-          "body": "a row of cells, one symbol each. Bounded on the left, unbounded on the right. Read-only. A **read head** (cursor) reads one symbol and moves right, *consuming* it — it never moves back. The tape can signal end-of-input.",
+          "body": "a row of cells, one symbol each. Bounded on the left, unbounded on the right. Read-only. A **read head** (cursor) reads one symbol and moves right, *consuming* it: it never moves back. The tape can signal end-of-input.",
           "id": "structure.37eff56c"
         },
         {
           "type": "definition",
           "term": "Control unit",
-          "body": "the 'brain', drawn as a directed graph (Lesson 2). Vertices are **states** — finitely many. Exactly one **initial state**, marked with a triangle (the *name* q₀ doesn't make a state initial; the triangle does). Zero or more **accepting** (final) states, drawn as double circles. The initial state may also be accepting. Edges are **transitions**, labelled with the symbol that triggers them; 'a, b' on one edge means a *or* b.",
+          "body": "the 'brain', drawn as a directed graph (Lesson 2). Vertices are **states**: finitely many. Exactly one **initial state**, marked with a triangle (the *name* q₀ doesn't make a state initial; the triangle does). Zero or more **accepting** (final) states, drawn as double circles. The initial state may also be accepting. Edges are **transitions**, labelled with the symbol that triggers them; 'a, b' on one edge means a *or* b.",
           "id": "structure.6492fb5d"
         },
         {
@@ -83,21 +83,21 @@
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** You have written this structure many times without naming it: the tape is any input consumed left to right (a file stream, a network buffer, a string with an index `i` that only goes up); the control unit is the `state` variable plus the `switch` on it; the accepting states are the `return true` branches. ==One pass, never look back, constant memory== is the whole appeal — it's why streaming parsers can chew through gigabytes on a phone. When Lesson 7 writes δ as a table, you'll recognize the lookup table at the heart of that loop.",
+          "md": "**Where you'll meet this after the exam** You have written this structure many times without naming it: the tape is any input consumed left to right (a file stream, a network buffer, a string with an index `i` that only goes up); the control unit is the `state` variable plus the `switch` on it; the accepting states are the `return true` branches. ==One pass, never look back, constant memory== is the whole appeal: it's why streaming parsers can chew through gigabytes on a phone. When Lesson 7 writes δ as a table, you'll recognize the lookup table at the heart of that loop.",
           "id": "structure.8e2f4a9c"
         },
         {
           "type": "figure",
-          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaSA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaSG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker><marker id='dfaSR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>q0, the initial state. The TRIANGLE is what marks it as initial — the name q0 alone would not.</title><path d='M14 80 L14 100 L38 90 z' fill='currentColor' opacity='0.8'/><circle cx='60' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='60' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>The spine (green): the one walk that leads to acceptance — read a, then b, then b. q1 remembers 'seen a', q2 remembers 'seen ab'; the current state is the machine's only memory.</title><path d='M80 90 L156 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='119' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a</text><path d='M200 90 L276 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='239' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>b</text><path d='M320 90 L396 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='359' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>b</text><circle cx='180' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='180' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><circle cx='300' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='300' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q2</text></g><g><title>q3, the accepting state — the double circle. Halting here with all symbols consumed means Accept. The only way in is the walk a, b, b from q0.</title><circle cx='420' cy='90' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='420' cy='90' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='420' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q3</text></g><g><title>q4, the trap: the first wrong symbol — b too early, a too late, anything after abb — falls here, and every arrow out loops straight back. Not accepting, no way out: this is how the machine rejects everything except abb while keeping δ total.</title><path d='M78 99 Q 150 135 220 169' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='140' y='148' text-anchor='middle' font-size='12' opacity='0.7'>b</text><path d='M191 107 Q 210 135 227 161' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='199' y='143' text-anchor='middle' font-size='12' opacity='0.7'>a</text><path d='M289 107 Q 270 135 253 161' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='281' y='143' text-anchor='middle' font-size='12' opacity='0.7'>a</text><path d='M402 99 Q 330 135 260 169' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='327' y='129' text-anchor='middle' font-size='12' opacity='0.7'>a, b</text><circle cx='240' cy='180' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='240' y='184' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>q4</text><path d='M230 198 C 214 234, 266 234, 250 198' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaSR)'/><text x='240' y='240' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text></g></g>",
+          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaSA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaSG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker><marker id='dfaSR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>q0, the initial state. The TRIANGLE is what marks it as initial: the name q0 alone would not.</title><path d='M14 80 L14 100 L38 90 z' fill='currentColor' opacity='0.8'/><circle cx='60' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='60' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>The spine (green): the one walk that leads to acceptance: read a, then b, then b. q1 remembers 'seen a', q2 remembers 'seen ab'; the current state is the machine's only memory.</title><path d='M80 90 L156 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='119' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a</text><path d='M200 90 L276 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='239' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>b</text><path d='M320 90 L396 90' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6' marker-end='url(#dfaSG)'/><text x='359' y='82' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>b</text><circle cx='180' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='180' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><circle cx='300' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='300' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q2</text></g><g><title>q3, the accepting state: the double circle. Halting here with all symbols consumed means Accept. The only way in is the walk a, b, b from q0.</title><circle cx='420' cy='90' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='420' cy='90' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='420' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q3</text></g><g><title>q4, the trap: the first wrong symbol, b too early, a too late, anything after abb, falls here, and every arrow out loops straight back. Not accepting, no way out: this is how the machine rejects everything except abb while keeping δ total.</title><path d='M78 99 Q 150 135 220 169' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='140' y='148' text-anchor='middle' font-size='12' opacity='0.7'>b</text><path d='M191 107 Q 210 135 227 161' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='199' y='143' text-anchor='middle' font-size='12' opacity='0.7'>a</text><path d='M289 107 Q 270 135 253 161' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='281' y='143' text-anchor='middle' font-size='12' opacity='0.7'>a</text><path d='M402 99 Q 330 135 260 169' fill='none' stroke='currentColor' stroke-width='1.5' opacity='0.55' marker-end='url(#dfaSA)'/><text x='327' y='129' text-anchor='middle' font-size='12' opacity='0.7'>a, b</text><circle cx='240' cy='180' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='240' y='184' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>q4</text><path d='M230 198 C 214 234, 266 234, 250 198' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaSR)'/><text x='240' y='240' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text></g></g>",
           "viewBox": "0 0 480 270",
-          "caption": "Five states, one job: say yes to exactly {abb}. Triangle = initial (q0); the green spine a, b, b is the only accepting walk, ending at the double-circled q3. Every off-spine symbol drops into q4 — the trap, red — which loops on everything and can never accept. Hover any part.",
+          "caption": "Five states, one job: say yes to exactly {abb}. Triangle = initial (q0); the green spine a, b, b is the only accepting walk, ending at the double-circled q3. Every off-spine symbol drops into q4, the trap, red, which loops on everything and can never accept. Hover any part.",
           "slide": "The Lesson 6 example: L(M) = {abb}",
           "id": "structure.b0da62dc"
         },
         {
           "type": "check",
           "prompt": "True or false (Lesson 5 exercises): a DFA must have at least one accepting state. A state named q₀ is the initial state. A timeframe is one second. 'a, b' on an edge means a or b.",
-          "answer": "False — zero or more; with none it accepts nothing. False — the triangle marks it, not the name. False — the clock speed is irrelevant. True.",
+          "answer": "False: zero or more; with none it accepts nothing. False: the triangle marks it, not the name. False: the clock speed is irrelevant. True.",
           "sectionRef": "structure",
           "id": "structure.c7b6dd63"
         }
@@ -131,7 +131,7 @@
                 "state: q1"
               ],
               "active": 1,
-              "caption": "One transition: read the symbol under the cursor (a), look up the pair (current state, symbol) = (q0, a), move to the state it gives (q1), and **consume** the symbol — the cursor moves right. It never moves left."
+              "caption": "One transition: read the symbol under the cursor (a), look up the pair (current state, symbol) = (q0, a), move to the state it gives (q1), and **consume** the symbol: the cursor moves right. It never moves left."
             },
             {
               "kind": "lines",
@@ -150,7 +150,7 @@
                 "timeframe 3",
                 "read b · (q2, b) → q3",
                 "tape:   a  b  b [ ]",
-                "state: q3  — accepting"
+                "state: q3: accepting"
               ],
               "active": 1,
               "caption": "Read the last b. (q2, b) → q3. The cursor is now past the end: **all symbols consumed**, so the machine **halts**."
@@ -173,10 +173,10 @@
                 "t1: (q0, a) → q1",
                 "t2: (q1, b) → q2",
                 "t3: (q2, a) → q4",
-                "halted, in q4 — not accepting → REJECT"
+                "halted, in q4, not accepting → REJECT"
               ],
               "active": 3,
-              "caption": "Same machine, input aba. The third symbol is an a, and (q2, a) sends us to q4 — the **trap**. q4 loops on everything and isn't accepting, so once you're in, you're done: reject. Note the machine still consumed every symbol; it rejected because of *where it ended*, not because it got stuck."
+              "caption": "Same machine, input aba. The third symbol is an a, and (q2, a) sends us to q4: the **trap**. q4 loops on everything and isn't accepting, so once you're in, you're done: reject. Note the machine still consumed every symbol; it rejected because of *where it ended*, not because it got stuck."
             }
           ],
           "slide": true,
@@ -249,19 +249,19 @@
         },
         {
           "type": "prose",
-          "md": "- ♥ A DFA **halts** iff all input symbols are consumed. (c ⟺ h)\n- ♥ A DFA **accepts** a string iff it halts with all symbols consumed AND it is in an accepting state. ((c ∧ f) ⟺ a)\n- ♥ A DFA **rejects** iff at least one symbol is not consumed OR it is not in an accepting state. ((¬c ∨ ¬f) ⟺ ¬a — De Morgan applied to the line above.)",
+          "md": "- ♥ A DFA **halts** iff all input symbols are consumed. (c ⟺ h)\n- ♥ A DFA **accepts** a string iff it halts with all symbols consumed AND it is in an accepting state. ((c ∧ f) ⟺ a)\n- ♥ A DFA **rejects** iff at least one symbol is not consumed OR it is not in an accepting state. ((¬c ∨ ¬f) ⟺ ¬a: De Morgan applied to the line above.)",
           "slide": "The ♥ workflow sentences",
           "id": "workflow.9194e48d"
         },
         {
           "type": "definition",
           "term": "Configuration",
-          "body": "A snapshot at one timeframe: tape contents and cursor position, current state, the timeframe number, current result. From a configuration you can continue the run without knowing anything else. Chen builds every later machine (NFA, PDA, TM) by changing what goes in the configuration — so this word matters more than it looks.",
+          "body": "A snapshot at one timeframe: tape contents and cursor position, current state, the timeframe number, current result. From a configuration you can continue the run without knowing anything else. Chen builds every later machine (NFA, PDA, TM) by changing what goes in the configuration, so this word matters more than it looks.",
           "id": "workflow.365e4fd2"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** 'Start configuration, one transition per input, halt, check the final state' is the run loop of more software than any other idea in this course. TCP's connection setup is a published state diagram — CLOSED → SYN-SENT → ESTABLISHED — and the three-way handshake is literally a walk through it (the RFC ships the picture). Bluetooth pairing, OAuth flows, and game AI (idle → chase → attack) run the same workflow. And when such a system misbehaves, the fix starts with the trace you just practiced: ==which state were we in, what symbol arrived, where did δ send us== — a packet capture of a stuck connection is timeframes 0 through n, written down.",
+          "md": "**Where you'll meet this after the exam** 'Start configuration, one transition per input, halt, check the final state' is the run loop of more software than any other idea in this course. TCP's connection setup is a published state diagram, CLOSED → SYN-SENT → ESTABLISHED, and the three-way handshake is literally a walk through it (the RFC ships the picture). Bluetooth pairing, OAuth flows, and game AI (idle → chase → attack) run the same workflow. And when such a system misbehaves, the fix starts with the trace you just practiced: ==which state were we in, what symbol arrived, where did δ send us==: a packet capture of a stuck connection is timeframes 0 through n, written down.",
           "id": "workflow.7d4e8f1a"
         }
       ]
@@ -285,48 +285,48 @@
         {
           "type": "definition",
           "term": "'Heaven'",
-          "body": "an accepting state that loops on everything — accepts whatever reaches it. Used for 'anything after this is fine'.",
+          "body": "an accepting state that loops on everything: accepts whatever reaches it. Used for 'anything after this is fine'.",
           "id": "analyze.6fea696b"
         },
         {
           "type": "figure",
           "viewBox": "0 0 560 220",
-          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaTC' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaTR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker><marker id='dfaTG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><line x1='280' y1='30' x2='280' y2='200' stroke='currentColor' opacity='0.12'/><g><title>Getting in: the first symbol that makes success impossible — like b when the language demands 'starts with a' — sends the run here. Every string that can NEVER recover goes to the trap.</title><text x='140' y='34' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))'>the trap ('hell')</text><circle cx='70' cy='120' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='70' y='124' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q</text><path d='M90 120 L178 120' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaTC)'/><text x='134' y='110' text-anchor='middle' font-size='10' opacity='0.6'>first doomed symbol</text></g><g><title>The trap itself: NOT accepting, and every transition loops back to itself — once in, never out. It exists so that δ stays total (every state, every symbol, one arrow) while the machine rejects the whole complement.</title><circle cx='200' cy='120' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='200' y='124' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>trap</text><path d='M190 102 C 174 66, 226 66, 210 102' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaTR)'/><text x='200' y='60' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text><text x='140' y='178' text-anchor='middle' font-size='11' opacity='0.7'>non-accepting · once in, never out</text></g><g><title>Getting in: the symbol that completes the requirement — like the second b of 'contains bb' — sends the run here. Every string that has ALREADY succeeded goes to heaven.</title><text x='420' y='34' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>heaven</text><circle cx='350' cy='120' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='350' y='124' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q</text><path d='M370 120 L458 120' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaTC)'/><text x='414' y='110' text-anchor='middle' font-size='10' opacity='0.6'>requirement met</text></g><g><title>Heaven: ACCEPTING, and it loops on everything — whatever arrives after the requirement is met, the answer stays yes. Same loop as the trap, opposite meaning; the double circle is the entire difference.</title><circle cx='480' cy='120' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='480' cy='120' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='480' y='124' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>qF</text><path d='M470 102 C 454 66, 506 66, 490 102' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#dfaTG)'/><text x='480' y='60' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a, b</text><text x='420' y='178' text-anchor='middle' font-size='11' opacity='0.7'>accepting · anything after is fine</text></g></g>",
-          "caption": "The two workhorse states of DFA design, side by side. The trap absorbs strings that can never succeed — it keeps δ total while rejecting. Heaven absorbs strings that already succeeded — anything after is fine. Identical loop, opposite meaning: the double circle is the whole difference. Hover either side.",
-          "slide": "Trap and heaven — the pattern",
+          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaTC' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaTR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker><marker id='dfaTG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker></defs><line x1='280' y1='30' x2='280' y2='200' stroke='currentColor' opacity='0.12'/><g><title>Getting in: the first symbol that makes success impossible, like b when the language demands 'starts with a', sends the run here. Every string that can NEVER recover goes to the trap.</title><text x='140' y='34' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))'>the trap ('hell')</text><circle cx='70' cy='120' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='70' y='124' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q</text><path d='M90 120 L178 120' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaTC)'/><text x='134' y='110' text-anchor='middle' font-size='10' opacity='0.6'>first doomed symbol</text></g><g><title>The trap itself: NOT accepting, and every transition loops back to itself: once in, never out. It exists so that δ stays total (every state, every symbol, one arrow) while the machine rejects the whole complement.</title><circle cx='200' cy='120' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='200' y='124' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>trap</text><path d='M190 102 C 174 66, 226 66, 210 102' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaTR)'/><text x='200' y='60' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text><text x='140' y='178' text-anchor='middle' font-size='11' opacity='0.7'>non-accepting · once in, never out</text></g><g><title>Getting in: the symbol that completes the requirement, like the second b of 'contains bb', sends the run here. Every string that has ALREADY succeeded goes to heaven.</title><text x='420' y='34' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>heaven</text><circle cx='350' cy='120' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='350' y='124' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q</text><path d='M370 120 L458 120' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaTC)'/><text x='414' y='110' text-anchor='middle' font-size='10' opacity='0.6'>requirement met</text></g><g><title>Heaven: ACCEPTING, and it loops on everything: whatever arrives after the requirement is met, the answer stays yes. Same loop as the trap, opposite meaning; the double circle is the entire difference.</title><circle cx='480' cy='120' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='480' cy='120' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='480' y='124' text-anchor='middle' font-size='11' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>qF</text><path d='M470 102 C 454 66, 506 66, 490 102' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#dfaTG)'/><text x='480' y='60' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a, b</text><text x='420' y='178' text-anchor='middle' font-size='11' opacity='0.7'>accepting · anything after is fine</text></g></g>",
+          "caption": "The two workhorse states of DFA design, side by side. The trap absorbs strings that can never succeed: it keeps δ total while rejecting. Heaven absorbs strings that already succeeded: anything after is fine. Identical loop, opposite meaning: the double circle is the whole difference. Hover either side.",
+          "slide": "Trap and heaven: the pattern",
           "id": "analyze.3c6f9a1e"
         },
         {
           "type": "definition",
           "term": "Complement DFA",
-          "body": "to recognize L̄ from a DFA for L, **swap** accepting and non-accepting states. This works only because a DFA is total — every string ends in exactly one state, so flipping the labels flips every answer.",
+          "body": "to recognize L̄ from a DFA for L, **swap** accepting and non-accepting states. This works only because a DFA is total: every string ends in exactly one state, so flipping the labels flips every answer.",
           "id": "analyze.2f16225d"
         },
         {
           "type": "figure",
-          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaCA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>q0 means 'even number of a's so far'. It is BOTH initial and accepting, because λ has zero a's and zero is even — the λ check, passed by design.</title><path d='M24 90 L24 110 L48 100 z' fill='currentColor' opacity='0.8'/><circle cx='70' cy='100' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='70' cy='100' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='70' y='104' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>q1 means 'odd number of a's so far'. Not accepting: halting here says the count came out odd.</title><circle cx='230' cy='100' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='230' y='104' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text></g><g><title>Each a flips the parity, so a toggles between the two states. The machine's entire memory is one bit: even or odd.</title><path d='M90 100 Q 149 78 208 100' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='149' y='80' text-anchor='middle' font-size='12'>a</text><path d='M210 100 Q 151 122 92 100' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='151' y='128' text-anchor='middle' font-size='12'>a</text></g><g><title>b doesn't change the count of a's, so b changes nothing: a self-loop on each state. Ignoring irrelevant symbols is what self-loops are for.</title><path d='M60 82 C 44 46, 96 46, 80 82' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='70' y='44' text-anchor='middle' font-size='12'>b</text><path d='M220 82 C 204 46, 256 46, 240 82' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='230' y='44' text-anchor='middle' font-size='12'>b</text></g></g>",
+          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaCA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>q0 means 'even number of a's so far'. It is BOTH initial and accepting, because λ has zero a's and zero is even: the λ check, passed by design.</title><path d='M24 90 L24 110 L48 100 z' fill='currentColor' opacity='0.8'/><circle cx='70' cy='100' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='70' cy='100' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='70' y='104' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>q1 means 'odd number of a's so far'. Not accepting: halting here says the count came out odd.</title><circle cx='230' cy='100' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='230' y='104' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text></g><g><title>Each a flips the parity, so a toggles between the two states. The machine's entire memory is one bit: even or odd.</title><path d='M90 100 Q 149 78 208 100' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='149' y='80' text-anchor='middle' font-size='12'>a</text><path d='M210 100 Q 151 122 92 100' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='151' y='128' text-anchor='middle' font-size='12'>a</text></g><g><title>b doesn't change the count of a's, so b changes nothing: a self-loop on each state. Ignoring irrelevant symbols is what self-loops are for.</title><path d='M60 82 C 44 46, 96 46, 80 82' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='70' y='44' text-anchor='middle' font-size='12'>b</text><path d='M220 82 C 204 46, 256 46, 240 82' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaCA)'/><text x='230' y='44' text-anchor='middle' font-size='12'>b</text></g></g>",
           "viewBox": "0 0 300 170",
-          "caption": "Two states; a toggles between them, b changes nothing. The initial state is accepting because λ has zero a's — and zero is even. No trap needed: every string over {a, b} has either an even or an odd count, so no string is ever doomed. Hover any part.",
+          "caption": "Two states; a toggles between them, b changes nothing. The initial state is accepting because λ has zero a's, and zero is even. No trap needed: every string over {a, b} has either an even or an odd count, so no string is ever doomed. Hover any part.",
           "slide": "Even number of a's",
           "id": "analyze.f8a1c60f"
         },
         {
           "type": "figure",
           "viewBox": "0 0 640 270",
-          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaEA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>q0 — 'the last symbol was not a' (or nothing read yet). b loops here rather than going to a trap, because no string is ever doomed: a late ab can always still arrive.</title><path d='M24 140 L24 160 L48 150 z' fill='currentColor' opacity='0.8'/><circle cx='70' cy='150' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='70' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text><path d='M60 132 C 44 96, 96 96, 80 132' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='70' y='90' text-anchor='middle' font-size='12'>b</text><path d='M90 150 L186 150' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='138' y='142' text-anchor='middle' font-size='12'>a</text></g><g><title>q1 — 'the last symbol was a'. Another a stays here (still one b away from done). This state IS the machine's memory of the previous symbol.</title><circle cx='210' cy='150' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='210' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><path d='M200 132 C 184 96, 236 96, 220 132' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='210' y='90' text-anchor='middle' font-size='12'>a</text><path d='M230 150 L326 150' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='278' y='142' text-anchor='middle' font-size='12'>b</text></g><g><title>q2 — 'the last two symbols were ab'. Accepting (double circle): if the input runs out here, the string ended in ab.</title><circle cx='350' cy='150' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='350' cy='150' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='350' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q2</text></g><g><title>Acceptance isn't sticky: more input can leave q2. An a might start a new ab (back to q1); a b ruins the ending (back to q0). Only where you stand when the input ENDS matters.</title><path d='M338 166 Q 280 205 224 164' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='280' y='198' text-anchor='middle' font-size='12'>a</text><path d='M344 169 Q 210 250 78 168' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='210' y='232' text-anchor='middle' font-size='12'>b</text></g><g><title>The same δ as a table: rows are states, columns are symbols, each cell the next state. Every cell filled means δ is total — the machine can never be stuck. The diagram and the table are the same information; Chen may ask for either.</title><text x='480' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' opacity='0.55'>δ</text><text x='550' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>a</text><text x='605' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>b</text><line x1='455' y1='108' x2='628' y2='108' stroke='currentColor' opacity='0.3'/><line x1='512' y1='84' x2='512' y2='190' stroke='currentColor' opacity='0.3'/><text x='480' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q0</text><text x='550' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='605' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q0</text><text x='480' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q1</text><text x='550' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='480' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q2</text><text x='550' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='605' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q0</text><rect x='587' y='143' width='36' height='20' rx='4' fill='rgb(var(--on-track) / 0.15)'/><text x='605' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>q2</text><text x='541' y='214' text-anchor='middle' font-size='10' opacity='0.6'>every cell filled → δ is total</text></g></g>",
-          "caption": "A second machine to analyze: L(M) = { wab | w ∈ Σ∗ } — strings ending in ab — as a diagram AND as its δ table. Each state remembers just enough of the recent past (nothing useful / ended in a / ended in ab), and the backward arrows out of q2 show acceptance only counts where the run ENDS. The highlighted cell is the winning move (q1, b) → q2. Hover any part.",
+          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaEA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker></defs><g><title>q0: 'the last symbol was not a' (or nothing read yet). b loops here rather than going to a trap, because no string is ever doomed: a late ab can always still arrive.</title><path d='M24 140 L24 160 L48 150 z' fill='currentColor' opacity='0.8'/><circle cx='70' cy='150' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='70' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text><path d='M60 132 C 44 96, 96 96, 80 132' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='70' y='90' text-anchor='middle' font-size='12'>b</text><path d='M90 150 L186 150' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='138' y='142' text-anchor='middle' font-size='12'>a</text></g><g><title>q1: 'the last symbol was a'. Another a stays here (still one b away from done). This state IS the machine's memory of the previous symbol.</title><circle cx='210' cy='150' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='210' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><path d='M200 132 C 184 96, 236 96, 220 132' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='210' y='90' text-anchor='middle' font-size='12'>a</text><path d='M230 150 L326 150' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='278' y='142' text-anchor='middle' font-size='12'>b</text></g><g><title>q2: 'the last two symbols were ab'. Accepting (double circle): if the input runs out here, the string ended in ab.</title><circle cx='350' cy='150' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='350' cy='150' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='350' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q2</text></g><g><title>Acceptance isn't sticky: more input can leave q2. An a might start a new ab (back to q1); a b ruins the ending (back to q0). Only where you stand when the input ENDS matters.</title><path d='M338 166 Q 280 205 224 164' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='280' y='198' text-anchor='middle' font-size='12'>a</text><path d='M344 169 Q 210 250 78 168' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaEA)'/><text x='210' y='232' text-anchor='middle' font-size='12'>b</text></g><g><title>The same δ as a table: rows are states, columns are symbols, each cell the next state. Every cell filled means δ is total: the machine can never be stuck. The diagram and the table are the same information; Chen may ask for either.</title><text x='480' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' opacity='0.55'>δ</text><text x='550' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>a</text><text x='605' y='100' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>b</text><line x1='455' y1='108' x2='628' y2='108' stroke='currentColor' opacity='0.3'/><line x1='512' y1='84' x2='512' y2='190' stroke='currentColor' opacity='0.3'/><text x='480' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q0</text><text x='550' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='605' y='130' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q0</text><text x='480' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q1</text><text x='550' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='480' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' font-weight='700'>q2</text><text x='550' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q1</text><text x='605' y='186' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>q0</text><rect x='587' y='143' width='36' height='20' rx='4' fill='rgb(var(--on-track) / 0.15)'/><text x='605' y='158' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>q2</text><text x='541' y='214' text-anchor='middle' font-size='10' opacity='0.6'>every cell filled → δ is total</text></g></g>",
+          "caption": "A second machine to analyze: L(M) = { wab | w ∈ Σ∗ }, strings ending in ab, as a diagram AND as its δ table. Each state remembers just enough of the recent past (nothing useful / ended in a / ended in ab), and the backward arrows out of q2 show acceptance only counts where the run ENDS. The highlighted cell is the winning move (q1, b) → q2. Hover any part.",
           "slide": "Strings ending in ab: diagram + δ table",
           "id": "analyze.5e8d2c4b"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Reading a machine and naming its language is the code-review skill for anything state-shaped: given a Redux reducer or an order-status enum, 'which event sequences end in PAID?' is exactly 'what is L(M)?'. Protocol debugging is the same read — engineers stare at the TCP state diagram asking which walks reach CLOSE_WAIT and never leave, which is literally hunting for an unintended trap (the classic connection leak). And the complement trick — ==swap accepting and non-accepting states, get L̄ for free== — works only because δ is total, a first taste of how proofs about machines lean on the formal definition.",
+          "md": "**Where you'll meet this after the exam** Reading a machine and naming its language is the code-review skill for anything state-shaped: given a Redux reducer or an order-status enum, 'which event sequences end in PAID?' is exactly 'what is L(M)?'. Protocol debugging is the same read: engineers stare at the TCP state diagram asking which walks reach CLOSE_WAIT and never leave, which is literally hunting for an unintended trap (the classic connection leak). And the complement trick, ==swap accepting and non-accepting states, get L̄ for free==, works only because δ is total, a first taste of how proofs about machines lean on the formal definition.",
           "id": "analyze.9b3c5e7d"
         },
         {
           "type": "check",
           "prompt": "In the even-a's machine, what's L(M) in set-builder, and what does swapping the accepting states give you?",
-          "answer": "L(M) = { w ∈ {a,b}∗ | the number of a's in w is even }. Swapping makes q1 accepting and q0 not: odd number of a's — the complement.",
+          "answer": "L(M) = { w ∈ {a,b}∗ | the number of a's in w is even }. Swapping makes q1 accepting and q0 not: odd number of a's: the complement.",
           "sectionRef": "analyze",
           "id": "analyze.5de13164"
         }
@@ -347,7 +347,7 @@
                 "L̄ = {λ} ∪ { bw | w ∈ Σ∗ }"
               ],
               "active": 0,
-              "caption": "**Step 1: write L and L̄ in set-builder before drawing anything.** Strings that start with a. The complement — what to *reject* — is the empty string plus everything that starts with b. Knowing the reject side is half the machine."
+              "caption": "**Step 1: write L and L̄ in set-builder before drawing anything.** Strings that start with a. The complement, what to *reject*, is the empty string plus everything that starts with b. Knowing the reject side is half the machine."
             },
             {
               "kind": "lines",
@@ -357,7 +357,7 @@
                 "q1 loops on a, b (anything after is fine)"
               ],
               "active": 0,
-              "caption": "**Step 2: draw the spine** — the walk that accepts strings in L. One a gets us to q1; after that, anything goes, so q1 loops on both symbols and is accepting."
+              "caption": "**Step 2: draw the spine**: the walk that accepts strings in L. One a gets us to q1; after that, anything goes, so q1 loops on both symbols and is accepting."
             },
             {
               "kind": "lines",
@@ -367,12 +367,12 @@
                 "send it to a trap: q0 —b→ q2, q2 loops on a, b, not accepting"
               ],
               "active": 2,
-              "caption": "**Step 3: send everything else to the trap.** From q0, a b means the string starts with b — no later symbol can fix that. So b goes to a non-accepting state that loops forever. Chen calls it 'hell'."
+              "caption": "**Step 3: send everything else to the trap.** From q0, a b means the string starts with b: no later symbol can fix that. So b goes to a non-accepting state that loops forever. Chen calls it 'hell'."
             },
             {
               "kind": "lines",
               "lines": [
-                "is λ ∈ L?  no — λ doesn't start with a",
+                "is λ ∈ L?  no: λ doesn't start with a",
                 "so q0 must NOT be accepting"
               ],
               "active": 1,
@@ -398,7 +398,7 @@
                 "ba → q2 reject ✓"
               ],
               "active": 0,
-              "caption": "**Step 6: test** with strings from L, strings from L̄, and λ — never with symbols outside Σ. Chen's two ways to break a design: a string from L that's rejected, or a string from L̄ that's accepted. If neither exists among your tests, submit. (You can never *prove* it by testing — Σ∗ is infinite.)"
+              "caption": "**Step 6: test** with strings from L, strings from L̄, and λ: never with symbols outside Σ. Chen's two ways to break a design: a string from L that's rejected, or a string from L̄ that's accepted. If neither exists among your tests, submit. (You can never *prove* it by testing: Σ∗ is infinite.)"
             }
           ],
           "slide": true,
@@ -443,16 +443,16 @@
         },
         {
           "type": "figure",
-          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaDA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaDG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker><marker id='dfaDR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>q0, the initial state. λ ends its run right here, and λ doesn't start with a — so q0 is correctly NOT accepting (step 4 of the design recipe).</title><path d='M14 80 L14 100 L38 90 z' fill='currentColor' opacity='0.8'/><circle cx='60' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='60' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>The one decision that matters is the FIRST symbol: a means the string starts with a (up to heaven), b means it never can (down to hell). After that, nothing can change the verdict.</title><path d='M80 86 L179 64' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaDA)'/><text x='128' y='64' text-anchor='middle' font-size='12'>a</text><path d='M78 98 L180 141' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaDA)'/><text x='122' y='131' text-anchor='middle' font-size='12'>b</text></g><g><title>q1 is heaven: accepting, and it loops on both symbols — once the string starts with a, whatever follows is fine.</title><circle cx='200' cy='60' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='200' cy='60' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='200' y='64' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><path d='M190 42 C 174 6, 226 6, 210 42' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#dfaDG)'/><text x='200' y='10' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a, b</text></g><g><title>q2 is hell: a trap. A string that began with b can never start with a, so it loops here forever, not accepting. The trap is what keeps δ total while rejecting L̄.</title><circle cx='200' cy='150' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='200' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>q2</text><path d='M190 132 C 174 96, 226 96, 210 132' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaDR)'/><text x='200' y='100' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text></g></g>",
+          "svg": "<g fill='currentColor' font-family='ui-sans-serif, system-ui'><defs><marker id='dfaDA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='dfaDG' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--on-track))'/></marker><marker id='dfaDR' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>q0, the initial state. λ ends its run right here, and λ doesn't start with a, so q0 is correctly NOT accepting (step 4 of the design recipe).</title><path d='M14 80 L14 100 L38 90 z' fill='currentColor' opacity='0.8'/><circle cx='60' cy='90' r='20' fill='none' stroke='currentColor' stroke-width='1.5'/><text x='60' y='94' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q0</text></g><g><title>The one decision that matters is the FIRST symbol: a means the string starts with a (up to heaven), b means it never can (down to hell). After that, nothing can change the verdict.</title><path d='M80 86 L179 64' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaDA)'/><text x='128' y='64' text-anchor='middle' font-size='12'>a</text><path d='M78 98 L180 141' fill='none' stroke='currentColor' stroke-width='1.5' marker-end='url(#dfaDA)'/><text x='122' y='131' text-anchor='middle' font-size='12'>b</text></g><g><title>q1 is heaven: accepting, and it loops on both symbols: once the string starts with a, whatever follows is fine.</title><circle cx='200' cy='60' r='20' fill='rgb(var(--on-track) / 0.12)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><circle cx='200' cy='60' r='16' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='200' y='64' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace'>q1</text><path d='M190 42 C 174 6, 226 6, 210 42' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#dfaDG)'/><text x='200' y='10' text-anchor='middle' font-size='12' fill='rgb(var(--on-track))'>a, b</text></g><g><title>q2 is hell: a trap. A string that began with b can never start with a, so it loops here forever, not accepting. The trap is what keeps δ total while rejecting L̄.</title><circle cx='200' cy='150' r='20' fill='rgb(var(--critical) / 0.12)' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='200' y='154' text-anchor='middle' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>q2</text><path d='M190 132 C 174 96, 226 96, 210 132' fill='none' stroke='rgb(var(--critical))' stroke-width='1.5' marker-end='url(#dfaDR)'/><text x='200' y='100' text-anchor='middle' font-size='12' fill='rgb(var(--critical))'>a, b</text></g></g>",
           "viewBox": "0 0 360 190",
-          "caption": "L = { aw | w ∈ Σ∗ }, finished. The first symbol decides everything: q1 is heaven (green, accepting, loops), q2 is hell (red, trap, loops). Totality check passes — every state has exactly one a-arrow and one b-arrow. Hover any part.",
+          "caption": "L = { aw | w ∈ Σ∗ }, finished. The first symbol decides everything: q1 is heaven (green, accepting, loops), q2 is hell (red, trap, loops). Totality check passes: every state has exactly one a-arrow and one b-arrow. Hover any part.",
           "slide": "The result",
           "id": "design.b95fc263"
         },
         {
           "type": "example",
           "title": "Seven small languages over Σ = {a, b}",
-          "body": "Describe the DFA for each.\n\n1. **L = ϕ**: one non-accepting state looping on a, b (all hell). **L = Σ∗**: one accepting state looping on a, b (all heaven).\n2. **L = {λ}**: q0 accepting; any symbol → hell. **L = Σ⁺**: q0 non-accepting → q1 accepting on a or b; q1 loops.\n3. **L = {a}**: q0 —a→ q1 (accepting); q0 —b→ hell; q1 —a, b→ hell.\n4. **L = { aw | w ∈ Σ⁺ }** (starts with a, at least 2 symbols): like 'starts with a' but q1 is *not* accepting; q1 —a, b→ q2 accepting, q2 loops. The string 'a' alone must be rejected.\n5. **L = { aⁿ | n ≥ 0 }**: q0 accepting, loops on a; b → hell. For n ≥ 1: q0 non-accepting —a→ q1 accepting (loops on a); b → hell from both.\n6. **Even number of a's**: the two-state toggle above.",
+          "body": "Describe the DFA for each.\n\n1. **L = ϕ**: one non-accepting state looping on a, b (all hell). **L = Σ∗**: one accepting state looping on a, b (all heaven).\n2. **L = {λ}**: q0 accepting; any symbol → hell. **L = Σ⁺**: q0 non-accepting → q1 accepting on a or b; q1 loops.\n3. **L = {a}**: q0 —a→ q1 (accepting); q0 —b→ hell; q1: a, b→ hell.\n4. **L = { aw | w ∈ Σ⁺ }** (starts with a, at least 2 symbols): like 'starts with a' but q1 is *not* accepting; q1: a, b→ q2 accepting, q2 loops. The string 'a' alone must be rejected.\n5. **L = { aⁿ | n ≥ 0 }**: q0 accepting, loops on a; b → hell. For n ≥ 1: q0 non-accepting —a→ q1 accepting (loops on a); b → hell from both.\n6. **Even number of a's**: the two-state toggle above.",
           "slide": "The Lesson 6 design set (redo each cold)",
           "id": "design.c7b4191e"
         },
@@ -465,26 +465,26 @@
         },
         {
           "type": "prose",
-          "md": "- JFLAP7.1.jar from the course home page. Finite Automaton → draw states with the state tool; right-click a state to set Initial or Final.\n- Each transition is **one symbol**. For 'a or b', add two transitions between the same states — JFLAP stacks the labels.\n- Input → Multiple Run lets you test a batch of strings at once. Test strings from L, strings from L̄, and λ (leave the input empty).\n- Undo is unreliable; save often.",
+          "md": "- JFLAP7.1.jar from the course home page. Finite Automaton → draw states with the state tool; right-click a state to set Initial or Final.\n- Each transition is **one symbol**. For 'a or b', add two transitions between the same states: JFLAP stacks the labels.\n- Input → Multiple Run lets you test a batch of strings at once. Test strings from L, strings from L̄, and λ (leave the input empty).\n- Undo is unreliable; save often.",
           "slide": "JFLAP (Assignment 3 was 9 points of this)",
           "id": "design.e5515ae5"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The six-step recipe is how real input-handling code gets designed. A vending machine (states = credit inserted so far), an elevator controller (floor + direction), a subway turnstile (locked/unlocked) — these are interview favorites precisely because they test steps 1–5: name the states, cover every (state, event) pair, get the start state right. Form validators and protocol parsers are DFAs too, and you have met their 'missing arrow' bug in the wild: ==the app that freezes when you press a button at the wrong moment== is a non-total δ that shipped. Even the trap has a career — parser error-recovery states and 'poison' states in stream processors are hell with better branding.",
+          "md": "**Where you'll meet this after the exam** The six-step recipe is how real input-handling code gets designed. A vending machine (states = credit inserted so far), an elevator controller (floor + direction), a subway turnstile (locked/unlocked): these are interview favorites precisely because they test steps 1–5: name the states, cover every (state, event) pair, get the start state right. Form validators and protocol parsers are DFAs too, and you have met their 'missing arrow' bug in the wild: ==the app that freezes when you press a button at the wrong moment== is a non-total δ that shipped. Even the trap has a career: parser error-recovery states and 'poison' states in stream processors are hell with better branding.",
           "id": "design.4a8b2c6e"
         },
         {
           "type": "check",
           "prompt": "Assignment 3 style: design a DFA for L = { (ba)ⁿ | n ≥ 0 } over {a, b}, and describe the DFA for L̄.",
-          "answer": "q0 (initial, accepting) —b→ q1 —a→ q0. q0 —a→ hell; q1 —b→ hell; hell loops on a, b. Accepts λ, ba, baba, … For L̄: swap — q1 and hell become accepting, q0 becomes non-accepting.",
+          "answer": "q0 (initial, accepting) —b→ q1 —a→ q0. q0 —a→ hell; q1 —b→ hell; hell loops on a, b. Accepts λ, ba, baba, … For L̄: swap: q1 and hell become accepting, q0 becomes non-accepting.",
           "sectionRef": "design",
           "id": "design.5c80f3a2"
         },
         {
           "type": "check",
           "prompt": "Over Σ = {1}: strings with an even number of 1's. Set-builder and DFA.",
-          "answer": "L = { 1ⁿ | n even } = { 1²ᵏ | k ≥ 0 }. q0 (initial, accepting) —1→ q1 —1→ q0. No trap needed — every string over {1} has even or odd length.",
+          "answer": "L = { 1ⁿ | n even } = { 1²ᵏ | k ≥ 0 }. q0 (initial, accepting) —1→ q1 —1→ q0. No trap needed: every string over {1} has even or odd length.",
           "sectionRef": "design",
           "id": "design.f6666702"
         }
@@ -514,7 +514,7 @@
                 "the finite set of STATES"
               ],
               "active": 0,
-              "caption": "**Q**: the states — a finite set (that's the 'Finite' in DFA)."
+              "caption": "**Q**: the states: a finite set (that's the 'Finite' in DFA)."
             },
             {
               "kind": "lines",
@@ -532,7 +532,7 @@
                 "a TOTAL function: (state, symbol) ↦ next state"
               ],
               "active": 0,
-              "caption": "**δ**: the transition function. Domain Q × Σ — the Cartesian product of states and symbols (Lesson 2). Range Q. **Total**: defined for every pair — that's what 'Deterministic' means: from any state, on any symbol, exactly one next state. The arrows in the picture are δ drawn."
+              "caption": "**δ**: the transition function. Domain Q × Σ: the Cartesian product of states and symbols (Lesson 2). Range Q. **Total**: defined for every pair: that's what 'Deterministic' means: from any state, on any symbol, exactly one next state. The arrows in the picture are δ drawn."
             },
             {
               "kind": "lines",
@@ -552,16 +552,16 @@
               "kind": "lines",
               "lines": [
                 "q₀ ∈ Q",
-                "the INITIAL state — exactly one"
+                "the INITIAL state: exactly one"
               ],
               "active": 0,
-              "caption": "**q₀**: the initial state, a member of Q. Exactly one. It's marked by the triangle, not by its name — a state called q₀ isn't initial unless it has the triangle."
+              "caption": "**q₀**: the initial state, a member of Q. Exactly one. It's marked by the triangle, not by its name: a state called q₀ isn't initial unless it has the triangle."
             },
             {
               "kind": "lines",
               "lines": [
                 "F ⊆ Q,  F = {q3}",
-                "the set of ACCEPTING (final) states — zero or more"
+                "the set of ACCEPTING (final) states: zero or more"
               ],
               "active": 0,
               "caption": "**F**: the accepting states, a subset of Q. Zero or more (a DFA with F = ϕ accepts nothing). Double circles in the picture."
@@ -582,25 +582,25 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Determinism** From Lesson 2: a **total** function has an output for every domain element. δ's domain is Q × Σ — every (state, symbol) pair — so a total δ means the machine always knows exactly one next state. No choices, no dead ends: that's *deterministic*. Lesson 8 will relax this: an NFA's δ maps to a *set* of states (range 2^Q, the power set from Lesson 2) and may be undefined for some pairs. ==Every piece of the definition is a knob Chen will turn later==.",
+          "md": "**Determinism** From Lesson 2: a **total** function has an output for every domain element. δ's domain is Q × Σ, every (state, symbol) pair, so a total δ means the machine always knows exactly one next state. No choices, no dead ends: that's *deterministic*. Lesson 8 will relax this: an NFA's δ maps to a *set* of states (range 2^Q, the power set from Lesson 2) and may be undefined for some pairs. ==Every piece of the definition is a knob Chen will turn later==.",
           "slide": "Why 'deterministic' means 'δ is total'",
           "id": "formal.be03aa9b"
         },
         {
           "type": "prose",
-          "md": "It can't. The input string is by definition in Σ∗. Asking what a DFA over {a, b} does on 'abc' is a category error, not a hard case — which is why the design steps say to test only with strings from Σ∗.",
+          "md": "It can't. The input string is by definition in Σ∗. Asking what a DFA over {a, b} does on 'abc' is a category error, not a hard case, which is why the design steps say to test only with strings from Σ∗.",
           "slide": "What if the input has a symbol not in Σ?",
           "id": "formal.70c77022"
         },
         {
           "type": "prose",
-          "md": "A DFA has no memory beyond its current state, and it has finitely many states. So ==it can't count without bound==. Try to design a DFA for the celebrity language { aⁿbⁿ | n ≥ 0 }: to know when the b's have matched the a's, the machine would have to remember how many a's it saw — any count, with a fixed number of states. With, say, 10 states and 11 possible counts, two different counts must land in the same state, and from there the machine literally cannot tell them apart. Lesson 12 turns that overcrowding argument into a proof (the pumping lemma). Every later machine class exists to add a kind of memory the DFA lacks.",
+          "md": "A DFA has no memory beyond its current state, and it has finitely many states. So ==it can't count without bound==. Try to design a DFA for the celebrity language { aⁿbⁿ | n ≥ 0 }: to know when the b's have matched the a's, the machine would have to remember how many a's it saw: any count, with a fixed number of states. With, say, 10 states and 11 possible counts, two different counts must land in the same state, and from there the machine literally cannot tell them apart. Lesson 12 turns that overcrowding argument into a proof (the pumping lemma). Every later machine class exists to add a kind of memory the DFA lacks.",
           "slide": "The limitation that motivates everything after",
           "id": "formal.1fbe2ced"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The 5-tuple is a machine written as data, and industry stores it exactly that way: XState charts, AWS Step Functions definitions, and every hand-rolled `TRANSITIONS[state][event]` table are δ with a JSON accent — and 'is the table total?' is a one-line CI check that kills a whole class of bugs. The limitation is famous out here too: HTML allows tags nested arbitrarily deep, which requires unbounded counting just like aⁿbⁿ — that is the actual theorem behind the beloved Stack Overflow answer about why ==you cannot parse HTML with regex==. When the pumping lemma arrives in Lesson 12, you will already own its punchline.",
+          "md": "**Where you'll meet this after the exam** The 5-tuple is a machine written as data, and industry stores it exactly that way: XState charts, AWS Step Functions definitions, and every hand-rolled `TRANSITIONS[state][event]` table are δ with a JSON accent, and 'is the table total?' is a one-line CI check that kills a whole class of bugs. The limitation is famous out here too: HTML allows tags nested arbitrarily deep, which requires unbounded counting just like aⁿbⁿ: that is the actual theorem behind the beloved Stack Overflow answer about why ==you cannot parse HTML with regex==. When the pumping lemma arrives in Lesson 12, you will already own its punchline.",
           "id": "formal.6c9d1e3f"
         },
         {
@@ -618,7 +618,7 @@
       "prompt": "M has states {q0, q1, q2}, initial q0, accepting {q2}, Σ = {a, b}. δ: q0 —a→ q1, q0 —b→ q0, q1 —a→ q1, q1 —b→ q2, q2 —a→ q1, q2 —b→ q0. Run M on aab, abab, bba, and λ. For each, list the state after every symbol and say accept or reject. Then describe L(M) in English.",
       "hints": [
         "Keep a finger on the current state and read one symbol at a time. Write the state sequence like q0 → q1 → q1 → q2. Accept iff the *last* state is in F.",
-        "λ trips people: no symbols are read, so the run ends in the initial state. Is q0 accepting? Also: 'reject' here never means 'got stuck' — δ is total, so every string ends somewhere.",
+        "λ trips people: no symbols are read, so the run ends in the initial state. Is q0 accepting? Also: 'reject' here never means 'got stuck': δ is total, so every string ends somewhere.",
         "To describe L(M), ask what has to be true of the last two symbols for the run to end in q2. Which arrows lead into q2?"
       ],
       "solution": [
@@ -635,15 +635,15 @@
       "title": "Design from a description",
       "prompt": "Over Σ = {a, b}, design a DFA for L = strings that contain the substring bb. Follow the six steps: write L and L̄ in set-builder; draw the spine; add the trap or heaven; check λ; check totality; test with three strings.",
       "hints": [
-        "The spine is 'see a b, then see another b immediately'. Two b's in a row means you need to *remember* that the previous symbol was b — that memory is a state.",
-        "The usual bug: from the 'just saw one b' state, what happens on a? You haven't seen bb, and the a resets you — back to the start state, not to a trap. Traps are for strings that can *never* succeed; here every string can still succeed.",
+        "The spine is 'see a b, then see another b immediately'. Two b's in a row means you need to *remember* that the previous symbol was b: that memory is a state.",
+        "The usual bug: from the 'just saw one b' state, what happens on a? You haven't seen bb, and the a resets you: back to the start state, not to a trap. Traps are for strings that can *never* succeed; here every string can still succeed.",
         "Once you've seen bb, nothing can un-see it: the accepting state is heaven (loops on a and b). And λ: does the empty string contain bb?"
       ],
       "solution": [
         "L = { ubbv | u, v ∈ Σ∗ }. L̄ = strings with no two consecutive b's.",
         "States: q0 'no b just seen' (initial), q1 'the last symbol was b', q2 'have seen bb' (accepting, heaven).",
         "δ: q0 —a→ q0, q0 —b→ q1, q1 —a→ q0, q1 —b→ q2, q2 —a,b→ q2. Every state has one a-arrow and one b-arrow: total.",
-        "λ ∉ L, so q0 is not accepting. No trap needed — no string is doomed.",
+        "λ ∉ L, so q0 is not accepting. No trap needed: no string is doomed.",
         "Tests: abba → q0,q1,q2,q2 accept ✓. baba → q1,q0,q1,q0 reject ✓. bb → q1,q2 accept ✓."
       ],
       "why": "'Detect a pattern in a stream without storing the stream' is the shape of intrusion detection, of finding a keyword in a live transcript, and of the `grep` you run on logs. The states are the only memory, and designing them is the skill.",
@@ -660,11 +660,11 @@
       ],
       "solution": [
         "M = ({q0, q1, q2}, {a, b}, δ, q0, {q2}).",
-        "δ table — rows q0, q1, q2; columns a, b: q0: (q0, q1); q1: (q0, q2); q2: (q2, q2).",
+        "δ table: rows q0, q1, q2; columns a, b: q0: (q0, q1); q1: (q0, q2); q2: (q2, q2).",
         "Domain of δ: Q × Σ = {(q0,a), (q0,b), (q1,a), (q1,b), (q2,a), (q2,b)}. Range: Q.",
         "δ total ⇒ for every state and every symbol there is exactly one next state ⇒ the machine never has a choice and never gets stuck. That is what 'deterministic' means; an NFA (Lesson 8) drops exactly this requirement."
       ],
-      "why": "The 5-tuple is a machine written as data — which is how real state machines are stored: as a transition table you can load, validate, and test automatically. 'Is the table total?' is a check you can write in one line of code, and it catches a whole class of bugs before they ship.",
+      "why": "The 5-tuple is a machine written as data, which is how real state machines are stored: as a transition table you can load, validate, and test automatically. 'Is the table total?' is a check you can write in one line of code, and it catches a whole class of bugs before they ship.",
       "sectionRef": "why"
     }
   ]

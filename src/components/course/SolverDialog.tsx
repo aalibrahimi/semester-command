@@ -53,7 +53,7 @@ export function SolverDialog({
     if (Number.isNaN(target)) return;
     whatDoINeed(courseId, target, scope === "everything" ? null : scope)
       .then(setAnswer)
-      .catch(() => toast.error("Solver failed — try re-syncing."));
+      .catch(() => toast.error("Solver failed: try re-syncing."));
   }, [open, targetPct, scope, courseId]);
 
   return (
@@ -62,7 +62,7 @@ export function SolverDialog({
         <DialogHeader>
           <DialogTitle>What do I need?</DialogTitle>
           <DialogDescription>
-            Every other ungraded assignment is held at zero — the honest baseline.
+            Every other ungraded assignment is held at zero: the honest baseline.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +122,7 @@ function SolverResult({ answer }: { answer: SolverAnswer }) {
           {answer.pointsNeeded !== null && answer.pointsPossible !== null && (
             <>
               {" "}
-              — that's{" "}
+              that's{" "}
               <span data-numeric className="font-mono text-foreground">
                 {points(Math.ceil(answer.pointsNeeded * 10) / 10, answer.pointsPossible)}
               </span>{" "}

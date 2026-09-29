@@ -50,7 +50,7 @@ export function ImportDialog({
           <DialogDescription>
             In MySJSU open <span className="font-medium">My Progress</span>, click{" "}
             <span className="font-medium">Expand All</span>, then{" "}
-            <span className="font-medium">View All</span> on every course table — they cap at
+            <span className="font-medium">View All</span> on every course table: they cap at
             ten rows and the rest are silently dropped. Select the whole page, copy, and paste
             below.
           </DialogDescription>

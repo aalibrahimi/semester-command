@@ -72,7 +72,7 @@ pub fn set_preferred_theme(app: AppHandle, mode: String) -> CommandResult<()> {
     // file would let a typo silently disable theming on the next launch.
     if !matches!(mode.as_str(), "light" | "dark" | "system") {
         return Err(CommandError::internal(format!(
-            "Unknown theme \"{mode}\" — expected light, dark or system"
+            "Unknown theme \"{mode}\": expected light, dark or system"
         )));
     }
 

@@ -148,7 +148,7 @@ export function CompositionCard({
                   </TooltipTrigger>
                   <TooltipContent className="max-w-60">
                     This group contains {seg.group.totalCount} assignment
-                    {seg.group.totalCount === 1 ? "" : "s"} but carries zero weight — either the
+                    {seg.group.totalCount === 1 ? "" : "s"} but carries zero weight: either the
                     instructor's real choice, or a sync artifact worth checking.
                   </TooltipContent>
                 </Tooltip>

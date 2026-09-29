@@ -158,7 +158,7 @@ export default function DevTokens() {
             <p className="text-xs">13 · dense rows</p>
             <p className="text-2xs">12 · labels</p>
             <p className="font-mono text-sm" data-numeric>
-              0123456789 · tabular — 111.1 and 000.0 occupy the same width
+              0123456789 · tabular: 111.1 and 000.0 occupy the same width
             </p>
           </div>
         </section>

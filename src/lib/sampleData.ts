@@ -87,7 +87,7 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
   {
     id: "t1",
     courseCode: "MATH 161A",
-    title: "Homework 7 — Joint distributions",
+    title: "Homework 7: Joint distributions",
     dueLabel: "2d overdue",
     impactLabel: "worth 4.5% of your final grade",
     estLabel: "2h",
@@ -97,7 +97,7 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
   {
     id: "t2",
     courseCode: "CS 152",
-    title: "Project 3 — Interpreter, part two",
+    title: "Project 3: Interpreter, part two",
     dueLabel: "in 26h",
     impactLabel: "worth 12.0% of your final grade",
     estLabel: "6h",
@@ -107,7 +107,7 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
   {
     id: "t3",
     courseCode: "MATH 161A",
-    title: "Quiz 5 — Central limit theorem",
+    title: "Quiz 5: Central limit theorem",
     dueLabel: "in 3d",
     impactLabel: "worth 5.0% of your final grade",
     estLabel: "1h 30m",
@@ -117,7 +117,7 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
   {
     id: "t4",
     courseCode: "CS 149",
-    title: "Lab 8 — Scheduling simulator",
+    title: "Lab 8: Scheduling simulator",
     dueLabel: "in 5d",
     impactLabel: "worth 3.2% of your final grade",
     estLabel: "3h",
@@ -127,7 +127,7 @@ export const SAMPLE_TRIAGE: SampleTriageRow[] = [
   {
     id: "t5",
     courseCode: "CS 152",
-    title: "Reading response — Continuations",
+    title: "Reading response: Continuations",
     dueLabel: "in 6d",
     impactLabel: "worth 1.0% of your final grade",
     estLabel: "40m",

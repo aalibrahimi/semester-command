@@ -13,7 +13,7 @@
     "typecheck": "tsc -b",
     "lint": "oxlint",
     "check:tokens": "node scripts/check-tokens.mjs",
-    "check:guides": "tsx scripts/check-guides.ts && tsx scripts/guide-index.ts --check",
+    "check:guides": "tsx scripts/check-guides.ts && tsx scripts/guide-index.ts --check && tsx scripts/lint-content.ts",
     "check:drills": "tsx scripts/check-drills.ts",
     "content:build": "python3 content/build.py && tsx scripts/guide-index.ts",
     "video:render": "node content/video/render.mjs",
@@ -27,7 +27,9 @@
     "test": "npm run test:unit && npm run test:rust",
     "test:unit": "vitest run",
     "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
-    "verify": "npm run typecheck && npm run lint && npm run check:tokens && npm run check:guides && npm run check:drills && npm run test"
+    "verify": "npm run typecheck && npm run lint && npm run check:tokens && npm run check:guides && npm run check:drills && npm run test",
+    "content:lint": "tsx scripts/lint-content.ts",
+    "content:shots": "node scripts/shot-guides.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

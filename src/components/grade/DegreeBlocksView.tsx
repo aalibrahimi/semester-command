@@ -63,8 +63,8 @@ const HIDDEN_KEYS = new Set([
 const SATISFIED_CALLOUTS: { key: string; label: string }[] = [
   { key: "RG1049", label: "PE" },
   { key: "RQ2996", label: "WID (100W)" },
-  { key: "slug:ai-us2---us-constitution-courses", label: "US2 — Constitution" },
-  { key: "slug:ai-us3---ca-government", label: "US3 — CA Government" },
+  { key: "slug:ai-us2---us-constitution-courses", label: "US2: Constitution" },
+  { key: "slug:ai-us3---ca-government", label: "US3: CA Government" },
   { key: "slug:minimum-120-units", label: "120-unit minimum" },
   { key: "RQ39:LI40", label: "Residency (30 @ SJSU)" },
   { key: "RQ39:LI50", label: "24 UD in residence" },
@@ -135,7 +135,7 @@ export function DegreeBlocksView({
     return (
       <p className="max-w-2xl border-l-[3px] border-border px-10 py-8 text-sm text-muted-foreground">
         No requirement blocks imported yet. Import your MyProgress report on the Registrar tab
-        and every block — satisfied, in-progress and open — lands here.
+        and every block, satisfied, in-progress and open, lands here.
       </p>
     );
   }
@@ -179,7 +179,7 @@ export function DegreeBlocksView({
 
       {/* ═══ Open blocks ════════════════════════════════════════════════ */}
       <BlockGroup
-        title="Open — what SJSU still counts against you"
+        title="Open: what SJSU still counts against you"
         icon={<AlertTriangle className="h-4 w-4 text-critical-fg" />}
         blocks={open.filter((b) => b.key !== UD_UNITS_KEY)}
         coursesByKey={coursesByKey}
@@ -189,7 +189,7 @@ export function DegreeBlocksView({
 
       {/* ═══ In progress ════════════════════════════════════════════════ */}
       <BlockGroup
-        title="In progress — registered coursework counts once graded"
+        title="In progress: registered coursework counts once graded"
         icon={<CircleDashed className="h-4 w-4 text-at-risk-fg" />}
         blocks={inProgress}
         coursesByKey={coursesByKey}
@@ -203,7 +203,7 @@ export function DegreeBlocksView({
           <CheckCircle2 className="h-4 w-4 text-on-track-fg" />
           <h2 className="font-display text-base font-bold tracking-tight">Satisfied</h2>
           <span className="ml-1 text-2xs font-semibold uppercase tracking-[0.15em] text-muted-foreground/70">
-            The audit closes these — no action left
+            The audit closes these: no action left
           </span>
         </div>
         {/* The spec-named six first, so nothing needs hunting. */}
@@ -275,9 +275,9 @@ function GpaCard({
               data-numeric
               className="mt-1 font-mono text-[38px] font-bold leading-none tabular-nums tracking-tight text-on-track-fg"
             >
-              {majorGpa !== null ? majorGpa.toFixed(3) : "—"}
+              {majorGpa !== null ? majorGpa.toFixed(3) : "–"}
             </div>
-            <div className="mt-1 text-2xs text-muted-foreground">min 2.0 — comfortably clear</div>
+            <div className="mt-1 text-2xs text-muted-foreground">min 2.0: comfortably clear</div>
           </div>
           <div>
             <div className="text-2xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
@@ -287,7 +287,7 @@ function GpaCard({
               data-numeric
               className="mt-1 font-mono text-[26px] font-bold leading-none tabular-nums tracking-tight"
             >
-              {sjsuGpa !== null ? sjsuGpa.toFixed(3) : "—"}
+              {sjsuGpa !== null ? sjsuGpa.toFixed(3) : "–"}
             </div>
           </div>
           <div>
@@ -298,7 +298,7 @@ function GpaCard({
               data-numeric
               className="mt-1 font-mono text-[26px] font-bold leading-none tabular-nums tracking-tight"
             >
-              {overallGpa !== null ? overallGpa.toFixed(3) : "—"}
+              {overallGpa !== null ? overallGpa.toFixed(3) : "–"}
             </div>
           </div>
         </div>
@@ -331,7 +331,7 @@ function GpaCard({
           </p>
           <div className="flex items-baseline gap-3">
             <span data-numeric className="font-mono text-sm tabular-nums text-muted-foreground">
-              {sjsuGpa !== null ? sjsuGpa.toFixed(3) : "—"}
+              {sjsuGpa !== null ? sjsuGpa.toFixed(3) : "–"}
             </span>
             <span className="text-muted-foreground/60">→</span>
             <span
@@ -343,7 +343,7 @@ function GpaCard({
                   : "text-foreground",
               )}
             >
-              {projected !== null ? projected.toFixed(3) : "—"}
+              {projected !== null ? projected.toFixed(3) : "–"}
             </span>
             <span className="text-2xs text-muted-foreground">
               over{" "}
@@ -358,7 +358,7 @@ function GpaCard({
             </span>
           </div>
           <p className="mt-2 text-2xs text-muted-foreground/70">
-            Estimate only — registrar math may differ. File the forgiveness request when
+            Estimate only: registrar math may differ. File the forgiveness request when
             registering the retake.
           </p>
         </div>
@@ -418,8 +418,8 @@ function UdUnitsMeter({
         {taken} upper-division units done, {needed} still required. Your timeline already carries
         ~{plannedUdUnits} more UD units in planned and in-progress courses
         {autoResolving
-          ? " — finish the plan and this block closes itself. Nothing extra to schedule."
-          : ` — ${needed - plannedUdUnits} units short. An extra UD course is needed somewhere.`}
+          ? ": finish the plan and this block closes itself. Nothing extra to schedule."
+          : `: ${needed - plannedUdUnits} units short. An extra UD course is needed somewhere.`}
       </p>
     </div>
   );
@@ -503,7 +503,7 @@ function BlockRow({
           <span className="text-sm font-medium">{cleanTitle(block.title)}</span>
           {isMajorElectives && (
             <span className="inline-flex items-center gap-1 rounded-sm border border-at-risk/40 bg-at-risk/10 px-1.5 py-0.5 text-2xs font-semibold text-at-risk-fg">
-              <HelpCircle className="h-3 w-3" /> UNRESOLVED — ask advisor
+              <HelpCircle className="h-3 w-3" /> UNRESOLVED: ask advisor
             </span>
           )}
           {block.unitsRequired !== null && (
@@ -533,11 +533,11 @@ function BlockRow({
             <div className="mb-3 max-w-3xl border-l-[3px] border-at-risk/70 bg-at-risk/[0.05] py-2.5 pl-3 pr-3 text-xs leading-relaxed text-foreground/85">
               The audit demands <span className="font-semibold">12 more elective units</span> but
               only itemises <span className="font-semibold">6</span> (one CS UD elective + one
-              LING UD elective). Where the other 6 come from — extra electives, double-counted
-              coursework, or an audit quirk — isn't stated anywhere in MyProgress.{" "}
+              LING UD elective). Where the other 6 come from: extra electives, double-counted
+              coursework, or an audit quirk: isn't stated anywhere in MyProgress.{" "}
               <span className="font-semibold">
                 Advisor question: "Major Electives shows 12 units needed but the requirement list
-                only names two 3-unit courses — what fills the rest?"
+                only names two 3-unit courses: what fills the rest?"
               </span>{" "}
               Until it's answered, CS 133 sits in the timeline's "Pending advisor resolution"
               bin instead of holding a slot the block may not have.
@@ -556,7 +556,7 @@ function BlockRow({
                   block.truncatedShown !== null &&
                   block.truncatedShown < block.truncatedTotal && (
                     <span className="ml-2 normal-case tracking-normal">
-                      MyProgress shows {block.truncatedShown} of {block.truncatedTotal} — the full
+                      MyProgress shows {block.truncatedShown} of {block.truncatedTotal} the full
                       list is in the SJSU catalog
                     </span>
                   )}
@@ -597,19 +597,19 @@ const CHAINS: {
     chain: "CS 146 → CS 171 (Fall only)",
     cost: "missing Fall 2027 costs a year",
     detail:
-      "CS 171 runs Fall only. CS 146 is in progress now — pass it and CS 171 lands in Fall 2027 as planned. Miss that window and the next offering is Fall 2028, which alone pushes graduation from Fall 2027 to Fall 2028.",
+      "CS 171 runs Fall only. CS 146 is in progress now: pass it and CS 171 lands in Fall 2027 as planned. Miss that window and the next offering is Fall 2028, which alone pushes graduation from Fall 2027 to Fall 2028.",
   },
   {
     chain: "MATH 31 → MATH 161A",
     cost: "retake must clear C− first",
     detail:
-      "MATH 161A's prereq chain runs through MATH 31, and the current D doesn't count — the retake has to land C− or better before MATH 161A can be taken. Slot the retake early (grade forgiveness cleans the GPA at the same time).",
+      "MATH 161A's prereq chain runs through MATH 31, and the current D doesn't count: the retake has to land C− or better before MATH 161A can be taken. Slot the retake early (grade forgiveness cleans the GPA at the same time).",
   },
   {
     chain: "MATH 39 prereq",
     cost: "UNVERIFIED",
     detail:
-      "Whether MATH 39 requires MATH 31 (vs only MATH 30, which is done) is not stated in the audit and hasn't been verified against the catalog. Don't assume either way — confirm with the Math department before building a term around it.",
+      "Whether MATH 39 requires MATH 31 (vs only MATH 30, which is done) is not stated in the audit and hasn't been verified against the catalog. Don't assume either way: confirm with the Math department before building a term around it.",
     unverified: true,
   },
 ];
@@ -660,20 +660,20 @@ const DEADLINES: {
 }[] = [
   {
     date: "Oct 9, 2026",
-    label: "Graduation application — priority deadline (Fall 2027)",
+    label: "Graduation application: priority deadline (Fall 2027)",
     detail:
       "Verified with the SJSU Registrar: priority deadline (two semesters ahead) for a Fall 2027 graduation. Filing by this date gets the degree audit reviewed with time to fix anything it turns up.",
     top: true,
   },
   {
     date: "Mar 19, 2027",
-    label: "Graduation application — final deadline (Fall 2027)",
+    label: "Graduation application: final deadline (Fall 2027)",
     detail:
       "The Registrar's rule: apply no later than the add deadline of the term you graduate in. This is the hard stop for a Fall 2027 conferral.",
   },
   {
     date: "Feb 6, 2027",
-    label: "Spring 2027 last day to add — repeat-course registration",
+    label: "Spring 2027 last day to add: repeat-course registration",
     detail:
       "Repeat-course (grade forgiveness) registration closes with the term's add/drop deadline. If the MATH 31 retake lands in Spring 2027, both the registration and the forgiveness paperwork are due by this date.",
   },
@@ -681,7 +681,7 @@ const DEADLINES: {
     date: "TBD",
     label: "Spring 2028 fallback deadlines",
     detail:
-      "The Registrar hasn't published Spring 2028 dates yet — the graduation-application and add deadlines for the fallback term are unverified until the 2027-28 calendar posts.",
+      "The Registrar hasn't published Spring 2028 dates yet: the graduation-application and add deadlines for the fallback term are unverified until the 2027-28 calendar posts.",
     unverified: true,
   },
 ];

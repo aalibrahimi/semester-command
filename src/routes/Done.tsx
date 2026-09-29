@@ -96,7 +96,7 @@ export default function Done() {
         <EmptyState
           icon={CheckCheck}
           title="Nothing finished yet"
-          description="Submit on Canvas or mark items done (x on the board) and they collect here — with scores and professor comments once grading happens."
+          description="Submit on Canvas or mark items done (x on the board) and they collect here: with scores and professor comments once grading happens."
         />
       ) : (
         <div className="mx-8 mb-10 flex max-w-4xl flex-col gap-6">
@@ -108,14 +108,14 @@ export default function Done() {
             kind="graded"
           />
           <Section
-            title="Submitted — awaiting grade"
+            title="Submitted: awaiting grade"
             items={awaiting}
             labelOf={labelOf}
             kind="awaiting"
           />
           <Section
             title="Marked done by you"
-            hint="local marks — Canvas doesn't know; unmark to send one back to the queue"
+            hint="local marks: Canvas doesn't know; unmark to send one back to the queue"
             items={local}
             labelOf={labelOf}
             kind="local"
@@ -255,7 +255,7 @@ function DoneRow({
             <p className="text-xs text-muted-foreground">Asking Canvas…</p>
           ) : comments === "error" ? (
             <p className="text-xs text-muted-foreground">
-              Couldn't reach Canvas — comments need a live session. Reconnect and try again.
+              Couldn't reach Canvas: comments need a live session. Reconnect and try again.
             </p>
           ) : comments === null || comments.length === 0 ? (
             <p className="text-xs text-muted-foreground">No comments on this one.</p>

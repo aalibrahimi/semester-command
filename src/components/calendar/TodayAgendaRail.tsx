@@ -83,7 +83,7 @@ export function TodayAgendaRail({
       </p>
       {noClass && (
         <p className="mt-2 rounded-lg bg-at-risk/10 px-2 py-1 text-2xs text-at-risk-fg">
-          {noClass.label} — no class meetings today.
+          {noClass.label} no class meetings today.
         </p>
       )}
       {entries.length === 0 ? (

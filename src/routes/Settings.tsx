@@ -70,7 +70,7 @@ export default function Settings() {
       ? `Connected${status.validatedAs ? ` as ${status.validatedAs}` : ""}${
           status.storage === "file" ? " · stored in fallback file (keyring unavailable)" : ""
         }`
-      : "Session expired — sign in again"
+      : "Session expired: sign in again"
     : busy
       ? (status.message ?? "Waiting for you to sign in…")
       : "Not connected";
@@ -116,7 +116,7 @@ export default function Settings() {
               tier="Tier 1"
               name="Sign in to Canvas"
               status={sessionStatus}
-              description="Opens an SJSU login window. You sign in through SSO yourself, including MFA — the app never sees your password, only the resulting session cookie. Tick “Keep me signed in” / “Stay signed in” during SSO: when the Canvas session later expires, the app reconnects through those remembered SSO cookies silently, so weeks can pass without this window reappearing."
+              description="Opens an SJSU login window. You sign in through SSO yourself, including MFA: the app never sees your password, only the resulting session cookie. Tick “Keep me signed in” / “Stay signed in” during SSO: when the Canvas session later expires, the app reconnects through those remembered SSO cookies silently, so weeks can pass without this window reappearing."
               cta={sessionActive && status.alive ? "Sign out" : busy ? "Waiting…" : "Sign in to Canvas"}
               disabled={!IS_TAURI || busy || tokenActive}
               onCta={sessionActive && status.alive ? handleSignOut : handleSignIn}
@@ -144,7 +144,7 @@ export default function Settings() {
               tier="Tier 2"
               name="Calendar feed"
               status={feedUrl ? "Configured" : "Not configured"}
-              description="Your private Canvas .ics URL from Calendar → Calendar Feed. Needs no login and always works, but carries due dates only — no grades, no weights, no rubrics. Paired with entering scores by hand, the grade engine still works end to end."
+              description="Your private Canvas .ics URL from Calendar → Calendar Feed. Needs no login and always works, but carries due dates only: no grades, no weights, no rubrics. Paired with entering scores by hand, the grade engine still works end to end."
               cta={feedUrl ? "Change / import" : "Add feed URL"}
               disabled={!IS_TAURI}
               onCta={() => setFeedOpen(true)}
@@ -174,7 +174,7 @@ export default function Settings() {
           <CardHeader>
             <CardTitle className="text-base">Background &amp; reminders</CardTitle>
             <CardDescription>
-              Deadline reminders scale with grade impact — a heavy midterm pings at 7d/3d/24h/3h,
+              Deadline reminders scale with grade impact: a heavy midterm pings at 7d/3d/24h/3h,
               a small discussion post only the day before. Closing the window keeps the app in
               the tray so reminders still fire; quit from the tray icon.
             </CardDescription>

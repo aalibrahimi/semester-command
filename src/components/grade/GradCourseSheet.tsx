@@ -65,7 +65,7 @@ export function GradCourseSheet({
           <SheetHeader>
             <SheetTitle className="font-display">{code}</SheetTitle>
             <SheetDescription>
-              No intelligence on this course yet — it's outside the CWA plan registry. It still
+              No intelligence on this course yet: it's outside the CWA plan registry. It still
               counts toward the term's units.
             </SheetDescription>
           </SheetHeader>
@@ -120,7 +120,7 @@ function Body({
         <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
           Minimum grade: <strong>{intel.minGrade.value}</strong>
-          {intel.minGrade.note && <> — {intel.minGrade.note}</>}
+          {intel.minGrade.note && <> – {intel.minGrade.note}</>}
         </span>
       </div>
 
@@ -140,7 +140,7 @@ function Body({
       {/* ── Prereq chains ────────────────────────────────────────────────── */}
       <Section title="Prerequisite chain" icon={GitBranch}>
         {intel.prereqChains.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No prerequisites — open registration.</p>
+          <p className="text-xs text-muted-foreground">No prerequisites: open registration.</p>
         ) : (
           <div className="flex flex-col gap-3">
             {intel.prereqChains.map((chain, i) => (
@@ -229,7 +229,7 @@ function Body({
               <strong className="text-foreground/80">Safe swap:</strong> {intel.safeSwap}
             </>
           ) : (
-            <strong className="text-critical-fg">No safe swap — this slot is load-bearing.</strong>
+            <strong className="text-critical-fg">No safe swap: this slot is load-bearing.</strong>
           )}
         </p>
       </Section>
@@ -313,7 +313,7 @@ function Body({
             </button>
           </div>
           <p className="mt-2 text-2xs text-muted-foreground">
-            Moving only changes your plan — check “{intel.offered}” before committing.
+            Moving only changes your plan: check “{intel.offered}” before committing.
           </p>
         </Section>
       )}
@@ -396,12 +396,12 @@ function registrationFlags(
   statusOf: (code: string) => GradStatus | undefined,
 ): RegFlag[] {
   const flags: RegFlag[] = intel.prereqsRequired.map((code) => {
-    if (isTransferred(code)) return { kind: "ok", text: `${code} — satisfied (transfer)` };
+    if (isTransferred(code)) return { kind: "ok", text: `${code}: satisfied (transfer)` };
     const s = statusOf(code);
-    if (s === "passed") return { kind: "ok", text: `${code} — passed` };
-    if (s === "in_progress") return { kind: "warn", text: `${code} — in progress; must pass before registration` };
-    if (s === "failed") return { kind: "fail", text: `${code} — FAILED; registration blocked until cleared` };
-    return { kind: "warn", text: `${code} — not yet taken` };
+    if (s === "passed") return { kind: "ok", text: `${code}: passed` };
+    if (s === "in_progress") return { kind: "warn", text: `${code}: in progress; must pass before registration` };
+    if (s === "failed") return { kind: "fail", text: `${code}: FAILED; registration blocked until cleared` };
+    return { kind: "warn", text: `${code}, not yet taken` };
   });
   if (flags.length === 0) {
     flags.push({ kind: "ok", text: "No course prerequisites." });

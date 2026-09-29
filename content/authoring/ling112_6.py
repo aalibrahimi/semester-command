@@ -107,7 +107,7 @@ g = {
   ]},
   {"id": "cp", "heading": "Clauses inside clauses: CP", "blocks": [
     D("CP (complementizer phrase)", "A sentence introduced by a **complementizer**, a word like *that*, *if*, *whether*. Rule: `CP → C TP`. *that she had left* = [CP [C that] [TP she had left]]."),
-    P("A CP shows up in two places in our rules: after a verb (`VP → … (CP) …`, *Henry **said** that she had left*) and after a noun (`NP → … (CP)`, *a dubious **rumor** that he threw the game*). Inside the CP is a whole TP, with its own subject, T and VP. That is where the endless nesting comes from: *I think that you said that she knows that…*"),
+    P("A CP shows up in two places in our rules: after a verb (`VP → … (CP) …`, *Henry* **said** *that she had left*) and after a noun (`NP → … (CP)`, *a dubious* **rumor** *that he threw the game*). Inside the CP is a whole TP, with its own subject, T and VP. That is where the endless nesting comes from: *I think that you said that she knows that…*"),
     E("Two CPs, two homes (handout (10) and (11))", "(10) Henry said [CP that she had left rather quietly at night].\n     The CP is what Henry said: it sits in the VP, after 'said'.\n\n(11) We heard a dubious rumor [CP that he threw the game].\n     The CP says what the rumor was: it sits in the NP, after 'rumor'.", slide="CP after a verb vs after a noun"),
     C("In *We heard a dubious rumor that he threw the game*, is the CP inside the VP directly, or inside the object DP?", "Inside the object DP (in its NP, after *rumor*). Test: We heard **it** replaces *a dubious rumor that he threw the game* as one piece."),
   ]},

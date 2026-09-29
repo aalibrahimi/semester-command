@@ -82,7 +82,7 @@ impl std::fmt::Debug for AuthMode {
 /// never retried automatically (§2.0).
 #[derive(Debug, thiserror::Error)]
 pub enum CanvasError {
-    #[error("Canvas session expired — sign in again")]
+    #[error("Canvas session expired: sign in again")]
     SessionExpired,
 
     #[error("Canvas is rate-limiting us and retries were exhausted")]

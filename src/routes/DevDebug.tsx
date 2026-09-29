@@ -67,7 +67,7 @@ export default function DevDebug() {
             variant="outline"
             onClick={() =>
               void debugForceReconnect().then(() =>
-                toast.info("Session marked dead — footer should show reconnect."),
+                toast.info("Session marked dead: footer should show reconnect."),
               )
             }
           >
@@ -218,7 +218,7 @@ function RowTable<T extends { source: Source; rawJson: string | null }>({
   if (rows.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
-        No rows yet — run a sync, import a calendar feed, or add entries manually.
+        No rows yet: run a sync, import a calendar feed, or add entries manually.
       </p>
     );
   }
@@ -290,7 +290,7 @@ function RowPair<T extends { source: Source; rawJson: string | null }>({
         <tr className="border-t border-border/40 bg-fill-ghost/40">
           <td colSpan={cols.length + 1} className="px-3 py-2">
             <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-all text-2xs">
-              {row.rawJson ? prettify(row.rawJson) : "(no raw JSON — locally created row)"}
+              {row.rawJson ? prettify(row.rawJson) : "(no raw JSON: locally created row)"}
             </pre>
           </td>
         </tr>

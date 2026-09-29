@@ -50,7 +50,7 @@ export function CourseLine({
             {row.note === "not enrolled" && "⚠ planned this term but not enrolled"}
             {row.note === "off-plan" && "enrolled, outside the plan"}
             {row.note === "moved" && "moved from its planned term"}
-            {row.note === "registered" && "registered — not yet published on Canvas"}
+            {row.note === "registered" && "registered, not yet published on Canvas"}
             {row.note === "overdue" && "owed from a past term"}
           </span>
         )}
@@ -145,7 +145,7 @@ export function AuditReport({ audit, notApplied }: { audit: DegreeAudit; notAppl
           />
           <Stat
             label="Graduation Status"
-            value={notApplied ? "Not Applied" : (audit.header.graduationStatus ?? "—")}
+            value={notApplied ? "Not Applied" : (audit.header.graduationStatus ?? "–")}
             sub={audit.generatedAt ? `report from ${audit.generatedAt}` : "from MyProgress"}
             accent={notApplied ? "critical" : "onTrack"}
           />
@@ -169,7 +169,7 @@ export function AuditReport({ audit, notApplied }: { audit: DegreeAudit; notAppl
             Unit Totals
           </h3>
           <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
-            Satisfied <em>by</em> the courses above rather than alongside them — where a total
+            Satisfied <em>by</em> the courses above rather than alongside them, where a total
             exceeds what its itemised requirements cover, the difference is real work with no
             row of its own.
           </p>
@@ -181,7 +181,7 @@ export function AuditReport({ audit, notApplied }: { audit: DegreeAudit; notAppl
               >
                 <span className="text-sm">{b.title}</span>
                 <span className="font-mono text-sm text-muted-foreground" data-numeric>
-                  {b.unitsNeeded === null ? "—" : `${fmt(b.unitsNeeded)} units`}
+                  {b.unitsNeeded === null ? "–" : `${fmt(b.unitsNeeded)} units`}
                 </span>
               </div>
             ))}
@@ -190,7 +190,7 @@ export function AuditReport({ audit, notApplied }: { audit: DegreeAudit; notAppl
       )}
 
       <p className="text-2xs text-muted-foreground">
-        Unofficial report. SJSU and CSU regulations prevail — confirm anything here with your
+        Unofficial report. SJSU and CSU regulations prevail: confirm anything here with your
         advisor before planning around it.
       </p>
     </div>
@@ -248,14 +248,14 @@ function RequirementCard({ item }: { item: AuditItem }) {
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
-              “Variable Offering — See Advisor.” The department commits to no cadence; confirm
+              “Variable Offering: See Advisor.” The department commits to no cadence; confirm
               when it next runs before planning around it.
             </TooltipContent>
           </Tooltip>
         )}
 
         <span className="ml-auto font-mono text-sm text-muted-foreground" data-numeric>
-          {item.unitsNeeded === null ? "—" : `${fmt(item.unitsNeeded)} units`}
+          {item.unitsNeeded === null ? "–" : `${fmt(item.unitsNeeded)} units`}
         </span>
       </div>
 
@@ -295,8 +295,7 @@ function RequirementCard({ item }: { item: AuditItem }) {
       )}
       {item.truncated && (
         <p className="mt-2 text-2xs text-at-risk-fg">
-          Only {item.truncated.shown} of {item.truncated.total} eligible courses were captured —
-          re-paste with View All.
+          Only {item.truncated.shown} of {item.truncated.total} eligible courses were captured: re-paste with View All.
         </p>
       )}
     </div>

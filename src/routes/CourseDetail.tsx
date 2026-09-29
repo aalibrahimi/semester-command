@@ -161,7 +161,7 @@ export default function CourseDetail() {
         <EmptyState
           icon={GraduationCap}
           title="Course not found"
-          description="This course isn't in the local database — it may have been removed on Canvas, or sync hasn't seen it yet."
+          description="This course isn't in the local database: it may have been removed on Canvas, or sync hasn't seen it yet."
         />
       </>
     );
@@ -263,10 +263,10 @@ export default function CourseDetail() {
             </AlertTitle>
             <AlertDescription>
               The degree requires <strong>{floor.letter}</strong> ({floor.pct}%) or better for
-              this course to count{floor.note ? ` — ${floor.note}` : "."}{" "}
+              this course to count{floor.note ? `: ${floor.note}` : "."}{" "}
               {maxBelowFloor
-                ? "Even a perfect run from here lands below it — talk to the professor and your advisor about options this week, not at finals."
-                : "Passing the class below that line means retaking it for degree credit — check the Graduation tab before deprioritizing this course."}
+                ? "Even a perfect run from here lands below it: talk to the professor and your advisor about options this week, not at finals."
+                : "Passing the class below that line means retaking it for degree credit: check the Graduation tab before deprioritizing this course."}
             </AlertDescription>
           </Alert>
         )}
@@ -278,7 +278,7 @@ export default function CourseDetail() {
             <AlertTitle>Our math disagrees with Canvas here</AlertTitle>
             <AlertDescription>
               We compute {pct(s.grade.currentPct)} but Canvas reports{" "}
-              {pct(s.grade.canvasCurrentPct)} — a gap of{" "}
+              {pct(s.grade.canvasCurrentPct)} a gap of{" "}
               {Math.abs(s.grade.reconciliationDelta).toFixed(1)} points. This usually means an
               unmodelled course rule (dropped-lowest, a curve). Trust Canvas's number until this
               banner clears, and treat the solver as approximate for this course.
@@ -299,7 +299,7 @@ export default function CourseDetail() {
             <AlertDescription>
               This course grades by weighted groups, and assignments outside a weighted group
               (added by hand or from the calendar feed) can't contribute. Edit each one and put
-              it in a group — they still show in the list and in Triage meanwhile.
+              it in a group: they still show in the list and in Triage meanwhile.
             </AlertDescription>
           </Alert>
         )}
@@ -415,7 +415,7 @@ export default function CourseDetail() {
                       {pct(s.grade.currentPct)}
                     </div>
                     <div className="mt-1.5 text-xs text-muted-foreground">
-                      current{s.currentLetter ? ` · ${s.currentLetter}` : ""} — ungraded work
+                      current{s.currentLetter ? ` · ${s.currentLetter}` : ""} ungraded work
                       excluded
                     </div>
                   </div>
@@ -427,7 +427,7 @@ export default function CourseDetail() {
                       {pct(s.grade.projectedPct)}
                     </div>
                     <div className="mt-1.5 text-xs text-muted-foreground">
-                      projected · {s.projectedLetter} — if you stopped today
+                      projected · {s.projectedLetter} if you stopped today
                     </div>
                   </div>
                   {s.grade.gapPct !== null && s.grade.gapPct > 0.05 && (
@@ -478,7 +478,7 @@ export default function CourseDetail() {
           <CompositionCard
             groups={groups}
             mode={s.grade.mode}
-            centerLabel={anyGraded ? pct(s.grade.currentPct) : "—"}
+            centerLabel={anyGraded ? pct(s.grade.currentPct) : "–"}
             hoverGroupId={hoverGroupId}
             onHover={setHoverGroupId}
             filterGroupId={filterGroupId}
@@ -559,5 +559,5 @@ function firstDueLabel(assignments: AssignmentDetail[]): string | null {
     weekday: "short",
     month: "short",
     day: "numeric",
-  })} — current and projected appear the moment a score lands.`;
+  })}: current and projected appear the moment a score lands.`;
 }

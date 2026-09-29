@@ -59,7 +59,7 @@ function known(r: Rng): Machine {
       start: "q0",
       accept: ["q0"],
       delta: { q0: { a: "q1", b: "q2" }, q1: { a: "q2", b: "q2" }, q2: { a: "q2", b: "q2" } },
-      describe: "q0 (initial, accepting) —a→ q1, q0 —b→ q2; q1 —a, b→ q2; q2 loops on a, b",
+      describe: "q0 (initial, accepting) —a→ q1, q0 —b→ q2; q1: a, b→ q2; q2 loops on a, b",
       lang: "{λ} (only the empty string)",
     },
     {

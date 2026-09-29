@@ -132,7 +132,7 @@ export default function Graduation() {
       toast.success(`Plan validates clean against ${plan.primaryTargetLabel}.`);
     } else {
       toast.error(
-        `${breakCount} break${breakCount === 1 ? "" : "s"} against ${plan.primaryTargetLabel} — see Plan warnings.`,
+        `${breakCount} break${breakCount === 1 ? "" : "s"} against ${plan.primaryTargetLabel}: see Plan warnings.`,
       );
       setTab("timeline");
       window.setTimeout(
@@ -269,7 +269,7 @@ export default function Graduation() {
         >
           <div className="mb-1.5 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-critical-fg">
             <AlertTriangle className="h-3.5 w-3.5" />
-            Plan validation failed — {plan.breaks.length} break
+            Plan validation failed{plan.breaks.length} break
             {plan.breaks.length === 1 ? "" : "s"} against {plan.primaryTargetLabel}
           </div>
           <ul className="flex flex-col gap-1">
@@ -303,7 +303,7 @@ export default function Graduation() {
           <div className="mb-6 border-l-[3px] border-critical/70 bg-critical/[0.04] py-3 pl-4 pr-3">
             <div className="mb-2 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-critical-fg">
               <AlertTriangle className="h-3.5 w-3.5" />
-              Still owed — needs a new slot
+              Still owed: needs a new slot
             </div>
             <div className="flex flex-col gap-1.5">
               {plan.overdue.map((row) => (
@@ -412,7 +412,7 @@ export default function Graduation() {
         {PENDING_ADVISOR.length > 0 && (
           <div className="mt-6 border-l-[3px] border-at-risk/70 bg-at-risk/[0.04] py-3 pl-4 pr-3">
             <div className="mb-2 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.18em] text-at-risk-fg">
-              <Info className="h-3.5 w-3.5" /> Pending advisor resolution — not on the timeline
+              <Info className="h-3.5 w-3.5" /> Pending advisor resolution, not on the timeline
             </div>
             <div className="flex flex-col gap-1.5">
               {PENDING_ADVISOR.map((pa) => (
@@ -449,13 +449,13 @@ export default function Graduation() {
                     audit.header.sjsuGpa !== null && audit.header.sjsuGpa < 2.0 && "text-critical-fg",
                   )}
                 >
-                  {audit.header.sjsuGpa?.toFixed(3) ?? "—"}
+                  {audit.header.sjsuGpa?.toFixed(3) ?? "–"}
                 </div>
                 <div className="text-2xs text-muted-foreground">SJSU GPA</div>
               </div>
               <div className="px-3">
                 <div data-numeric className="font-mono text-xl font-bold tabular-nums">
-                  {audit.header.overallGpa?.toFixed(3) ?? "—"}
+                  {audit.header.overallGpa?.toFixed(3) ?? "–"}
                 </div>
                 <div className="text-2xs text-muted-foreground">Overall GPA</div>
               </div>
@@ -491,7 +491,7 @@ export default function Graduation() {
               sub={
                 breakCount > 0
                   ? `${breakCount} break${breakCount === 1 ? "" : "s"} to review.`
-                  : "No warnings — the plan validates clean."
+                  : "No warnings: the plan validates clean."
               }
               onClick={validatePlan}
             />
@@ -621,7 +621,7 @@ export default function Graduation() {
             The plan above says what you intend; the registrar's audit says what SJSU still
             requires. Open <span className="font-medium text-foreground/80">MySJSU → My
             Progress</span>, click Expand All and View All on every table, copy the whole page
-            and import it — retake flags, unit gaps and “apply to graduate” status all come
+            and import it: retake flags, unit gaps and “apply to graduate” status all come
             from there.
           </p>
         ) : (

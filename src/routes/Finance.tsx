@@ -65,11 +65,11 @@ function fafsaState(
   const opens = new Date(`${f.opens}T00:00`).getTime();
   const deadline = new Date(`${f.priorityDeadline}T23:59`).getTime();
   const history =
-    "Your last two FAFSAs were late — and both years the aid arrived months into the term.";
+    "Your last two FAFSAs were late, and both years the aid arrived months into the term.";
   if (f.filed) {
     return {
       tone: "good",
-      headline: `${f.year} FAFSA — filed`,
+      headline: `${f.year} FAFSA: filed`,
       sub: "On time this cycle. State aid should land with the fall bill instead of months after it.",
       days: null,
     };
@@ -88,7 +88,7 @@ function fafsaState(
     const tone = days <= 30 ? "urgent" : days <= 60 ? "warn" : "info";
     return {
       tone,
-      headline: `${f.year} FAFSA is OPEN — priority deadline ${new Date(deadline).toLocaleDateString(undefined, { month: "long", day: "numeric" })}`,
+      headline: `${f.year} FAFSA is OPEN: priority deadline ${new Date(deadline).toLocaleDateString(undefined, { month: "long", day: "numeric" })}`,
       sub:
         days <= 30
           ? `${history} Missing March 2 again risks losing Cal Grant renewal for a second year.`
@@ -99,13 +99,13 @@ function fafsaState(
   return {
     tone: "urgent",
     headline: `${f.year} priority deadline has passed`,
-    sub: "File anyway — federal aid still works — but state grants are at risk again. Talk to Financial Aid about late options.",
+    sub: "File anyway, federal aid still works, but state grants are at risk again. Talk to Financial Aid about late options.",
     days: null,
   };
 }
 
 function shortDate(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "–";
   const d = new Date(iso.length <= 10 ? `${iso}T00:00` : iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
@@ -164,7 +164,7 @@ export default function Finance() {
     <>
       <ScreenHeader
         title="Finances"
-        subtitle={`${snap.source} snapshot · captured ${shortDate(snap.asOf)} — not live`}
+        subtitle={`${snap.source} snapshot · captured ${shortDate(snap.asOf)}, not live`}
         actions={
           <Button size="sm" onClick={() => void openUrl(MYSJSU_URL)}>
             Open MySJSU <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
@@ -183,12 +183,12 @@ export default function Finance() {
               <span className="text-sm font-medium">
                 past due
                 {snap.dueDate &&
-                  ` — was due ${shortDate(snap.dueDate)}${daysPast !== null && daysPast > 0 ? ` (${daysPast} days ago)` : ""}`}
+                  `: was due ${shortDate(snap.dueDate)}${daysPast !== null && daysPast > 0 ? ` (${daysPast} days ago)` : ""}`}
               </span>
             </AlertTitle>
             <AlertDescription className="text-critical-fg/80">
               Unpaid balances at CSU can grow holds or drop classes. Payment plans and paying
-              happen in MySJSU — this page never touches money.
+              happen in MySJSU: this page never touches money.
             </AlertDescription>
           </Alert>
         ) : (
@@ -421,7 +421,7 @@ export default function Finance() {
                 ))}
                 <p className="mt-2 border-t border-border pt-2 text-2xs text-muted-foreground">
                   accepted / offered · year total {usd(snap.awardsYearAccepted)} of{" "}
-                  {usd(snap.awardsYearOffered)}. Awards accepted at $0 never disburse — accept
+                  {usd(snap.awardsYearOffered)}. Awards accepted at $0 never disburse: accept
                   or decline them in MySJSU, your call.
                 </p>
               </div>
@@ -804,7 +804,7 @@ export default function Finance() {
         )}
 
         <p className="text-2xs text-muted-foreground/70 xl:col-span-3">
-          Snapshot only — MySJSU is the source of truth and the only place to pay, accept
+          Snapshot only: MySJSU is the source of truth and the only place to pay, accept
           awards, or enroll in a payment plan. To refresh this page, ask me to read the portal
           again.
         </p>

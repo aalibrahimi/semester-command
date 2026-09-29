@@ -49,7 +49,7 @@ export function TitleWithNickname({
           setValue(nickname ?? "");
           setEditing(true);
         }}
-        title="Set a nickname — used everywhere in place of the Canvas name"
+        title="Set a nickname: used everywhere in place of the Canvas name"
         className="rounded p-1 text-muted-foreground opacity-0 transition-opacity duration-micro hover:bg-fill-ghost group-hover:opacity-100"
       >
         <Pencil className="h-3.5 w-3.5" />

@@ -72,8 +72,7 @@ export function DetectDialog({
         <DialogHeader>
           <DialogTitle>Detected class times</DialogTitle>
           <DialogDescription>
-            From Canvas calendar events and imported syllabi. Uncheck anything that looks wrong —
-            nothing is saved until you confirm.
+            From Canvas calendar events and imported syllabi. Uncheck anything that looks wrong: nothing is saved until you confirm.
           </DialogDescription>
         </DialogHeader>
 
@@ -87,11 +86,11 @@ export function DetectDialog({
               Nothing new detected
               {detect.canvasChecked
                 ? ""
-                : " — Canvas session expired, so only imported syllabi were checked"}
+                : ": Canvas session expired, so only imported syllabi were checked"}
               . SJSU rarely publishes meeting times to Canvas, so two ways forward:
             </p>
             <ul className="mt-2 list-disc pl-5 text-xs">
-              <li>Import your syllabus PDFs (each course's Syllabus tab) — most state the meeting pattern.</li>
+              <li>Import your syllabus PDFs (each course's Syllabus tab): most state the meeting pattern.</li>
               <li>Or click any empty slot on the grid and enter times from MySJSU once.</li>
             </ul>
           </div>
@@ -99,7 +98,7 @@ export function DetectDialog({
           <div className="flex max-h-80 flex-col gap-1 overflow-y-auto">
             {!detect.canvasChecked && (
               <p className="mb-1 text-2xs text-muted-foreground">
-                Canvas session expired — these came from imported syllabi only.
+                Canvas session expired: these came from imported syllabi only.
               </p>
             )}
             {detect.candidates.map((c, i) => (

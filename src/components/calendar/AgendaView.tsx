@@ -32,7 +32,7 @@ export function AgendaView({ items }: { items: CalendarItem[] }) {
       <EmptyState
         icon={CalendarDays}
         title="No upcoming due dates"
-        description="Nothing dated is coming up — switch to Month to look further out."
+        description="Nothing dated is coming up: switch to Month to look further out."
       />
     );
   }

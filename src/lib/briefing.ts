@@ -42,9 +42,9 @@ export function casualDue(iso: string | null, now: Date = new Date()): string {
   const days = dayDiff(d, now);
   const clock = clockOf(d);
   if (d.getTime() < now.getTime()) {
-    if (days === 0) return `it was due earlier today (${clock}) — it's past due`;
-    if (days === -1) return "it was due yesterday — it's past due";
-    return `it was due ${d.toLocaleDateString(undefined, { weekday: "long" })} — it's past due`;
+    if (days === 0) return `it was due earlier today (${clock}): it's past due`;
+    if (days === -1) return "it was due yesterday: it's past due";
+    return `it was due ${d.toLocaleDateString(undefined, { weekday: "long" })}: it's past due`;
   }
   if (days === 0) return d.getHours() >= 17 ? `it's due tonight at ${clock}` : `it's due today at ${clock}`;
   if (days === 1) {
@@ -54,13 +54,13 @@ export function casualDue(iso: string | null, now: Date = new Date()): string {
   if (days < 7) return `it's due ${d.toLocaleDateString(undefined, { weekday: "long" })} at ${clock}`;
   const date = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const weeks = Math.round(days / 7);
-  return `it's not due until ${date} — about ${weeks} week${weeks === 1 ? "" : "s"} out`;
+  return `it's not due until ${date}: about ${weeks} week${weeks === 1 ? "" : "s"} out`;
 }
 
 /** How big a deal this is, in words a person would use. */
 export function impactPhrase(pct: number): string {
   const n = pct.toFixed(1).replace(/\.0$/, "");
-  if (pct >= 40) return `a massive ${n}% of the course — the biggest single lever you've got`;
+  if (pct >= 40) return `a massive ${n}% of the course: the biggest single lever you've got`;
   if (pct >= 20) return `a big chunk of the grade (${n}%)`;
   if (pct >= 8) return `a solid ${n}% of the grade`;
   if (pct > 0.5) return `a small slice of the grade (${n}%)`;
@@ -96,7 +96,7 @@ export function submissionPhrase(typesJson: string | null): string | null {
 export function queueReason(row: TriageRow, now: Date = new Date()): string {
   const parts: string[] = [];
   if (row.state === "missing") {
-    parts.push("Canvas has it flagged missing — deal with it before it snowballs");
+    parts.push("Canvas has it flagged missing: deal with it before it snowballs");
   } else if (row.dueAt && new Date(row.dueAt).getTime() < now.getTime()) {
     parts.push(`${casualDue(row.dueAt, now)}; sooner beats later`);
   } else {

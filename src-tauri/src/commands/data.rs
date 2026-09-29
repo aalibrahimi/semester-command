@@ -364,7 +364,7 @@ pub async fn save_planner_block(
     }
     if weekday.is_some() == date.is_some() {
         return Err(CommandError::internal(
-            "A block repeats weekly (weekday) or happens once (date) — exactly one.",
+            "A block repeats weekly (weekday) or happens once (date): exactly one.",
         ));
     }
     if let Some(w) = weekday {

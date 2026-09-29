@@ -78,7 +78,7 @@ export function tilesFor(guide: Guide): Tile[] {
 
 /** The one-liner for a trap: bold title as a lead, then the first sentence. Never cuts inside markup. */
 export function trapLine(t: TrapBlock): string {
-  const plain = t.body.replace(/\*\*([^*]+)\*\*\s*/, "$1 — ").replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
+  const plain = t.body.replace(/\*\*([^*]+)\*\*\s*/, "$1: ").replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
   const sentence = /^(.{20,200}?[.!?])(\s|$)/.exec(plain)?.[1];
   if (sentence) return sentence;
   return plain.length > 200 ? plain.slice(0, 197).replace(/\s\S*$/, "") + "…" : plain;

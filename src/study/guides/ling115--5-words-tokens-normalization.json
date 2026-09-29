@@ -17,13 +17,13 @@
         {
           "type": "prose",
           "label": "why",
-          "md": "**Every technical choice is a linguistic claim** Before you can count words, you have to decide what a word is — and ==every answer erases something==. Is *San Francisco* one word or two? Is *don't* one? Are *Apple* and *apple* the same? Kraus's line: **'Tokenization is an analytic decision, not a neutral preprocessing step.'** Her chance-quiz questions almost all have the same shape: *true or false about a definition*, then *give one example of what a choice preserves or erases*. This chapter is that answer bank.",
+          "md": "**Every technical choice is a linguistic claim** Before you can count words, you have to decide what a word is, and ==every answer erases something==. Is *San Francisco* one word or two? Is *don't* one? Are *Apple* and *apple* the same? Kraus's line: **'Tokenization is an analytic decision, not a neutral preprocessing step.'** Her chance-quiz questions almost all have the same shape: *true or false about a definition*, then *give one example of what a choice preserves or erases*. This chapter is that answer bank.",
           "slide": "The course's thesis",
           "id": "why.519614dd"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** 'What counts as one unit' is a live question in every data job: is a returning visitor a new *type* or another *token* of an old one? Are 'NYC' and 'New York City' one row or two? And the loudest modern version — large language models don't read words, they read tokens, so half the internet's 'why can't the AI count the r's in strawberry' complaints are this lecture wearing a new shirt. The engineers debugging those systems are answering Kraus's question with code.",
+          "md": "**Where you'll meet this after the exam** 'What counts as one unit' is a live question in every data job: is a returning visitor a new *type* or another *token* of an old one? Are 'NYC' and 'New York City' one row or two? And the loudest modern version: large language models don't read words, they read tokens, so half the internet's 'why can't the AI count the r's in strawberry' complaints are this lecture wearing a new shirt. The engineers debugging those systems are answering Kraus's question with code.",
           "id": "why.6e2a94c8"
         }
       ]
@@ -35,7 +35,7 @@
         {
           "type": "definition",
           "term": "Lemma",
-          "body": "the dictionary headword — same stem, same part of speech, same basic sense. *cat* and *cats* are one lemma.",
+          "body": "the dictionary headword: same stem, same part of speech, same basic sense. *cat* and *cats* are one lemma.",
           "id": "units.18f301fc"
         },
         {
@@ -79,7 +79,7 @@
                 "rose"
               ],
               "note": "8 tokens",
-              "caption": "Gertrude Stein's line, split on spaces. Every word you can point at is a **token** — an instance. Count them: 8. (Kraus's slide counts the full 'a rose is a rose is a rose' line as 10 tokens with 'rose' at the start; the method is what matters.)"
+              "caption": "Gertrude Stein's line, split on spaces. Every word you can point at is a **token**: an instance. Count them: 8. (Kraus's slide counts the full 'a rose is a rose is a rose' line as 10 tokens with 'rose' at the start; the method is what matters.)"
             },
             {
               "kind": "array",
@@ -101,7 +101,7 @@
                 6
               ],
               "note": "type 1: a  (3 tokens)",
-              "caption": "Now count **types** — distinct words. 'a' appears three times but is one type."
+              "caption": "Now count **types**: distinct words. 'a' appears three times but is one type."
             },
             {
               "kind": "array",
@@ -153,7 +153,7 @@
                 "= 3 / 8 = 0.375"
               ],
               "active": 1,
-              "caption": "**Type–token ratio.** Low TTR means lots of repetition; high TTR means varied vocabulary. Stein's line is deliberately repetitive. The first line of Wikipedia's 'Rose' article scores about 0.92 — almost every word is new."
+              "caption": "**Type–token ratio.** Low TTR means lots of repetition; high TTR means varied vocabulary. Stein's line is deliberately repetitive. The first line of Wikipedia's 'Rose' article scores about 0.92: almost every word is new."
             },
             {
               "kind": "lines",
@@ -164,7 +164,7 @@
                 "Google N-grams (1T): 0.000013"
               ],
               "active": 0,
-              "caption": "Real corpora. Notice the pattern: **the bigger the corpus, the lower the TTR**. That's not because Google's English is boring. It's because vocabulary grows slower than text (next section), so tokens outrun types. TTR is only comparable between texts of similar size — Kraus's caveat about Alice vs Moby Dick."
+              "caption": "Real corpora. Notice the pattern: **the bigger the corpus, the lower the TTR**. That's not because Google's English is boring. It's because vocabulary grows slower than text (next section), so tokens outrun types. TTR is only comparable between texts of similar size: Kraus's caveat about Alice vs Moby Dick."
             }
           ],
           "slide": true,
@@ -187,13 +187,13 @@
         {
           "type": "check",
           "prompt": "Chance quiz: separate the morphemes in *rewriting* and *undermined*. And: T/F, hapax legomena are very common in corpora.",
-          "answer": "re-writ(e)-ing; under-mine-(e)d. True — around half of all types in a natural corpus occur once.",
+          "answer": "re-writ(e)-ing; under-mine-(e)d. True: around half of all types in a natural corpus occur once.",
           "sectionRef": "units",
           "id": "units.79bee212"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Type vs token is the working vocabulary of search engines — an index maps each *type* to the positions of all its *tokens* — and of stylometry, where TTR-family measures helped attribute the Federalist Papers and still catch ghostwriters and essay mills. Readability formulas score textbooks with these counts; fraud teams flag accounts whose TTR is eerily low, because spam repeats itself. ==When an NLP paper says 'vocabulary size |V|', it means the number of types== — and someone had to make exactly the decisions this section names to get that number.",
+          "md": "**Where you'll meet this after the exam** Type vs token is the working vocabulary of search engines, an index maps each *type* to the positions of all its *tokens*, and of stylometry, where TTR-family measures helped attribute the Federalist Papers and still catch ghostwriters and essay mills. Readability formulas score textbooks with these counts; fraud teams flag accounts whose TTR is eerily low, because spam repeats itself. ==When an NLP paper says 'vocabulary size |V|', it means the number of types==, and someone had to make exactly the decisions this section names to get that number.",
           "id": "units.3d7f81b6"
         }
       ]
@@ -225,7 +225,7 @@
                 "β ≈ 0.5:  100× the text → ×10 the types"
               ],
               "active": 1,
-              "caption": "A power of 1 would mean every new chunk of text brings as many new words as the first chunk. A power around 0.5 (a square root) means new words come more and more slowly — you keep seeing the same common words, and only occasionally a new rare one."
+              "caption": "A power of 1 would mean every new chunk of text brings as many new words as the first chunk. A power around 0.5 (a square root) means new words come more and more slowly: you keep seeing the same common words, and only occasionally a new rare one."
             },
             {
               "kind": "lines",
@@ -235,7 +235,7 @@
                 "n = 1,000,000 → V ≈ 30 · 1000    = 30,000"
               ],
               "active": 0,
-              "caption": "With K = 30, β = 0.5: a thousand-fold increase in text gives roughly a thirty-fold increase in vocabulary. Diminishing returns for rare words — which is why a 1-million-word corpus like Brown already has most of the common vocabulary, and why hapax legomena (words seen once) are so common: the tail never fills in."
+              "caption": "With K = 30, β = 0.5: a thousand-fold increase in text gives roughly a thirty-fold increase in vocabulary. Diminishing returns for rare words, which is why a 1-million-word corpus like Brown already has most of the common vocabulary, and why hapax legomena (words seen once) are so common: the tail never fills in."
             },
             {
               "kind": "lines",
@@ -245,7 +245,7 @@
                 "each counts as a new type unless you decide otherwise"
               ],
               "active": 0,
-              "caption": "The catch: typos, stretched spellings, and case variants all look like new types to a computer. Whether they *are* new types is a decision — which is what the rest of this chapter is about."
+              "caption": "The catch: typos, stretched spellings, and case variants all look like new types to a computer. Whether they *are* new types is a decision, which is what the rest of this chapter is about."
             }
           ],
           "slide": true,
@@ -254,8 +254,8 @@
         {
           "type": "figure",
           "viewBox": "0 0 620 300",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='hpN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='hpC' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>Axes: tokens n along the bottom (how much text you have read so far), types V up the side (how many distinct words you have met).</title><path d='M70 250 L580 250' stroke='currentColor' stroke-width='1.4' opacity='0.6' marker-end='url(#hpN)'/><path d='M70 250 L70 40' stroke='currentColor' stroke-width='1.4' opacity='0.6' marker-end='url(#hpN)'/><text x='560' y='272' text-anchor='end' font-size='11' opacity='0.55'>n — tokens read (log scale)</text><text x='40' y='32' font-size='11' opacity='0.55'>V — types met</text></g><g><title>The straight line nobody gets: if β were 1, every stretch of new text would bring new words at the same rate forever, and V would keep pace with n.</title><path d='M70 250 L220 40' stroke='currentColor' stroke-width='1.3' stroke-dasharray='6 5' opacity='0.35'/><text x='190' y='60' font-size='10' opacity='0.5'>if β = 1: types grow as fast as tokens</text></g><g><title>The real curve: V = K·nᵝ with β around 0.5. New words never stop coming — the curve never goes flat — but they come ever more slowly.</title><path d='M70 250 C 110 195, 125 182, 150 170 C 200 146, 235 132, 280 122 C 360 105, 440 96, 520 90 L 570 88' stroke='rgb(var(--on-track))' stroke-width='2.2' fill='none'/><text x='560' y='72' text-anchor='end' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>V = K·nᵝ, β ≈ 0.5</text></g><g><title>Three checkpoints with K = 30, β = 0.5 — the stepper's numbers. A thousandfold more text buys only about thirtyfold more vocabulary.</title><circle cx='150' cy='170' r='4' fill='rgb(var(--on-track))'/><text x='150' y='192' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>1K → ~950</text><circle cx='280' cy='122' r='4' fill='rgb(var(--on-track))'/><text x='280' y='144' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>10K → ~3,000</text><circle cx='520' cy='90' r='4' fill='rgb(var(--on-track))'/><text x='520' y='112' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>1M → ~30,000</text></g><g><title>The widening gap is pure repetition — the, of, and, to soaking up almost every new token. This gap is exactly why TTR falls as texts grow longer.</title><path d='M180 100 L180 154' stroke='rgb(var(--critical))' stroke-width='1.5' marker-start='url(#hpC)' marker-end='url(#hpC)'/><text x='192' y='130' font-size='10' fill='rgb(var(--critical))'>the gap = repetition; TTR falls</text></g><g><title>Even far out on the curve, about half of all types are hapax legomena — words seen exactly once. The rare tail never fills in, no matter how much you read.</title><text x='560' y='140' text-anchor='end' font-size='10' opacity='0.6'>out here, ~half of V is still hapax</text></g></g>",
-          "caption": "Heaps' law drawn. The dashed line is the world where every new page brings new words at a constant rate; the green curve is the real one — V = K·nᵝ with β near 0.5, so a thousandfold more text buys only about thirtyfold more vocabulary. The red gap is pure repetition, and it is exactly why TTR falls with length and why Alice vs Moby Dick is an unfair fight. Hover any part.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='hpN' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='currentColor'/></marker><marker id='hpC' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--critical))'/></marker></defs><g><title>Axes: tokens n along the bottom (how much text you have read so far), types V up the side (how many distinct words you have met).</title><path d='M70 250 L580 250' stroke='currentColor' stroke-width='1.4' opacity='0.6' marker-end='url(#hpN)'/><path d='M70 250 L70 40' stroke='currentColor' stroke-width='1.4' opacity='0.6' marker-end='url(#hpN)'/><text x='560' y='272' text-anchor='end' font-size='11' opacity='0.55'>n: tokens read (log scale)</text><text x='40' y='32' font-size='11' opacity='0.55'>V: types met</text></g><g><title>The straight line nobody gets: if β were 1, every stretch of new text would bring new words at the same rate forever, and V would keep pace with n.</title><path d='M70 250 L220 40' stroke='currentColor' stroke-width='1.3' stroke-dasharray='6 5' opacity='0.35'/><text x='190' y='60' font-size='10' opacity='0.5'>if β = 1: types grow as fast as tokens</text></g><g><title>The real curve: V = K·nᵝ with β around 0.5. New words never stop coming, the curve never goes flat, but they come ever more slowly.</title><path d='M70 250 C 110 195, 125 182, 150 170 C 200 146, 235 132, 280 122 C 360 105, 440 96, 520 90 L 570 88' stroke='rgb(var(--on-track))' stroke-width='2.2' fill='none'/><text x='560' y='72' text-anchor='end' font-size='12' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>V = K·nᵝ, β ≈ 0.5</text></g><g><title>Three checkpoints with K = 30, β = 0.5: the stepper's numbers. A thousandfold more text buys only about thirtyfold more vocabulary.</title><circle cx='150' cy='170' r='4' fill='rgb(var(--on-track))'/><text x='150' y='192' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>1K → ~950</text><circle cx='280' cy='122' r='4' fill='rgb(var(--on-track))'/><text x='280' y='144' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>10K → ~3,000</text><circle cx='520' cy='90' r='4' fill='rgb(var(--on-track))'/><text x='520' y='112' text-anchor='middle' font-size='10' font-family='ui-monospace, monospace'>1M → ~30,000</text></g><g><title>The widening gap is pure repetition: the, of, and, to soaking up almost every new token. This gap is exactly why TTR falls as texts grow longer.</title><path d='M180 100 L180 154' stroke='rgb(var(--critical))' stroke-width='1.5' marker-start='url(#hpC)' marker-end='url(#hpC)'/><text x='192' y='130' font-size='10' fill='rgb(var(--critical))'>the gap = repetition; TTR falls</text></g><g><title>Even far out on the curve, about half of all types are hapax legomena: words seen exactly once. The rare tail never fills in, no matter how much you read.</title><text x='560' y='140' text-anchor='end' font-size='10' opacity='0.6'>out here, ~half of V is still hapax</text></g></g>",
+          "caption": "Heaps' law drawn. The dashed line is the world where every new page brings new words at a constant rate; the green curve is the real one: V = K·nᵝ with β near 0.5, so a thousandfold more text buys only about thirtyfold more vocabulary. The red gap is pure repetition, and it is exactly why TTR falls with length and why Alice vs Moby Dick is an unfair fight. Hover any part.",
           "slide": "Heaps' law: the curve that bends",
           "id": "heaps.9c4e72a1"
         },
@@ -268,13 +268,13 @@
         },
         {
           "type": "prose",
-          "md": "Frequency reveals things the words alone don't: register (formal text uses *however*; chat uses *lol*), speaker age, subject matter, dialect. A frequency list is the first thing a corpus linguist looks at — and ==every number in it depends on the tokenization and normalization decisions below==.",
+          "md": "Frequency reveals things the words alone don't: register (formal text uses *however*; chat uses *lol*), speaker age, subject matter, dialect. A frequency list is the first thing a corpus linguist looks at, and ==every number in it depends on the tokenization and normalization decisions below==.",
           "slide": "Why frequency matters at all",
           "id": "heaps.51afa9f5"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** Heaps' law is capacity planning. Search engineers use it to predict how big an index's dictionary gets at ten times the documents; ML engineers use it to size embedding tables before training. It's also the reason LLM tokenizers cap their vocabularies at roughly 50K–200K learned subwords instead of using words: ##V never stops growing, so any fixed word list eventually leaks — subword tokenization is the industry's escape hatch##. Even 'how much more data until we've seen the rare cases?' — the question every self-driving and content-moderation team asks — is a Heaps-shaped question with a Heaps-shaped answer: more slowly than you hope.",
+          "md": "**Where you'll meet this after the exam** Heaps' law is capacity planning. Search engineers use it to predict how big an index's dictionary gets at ten times the documents; ML engineers use it to size embedding tables before training. It's also the reason LLM tokenizers cap their vocabularies at roughly 50K–200K learned subwords instead of using words: ##V never stops growing, so any fixed word list eventually leaks: subword tokenization is the industry's escape hatch##. Even 'how much more data until we've seen the rare cases?', the question every self-driving and content-moderation team asks, is a Heaps-shaped question with a Heaps-shaped answer: more slowly than you hope.",
           "id": "heaps.5a1d38f7"
         }
       ]
@@ -292,7 +292,7 @@
         {
           "type": "definition",
           "term": "Scripts without spaces.",
-          "body": "Chinese 姚明进入总决赛 — is that 3, 5, or 7 tokens? 'Tokenization requires a theory of wordhood.' Japanese mixes four writing systems and needs a lexicon-based segmenter; Thai, Burmese, Ge'ez similar.",
+          "body": "Chinese 姚明进入总决赛: is that 3, 5, or 7 tokens? 'Tokenization requires a theory of wordhood.' Japanese mixes four writing systems and needs a lexicon-based segmenter; Thai, Burmese, Ge'ez similar.",
           "id": "tokenization.a3418dff"
         },
         {
@@ -322,21 +322,21 @@
         {
           "type": "figure",
           "viewBox": "0 0 680 330",
-          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='tkA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The raw string, exactly as typed. Every count you will ever publish is downstream of what happens to this line.</title><text x='14' y='52' font-size='10' font-weight='700' opacity='0.5'>RAW</text><rect x='110' y='30' width='330' height='34' rx='8' fill='none' stroke='currentColor' stroke-width='1.4' opacity='0.45'/><text x='275' y='52' text-anchor='middle' font-size='14' font-family='ui-monospace, monospace'>Don't visit the U.S. in July!</text></g><g><title>Tokenization: punctuation splits off and the clitic n't separates from Do — but the periods in U.S. stay, because the tokenizer must already know U.S. is one unit rather than a sentence end.</title><text x='14' y='122' font-size='10' font-weight='700' opacity='0.5'>TOKENIZE</text><rect x='110' y='100' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>Do</text><rect x='160' y='100' width='46' height='34' rx='6' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='183' y='122' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>n't</text><rect x='214' y='100' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='100' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='100' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.8'/><text x='360' y='122' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))'>U.S.</text><rect x='396' y='100' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='100' width='52' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='464' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>July</text><rect x='498' y='100' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='108' font-size='9' fill='rgb(var(--accent-fg))'>Don't → Do + n't</text><text x='536' y='120' font-size='9' fill='rgb(var(--accent-fg))'>(clitic split)</text><text x='536' y='136' font-size='9' fill='rgb(var(--at-risk))'>U.S. stays one token</text></g><g><title>Lowercasing merges Apple/apple-style pairs — and July and U.S. lose their capitalization for good. A lossy step: no rule can restore what it deleted.</title><text x='14' y='194' font-size='10' font-weight='700' opacity='0.5'>LOWERCASE</text><rect x='110' y='172' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>do</text><rect x='160' y='172' width='46' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='183' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>n't</text><rect x='214' y='172' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='172' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='172' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='360' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>u.s.</text><rect x='396' y='172' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='172' width='52' height='34' rx='6' fill='none' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='464' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>july</text><rect x='498' y='172' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='180' font-size='9' fill='rgb(var(--critical))'>July → july:</text><text x='536' y='192' font-size='9' fill='rgb(var(--critical))'>proper-noun signal</text><text x='536' y='204' font-size='9' fill='rgb(var(--critical))'>gone for good (lossy)</text></g><g><title>Lemmatization maps wordforms to dictionary headwords: n't becomes not, and counts of DO now pool don't, do, does, and did into one row.</title><text x='14' y='266' font-size='10' font-weight='700' opacity='0.5'>LEMMATIZE</text><rect x='110' y='244' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>do</text><rect x='160' y='244' width='46' height='34' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='183' y='266' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>not</text><rect x='214' y='244' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='244' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='244' width='56' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='360' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>u.s.</text><rect x='396' y='244' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='244' width='52' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='464' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>july</text><rect x='498' y='244' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='252' font-size='9' fill='rgb(var(--on-track))'>n't → not:</text><text x='536' y='264' font-size='9' fill='rgb(var(--on-track))'>wordforms pool</text><text x='536' y='276' font-size='9' fill='rgb(var(--on-track))'>under the lemma</text></g><g><title>Each arrow is a transformation you chose. Different tools default to different choices — which is why two people counting the same text get different numbers.</title><path d='M275 68 L275 96' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='86' font-size='9' fill='rgb(var(--accent-fg))'>split into tokens</text><path d='M275 138 L275 168' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='157' font-size='9' fill='rgb(var(--accent-fg))'>case-fold</text><path d='M275 210 L275 240' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='229' font-size='9' fill='rgb(var(--accent-fg))'>map to headwords</text></g><g><title>The bottom line: the token count, the type count, and the TTR all changed between rows while the text itself never changed at all.</title><text x='340' y='316' text-anchor='middle' font-size='11' opacity='0.7'>four different texts, four different counts — every row is a decision you must report</text></g></g>",
-          "caption": "One sentence through the standard pipeline. Watch the two troublemakers: *Don't* splits into Do + n't at the tokenize step, so 'how many words?' has already changed its answer — while *U.S.* must survive with its periods intact, because a tokenizer that splits on '.' would shatter it into two fake sentences. By the bottom row the token count, type count, and TTR have all moved without the text changing. Hover any stage.",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><defs><marker id='tkA' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0 L10 5 L0 10 z' fill='rgb(var(--accent-fg))'/></marker></defs><g><title>The raw string, exactly as typed. Every count you will ever publish is downstream of what happens to this line.</title><text x='14' y='52' font-size='10' font-weight='700' opacity='0.5'>RAW</text><rect x='110' y='30' width='330' height='34' rx='8' fill='none' stroke='currentColor' stroke-width='1.4' opacity='0.45'/><text x='275' y='52' text-anchor='middle' font-size='14' font-family='ui-monospace, monospace'>Don't visit the U.S. in July!</text></g><g><title>Tokenization: punctuation splits off and the clitic n't separates from Do, but the periods in U.S. stay, because the tokenizer must already know U.S. is one unit rather than a sentence end.</title><text x='14' y='122' font-size='10' font-weight='700' opacity='0.5'>TOKENIZE</text><rect x='110' y='100' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>Do</text><rect x='160' y='100' width='46' height='34' rx='6' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.8'/><text x='183' y='122' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--accent-fg))'>n't</text><rect x='214' y='100' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='100' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='100' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.8'/><text x='360' y='122' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--at-risk))'>U.S.</text><rect x='396' y='100' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='100' width='52' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='464' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>July</text><rect x='498' y='100' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='122' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='108' font-size='9' fill='rgb(var(--accent-fg))'>Don't → Do + n't</text><text x='536' y='120' font-size='9' fill='rgb(var(--accent-fg))'>(clitic split)</text><text x='536' y='136' font-size='9' fill='rgb(var(--at-risk))'>U.S. stays one token</text></g><g><title>Lowercasing merges Apple/apple-style pairs, and July and U.S. lose their capitalization for good. A lossy step: no rule can restore what it deleted.</title><text x='14' y='194' font-size='10' font-weight='700' opacity='0.5'>LOWERCASE</text><rect x='110' y='172' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>do</text><rect x='160' y='172' width='46' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='183' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>n't</text><rect x='214' y='172' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='172' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='172' width='56' height='34' rx='6' fill='none' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='360' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>u.s.</text><rect x='396' y='172' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='172' width='52' height='34' rx='6' fill='none' stroke='rgb(var(--critical))' stroke-width='1.6'/><text x='464' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace' fill='rgb(var(--critical))'>july</text><rect x='498' y='172' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='194' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='180' font-size='9' fill='rgb(var(--critical))'>July → july:</text><text x='536' y='192' font-size='9' fill='rgb(var(--critical))'>proper-noun signal</text><text x='536' y='204' font-size='9' fill='rgb(var(--critical))'>gone for good (lossy)</text></g><g><title>Lemmatization maps wordforms to dictionary headwords: n't becomes not, and counts of DO now pool don't, do, does, and did into one row.</title><text x='14' y='266' font-size='10' font-weight='700' opacity='0.5'>LEMMATIZE</text><rect x='110' y='244' width='42' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='131' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>do</text><rect x='160' y='244' width='46' height='34' rx='6' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.8'/><text x='183' y='266' text-anchor='middle' font-size='13' font-weight='700' font-family='ui-monospace, monospace' fill='rgb(var(--on-track))'>not</text><rect x='214' y='244' width='58' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='243' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>visit</text><rect x='280' y='244' width='44' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='302' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>the</text><rect x='332' y='244' width='56' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='360' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>u.s.</text><rect x='396' y='244' width='34' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='413' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>in</text><rect x='438' y='244' width='52' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='464' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>july</text><rect x='498' y='244' width='26' height='34' rx='6' fill='none' stroke='currentColor' stroke-width='1.2' opacity='0.35'/><text x='511' y='266' text-anchor='middle' font-size='13' font-family='ui-monospace, monospace'>!</text><text x='536' y='252' font-size='9' fill='rgb(var(--on-track))'>n't → not:</text><text x='536' y='264' font-size='9' fill='rgb(var(--on-track))'>wordforms pool</text><text x='536' y='276' font-size='9' fill='rgb(var(--on-track))'>under the lemma</text></g><g><title>Each arrow is a transformation you chose. Different tools default to different choices, which is why two people counting the same text get different numbers.</title><path d='M275 68 L275 96' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='86' font-size='9' fill='rgb(var(--accent-fg))'>split into tokens</text><path d='M275 138 L275 168' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='157' font-size='9' fill='rgb(var(--accent-fg))'>case-fold</text><path d='M275 210 L275 240' stroke='rgb(var(--accent-fg))' stroke-width='1.6' fill='none' marker-end='url(#tkA)'/><text x='285' y='229' font-size='9' fill='rgb(var(--accent-fg))'>map to headwords</text></g><g><title>The bottom line: the token count, the type count, and the TTR all changed between rows while the text itself never changed at all.</title><text x='340' y='316' text-anchor='middle' font-size='11' opacity='0.7'>four different texts, four different counts: every row is a decision you must report</text></g></g>",
+          "caption": "One sentence through the standard pipeline. Watch the two troublemakers: *Don't* splits into Do + n't at the tokenize step, so 'how many words?' has already changed its answer, while *U.S.* must survive with its periods intact, because a tokenizer that splits on '.' would shatter it into two fake sentences. By the bottom row the token count, type count, and TTR have all moved without the text changing. Hover any stage.",
           "slide": "Raw → tokens → lowercase → lemmas",
           "id": "tokenization.2e8c61b9"
         },
         {
           "type": "check",
-          "prompt": "Chance quiz: T/F — it's fine to remove all punctuation when tokenizing, since punctuation doesn't tell you anything important.",
+          "prompt": "Chance quiz: T/F: it's fine to remove all punctuation when tokenizing, since punctuation doesn't tell you anything important.",
           "answer": "False. Punctuation marks conventional units (Ph.D.), encodes magnitude and currency ($89.99), carries structure (dates, URLs), and delimits sentences. Removing it changes meaning before the analysis starts.",
           "sectionRef": "tokenization",
           "id": "tokenization.71d46130"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** This section's failure list is the design brief for LLM tokenizers. **BPE (byte-pair encoding)** — what GPT-style and Claude-style models actually run on — is the industrial descendant of this lecture: it gives up on wordhood entirely and learns frequent character chunks from data, so *Flughafensicherheitskontrolle* becomes a few subwords, unspaced Chinese segments without a hand-built lexicon, and no word is ever out-of-vocabulary. The costs are this lecture's costs too: ==a model that sees 'strawberry' as two or three opaque chunks genuinely cannot count its letters==, and languages that fragment into more tokens pay more per API call. Closer to home, every search box doing CJK segmentation and every `text.split()` you'll ever regret in a notebook are the same story.",
+          "md": "**Where you'll meet this after the exam** This section's failure list is the design brief for LLM tokenizers. **BPE (byte-pair encoding)**, what GPT-style and Claude-style models actually run on, is the industrial descendant of this lecture: it gives up on wordhood entirely and learns frequent character chunks from data, so *Flughafensicherheitskontrolle* becomes a few subwords, unspaced Chinese segments without a hand-built lexicon, and no word is ever out-of-vocabulary. The costs are this lecture's costs too: ==a model that sees 'strawberry' as two or three opaque chunks genuinely cannot count its letters==, and languages that fragment into more tokens pay more per API call. Closer to home, every search box doing CJK segmentation and every `text.split()` you'll ever regret in a notebook are the same story.",
           "slide": "From this lecture to LLM tokenizers",
           "id": "tokenization.7f3a95d4"
         }
@@ -391,13 +391,13 @@
               "Normalize if it interferes"
             ]
           ],
-          "slide": "The normalization table (slide 28 — shown three times)",
+          "slide": "The normalization table (slide 28: shown three times)",
           "id": "normalization.c3a7f9e0"
         },
         {
           "type": "prose",
           "label": "why",
-          "md": "**Why the bottom rows say PRESERVE** The rows to normalize are variation that *doesn't correlate with anything linguistic* — a typo tells you nothing about the writer. The rows to preserve are variation that *is* linguistic evidence: register, dialect, identity. If your research question is about those, !!normalizing them away deletes your data!!. If it isn't, they're noise. The table isn't a rule; it's a way of asking 'what is my question?' before touching the text.",
+          "md": "**Why the bottom rows say PRESERVE** The rows to normalize are variation that *doesn't correlate with anything linguistic*: a typo tells you nothing about the writer. The rows to preserve are variation that *is* linguistic evidence: register, dialect, identity. If your research question is about those, !!normalizing them away deletes your data!!. If it isn't, they're noise. The table isn't a rule; it's a way of asking 'what is my question?' before touching the text.",
           "slide": "The pattern in the table",
           "id": "normalization.029065e5"
         },
@@ -410,7 +410,7 @@
         {
           "type": "definition",
           "term": "Lowercasing",
-          "body": "erases proper-noun and category signals: *Apple* vs *apple*; German *Essen* (food, noun) vs *essen* (to eat, verb) — capitalization *is* the part of speech.",
+          "body": "erases proper-noun and category signals: *Apple* vs *apple*; German *Essen* (food, noun) vs *essen* (to eat, verb): capitalization *is* the part of speech.",
           "id": "normalization.a125c4c2"
         },
         {
@@ -428,7 +428,7 @@
         {
           "type": "definition",
           "term": "Expanding numbers",
-          "body": "is ambiguous: '1915 J St' — nineteen fifteen? one-nine-one-five? 'roll two sixty four sided dice' — 264? 2 × 64? 260 × 4?",
+          "body": "is ambiguous: '1915 J St': nineteen fifteen? one-nine-one-five? 'roll two sixty four sided dice': 264? 2 × 64? 260 × 4?",
           "id": "normalization.2f7e5bb6"
         },
         {
@@ -440,7 +440,7 @@
         {
           "type": "definition",
           "term": "Lossless vs lossy",
-          "body": "lossless shaping is reversible — the original is recoverable. Lossy is not — lowercasing, emoji removal, stemming all discard information for good. Prefer keeping the raw text and deriving normalized *views* of it.",
+          "body": "lossless shaping is reversible: the original is recoverable. Lossy is not: lowercasing, emoji removal, stemming all discard information for good. Prefer keeping the raw text and deriving normalized *views* of it.",
           "id": "normalization.a7cbd6df"
         },
         {
@@ -453,18 +453,18 @@
         {
           "type": "check",
           "prompt": "Is stemming lossy or lossless? Why does it matter for a dialect study?",
-          "answer": "Lossy — *running, runner, runs* → *run* can't be reversed. A dialect study needs surface forms (*sittin* vs *sitting*), so stemming or spell-normalizing would erase the very variable under study.",
+          "answer": "Lossy: *running, runner, runs* → *run* can't be reversed. A dialect study needs surface forms (*sittin* vs *sitting*), so stemming or spell-normalizing would erase the very variable under study.",
           "sectionRef": "normalization",
           "id": "normalization.b3f93d62"
         },
         {
           "type": "prose",
-          "md": "**Lectures 5–6 in one paragraph.** Tokens are instances, types are distinct forms, lemmas are headwords; TTR = types/tokens and falls with length because vocabulary grows as K·nᵝ with β < 1 (Heaps). Whitespace tokenization fails on unspaced scripts, compounds, meaningful punctuation, clitics, and multi-word expressions. Normalize noise and orthography; preserve register and dialect. Every cleaning step is lossy or lossless, and every lossy step is a linguistic claim — ==name what it erases==.",
+          "md": "**Lectures 5–6 in one paragraph.** Tokens are instances, types are distinct forms, lemmas are headwords; TTR = types/tokens and falls with length because vocabulary grows as K·nᵝ with β < 1 (Heaps). Whitespace tokenization fails on unspaced scripts, compounds, meaningful punctuation, clitics, and multi-word expressions. Normalize noise and orthography; preserve register and dialect. Every cleaning step is lossy or lossless, and every lossy step is a linguistic claim: ==name what it erases==.",
           "id": "normalization.e0574e0d"
         },
         {
           "type": "prose",
-          "md": "**Where you'll meet this after the exam** The normalization table is the honest job description of data work — most of any analytics or ML role is deciding what to clean and knowing what the cleaning destroys. Search engines case-fold so 'apple' finds 'Apple', then special-case the collisions that matter; sentiment models that strip emoji lose the sarcasm bit exactly as the 🙄 example warns; dialect-aware moderation breaks when someone upstream 'fixed' the spelling. The keep-raw-derive-views habit is the raw/staging/clean layering every data-engineering team runs. !!Cleaning you can't undo is analysis you can't revise!! — keep the original.",
+          "md": "**Where you'll meet this after the exam** The normalization table is the honest job description of data work: most of any analytics or ML role is deciding what to clean and knowing what the cleaning destroys. Search engines case-fold so 'apple' finds 'Apple', then special-case the collisions that matter; sentiment models that strip emoji lose the sarcasm bit exactly as the 🙄 example warns; dialect-aware moderation breaks when someone upstream 'fixed' the spelling. The keep-raw-derive-views habit is the raw/staging/clean layering every data-engineering team runs. !!Cleaning you can't undo is analysis you can't revise!!: keep the original.",
           "id": "normalization.8b5e27c3"
         }
       ]
@@ -473,20 +473,20 @@
   "exercises": [
     {
       "id": "count-and-decide",
-      "title": "Count tokens and types — then defend the count",
+      "title": "Count tokens and types, then defend the count",
       "prompt": "Text: `I can't believe it's already 5pm! I CAN'T. Time flies, doesn't it? #mood 😩` Give the token count and type count under (A) whitespace splitting with no changes and (B) NLTK-style tokenization with lowercasing. Then write two sentences on what (B) erased that a study of *register* would need.",
       "hints": [
-        "For (A), just count space-separated chunks — punctuation stays attached ('5pm!' is one token). For (B), NLTK splits 'can't' into 'ca' + \"n't\", separates punctuation, and lowercasing merges 'I CAN'T' with 'I can't'.",
+        "For (A), just count space-separated chunks: punctuation stays attached ('5pm!' is one token). For (B), NLTK splits 'can't' into 'ca' + \"n't\", separates punctuation, and lowercasing merges 'I CAN'T' with 'I can't'.",
         "The usual error is doing only one count and treating it as *the* answer. The exercise is about how the count *changes* with the decision, and being able to say by how much.",
         "What does 'CAN'T' in capitals tell you that 'can't' doesn't? What does the emoji do to the sentence's tone? Those are the register signals lowercasing and emoji-stripping delete."
       ],
       "solution": [
         "(A) Whitespace: I · can't · believe · it's · already · 5pm! · I · CAN'T. · Time · flies, · doesn't · it? · #mood · 😩 → 14 tokens. Only 'I' repeats exactly ('can't' and 'CAN'T.' differ in case and punctuation), so 13 types.",
         "(B) NLTK + lowercase: i · ca · n't · believe · it · 's · already · 5pm · ! · i · ca · n't · . · time · flies · , · does · n't · it · ? · # · mood · 😩 → 23 tokens; types: i, ca, n't, believe, it, 's, already, 5pm, !, ., time, flies, ,, does, ?, #, mood, 😩 → 18 types.",
-        "TTR moves from 13/14 ≈ 0.93 to 18/23 ≈ 0.78 — from the decisions alone, not the text.",
-        "(B) erased emphasis (CAN'T vs can't — shouting is register), and stripping/separating the emoji loses the exasperated tone that flips the meaning of 'Time flies'. A register study needs both preserved."
+        "TTR moves from 13/14 ≈ 0.93 to 18/23 ≈ 0.78: from the decisions alone, not the text.",
+        "(B) erased emphasis (CAN'T vs can't: shouting is register), and stripping/separating the emoji loses the exasperated tone that flips the meaning of 'Time flies'. A register study needs both preserved."
       ],
-      "why": "Two people can 'count the words' in the same text and get numbers 60% apart, both correct under their decisions. Reporting the decisions with the number is what makes a result reproducible — the whole point of documentation in Lectures 7–8.",
+      "why": "Two people can 'count the words' in the same text and get numbers 60% apart, both correct under their decisions. Reporting the decisions with the number is what makes a result reproducible: the whole point of documentation in Lectures 7–8.",
       "sectionRef": "units"
     },
     {
@@ -495,15 +495,15 @@
       "prompt": "A classmate reports: 'Brown's *news* category has TTR 0.14 and *science fiction* has TTR 0.19, so sci-fi authors use a richer vocabulary.' Is the conclusion justified? What one fact would you need to check first, and what would you do instead?",
       "choices": [
         {
-          "text": "Yes — a higher TTR means more types per token, which is richer vocabulary by definition.",
+          "text": "Yes: a higher TTR means more types per token, which is richer vocabulary by definition.",
           "feedback": "That's the definition, but TTR falls with length (Heaps' law). If the two categories have different sizes, the comparison is meaningless."
         },
         {
-          "text": "Not yet — check the token counts of the two categories; if they differ, compare TTR on equal-size samples (e.g. the first 10,000 tokens of each).",
+          "text": "Not yet: check the token counts of the two categories; if they differ, compare TTR on equal-size samples (e.g. the first 10,000 tokens of each).",
           "feedback": "Right. Brown's news category is about 100k tokens and science fiction about 14k; the smaller one has a higher TTR almost automatically."
         },
         {
-          "text": "No — TTR can never be compared across texts.",
+          "text": "No: TTR can never be compared across texts.",
           "feedback": "Too strong. It can be compared when the texts are the same length, or with a length-corrected measure."
         }
       ],
@@ -514,12 +514,12 @@
         "The fix is mechanical: sample equal-size windows from each, or use a size-corrected measure, and *then* compare."
       ],
       "solution": [
-        "Not justified as stated. TTR decreases with text length because vocabulary grows as K·nᵝ with β < 1 — bigger corpus, lower ratio.",
+        "Not justified as stated. TTR decreases with text length because vocabulary grows as K·nᵝ with β < 1: bigger corpus, lower ratio.",
         "Check the token counts: in Brown, news ≈ 100,000 tokens, science fiction ≈ 14,000. The smaller category is expected to have a higher TTR regardless of style.",
         "Instead: compute TTR on equal-size samples (first 10,000 tokens of each, or averaged over 10k windows), or use a length-corrected measure (MTLD, or a standardized TTR).",
-        "Then, if sci-fi is still higher, you can start to talk about vocabulary — and even then it's a claim about these texts, not about 'sci-fi authors'."
+        "Then, if sci-fi is still higher, you can start to talk about vocabulary, and even then it's a claim about these texts, not about 'sci-fi authors'."
       ],
-      "why": "Comparing rates across groups of different sizes is the most common statistical mistake in any field — from 'this city has more crime' to 'this model has more errors'. Heaps' law is just the linguistics version. Catching it is what 'quantitative literacy' means."
+      "why": "Comparing rates across groups of different sizes is the most common statistical mistake in any field: from 'this city has more crime' to 'this model has more errors'. Heaps' law is just the linguistics version. Catching it is what 'quantitative literacy' means."
     }
   ]
 }

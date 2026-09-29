@@ -112,7 +112,7 @@ export default function Calendar() {
         <EmptyState
           icon={CalendarDays}
           title="No due dates yet"
-          description="Due dates arrive with sync — and also work under the calendar-feed fallback, which needs no login at all."
+          description="Due dates arrive with sync, and also work under the calendar-feed fallback, which needs no login at all."
         />
       ) : view === "agenda" ? (
         <AgendaView items={items} />

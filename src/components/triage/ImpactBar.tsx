@@ -61,7 +61,7 @@ export function ImpactBar({
       >
         {/* Zero impact is the absence of a fact — a dash, not "0.0%"
             repeated down the column. */}
-        {impactPct > 0.05 ? `${impactPct.toFixed(1)}%` : "—"}
+        {impactPct > 0.05 ? `${impactPct.toFixed(1)}%` : "–"}
       </span>
     </span>
   );

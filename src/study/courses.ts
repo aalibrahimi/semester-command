@@ -16,7 +16,7 @@ export const courses: Course[] = [
     title: "Data Structures & Algorithms",
     instructor: "Ben Poon",
     howTheyTest:
-      "Every lecture is the same shape: an analogy, the mechanics on a small array, the runtime, a 'Professional Applications' slide. The exam tests exactly what's on the slides — traces, runtimes, and the why — with only a handful of 'extend it to a novel case' questions. The three master-method cases are printed on the exam; nothing else is.",
+      "Every lecture is the same shape: an analogy, the mechanics on a small array, the runtime, a 'Professional Applications' slide. The exam tests exactly what's on the slides, traces, runtimes, and the why, with only a handful of 'extend it to a novel case' questions. The three master-method cases are printed on the exam; nothing else is.",
     weights: [
       { label: "Midterm", pct: "30%" },
       { label: "Final", pct: "40%" },
@@ -37,9 +37,9 @@ export const courses: Course[] = [
       { date: "2026-10-12", label: "MIDTERM", weight: "30% of grade", kind: "exam" },
     ],
     alerts: [
-      { kind: "warn", text: "Project 1 (10% of your grade) is due Fri Sep 25, 11:59pm — Insertion Sort + Merge Sort + a hybrid. 10% off per day late." },
+      { kind: "warn", text: "Project 1 (10% of your grade) is due Fri Sep 25, 11:59pm: Insertion Sort + Merge Sort + a hybrid. 10% off per day late." },
       { kind: "warn", text: "HW 7 (master method) is unsubmitted. Homework is 0% but Poon's data says < 6 completed = high risk of failing. Do it from the Lectures 6–7 chapter and submit late anyway." },
-      { kind: "info", text: "Office hours Mon & Wed 8:45–9:00 and 10:15–10:30 around DH318. He leaves at 11:45 sharp — ask in lecture or message on Canvas." },
+      { kind: "info", text: "Office hours Mon & Wed 8:45–9:00 and 10:15–10:30 around DH318. He leaves at 11:45 sharp: ask in lecture or message on Canvas." },
     ],
     checklist: [
       "Define ADT in Poon's words; array vs linked list trade-offs.",
@@ -208,7 +208,7 @@ export const courses: Course[] = [
     },
     deadlines: [
       { date: "2026-09-17", label: "Lab #7 due (windowing)", weight: "2.5 pts", kind: "hw" },
-      { date: "2026-09-24", label: "Lab #8 (STFT) — expected", kind: "hw" },
+      { date: "2026-09-24", label: "Lab #8 (STFT): expected", kind: "hw" },
       { date: "2026-12-10", label: "FINAL EXAM (1:00 to 3:00 PM)", weight: "20 pts", kind: "exam" },
     ],
     alerts: [
@@ -234,7 +234,7 @@ export const courses: Course[] = [
     title: "Corpus Linguistics",
     instructor: "Dr. Kelsey Kraus",
     howTheyTest:
-      "Tuesday lecture, Thursday Colab lab. Coin-flip 'chance quizzes': one True/False and one 'give an example' question. Her theme: every technical choice (tokenizing, lowercasing, tagging) is a linguistic decision that can erase information — name what a choice loses and you're speaking her language.",
+      "Tuesday lecture, Thursday Colab lab. Coin-flip 'chance quizzes': one True/False and one 'give an example' question. Her theme: every technical choice (tokenizing, lowercasing, tagging) is a linguistic decision that can erase information: name what a choice loses and you're speaking her language.",
     weights: [
       { label: "Homework & reading responses", pct: "40%" },
       { label: "Final project", pct: "30%" },
@@ -253,7 +253,7 @@ export const courses: Course[] = [
       { date: "2026-10-15", label: "TAKE-HOME MIDTERM due", weight: "10%", kind: "exam" },
     ],
     alerts: [
-      { kind: "warn", text: "Weeks 1–2 are locked until you pass the Syllabus Quiz in the Intro module. Take it — it's minutes." },
+      { kind: "warn", text: "Weeks 1–2 are locked until you pass the Syllabus Quiz in the Intro module. Take it: it's minutes." },
     ],
     checklist: [
       "Regex anchors, quantifiers, groups; re.findall/sub/split.",

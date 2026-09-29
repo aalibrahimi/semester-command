@@ -62,7 +62,7 @@ export function CourseBrief({
                   {pct(s.grade.projectedPct)}
                 </div>
                 <div className="mt-1.5 text-xs text-muted-foreground">
-                  projected — if you stopped today
+                  projected, if you stopped today
                 </div>
               </div>
               <div className="mb-1 ml-auto text-right text-xs text-muted-foreground">
@@ -90,7 +90,7 @@ export function CourseBrief({
           <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
             {open.length > 0
               ? nextUpSentence(open[0], now)
-              : "Nothing left to turn in right now — everything gradeable is submitted."}
+              : "Nothing left to turn in right now: everything gradeable is submitted."}
           </p>
         </div>
       </section>
@@ -124,19 +124,19 @@ export function CourseBrief({
  *  already shows current/projected/target; this says what to do with them. */
 function standingSentence(s: CourseSummary, anyGraded: boolean): string {
   if (!anyGraded) {
-    return `Your target is ${s.targetLetter} (${s.targetPct.toFixed(0)}%) — the numbers start the moment the first score lands.`;
+    return `Your target is ${s.targetLetter} (${s.targetPct.toFixed(0)}%): the numbers start the moment the first score lands.`;
   }
   const best = `The best still possible from here is ${s.maxPossiblePct.toFixed(1)}%`;
   if (s.maxPossiblePct < s.targetPct) {
-    return `The ${s.targetLetter} is mathematically out of reach now — ${best.toLowerCase()}. Pick a new target and protect it; don't chase a number that can't happen.`;
+    return `The ${s.targetLetter} is mathematically out of reach now: ${best.toLowerCase()}. Pick a new target and protect it; don't chase a number that can't happen.`;
   }
   if (s.status === "onTrack") {
-    return `You're on track for the ${s.targetLetter}. The gap between current and projected is just ungraded work — keep turning things in and it closes on its own. ${best}.`;
+    return `You're on track for the ${s.targetLetter}. The gap between current and projected is just ungraded work: keep turning things in and it closes on its own. ${best}.`;
   }
   if (s.missingCount > 0) {
-    return `The ${s.targetLetter} is still reachable, but ${s.missingCount === 1 ? "a missing item is" : `${s.missingCount} missing items are`} dragging the projection down — clear ${s.missingCount === 1 ? "it" : "those"} first. ${best}.`;
+    return `The ${s.targetLetter} is still reachable, but ${s.missingCount === 1 ? "a missing item is" : `${s.missingCount} missing items are`} dragging the projection down: clear ${s.missingCount === 1 ? "it" : "those"} first. ${best}.`;
   }
-  return `You're under the ${s.targetLetter} line right now, but it's still winnable — the hatched part of the bar is the grade still in play. ${best}.`;
+  return `You're under the ${s.targetLetter} line right now, but it's still winnable: the hatched part of the bar is the grade still in play. ${best}.`;
 }
 
 /** "First up: Homework 8 — it's due tomorrow night at 11:59p, a solid 12% of
@@ -147,7 +147,7 @@ function nextUpSentence(a: AssignmentDetail, now: Date): string {
   if (a.impactPct > 0.5) parts.push(impactPhrase(a.impactPct));
   else if (a.pointsPossible !== null && a.pointsPossible > 0)
     parts.push(`${a.pointsPossible} points`);
-  return `First up: ${title} — ${parts.join(", ")}.`;
+  return `First up: ${title}, ${parts.join(", ")}.`;
 }
 
 /* ── Sorting ─────────────────────────────────────────────────────────────── */
@@ -226,7 +226,7 @@ function BriefRow({
         data-numeric
         className="w-14 shrink-0 text-right font-mono text-2xs tabular-nums text-muted-foreground"
       >
-        {a.dueAt ? dueShort(a.dueAt) : "—"}
+        {a.dueAt ? dueShort(a.dueAt) : "–"}
       </span>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-micro group-hover:translate-x-0.5" />
     </button>
@@ -294,7 +294,7 @@ function SettledSection({
                 {a.score !== null
                   ? points(a.score, a.pointsPossible)
                   : a.excused
-                    ? "—"
+                    ? "–"
                     : "awaiting grade"}
               </span>
             </button>

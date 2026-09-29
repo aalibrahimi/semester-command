@@ -287,7 +287,7 @@ export default function StudyRead() {
               <button
                 key={s.id}
                 type="button"
-                aria-label={`${s.heading} — ${sectionStatus(mastery, s.id)}`}
+                aria-label={`${s.heading}: ${sectionStatus(mastery, s.id)}`}
                 onClick={() => go(i)}
                 className={cn("h-1.5 flex-1 rounded-full transition-colors duration-micro", SEG[sectionStatus(mastery, s.id)], i === idx && "ring-2 ring-brand/60 ring-offset-1 ring-offset-background")}
               />

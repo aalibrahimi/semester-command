@@ -380,8 +380,8 @@
         },
         {
           "type": "prose",
-          "md": "A CP shows up in two places in our rules: after a verb (`VP → … (CP) …`, *Henry **said** that she had left*) and after a noun (`NP → … (CP)`, *a dubious **rumor** that he threw the game*). Inside the CP is a whole TP, with its own subject, T and VP. That is where the endless nesting comes from: *I think that you said that she knows that…*",
-          "id": "cp.109d2a57"
+          "md": "A CP shows up in two places in our rules: after a verb (`VP → … (CP) …`, *Henry* **said** *that she had left*) and after a noun (`NP → … (CP)`, *a dubious* **rumor** *that he threw the game*). Inside the CP is a whole TP, with its own subject, T and VP. That is where the endless nesting comes from: *I think that you said that she knows that…*",
+          "id": "cp.dd164287"
         },
         {
           "type": "example",

@@ -31,14 +31,16 @@ def build(g):
             b["id"] = bid
     g.setdefault("exercises", [])
     g.setdefault("requires", [])
+    # Plain punctuation, applied after the ids above so they never move.
+    from typography import plain
+    g.update(plain(g))
     path = os.path.join(OUT, g["id"].replace("/", "--") + ".json")
     with open(path, "w") as f:
         f.write(json.dumps(g, ensure_ascii=False, indent=2) + "\n")
     n = sum(len(s["blocks"]) for s in g["sections"])
     print(f"wrote {path}: {len(g['sections'])} sections, {n} blocks, {len(g['exercises'])} exercises")
-    # em dash guard
-    raw = json.dumps(g, ensure_ascii=False)
-    if "—" in raw: print("  WARNING: em dash present", raw.count("—"))
+    left = sum(1 for _ in __import__("re").finditer("\u2014(?![^\\s\u2014]{1,8}\u2192)", json.dumps(g, ensure_ascii=False)))
+    if left: print("  WARNING: em dash present", left)
 
 # small helpers for readable specs
 def P(md, slide=None, why=False, notes=None):
