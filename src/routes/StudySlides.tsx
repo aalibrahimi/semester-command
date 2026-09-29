@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils";
 import { Inline } from "@/components/study/Blocks";
 import { buildDeck, courseBySlug } from "@/study";
 import { figureAtStep, figureGroups, isEssential, narration } from "@/study/lecture";
-import { guideById } from "@/study/loadGuides";
+import { useGuide } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 
 const RATES = [0.9, 1, 1.15, 1.3];
 
@@ -34,7 +35,7 @@ export default function StudySlides() {
   const { course: cslug, chapter: chslug } = useParams();
   const navigate = useNavigate();
   const course = courseBySlug(cslug);
-  const chapter = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
+  const { guide: chapter, loading: guideLoading } = useGuide(cslug && chslug ? `${cslug}/${chslug}` : undefined);
   const fullDeck = useMemo(() => (chapter ? buildDeck(chapter) : []), [chapter]);
   const [essentials, setEssentials] = useState(() => fullDeck.length > 28);
   const deck = useMemo(() => (essentials ? fullDeck.filter(isEssential) : fullDeck), [fullDeck, essentials]);
@@ -124,6 +125,7 @@ export default function StudySlides() {
   }, [advance, back, navigate, bookHref, stopSpeech]);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guideLoading) return <GuideLoading />;
   if (!chapter || !slide) return <Navigate to={bookHref} replace />;
 
   const c = slide.content;

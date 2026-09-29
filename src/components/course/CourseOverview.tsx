@@ -18,7 +18,7 @@ import { syllabi } from "@/lib/ipc";
 import { extractFacts } from "@/lib/syllabusFacts";
 import { digestFor } from "@/lib/syllabusDigest";
 import { parseCourseLabel } from "@/lib/courseLabel";
-import { guidesForCourse } from "@/study/loadGuides";
+import { summariesForCourse, useGuideIndexVersion, type GuideSummary } from "@/study/loadGuides";
 import { daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
 import { useCourseData } from "@/hooks/useCourseStudy";
@@ -27,6 +27,7 @@ import { calendarDays, classify, isDone } from "@/lib/courseWork";
 import type { AssignmentDetail, CourseSummary, GroupDetail, InstructorRow } from "@/types";
 
 const DAY = 86_400_000;
+const NO_GUIDES: GuideSummary[] = [];
 
 
 function dayLabel(d: Date): string {
@@ -77,7 +78,8 @@ export function CourseOverview({
   const color = courseHsla(s.id, 0.95);
   const { missing, soon, later } = useMemo(() => classify(assignments, now), [assignments, now]);
 
-  const guides = useMemo(() => (study ? guidesForCourse(study.slug, study.guides) : []), [study]);
+  useGuideIndexVersion(); // re-render when a content sync brings new chapters
+  const guides = study ? summariesForCourse(study.slug, study.guides) : NO_GUIDES;
   const { prog, actions } = useCourseData(study, guides);
   const studyRows = actions.filter((a) => a.kind === "read" || a.kind === "reread" || a.kind === "drill").slice(0, 2);
 

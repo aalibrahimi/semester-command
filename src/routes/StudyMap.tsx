@@ -23,7 +23,8 @@ import { GuideTopRow } from "@/components/study/GuideChrome";
 import { cn } from "@/lib/utils";
 import { courseBySlug } from "@/study";
 import type { TrapBlock } from "@/study/guide";
-import { guideById } from "@/study/loadGuides";
+import { useGuide } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 import { buildGraph, cluster, layout, nodeStatus, type ConceptGraph, type NodeStatus, type Placed } from "@/study/map";
 import { useMastery, type GuideMastery } from "@/study/mastery";
 
@@ -67,7 +68,7 @@ export default function StudyMap() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const course = courseBySlug(cslug);
-  const guide = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
+  const { guide, loading: guideLoading } = useGuide(cslug && chslug ? `${cslug}/${chslug}` : undefined);
   const mastery = useMastery(guide?.id ?? "");
 
   const graph = useMemo(() => (guide ? buildGraph(guide) : null), [guide]);
@@ -95,6 +96,7 @@ export default function StudyMap() {
   }, [graph, selectedId, mastery, setParams]);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guideLoading) return <GuideLoading />;
   if (!guide || !graph) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const select = (id: string) => setParams({ n: id });

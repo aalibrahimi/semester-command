@@ -26,7 +26,8 @@ import { GuideTopRow } from "@/components/study/GuideChrome";
 import { cn } from "@/lib/utils";
 import { courseBySlug } from "@/study";
 import { tilesFor, trapLine, type ChipKey, type Tile } from "@/study/cheatsheet";
-import { guideById } from "@/study/loadGuides";
+import { useGuide } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 
 const GAP = 14;
 const COLS = 3;
@@ -214,7 +215,7 @@ export default function StudyCheatSheet() {
   const { course: cslug, chapter: chslug } = useParams();
   const [params, setParams] = useSearchParams();
   const course = courseBySlug(cslug);
-  const guide = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
+  const { guide, loading: guideLoading } = useGuide(cslug && chslug ? `${cslug}/${chslug}` : undefined);
 
   const [chips, setChips] = useState<Record<ChipKey, boolean>>(DEFAULT_CHIPS);
   const allTiles = useMemo(() => (guide ? tilesFor(guide) : []), [guide]);
@@ -256,6 +257,7 @@ export default function StudyCheatSheet() {
   }, []);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guideLoading) return <GuideLoading />;
   if (!guide) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const colW = box.w ? (box.w - GAP * (COLS - 1)) / COLS : 0;

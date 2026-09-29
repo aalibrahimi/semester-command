@@ -28,8 +28,7 @@ import { stripShouting } from "@/lib/stripShouting";
 import { cn } from "@/lib/utils";
 import { courses as studyCourses, daysUntil } from "@/study";
 import type { Course as StudyCourse } from "@/study/types";
-import type { Guide } from "@/study/guide";
-import { guidesForCourse } from "@/study/loadGuides";
+import { summariesForCourse, type GuideSummary } from "@/study/loadGuides";
 import { attemptsRecent, examsRecent, reviewsAll, sectionsAll } from "@/study/mastery";
 import { plan, type Action } from "@/study/plan";
 import { courseProgress } from "@/study/progress";
@@ -65,8 +64,8 @@ function useStudy(): { actions: Action[]; pctBySlug: Map<string, number> } {
   const [state, setState] = useState<{ actions: Action[]; pctBySlug: Map<string, number> }>({ actions: [], pctBySlug: new Map() });
   useEffect(() => {
     let alive = true;
-    const guidesByCourse: Record<string, Guide[]> = {};
-    for (const c of studyCourses) guidesByCourse[c.slug] = guidesForCourse(c.slug, c.guides);
+    const guidesByCourse: Record<string, GuideSummary[]> = {};
+    for (const c of studyCourses) guidesByCourse[c.slug] = summariesForCourse(c.slug, c.guides);
     void Promise.all([sectionsAll(), attemptsRecent(2000), reviewsAll(), examsRecent()])
       .then(([sections, attempts, reviews, exams]) => {
         if (!alive) return;

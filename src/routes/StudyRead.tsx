@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils";
 import { courseBySlug } from "@/study";
 import type { CheckBlock, Guide, GuideSection } from "@/study/guide";
 import { drillsForGuide } from "@/study/drills";
-import { guideById } from "@/study/loadGuides";
+import { useGuide } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { recordReview, saveScratch, sectionStatus, setSectionStatus, useMastery, type GuideMastery, type SectionStatus } from "@/study/mastery";
 
@@ -204,7 +205,7 @@ export default function StudyRead() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const course = courseBySlug(cslug);
-  const guide = guideById(cslug && chslug ? `${cslug}/${chslug}` : undefined);
+  const { guide, loading: guideLoading } = useGuide(cslug && chslug ? `${cslug}/${chslug}` : undefined);
   const mastery = useMastery(guide?.id ?? "");
 
   const sections = guide?.sections ?? [];
@@ -237,6 +238,7 @@ export default function StudyRead() {
   }, [section?.id, params]);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guideLoading) return <GuideLoading />;
   if (!guide || !section) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const go = (i: number) => {

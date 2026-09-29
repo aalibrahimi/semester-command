@@ -86,7 +86,7 @@ for (const f of readdirSync(dir)) {
           if (!isStr(b.src) || !(b.src as string).startsWith("/study-videos/") || !isStr(b.caption)) at(`${id}: video src (/study-videos/…) and caption`);
           else for (const ext of [".mp4", ".webm", ".jpg"]) {
             const f = (b.src as string).replace(/\.mp4$/, ext);
-            if (!existsSync(join(process.cwd(), "public", f))) at(`${id}: video file missing: public${f}`);
+            if (!existsSync(join(process.cwd(), "content", "media", f))) at(`${id}: video file missing: content/media${f} (render it with npm run video:render)`);
           }
           if (b.chapters !== undefined && (!isArr(b.chapters) || !(b.chapters as Record<string, unknown>[]).every((c) => typeof c.t === "number" && isStr(c.label)))) at(`${id}: video.chapters`);
           break;

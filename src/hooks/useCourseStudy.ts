@@ -5,13 +5,13 @@
  */
 import { useEffect, useState } from "react";
 import type { Course } from "@/study/types";
-import type { Guide } from "@/study/guide";
+import type { ChapterLike } from "@/study/guideSummary";
 import { attemptsRecent, examsRecent, reviewsAll, sectionsAll } from "@/study/mastery";
 import { plan, type Action } from "@/study/plan";
 import { courseProgress, type CourseProgress } from "@/study/progress";
 
 /** Progress and the plan, for this one course. */
-export function useCourseData(c: Course | undefined, guides: Guide[]): { prog: CourseProgress | null; actions: Action[] } {
+export function useCourseData(c: Course | undefined, guides: ChapterLike[]): { prog: CourseProgress | null; actions: Action[] } {
   const [state, setState] = useState<{ prog: CourseProgress | null; actions: Action[] }>({ prog: null, actions: [] });
   useEffect(() => {
     if (!c) return;

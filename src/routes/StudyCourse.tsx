@@ -32,10 +32,9 @@ import {
   Timer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { guidesForCourse } from "@/study/loadGuides";
+import { prefetchGuide, summariesForCourse, useGuideIndexVersion, type GuideSummary } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
-import type { Guide } from "@/study/guide";
 import type { SectionStatus } from "@/study/mastery";
 import type { Action } from "@/study/plan";
 import { ago, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
@@ -93,7 +92,8 @@ export default function StudyCourse() {
  * of a course's page (CourseDetail).
  */
 export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean }) {
-  const [guides] = useState(() => guidesForCourse(c.slug, c.guides));
+  useGuideIndexVersion(); // re-render when a content sync brings new chapters
+  const guides = summariesForCourse(c.slug, c.guides);
   const [tab, setTab] = useState<"lectures" | "exam">("lectures");
   const { prog, actions } = useCourseData(c, guides);
 
@@ -233,18 +233,21 @@ const STATUS_ICON: Record<SectionStatus, { icon: typeof Circle; cls: string; lab
   unread: { icon: Circle, cls: "text-foreground/40", label: "not started" },
 };
 
-function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: Guide; cp?: ChapterProgress; here: boolean; nextSection?: string; guides: Guide[] }) {
+function ChapterCard({ ch, cp, here, nextSection, guides }: { ch: GuideSummary; cp?: ChapterProgress; here: boolean; nextSection?: string; guides: GuideSummary[] }) {
   const started = cp ? cp.mastered + cp.shaky > 0 : false;
   return (
-    <li className={cn("rounded-xl border bg-card px-5 py-4 shadow-sm", here ? "border-brand ring-2 ring-brand/25" : "border-foreground/15")}>
+    <li
+      onMouseEnter={() => prefetchGuide(ch.id)}
+      className={cn("rounded-xl border bg-card px-5 py-4 shadow-sm", here ? "border-brand ring-2 ring-brand/25" : "border-foreground/15")}
+    >
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-2xs text-muted-foreground">{ch.lessons}</span>
         <span className="flex items-center gap-1 font-mono text-2xs text-muted-foreground">
           <Clock className="h-3 w-3" /> {ch.estimatedMinutes} min
         </span>
-        {ch.exercises.length ? (
+        {ch.exerciseCount ? (
           <span className="flex items-center gap-1 font-mono text-2xs text-brand-fg">
-            <PencilLine className="h-3 w-3" /> {ch.exercises.length} to do yourself
+            <PencilLine className="h-3 w-3" /> {ch.exerciseCount} to do yourself
           </span>
         ) : null}
         {cp?.done ? (

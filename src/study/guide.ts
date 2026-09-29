@@ -129,9 +129,10 @@ export interface FigureBlock extends BlockBase {
 }
 
 /**
- * A narrated-by-captions animation rendered to MP4 and shipped in
- * public/study-videos/. `src` is the public path ("/study-videos/x.mp4");
- * x.webm (VP9 fallback) and x.jpg (poster) must sit next to it.
+ * A captioned animation rendered to MP4 (content/video/render.mjs). The
+ * files live in content/media/ and reach the app through the Railway content
+ * cache, not the bundle. `src` is "/study-videos/x.mp4"; x.webm (VP9
+ * fallback) and x.jpg (poster) must sit next to it.
  * `chapters` are jump points in seconds, shown as chips under the player.
  */
 export interface VideoBlock extends BlockBase {

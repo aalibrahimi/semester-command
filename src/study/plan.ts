@@ -11,7 +11,7 @@
  * then shaky sections, then unread sections of the nearest exam's chapters.
  * No mock in the last three days for an exam within ten → a mock.
  */
-import type { Guide } from "./guide";
+import type { ChapterLike } from "./guideSummary";
 import type { AttemptRecord, ExamRecord, ReviewRecord, SectionRecord } from "./mastery";
 import type { Course } from "./types";
 
@@ -32,7 +32,7 @@ export interface Action {
 
 export interface PlanInput {
   courses: Course[];
-  guidesByCourse: Record<string, Guide[]>;
+  guidesByCourse: Record<string, ChapterLike[]>;
   sections: SectionRecord[];
   attempts: AttemptRecord[];
   reviews: ReviewRecord[];

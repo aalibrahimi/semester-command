@@ -26,6 +26,7 @@
 pub mod canvas;
 pub mod class_slots;
 pub mod commands;
+pub mod content;
 pub mod db;
 pub mod degree;
 pub mod grades;
@@ -78,6 +79,11 @@ pub fn run() {
 
     builder
         .invoke_handler(tauri::generate_handler![
+            commands::content::content_asset,
+            commands::content::content_guide,
+            commands::content::content_manifest,
+            commands::content::content_status,
+            commands::content::content_sync,
             commands::auth::auth_status,
             commands::auth::clear_session,
             commands::auth::harvest_session,
@@ -169,6 +175,17 @@ pub fn run() {
 
             setup_auth(app.handle().clone(), dir);
             setup_sync_schedule(app.handle().clone());
+            // Study content from Railway: a quiet background pull on launch.
+            // Off (and silent) when no DATABASE_URL is configured.
+            {
+                let handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    match commands::content::run(&handle).await {
+                        Ok(_) | Err(content::ContentError::NotConfigured) => {}
+                        Err(e) => tracing::warn!(error = %e, "launch content sync failed; using cached and bundled guides"),
+                    }
+                });
+            }
             setup_tray(app)?;
             setup_notify_schedule(app.handle().clone());
 

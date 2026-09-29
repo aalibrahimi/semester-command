@@ -18,6 +18,7 @@
 //!    message that names what broke and how to fix it, as §9.7 requires.
 
 pub mod auth;
+pub mod content;
 pub mod data;
 pub mod degree;
 pub mod grades;

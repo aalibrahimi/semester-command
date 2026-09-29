@@ -28,8 +28,8 @@ import { cn } from "@/lib/utils";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
 import { grade as gradeAnswer } from "@/study/drill";
 import { drillsForGuide } from "@/study/drills";
-import type { Guide } from "@/study/guide";
-import { guideById, guidesForCourse } from "@/study/loadGuides";
+import { useGuides } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 import { examCapDays, previewIntervals, recordAttempt, recordReview, useMasteries, isDue, type GuideMastery } from "@/study/mastery";
 import { buildQueue, cardsFor, counts, interleave, intervalLabel, isShaky, nextDue, shakyQueue, CARD_KIND_LABEL, type Card } from "@/study/recall";
 
@@ -83,12 +83,12 @@ export default function StudyRecall() {
   const [params] = useSearchParams();
   const course = courseBySlug(cslug);
   const courseWide = !chslug;
-  const guides = useMemo<Guide[]>(() => {
+  const wantIds = useMemo(() => {
     if (!course) return [];
-    if (courseWide) return guidesForCourse(course.slug, course.guides);
-    const g = guideById(`${course.slug}/${chslug}`);
-    return g ? [g] : [];
+    if (courseWide) return course.guides.map((slug) => `${course.slug}/${slug}`);
+    return [`${course.slug}/${chslug}`];
   }, [course, courseWide, chslug]);
+  const { guides, loading: guidesLoading } = useGuides(wantIds);
   const guideIds = useMemo(() => guides.map((g) => g.id), [guides]);
   const masteries = useMasteries(guideIds);
   const allLoaded = guides.length > 0 && guides.every((g) => masteries[g.id]?.loaded);
@@ -183,6 +183,7 @@ export default function StudyRecall() {
   }, [card, revealed, grade, missLocked]);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guidesLoading) return <GuideLoading />;
   if (!guide) return <Navigate to={`/study/${course.slug}`} replace />;
 
   const totals = guides.reduce(

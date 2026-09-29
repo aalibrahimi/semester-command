@@ -1,0 +1,1620 @@
+[
+ {
+  "id": "cs146/0-notation",
+  "course": "cs146",
+  "lessons": "Chapter 0",
+  "title": "Reading the notation CS 146 uses",
+  "summary": "Read n, 2ⁿ, log n, Σ, n^(log_b a), T(n) and O(g(n)) as sentences, out loud, without stopping.",
+  "estimatedMinutes": 40,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why this chapter exists"
+   },
+   {
+    "id": "n",
+    "heading": "n: the size of the input"
+   },
+   {
+    "id": "exponents",
+    "heading": "Exponents: repeated multiplication (and why 2ⁱ keeps showing up)"
+   },
+   {
+    "id": "log",
+    "heading": "log n: how many times can you halve it?"
+   },
+   {
+    "id": "sum",
+    "heading": "Σ and 1 + 2 + … + (n−1): a for-loop that adds"
+   },
+   {
+    "id": "nlog",
+    "heading": "n^(log_b a): the scariest-looking thing in the course, decoded"
+   },
+   {
+    "id": "T",
+    "heading": "T(n): a function that returns \"how many steps\""
+   },
+   {
+    "id": "bigo",
+    "heading": "O(g(n)): \"grows no faster than\""
+   },
+   {
+    "id": "induction",
+    "heading": "Induction: proving something for every n"
+   },
+   {
+    "id": "check",
+    "heading": "Can you read these now?"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "56bb86b7eb78bd96ff0e2a47587038a9a87025af5f51230ffc5435bed31d71a1"
+ },
+ {
+  "id": "cs146/11-hash-tables",
+  "course": "cs146",
+  "lessons": "Lecture 11",
+  "title": "Hash tables: the library analogy, hash functions, chaining",
+  "summary": "From the library analogy up: the dictionary ADT, direct-address tables and why they waste space, hash functions (division and multiplication), collisions, chaining with insert at head, load factor α = n/m, and why resizing keeps every operation amortized O(1).",
+  "estimatedMinutes": 75,
+  "requires": [
+   "cs146/2-adts-invariants-insertion",
+   "cs146/4-big-o-merge-sort"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: find anything in O(1)"
+   },
+   {
+    "id": "library",
+    "heading": "The library analogy, phase by phase"
+   },
+   {
+    "id": "adt",
+    "heading": "The dictionary ADT: keys and values"
+   },
+   {
+    "id": "direct",
+    "heading": "Direct-address tables: the key IS the index"
+   },
+   {
+    "id": "hashing",
+    "heading": "Hash tables and hash functions"
+   },
+   {
+    "id": "division",
+    "heading": "Hashing by division: h(k) = k mod m"
+   },
+   {
+    "id": "multiplication",
+    "heading": "Hashing by multiplication"
+   },
+   {
+    "id": "chaining",
+    "heading": "Collision resolution: chaining"
+   },
+   {
+    "id": "runtime",
+    "heading": "How fast? Load factor, resizing, amortized O(1)"
+   },
+   {
+    "id": "apps",
+    "heading": "Where hash tables show up"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 7,
+  "sha": "41d41c00b04d6371c9eaab2ccf54249f95bc11bc454e2b11c428845428815f11"
+ },
+ {
+  "id": "cs146/2-adts-invariants-insertion",
+  "course": "cs146",
+  "lessons": "Lectures 2–3",
+  "title": "ADTs, loop invariants, and insertion sort",
+  "summary": "Say what an ADT is and pick stack vs queue for a real situation; build an array stack and a circular queue; draw a linked list and splice into it without losing anything; prove a loop correct with a three-part invariant; trace insertion sort and explain its best and worst case.",
+  "estimatedMinutes": 90,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: two lectures, six ideas"
+   },
+   {
+    "id": "why",
+    "heading": "ADT: what it does, not how"
+   },
+   {
+    "id": "stack",
+    "heading": "Stack: last in, first out"
+   },
+   {
+    "id": "queue",
+    "heading": "Queue: first in, first out"
+   },
+   {
+    "id": "linked",
+    "heading": "Linked list: boxes and arrows"
+   },
+   {
+    "id": "invariants",
+    "heading": "Loop invariants: proving a loop is right"
+   },
+   {
+    "id": "insertion",
+    "heading": "Insertion sort"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 12,
+  "sha": "201475bd3d5be1feb286a7ae1504eb20803fcb11020f29676340f439372c170a"
+ },
+ {
+  "id": "cs146/4-big-o-merge-sort",
+  "course": "cs146",
+  "lessons": "Lectures 4–5",
+  "title": "Big-O in practice, divide and conquer, and merge sort",
+  "summary": "Count an algorithm's steps, turn the count into Big-O, recognize the common growth shapes on sight, then use the divide-and-conquer recipe to build merge sort and explain, with one picture, why it costs n log n.",
+  "estimatedMinutes": 90,
+  "requires": [
+   "cs146/0-notation",
+   "cs146/2-adts-invariants-insertion"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: what this chapter is for"
+   },
+   {
+    "id": "count",
+    "heading": "Step 1: count steps, not seconds"
+   },
+   {
+    "id": "bigo",
+    "heading": "Step 2: Big-O keeps only the shape"
+   },
+   {
+    "id": "classes",
+    "heading": "Step 3: the growth ladder, and how to spot each rung"
+   },
+   {
+    "id": "binsearch",
+    "heading": "Step 4: binary search, the halving trick"
+   },
+   {
+    "id": "dc",
+    "heading": "Step 5: divide and conquer, a recipe"
+   },
+   {
+    "id": "merge",
+    "heading": "Merge: the one move merge sort needs"
+   },
+   {
+    "id": "mergesort",
+    "heading": "Merge sort, top to bottom"
+   },
+   {
+    "id": "whynlogn",
+    "heading": "Why merge sort costs n log n (one picture)"
+   },
+   {
+    "id": "choose",
+    "heading": "Which sort, when?"
+   },
+   {
+    "id": "project",
+    "heading": "Project 1: SortingHub (due Fri Sep 25, 10% of the grade)"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 11,
+  "sha": "5a86af1b1bb60fed45710c8c3afc3e8b64cb381bb4774298feaead12a6c59e6e"
+ },
+ {
+  "id": "cs146/6-recurrences",
+  "course": "cs146",
+  "lessons": "Lecture 6",
+  "title": "Recurrences: reading them, unrolling them, the recursion tree, and substitution",
+  "summary": "Read a recurrence as a sentence about one call, compute one by hand, solve it by drawing the recursion tree and adding row by row, and prove the answer with substitution. The master method shortcut gets its own chapter next.",
+  "estimatedMinutes": 70,
+  "requires": [
+   "cs146/0-notation",
+   "cs146/4-big-o-merge-sort"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: timing a function that calls itself"
+   },
+   {
+    "id": "read",
+    "heading": "Step 1: read a recurrence as a sentence"
+   },
+   {
+    "id": "unroll",
+    "heading": "Step 2: compute one by hand (n = 8)"
+   },
+   {
+    "id": "tree",
+    "heading": "Step 3: the recursion tree (add it up row by row)"
+   },
+   {
+    "id": "substitution",
+    "heading": "Step 4: substitution (guess, then prove it)"
+   },
+   {
+    "id": "hw",
+    "heading": "HW 6, solved in full"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "25c4ffddcd1872bb6b6e90cf22f60a19fc6fd612bc03f1c5b26b965fadad6da7"
+ },
+ {
+  "id": "cs146/7-master-method",
+  "course": "cs146",
+  "lessons": "Lecture 7",
+  "title": "The master method: solve a recurrence in five moves",
+  "summary": "Match T(n) = aT(n/b) + f(n), compute the watershed n^(log_b a), compare it with f(n), read off the case and the Θ answer, and recognize the recurrences where the master method does not apply (including Case 3's regularity check).",
+  "estimatedMinutes": 60,
+  "requires": [
+   "cs146/6-recurrences"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: a shortcut for the tree"
+   },
+   {
+    "id": "shape",
+    "heading": "Move 1: match the shape"
+   },
+   {
+    "id": "watershed",
+    "heading": "Move 2: the watershed n^(log_b a) is the leaves' work"
+   },
+   {
+    "id": "master",
+    "heading": "Moves 3 and 4: compare, then read off the case"
+   },
+   {
+    "id": "limits",
+    "heading": "Move 5: know when it does NOT apply"
+   },
+   {
+    "id": "hw",
+    "heading": "HW 7, solved in full"
+   },
+   {
+    "id": "practice",
+    "heading": "Practice set"
+   },
+   {
+    "id": "pro",
+    "heading": "Why engineers care: the case names the bottleneck"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "97c7c6422b8bd622e5d54fc4111f704be9bcb35caf1d09aa377c6434099308d9"
+ },
+ {
+  "id": "cs146/8-heaps-heapsort-pq",
+  "course": "cs146",
+  "lessons": "Lecture 8",
+  "title": "Heaps, heapify, buildHeap, heap sort, priority queues",
+  "summary": "Say why a priority queue needs a heap; read a heap as a tree and as an array with the index formulas; trace heapify, buildHeap and heapSort; explain why buildHeap is O(n) and heap sort is O(n log n) with O(1) space; and run insert and extract on a priority queue.",
+  "estimatedMinutes": 75,
+  "requires": [
+   "cs146/2-adts-invariants-insertion",
+   "cs146/4-big-o-merge-sort"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: always hand over the most urgent thing"
+   },
+   {
+    "id": "why",
+    "heading": "Why heaps exist: the emergency room"
+   },
+   {
+    "id": "array",
+    "heading": "The array IS the tree"
+   },
+   {
+    "id": "heapify",
+    "heading": "heapify: let one value sink"
+   },
+   {
+    "id": "build",
+    "heading": "buildHeap: any array → a heap, in O(n)"
+   },
+   {
+    "id": "sort",
+    "heading": "heapSort: pull the max out, n times"
+   },
+   {
+    "id": "pq",
+    "heading": "Priority queue: insert and extract, O(log n) each"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 11,
+  "sha": "7782b2c2862a2e080df46a10920b026de59394258627331affe7a4129884e0db"
+ },
+ {
+  "id": "cs146/9-quicksort",
+  "course": "cs146",
+  "lessons": "Lecture 9",
+  "title": "Quicksort: partition, recursion, and why the worst case is n²",
+  "summary": "Trace Lomuto partition (pivot, i, j, the final swap, the return value); run quicksort's recursion on an array; write its recurrence and explain the Θ(n²) worst case, the Θ(n log n) best and average case, and how real libraries avoid the worst case.",
+  "estimatedMinutes": 70,
+  "requires": [
+   "cs146/4-big-o-merge-sort",
+   "cs146/6-recurrences"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: sort in place by picking a pivot"
+   },
+   {
+    "id": "why",
+    "heading": "The idea: line a class up by height"
+   },
+   {
+    "id": "partition",
+    "heading": "partition: the one step that does all the work"
+   },
+   {
+    "id": "quicksort",
+    "heading": "quicksort: partition, then recurse on both sides"
+   },
+   {
+    "id": "analysis",
+    "heading": "How fast? It depends on the pivot"
+   },
+   {
+    "id": "practice",
+    "heading": "How real code avoids the worst case"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 9,
+  "sha": "3c9ecec889d6cb6edf7127f6c25548d6d130840f6782a4aa2b9052097cc60274"
+ },
+ {
+  "id": "cs154/1-sets-functions",
+  "course": "cs154",
+  "lessons": "Lessons 1–2",
+  "title": "Reading set notation, sets, power sets, products, functions",
+  "summary": "Read and write set-builder notation without guessing; tell ϕ, {ϕ}, and λ apart; build a power set and a Cartesian product with the right brackets; say what total and partial functions are in Chen's words; see why δ : Q × Σ → Q is coming.",
+  "estimatedMinutes": 50,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why a course about computers starts with sets"
+   },
+   {
+    "id": "reading",
+    "heading": "Reading { … | … } — the notation that was costing you points"
+   },
+   {
+    "id": "sets",
+    "heading": "Sets: the ♥ definitions"
+   },
+   {
+    "id": "power",
+    "heading": "Power set: the set of all subsets"
+   },
+   {
+    "id": "product",
+    "heading": "Cartesian product: all the ordered pairs"
+   },
+   {
+    "id": "functions",
+    "heading": "Functions, total and partial"
+   },
+   {
+    "id": "graphs",
+    "heading": "Directed graphs and walks"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "4d28f82a8ba81488273c4e1bd428cb9318d10928fbb1cdf84b3694a62b21862d"
+ },
+ {
+  "id": "cs154/3-strings-languages",
+  "course": "cs154",
+  "lessons": "Lessons 3–4",
+  "title": "Alphabets, strings, formal languages — and the notation that costs points",
+  "summary": "Define alphabet, string, language in Chen's words; compute lengths, exponents, reverses, prefixes; tell λ, ϕ, {λ} apart; translate English ↔ set-builder for 'at least / exactly / starts with' languages and their complements; compute L₁L₂ and Lⁿ with independent indices.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "cs154/1-sets-functions"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why 'language' means something strange here"
+   },
+   {
+    "id": "strings",
+    "heading": "Alphabets and strings"
+   },
+   {
+    "id": "languages",
+    "heading": "Formal languages"
+   },
+   {
+    "id": "patterns",
+    "heading": "English ↔ set-builder: the patterns he expects"
+   },
+   {
+    "id": "rules",
+    "heading": "The 12 notation rules (index-card material)"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "3295a4afc69fff2df02a8ce1458e7863753232d134f9a76d3428c38ddd689f7d"
+ },
+ {
+  "id": "cs154/5-dfa",
+  "course": "cs154",
+  "lessons": "Lessons 5–7",
+  "title": "DFAs: what one is, how it runs, how to analyze and design one",
+  "summary": "Explain what a DFA is and what question it answers; describe its structure and workflow in Chen's ♥ sentences; trace a string through a DFA; read L(M) off a diagram; design a DFA from a set-builder description with a trap and a totality check; write the formal 5-tuple and δ table.",
+  "estimatedMinutes": 75,
+  "requires": [
+   "cs154/3-strings-languages"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "What a DFA is, from zero"
+   },
+   {
+    "id": "structure",
+    "heading": "Structure: three blocks"
+   },
+   {
+    "id": "workflow",
+    "heading": "Workflow: running the machine"
+   },
+   {
+    "id": "analyze",
+    "heading": "Analyze: given M, find L(M)"
+   },
+   {
+    "id": "design",
+    "heading": "Design: given L, build M"
+   },
+   {
+    "id": "formal",
+    "heading": "The formal definition (Lesson 7)"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "3e1923e3c4f5c7a6c8988d819484d864693d60e2523d2ae8e441fa86b699ab51"
+ },
+ {
+  "id": "cs154/8-nfa-intro",
+  "course": "cs154",
+  "lessons": "Lesson 8",
+  "title": "NFAs: machines that can guess",
+  "summary": "Say what 'deterministic' means and the two ways an NFA breaks the DFA rule; run an NFA by hand with processes (copy on a choice, halt on no arrow); decide accept or reject with the h ∧ c ∧ f rule; find L(M) for a small NFA in set-builder form; answer Chen's ten true/false questions.",
+  "estimatedMinutes": 55,
+  "requires": [
+   "cs154/5-dfa"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why NFAs exist"
+   },
+   {
+    "id": "terms",
+    "heading": "Three terms first"
+   },
+   {
+    "id": "rules",
+    "heading": "How an NFA runs: the two violations"
+   },
+   {
+    "id": "ex1",
+    "heading": "Example 1: L = {abb}, with and without a trap"
+   },
+   {
+    "id": "ex2",
+    "heading": "Example 2: a choice, and two processes"
+   },
+   {
+    "id": "flow",
+    "heading": "The one-process flowchart"
+   },
+   {
+    "id": "practice",
+    "heading": "Chen's exercises"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "d55478da652c288d4037771dff7505070c29637a5bc8184e5b9f9934801865c1"
+ },
+ {
+  "id": "hist15/1-slavery",
+  "course": "hist15",
+  "lessons": "Weeks 1–3 · Class Discussions #1 and #2",
+  "title": "Slavery and the Making of America: The Downward Spiral",
+  "summary": "How slavery in North America went from a system with no rules (1620s) to a race-based, hereditary, legal caste (1740), told through New Amsterdam, the Chesapeake, and Carolina. Ends with the four discussion questions and the class exercise, answered with the specific examples the rubric rewards.",
+  "estimatedMinutes": 55,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: slavery was built, law by law"
+   },
+   {
+    "id": "newamsterdam",
+    "heading": "New Amsterdam, 1620s: the first eleven"
+   },
+   {
+    "id": "chesapeake",
+    "heading": "The Chesapeake: when race entered the law"
+   },
+   {
+    "id": "carolina",
+    "heading": "Carolina: the first slave society"
+   },
+   {
+    "id": "stono",
+    "heading": "The Stono Rebellion (1739) and the black code"
+   },
+   {
+    "id": "discussion",
+    "heading": "The four discussion questions and the class exercise"
+   },
+   {
+    "id": "quiz",
+    "heading": "Rehearsal: quick recall"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "ea37701a44b89f433107f4ce761e3eb9b822e59013b941105ace50ed283fa0ac"
+ },
+ {
+  "id": "hist15/11-market-revolution",
+  "course": "hist15",
+  "lessons": "Ch. 11 + lectures",
+  "title": "The Market Revolution, Lowell, and Cherokee Removal",
+  "summary": "Explain what the market revolution was and name its parts; describe the Lowell system and why it ended; tell the Cherokee removal story with its four legal steps.",
+  "estimatedMinutes": 50,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "What 'market revolution' means"
+   },
+   {
+    "id": "transport",
+    "heading": "The transportation revolution"
+   },
+   {
+    "id": "factories",
+    "heading": "Factories and the Lowell system"
+   },
+   {
+    "id": "economy",
+    "heading": "Banks, credit, cotton, and the social effects"
+   },
+   {
+    "id": "cherokee",
+    "heading": "Cherokee Removal (the Sep 16 lecture)"
+   },
+   {
+    "id": "quiz",
+    "heading": "Quiz #2 rehearsal"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "83701631029679fc07fe0c068e7f95b5e704b7be5bbf76fd8e2ea3f5af91d09c"
+ },
+ {
+  "id": "hist15/12-reform",
+  "course": "hist15",
+  "lessons": "Weeks 6–7 · Sep 21 and Sep 23 lectures",
+  "title": "Abolitionism and Women's Rights",
+  "summary": "What made 1830s abolitionism new (immediate emancipation), its strategies and leaders (Walker, Garrison, Maria Stewart, the Grimké sisters, Douglass, Sojourner Truth), how women's antislavery work turned into a women's rights movement, and the Seneca Falls Declaration of Sentiments. Includes both class discussions (Angelina Grimké; Seneca Falls).",
+  "estimatedMinutes": 50,
+  "requires": [
+   "hist15/6-walker"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: one movement grows out of another"
+   },
+   {
+    "id": "abolition",
+    "heading": "Abolitionism: immediate emancipation"
+   },
+   {
+    "id": "grimke",
+    "heading": "Angelina Grimké: 'Human Rights not founded on Sex'"
+   },
+   {
+    "id": "womensrights",
+    "heading": "From antislavery to women's rights"
+   },
+   {
+    "id": "senecafalls",
+    "heading": "Seneca Falls and the Declaration of Sentiments (1848)"
+   },
+   {
+    "id": "quiz",
+    "heading": "Rehearsal: quick recall"
+   }
+  ],
+  "exerciseCount": 4,
+  "sha": "f15a0159647dbd03335f3a7579a8f0d264e871252b52477b0bf55f42aaea5d5b"
+ },
+ {
+  "id": "hist15/3-declaration",
+  "course": "hist15",
+  "lessons": "Week 2 · Aug 31 lecture",
+  "title": "The Declaration of Independence",
+  "summary": "Why the colonies broke with Britain (the 1754–1775 crisis), how Congress got to independence in 1776, where the Declaration's ideas came from (the English Bill of Rights and Locke), how the document is built, and who its promise of equality left out.",
+  "estimatedMinutes": 35,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: a list of complaints and a theory of government"
+   },
+   {
+    "id": "crisis",
+    "heading": "The colonial crisis, 1754 to 1775"
+   },
+   {
+    "id": "ideas",
+    "heading": "Where the ideas came from: 1689 and Locke"
+   },
+   {
+    "id": "document",
+    "heading": "How the document is built"
+   },
+   {
+    "id": "limits",
+    "heading": "Who 'all men are created equal' left out"
+   }
+  ],
+  "exerciseCount": 4,
+  "sha": "6459ca9185ee3e5b078099d10632efe3a024f4dfa4274ac18df601e9c8ecb1df"
+ },
+ {
+  "id": "hist15/6-walker",
+  "course": "hist15",
+  "lessons": "Week 6",
+  "title": "David Walker's Appeal to the Coloured Citizens of the World",
+  "summary": "Read the excerpt with the tools to see its argument, then write the two exercise answers: Q1 (argument + key phrases, 4–5 sentences) and Q2 (1830s context, 2–3 sentences): before you open the 40-minute timer.",
+  "estimatedMinutes": 45,
+  "requires": [],
+  "sections": [
+   {
+    "id": "how",
+    "heading": "How the exercise works (read this first)"
+   },
+   {
+    "id": "who",
+    "heading": "Who Walker was and what the Appeal is"
+   },
+   {
+    "id": "argument",
+    "heading": "The argument, paragraph by paragraph"
+   },
+   {
+    "id": "context",
+    "heading": "The 1830s: what was shaping Walker"
+   },
+   {
+    "id": "answers",
+    "heading": "Model answers: write yours first, then compare"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "4dd85c11e57ebd23434ba1beab7860afcba31f1142aaa89d23f3188e0214c898"
+ },
+ {
+  "id": "hist15/8-confederation-to-constitution",
+  "course": "hist15",
+  "lessons": "Ch. 8–9",
+  "title": "From Confederation to Constitution, and the 1790s",
+  "summary": "Answer any multiple-choice question on why the Articles failed, what the Constitution changed, why people objected, and what held the 1790s together: with the names, dates and terms a textbook quiz uses.",
+  "estimatedMinutes": 60,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "The story in one paragraph"
+   },
+   {
+    "id": "articles",
+    "heading": "What kind of government did the Articles of Confederation create?"
+   },
+   {
+    "id": "failed",
+    "heading": "Why did the Articles of Confederation fail?"
+   },
+   {
+    "id": "changed",
+    "heading": "How did the Constitution change the nation's form of government?"
+   },
+   {
+    "id": "objected",
+    "heading": "Why did so many Americans object to the Constitution?"
+   },
+   {
+    "id": "conclusion",
+    "heading": "Conclusion of chapter 8: what the Constitution settled and what it didn't"
+   },
+   {
+    "id": "stability",
+    "heading": "Ch. 9: What were the sources of political stability in the 1790s?"
+   },
+   {
+    "id": "discussion",
+    "heading": "Class Discussion #3: the Constitution and 'Are We to Be a Nation?'"
+   },
+   {
+    "id": "quiz",
+    "heading": "Quiz #1 rehearsal"
+   }
+  ],
+  "exerciseCount": 3,
+  "sha": "6547fec0472cb6392ac1bd18bbbaca484e417938a515ba7584edd48b5c8a5534"
+ },
+ {
+  "id": "ling112/0-what-syntax-is",
+  "course": "ling112",
+  "lessons": "Chapter 0 · Week 1",
+  "title": "What syntax studies, and how to read a gloss",
+  "summary": "From zero: the handful of words every lecture assumes (morpheme, subject, object, *, #), why linguists say sentences have structure, how the world's languages differ (word order and the other parameters), and how to read and write the three-line gloss used for every non-English example.",
+  "estimatedMinutes": 55,
+  "requires": [],
+  "sections": [
+   {
+    "id": "start",
+    "heading": "Start here: the words every lecture assumes you know"
+   },
+   {
+    "id": "why",
+    "heading": "Why linguists say sentences have structure"
+   },
+   {
+    "id": "universals",
+    "heading": "Five properties every human language has"
+   },
+   {
+    "id": "variation",
+    "heading": "How languages differ: the parameters"
+   },
+   {
+    "id": "gloss",
+    "heading": "Reading and writing an interlinear gloss"
+   },
+   {
+    "id": "how-class-works",
+    "heading": "How this class works (so the packet makes sense)"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "0df7179f5808cbb49a9a967c40dae4bde8283336321076a790f46df07743e0a8"
+ },
+ {
+  "id": "ling112/1-universals",
+  "course": "ling112",
+  "lessons": "Week 1 (Aug 20)",
+  "title": "Which universal is this? Categories, constituents, sentence types, hierarchy and recursion",
+  "summary": "From zero: what each of the five properties every human language shares actually means, what it looks like in a real sentence, and how to name the property from one example in a few seconds.",
+  "estimatedMinutes": 45,
+  "requires": [
+   "ling112/0-what-syntax-is"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture in one minute"
+   },
+   {
+    "id": "categories",
+    "heading": "Categories: words come in kinds"
+   },
+   {
+    "id": "constituents",
+    "heading": "Constituents: words team up into units"
+   },
+   {
+    "id": "types",
+    "heading": "Sentence types: statements, questions, commands"
+   },
+   {
+    "id": "hierarchy",
+    "heading": "Hierarchy: units inside units, and grouping decides meaning"
+   },
+   {
+    "id": "recursion",
+    "heading": "Recursion: a unit inside a unit of the same kind, forever"
+   },
+   {
+    "id": "which",
+    "heading": "Which universal is this? The five-question method"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 20,
+  "sha": "a89c876f295427a223ddd1de8c21a8b8e48f18a76526fd7e39e204da33041d23"
+ },
+ {
+  "id": "ling112/2-categories",
+  "course": "ling112",
+  "lessons": "Week 2",
+  "title": "Syntactic categories by distribution",
+  "summary": "From zero: what a category is, the eleven categories on Dr. Nie's list with what each one does, the two kinds of test (endings and neighbors) that prove a label, and how to label every word of a sentence with a reason, the way HW 1 and the oral exam ask.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "ling112/0-what-syntax-is",
+   "ling112/1-universals"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Start here: what a category is, and why meaning can't find it"
+   },
+   {
+    "id": "list",
+    "heading": "The eleven categories, one at a time"
+   },
+   {
+    "id": "tests",
+    "heading": "The tests that prove a label"
+   },
+   {
+    "id": "props",
+    "heading": "Grammatical properties: what categories carry in any language"
+   },
+   {
+    "id": "practice",
+    "heading": "Practice: the diagnostic quiz and handout (23) to (24)"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 7,
+  "sha": "fd240e56a2a4eda39b19c9820f47dfae437090e1d047d9e015ea53b715dffc37"
+ },
+ {
+  "id": "ling112/4-heads-dependents",
+  "course": "ling112",
+  "lessons": "Week 4",
+  "title": "Heads, dependents, complements and adjuncts",
+  "summary": "From zero: what a phrase and its head are, how to find the head, the difference between required and optional dependents (arguments vs adjuncts, complements vs adjuncts) with the four tests, how to draw a dependency diagram, and head directionality in English, Japanese and Arabic.",
+  "estimatedMinutes": 65,
+  "requires": [
+   "ling112/2-categories"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Start here: phrases and their heads"
+   },
+   {
+    "id": "args",
+    "heading": "Required or optional: arguments and adjuncts"
+   },
+   {
+    "id": "comp",
+    "heading": "Complements vs adjuncts: the four tests"
+   },
+   {
+    "id": "dep",
+    "heading": "Dependency diagrams: heads drawn as arrows"
+   },
+   {
+    "id": "dir",
+    "heading": "Head directionality: head first or head last?"
+   },
+   {
+    "id": "oral",
+    "heading": "If this is your oral-exam concept"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "e484838838483e3c92f90a4697ece24702181fcb97e3375e2d6d473c79008e22"
+ },
+ {
+  "id": "ling112/5-constituency-tests",
+  "course": "ling112",
+  "lessons": "Week 5",
+  "title": "Constituent structure and constituency tests",
+  "summary": "From zero: what a constituent is, the three tests that prove one (substitution, movement, fragment answer) with each term defined before it's used, how to use the tests to pull apart an ambiguous sentence, and how to write a full Quiz 2 answer.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "ling112/4-heads-dependents"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Start here: what a constituent is"
+   },
+   {
+    "id": "sub",
+    "heading": "Test 1: substitution (swap it for one word)"
+   },
+   {
+    "id": "move",
+    "heading": "Test 2: movement (can it travel as a block?)"
+   },
+   {
+    "id": "frag",
+    "heading": "Test 3: fragment answer (can it answer alone?)"
+   },
+   {
+    "id": "ambig",
+    "heading": "Using the tests on an ambiguous sentence"
+   },
+   {
+    "id": "finite",
+    "heading": "A note on tense: finite vs non-finite verb phrases"
+   },
+   {
+    "id": "practice",
+    "heading": "Practice: a full Quiz 2 answer (handout (4) to (6))"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "050c42e20e90ed0a37bc013b9f8a3eaa5c98f28aa3f65f76e2d56c3647eaec02"
+ },
+ {
+  "id": "ling112/6-phrase-structure",
+  "course": "ling112",
+  "lessons": "Week 6",
+  "title": "Phrase structure rules and drawing trees",
+  "summary": "Read a phrase structure rule out loud; use Dr. Nie's eight English rules to bracket and draw a tree for any sentence, with a null D for bare nouns and a T (a modal, or PAST/PRES) in every sentence; draw both trees for an ambiguous sentence.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "ling112/1-universals",
+   "ling112/4-heads-dependents",
+   "ling112/5-constituency-tests"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why we need rules at all"
+   },
+   {
+    "id": "trees",
+    "heading": "Start here: how to read a tree"
+   },
+   {
+    "id": "read",
+    "heading": "How to read a rule"
+   },
+   {
+    "id": "rules",
+    "heading": "The eight English rules"
+   },
+   {
+    "id": "dp",
+    "heading": "Every noun phrase is a DP, even without a determiner"
+   },
+   {
+    "id": "tp",
+    "heading": "Every sentence is a TP, and T is never empty"
+   },
+   {
+    "id": "cp",
+    "heading": "Clauses inside clauses: CP"
+   },
+   {
+    "id": "draw",
+    "heading": "Drawing a tree, step by step"
+   },
+   {
+    "id": "ambig",
+    "heading": "One string, two trees: structural ambiguity"
+   },
+   {
+    "id": "practice",
+    "heading": "Practice: handout (7), (9), (10), (11)"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "e8c0322e9a4f1afacaadff55d3d430de6a906247f43026379dff7e81136b1d13"
+ },
+ {
+  "id": "ling115/1-what-is-a-corpus",
+  "course": "ling115",
+  "lessons": "Weeks 1–2",
+  "title": "What a corpus is, and what makes one good",
+  "summary": "Define corpus, representativeness, balance, and sampling frame; describe Brown, COCA, Switchboard, TIMIT, and the Penn Treebank in one line each; explain why a small balanced corpus can beat a huge web corpus.",
+  "estimatedMinutes": 30,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why not just use all the text on the internet?"
+   },
+   {
+    "id": "design",
+    "heading": "Design vocabulary"
+   }
+  ],
+  "exerciseCount": 1,
+  "sha": "ce6f15c4012c00594afcdb6b10cded7a809c1ce5685a21408bbc4f5967e9471b"
+ },
+ {
+  "id": "ling115/4-regex",
+  "course": "ling115",
+  "lessons": "Lecture 4",
+  "title": "Regular expressions from zero",
+  "summary": "Read any regex on Kraus's cheat sheet aloud and predict what it matches; write patterns with anchors, quantifiers, classes, groups and alternation; use re.search / findall / sub / split in Python with raw strings.",
+  "estimatedMinutes": 45,
+  "requires": [],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why a linguist needs regex"
+   },
+   {
+    "id": "how",
+    "heading": "How a pattern matches"
+   },
+   {
+    "id": "examples",
+    "heading": "The slides' examples"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "31316472b9a5aaa213175d90cdb3b8b950d2a744921431599691ae0f0a82806f"
+ },
+ {
+  "id": "ling115/5-words-tokens-normalization",
+  "course": "ling115",
+  "lessons": "Lectures 5–6",
+  "title": "What counts as a word: tokens, types, TTR, tokenization, normalization",
+  "summary": "Distinguish lemma / wordform / type / token and compute TTR; explain Heaps' law and why TTR only compares equal-size texts; list where whitespace tokenization fails; reproduce the normalization table and give three examples of what cleaning erases.",
+  "estimatedMinutes": 55,
+  "requires": [
+   "ling115/4-regex"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why 'what is a word' is a real question"
+   },
+   {
+    "id": "units",
+    "heading": "Lemma, wordform, type, token"
+   },
+   {
+    "id": "heaps",
+    "heading": "Heaps' law: why vocabulary grows slowly"
+   },
+   {
+    "id": "tokenization",
+    "heading": "Tokenization: where whitespace fails"
+   },
+   {
+    "id": "normalization",
+    "heading": "Normalization: what to standardize and what to keep"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "7021ac8bc96f92a6b28b57602ee12c3ef38b1d4348e1e098ac2e22b1af4dd914"
+ },
+ {
+  "id": "ling115/7-annotation-pos",
+  "course": "ling115",
+  "lessons": "Lectures 7–8",
+  "title": "Annotation, documentation, POS tagging, and ambiguity",
+  "summary": "Give the six annotation levels with an example each; recite the data-linguist process and why datasheets matter; distinguish parsing from POS tagging; name the three kinds of ambiguity with examples; compare Brown and Penn Treebank tagsets; explain why no tagger reaches 100%.",
+  "estimatedMinutes": 55,
+  "requires": [
+   "ling115/5-words-tokens-normalization"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why annotate at all"
+   },
+   {
+    "id": "levels",
+    "heading": "Six levels of annotation"
+   },
+   {
+    "id": "process",
+    "heading": "The data-linguist process and why documentation matters"
+   },
+   {
+    "id": "pos",
+    "heading": "Parsing and POS tagging"
+   },
+   {
+    "id": "tagsets",
+    "heading": "Tagsets and taggers"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "0b7510d1484dafd288bb426b0fdb2bb7c8ef9914ac6fe0e450f56104845acab0"
+ },
+ {
+  "id": "ling115/9-frequency-keyness",
+  "course": "ling115",
+  "lessons": "Weeks 5–6",
+  "title": "Counting words: normalized frequency, Zipf's law and keyness",
+  "summary": "Turn raw counts into per-million frequencies and explain why tiny corpora mislead; say why a count needs a concordance before it means anything; describe Zipf's law; define keyness, compute a log-likelihood keyness score by hand, and read a keyword list the way Farr & Murphy (2009) do.",
+  "estimatedMinutes": 50,
+  "requires": [
+   "ling115/5-words-tokens-normalization"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why count at all"
+   },
+   {
+    "id": "norm",
+    "heading": "Raw counts lie: normalize to per million"
+   },
+   {
+    "id": "concord",
+    "heading": "A count needs a concordance"
+   },
+   {
+    "id": "zipf",
+    "heading": "Zipf's law: a few words do most of the work"
+   },
+   {
+    "id": "key",
+    "heading": "Keyness: what makes this corpus different"
+   },
+   {
+    "id": "vars",
+    "heading": "Using counts to compare groups"
+   }
+  ],
+  "exerciseCount": 2,
+  "sha": "605abf73509564b0edacdad9c9d90a02f4a17c366f7518c00104b12d091285b4"
+ },
+ {
+  "id": "ling115/p-python-for-corpora",
+  "course": "ling115",
+  "lessons": "Python for the homework",
+  "title": "Python for corpus work: count, sort, search, and show",
+  "summary": "Write the code Kraus's homework asks for by yourself: loop over tagged (word, tag) pairs, count with a dictionary or Counter, sort to get a top-10 table, search with re (groups, backreferences, lookahead done right), turn counts into per-1,000 rates and TTR, and show results as a pandas table and a bar chart.",
+  "estimatedMinutes": 75,
+  "requires": [],
+  "sections": [
+   {
+    "id": "shape",
+    "heading": "Every homework notebook has the same shape"
+   },
+   {
+    "id": "fstrings",
+    "heading": "Printing a neat table with f-strings"
+   },
+   {
+    "id": "loops",
+    "heading": "Looping over (word, tag) pairs"
+   },
+   {
+    "id": "counting",
+    "heading": "Counting: dictionary, .get, and Counter"
+   },
+   {
+    "id": "sorting",
+    "heading": "Sorting to get a top-N list"
+   },
+   {
+    "id": "regex",
+    "heading": "Regex in Python: findall, finditer, compile"
+   },
+   {
+    "id": "groups",
+    "heading": "Groups and backreferences: finding reduplication"
+   },
+   {
+    "id": "lookahead",
+    "heading": "Lookahead: excluding words, the right way"
+   },
+   {
+    "id": "rates",
+    "heading": "From counts to rates: per 1,000 words and TTR"
+   },
+   {
+    "id": "show",
+    "heading": "Showing results: a pandas table and a bar chart"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "8f3648f82f5b5c5a851cbe72c842cb2a46d69eaf14abbfe32fcaea23f7c89e77"
+ },
+ {
+  "id": "ling124/0-reading-a-wave",
+  "course": "ling124",
+  "lessons": "Chapter 0 · Days 2–3",
+  "title": "What a sound wave is, and how to read its formula",
+  "summary": "Say what a waveform shows; find period, frequency and amplitude on a plot; read A, F and ϕ off A·cos(2πFt + ϕ); change one number and predict the new plot; know what a spectrum is.",
+  "estimatedMinutes": 45,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The whole course on one page"
+   },
+   {
+    "id": "why",
+    "heading": "What a sound is"
+   },
+   {
+    "id": "vocab",
+    "heading": "Three numbers that describe a wave"
+   },
+   {
+    "id": "circle",
+    "heading": "Where the wave shape comes from: a dot going around a circle"
+   },
+   {
+    "id": "formula",
+    "heading": "The wave formula, one piece at a time"
+   },
+   {
+    "id": "spectrum",
+    "heading": "A spectrum: the recipe of a sound"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "cdf089c1d9bbb47da3f30a8dc30eca90472dedcebca1d881e57f03537153c662"
+ },
+ {
+  "id": "ling124/11-feature-extraction",
+  "course": "ling124",
+  "lessons": "Days 11–12",
+  "title": "Feature extraction: pre-emphasis, Mel filterbank, cepstrum, MFCCs",
+  "summary": "Explain what a feature vector is for and why it should capture the filter, not the source; apply pre-emphasis and compute frame energy; convert Hz to mel and say why filterbanks use it; describe the cepstrum (log, then DCT), quefrency and liftering, and convert quefrency to frequency; compute deltas and list the 39 classic MFCC features.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "ling124/6-transform-dft-stft",
+   "ling124/9-pitch-asr"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why not just feed the spectrum to the recognizer?"
+   },
+   {
+    "id": "pre",
+    "heading": "Pre-emphasis: undo the source's tilt"
+   },
+   {
+    "id": "energy",
+    "heading": "Energy: one number for loudness"
+   },
+   {
+    "id": "mel",
+    "heading": "The Mel filterbank: hear like a human"
+   },
+   {
+    "id": "cep",
+    "heading": "The cepstrum: separating source from filter"
+   },
+   {
+    "id": "mfcc",
+    "heading": "MFCCs: the 39 numbers"
+   },
+   {
+    "id": "delta",
+    "heading": "Deltas: features that move"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "f81e1c479cfbe6d011f0a059be75ff865833c36935b97bb9cfe669ce37f712db"
+ },
+ {
+  "id": "ling124/3-sampling-aliasing",
+  "course": "ling124",
+  "lessons": "Day 3",
+  "title": "Sampling, quantization, and aliasing",
+  "summary": "Explain sampling and quantization in plain words; turn a sampling rate into the time between samples and a sample count; count levels from bits; find the Nyquist frequency and the fake (alias) frequency a too-high tone turns into.",
+  "estimatedMinutes": 40,
+  "requires": [
+   "ling124/0-reading-a-wave"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why a computer can't just store a wave"
+   },
+   {
+    "id": "sampling",
+    "heading": "Sampling: measuring many times a second"
+   },
+   {
+    "id": "quant",
+    "heading": "Quantization: rounding to allowed levels"
+   },
+   {
+    "id": "alias",
+    "heading": "Aliasing: when a high sound pretends to be a low one"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "851cd68aa0aa6f863d3d32132a6639d8fbfbcd74be5d9bdda42e31d8359c7da8"
+ },
+ {
+  "id": "ling124/4-complex-sinusoids",
+  "course": "ling124",
+  "lessons": "Day 4",
+  "title": "Complex numbers and spinning dots",
+  "summary": "Read a complex number as a point on a map; find its magnitude, angle and conjugate; translate r·e^{jθ} at the easy angles; explain why a cosine is two opposite spinners; read amplitude and phase off one complex number X.",
+  "estimatedMinutes": 45,
+  "requires": [
+   "ling124/0-reading-a-wave"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why we need complex numbers at all"
+   },
+   {
+    "id": "numbers",
+    "heading": "A complex number is a point on a map"
+   },
+   {
+    "id": "euler",
+    "heading": "The e^{jθ} notation: 'the point at angle θ'"
+   },
+   {
+    "id": "spinner",
+    "heading": "Spinning dots, and why a cosine is two of them"
+   },
+   {
+    "id": "def",
+    "heading": "One number that holds amplitude AND phase"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "35447c54f5c60a346a69d7f19884d1598dd59aa8f9f57a644810f5ef89830bac"
+ },
+ {
+  "id": "ling124/5-fourier-series",
+  "course": "ling124",
+  "lessons": "Day 5",
+  "title": "Fourier series: building a repeating sound from simple waves",
+  "summary": "Say what harmonics are and list them from F₀; explain why any repeating wave is a sum of harmonics; read a series in cosine form, cos+sin form and complex form and convert between them; find coefficients by eye using the 'detector' idea; draw the magnitude spectrum.",
+  "estimatedMinutes": 50,
+  "requires": [
+   "ling124/4-complex-sinusoids"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "The big idea: any repeating sound is simple waves added up"
+   },
+   {
+    "id": "spectrum",
+    "heading": "Harmonics: which simple waves are allowed"
+   },
+   {
+    "id": "forms",
+    "heading": "Three ways to write the same recipe"
+   },
+   {
+    "id": "coef",
+    "heading": "How to find how much of each harmonic: the detector"
+   },
+   {
+    "id": "plot",
+    "heading": "Drawing the spectrum"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "3527266db64019a5ced907dae2ac65bbb3c595ce8e46dc176c6121b9d2feb5a0"
+ },
+ {
+  "id": "ling124/6-transform-dft-stft",
+  "course": "ling124",
+  "lessons": "Days 6–8",
+  "title": "From one spectrum to a spectrogram: DFT, windows, and the STFT",
+  "summary": "Say why speech needs the Fourier transform instead of a series; use the DFT's bin spacing Fₛ/N to find which bin holds a frequency; explain spectral leakage and what a Hamming window fixes; compute every STFT setting from Fₛ, frame length and shift; pick narrow-band vs broad-band.",
+  "estimatedMinutes": 55,
+  "requires": [
+   "ling124/5-fourier-series"
+  ],
+  "sections": [
+   {
+    "id": "transform",
+    "heading": "Speech doesn't repeat, so we need the Fourier transform"
+   },
+   {
+    "id": "dft",
+    "heading": "The DFT: the version a computer can do"
+   },
+   {
+    "id": "window",
+    "heading": "Slices, and why the edges cause fake frequencies"
+   },
+   {
+    "id": "stft",
+    "heading": "The STFT: a spectrum for every slice = a spectrogram"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "82d0a25572919df446eb2a0638f988e78dcfd6b6d910061d04bb2c2d64b0f864"
+ },
+ {
+  "id": "ling124/9-pitch-asr",
+  "course": "ling124",
+  "lessons": "Days 9–10",
+  "title": "Measuring pitch, and what speech recognition is",
+  "summary": "Explain why pitch is not 1 / frame length; compute a dot product and an autocorrelation by hand and read the period off the first peak; turn a lag in samples into F0 = Fₛ / lag; say which heuristics (pitch range, silence, voicing) throw out bad frames; lay out the ASR pipeline and compute word error rate.",
+  "estimatedMinutes": 50,
+  "requires": [
+   "ling124/6-transform-dft-stft"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Why measure pitch"
+   },
+   {
+    "id": "trap",
+    "heading": "Pitch, and a number that is NOT pitch"
+   },
+   {
+    "id": "dot",
+    "heading": "Dot product: a number for 'same trend'"
+   },
+   {
+    "id": "auto",
+    "heading": "Autocorrelation: compare the signal with itself, shifted"
+   },
+   {
+    "id": "f0",
+    "heading": "From a lag in samples to F0 in Hz"
+   },
+   {
+    "id": "heur",
+    "heading": "When autocorrelation lies: three heuristics"
+   },
+   {
+    "id": "asr",
+    "heading": "ASR: speech in, text out"
+   },
+   {
+    "id": "wer",
+    "heading": "Word error rate"
+   }
+  ],
+  "exerciseCount": 7,
+  "sha": "4a27618e4d5536941a2391a0ea8aaf84e7d31b497437fc630a70d2a843518e63"
+ },
+ {
+  "id": "ling124/p1-python-waves-plots",
+  "course": "ling124",
+  "lessons": "Python for the labs · Part 1",
+  "title": "Python for the labs, part 1: arrays, waves, and plots",
+  "summary": "Read and write the code in Koo's notebooks yourself: make a time axis, turn a wave formula into one line of numpy, and draw it with matplotlib (labels, zoom, several panels). Every step runs right here and checks your answer.",
+  "estimatedMinutes": 60,
+  "requires": [],
+  "sections": [
+   {
+    "id": "start",
+    "heading": "How this chapter works"
+   },
+   {
+    "id": "arrays",
+    "heading": "numpy arrays: a list you can do math on"
+   },
+   {
+    "id": "time",
+    "heading": "The time axis: turning sample numbers into seconds"
+   },
+   {
+    "id": "wave",
+    "heading": "Making a wave from its formula"
+   },
+   {
+    "id": "plot",
+    "heading": "Plotting: figure, axes, plot, labels, show"
+   },
+   {
+    "id": "panels",
+    "heading": "Several graphs in one figure"
+   },
+   {
+    "id": "slice",
+    "heading": "Cutting out a piece by time"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "44b3aacc50b5ce2e54c35223233e627d42c1769b5378d45b6d26edbb4edeb79d"
+ },
+ {
+  "id": "ling124/p2-python-fft-spectra",
+  "course": "ling124",
+  "lessons": "Python for the labs · Part 2",
+  "title": "Python for the labs, part 2: complex numbers, the FFT, and spectra",
+  "summary": "Run the code behind Labs 3, 5 and 6 yourself: complex numbers with 1j, np.abs and np.angle; turn fft() output into a table of frequencies and amplitudes; draw an amplitude spectrum with stem; find the loudest frequency; convert to decibels; taper a frame with a Hamming window.",
+  "estimatedMinutes": 60,
+  "requires": [
+   "ling124/p1-python-waves-plots"
+  ],
+  "sections": [
+   {
+    "id": "complex",
+    "heading": "Complex numbers in numpy"
+   },
+   {
+    "id": "fft",
+    "heading": "The FFT: from a wave to its list of ingredients"
+   },
+   {
+    "id": "db",
+    "heading": "Decibels: squeezing big and small onto one scale"
+   },
+   {
+    "id": "window",
+    "heading": "Frames and windows (Lab 6)"
+   },
+   {
+    "id": "debug",
+    "heading": "Fix the broken cell"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "ad2928d7015fe92879a9dfd752935f63e30ed18ab0ff2afafb233b277681a617"
+ }
+]

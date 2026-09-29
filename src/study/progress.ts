@@ -10,7 +10,7 @@
  * Next is the first section, in reading order, that isn't done yet. A shaky
  * section earlier in the book counts as next, because that is the gap.
  */
-import type { Guide } from "./guide";
+import type { ChapterLike } from "./guideSummary";
 import type { SectionRecord, SectionStatus } from "./mastery";
 
 export interface NextStop {
@@ -57,7 +57,7 @@ function pct(m: number, t: number): number {
   return t === 0 ? 0 : Math.round((m / t) * 100);
 }
 
-export function chapterProgress(g: Guide, st: StatusMap): ChapterProgress {
+export function chapterProgress(g: ChapterLike, st: StatusMap): ChapterProgress {
   let mastered = 0;
   let shaky = 0;
   let next: NextStop | null = null;
@@ -75,7 +75,7 @@ export function chapterProgress(g: Guide, st: StatusMap): ChapterProgress {
   return { guideId: g.id, mastered, shaky, total, pct: pct(mastered, total), done: total > 0 && mastered === total, sections, next };
 }
 
-export function courseProgress(guides: Guide[], rows: SectionRecord[]): CourseProgress {
+export function courseProgress(guides: ChapterLike[], rows: SectionRecord[]): CourseProgress {
   const st = statusMap(rows);
   const chapters = guides.map((g) => chapterProgress(g, st));
   const mastered = chapters.reduce((s, c) => s + c.mastered, 0);

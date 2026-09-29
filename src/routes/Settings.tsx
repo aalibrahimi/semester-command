@@ -22,7 +22,7 @@ import {
 } from "@tauri-apps/plugin-autostart";
 import { BellOff, BellRing, KeyRound, Link2, Monitor, PencilLine } from "lucide-react";
 import { NotificationCard } from "@/components/inbox/NotificationCard";
-import { getPopupStyle, notifyTest, setPopupStyle } from "@/lib/ipc";
+import { contentStatus, contentSync, getPopupStyle, notifyTest, setPopupStyle, type ContentStatus } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 import type { InboxItem, PopupStyle } from "@/types";
 import { toast } from "sonner";
@@ -187,6 +187,9 @@ export default function Settings() {
         {/* ── Notifications ─────────────────────────────────────────────── */}
         <NotificationSettings />
 
+        {/* ── Study content (Railway) ───────────────────────────────────── */}
+        <ContentSettings />
+
         {/* ── Appearance ────────────────────────────────────────────────── */}
         <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
@@ -337,6 +340,70 @@ function AutostartToggle() {
         aria-label="Start at login"
       />
     </div>
+  );
+}
+
+/**
+ * Study content: guides and videos published to Railway with
+ * `bun run content:push` and pulled into this computer's cache on launch.
+ * Shows whether that is set up, when it last ran, and a Sync now button.
+ */
+function ContentSettings() {
+  const [st, setSt] = useState<ContentStatus | null>(null);
+  const [busy, setBusy] = useState(false);
+  const refresh = () => void contentStatus().then(setSt).catch(() => setSt(null));
+  useEffect(() => {
+    // oxlint-disable-next-line set-state-in-effect -- reads external state once
+    refresh();
+  }, []);
+  const syncNow = () => {
+    setBusy(true);
+    contentSync()
+      .then((r) => {
+        const n = r.guidesUpdated + r.assetsUpdated;
+        toast.success(n ? `Downloaded ${r.guidesUpdated} guides and ${r.assetsUpdated} files.` : "Already up to date.");
+      })
+      .catch((e: unknown) => toast.error(errorText(e, "Could not reach the content server.")))
+      .finally(() => {
+        setBusy(false);
+        refresh();
+      });
+  };
+  return (
+    <Card className="rounded-2xl border-border/60 shadow-card">
+      <CardHeader>
+        <CardTitle className="text-base">Study content</CardTitle>
+        <CardDescription>
+          Chapters and videos come from your Railway database (publish with <code>bun run content:push</code>) and are
+          cached here, so they work offline. Guides also ship inside the app as a fallback; videos only come from the
+          server.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex items-center justify-between gap-4">
+        <div className="text-sm">
+          {!IS_TAURI ? (
+            <span className="text-muted-foreground">Only available in the app.</span>
+          ) : !st ? (
+            <span className="text-muted-foreground">Checking…</span>
+          ) : !st.configured ? (
+            <span className="text-muted-foreground">Off: no DATABASE_URL in .env (or content.env in the app config folder).</span>
+          ) : (
+            <div className="flex flex-col gap-0.5">
+              <span>
+                {st.guides} guides, {st.assets} files cached
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {st.lastSyncAt ? `Last synced ${new Date(st.lastSyncAt).toLocaleString()}` : "Not synced yet"}
+                {st.lastError ? ` · last try failed: ${st.lastError}` : ""}
+              </span>
+            </div>
+          )}
+        </div>
+        <Button size="sm" variant="outline" disabled={!st?.configured || busy} onClick={syncNow}>
+          {busy ? "Syncing…" : "Sync now"}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
 

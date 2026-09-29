@@ -21,6 +21,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2 } from "lucide-react";
+import { IS_TAURI, contentAsset } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 import type { GuideBlock, ProseLabel } from "@/study/guide";
 import { Inline } from "./Blocks";
@@ -276,11 +277,48 @@ const SPEEDS = [0.75, 1, 1.25, 1.5] as const;
  * the player, chapter chips jump to a scene (the current one is lit) and a
  * speed toggle slows it down for a first watch.
  */
+/** The three files a video block needs, as URLs the webview can load. */
+interface VideoFiles {
+  mp4?: string;
+  webm?: string;
+  poster?: string;
+}
+
+/**
+ * Where a video's files are on this computer. Videos aren't bundled: they
+ * come from Railway through the content cache (src-tauri/src/content.rs),
+ * so this asks the cache for each file's path and turns it into an asset://
+ * URL. Null while asking; an empty object when this computer doesn't have
+ * the video yet.
+ */
+function useVideoFiles(src: string): VideoFiles | null {
+  const [files, setFiles] = useState<{ src: string; files: VideoFiles } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const base = src.replace(/^\//, "").replace(/\.mp4$/, "");
+    void (async () => {
+      const found: VideoFiles = {};
+      if (IS_TAURI) {
+        const { convertFileSrc } = await import("@tauri-apps/api/core");
+        const [mp4, webm, poster] = await Promise.all([".mp4", ".webm", ".jpg"].map((ext) => contentAsset(base + ext).catch(() => null)));
+        if (mp4) found.mp4 = convertFileSrc(mp4);
+        if (webm) found.webm = convertFileSrc(webm);
+        if (poster) found.poster = convertFileSrc(poster);
+      }
+      if (alive) setFiles({ src, files: found });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [src]);
+  return files?.src === src ? files.files : null;
+}
+
 function VideoView({ id, src, caption, chapters }: { id: string; src: string; caption: string; chapters: { t: number; label: string }[] }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [now, setNow] = useState(0);
   const [speed, setSpeed] = useState(1);
-  const base = src.replace(/\.mp4$/, "");
+  const files = useVideoFiles(src);
   const current = chapters.reduce((acc, c, i) => (now + 0.05 >= c.t ? i : acc), -1);
   const jump = (t: number) => {
     const v = ref.current;
@@ -292,13 +330,34 @@ function VideoView({ id, src, caption, chapters }: { id: string; src: string; ca
     setSpeed(s);
     if (ref.current) ref.current.playbackRate = s;
   };
+  const ready = files && (files.mp4 || files.webm);
   return (
     <figure id={id} className="scroll-mt-6 overflow-hidden rounded-xl border border-border/70 bg-card">
-      <video ref={ref} controls preload="metadata" playsInline poster={`${base}.jpg`} className="block aspect-video w-full bg-black" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}>
-        {/* H.264 for WebKit (the Tauri window), VP9 for builds without H.264. */}
-        <source src={`${base}.mp4`} type="video/mp4" />
-        <source src={`${base}.webm`} type="video/webm" />
-      </video>
+      {ready ? (
+        <video
+          key={files.mp4 ?? files.webm}
+          ref={ref}
+          controls
+          preload="metadata"
+          playsInline
+          poster={files.poster}
+          className="block aspect-video w-full bg-black"
+          onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}
+        >
+          {/* H.264 for WebKit (the Tauri window), VP9 for builds without H.264. */}
+          {files.mp4 && <source src={files.mp4} type="video/mp4" />}
+          {files.webm && <source src={files.webm} type="video/webm" />}
+        </video>
+      ) : (
+        <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 bg-fill-ghost/40 px-6 text-center">
+          <span className="text-sm font-medium">{files === null ? "Finding the video…" : "This video isn't on this computer yet"}</span>
+          {files !== null && (
+            <span className="max-w-md text-xs leading-relaxed text-muted-foreground">
+              Videos download from the content server on launch. Open Settings, Study content, and press Sync now. (In a plain browser tab there is no content cache, so videos only play in the app.)
+            </span>
+          )}
+        </div>
+      )}
       <div className="flex flex-col gap-3 px-5 py-4">
         {chapters.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
@@ -306,13 +365,16 @@ function VideoView({ id, src, caption, chapters }: { id: string; src: string; ca
               <button
                 key={c.t}
                 type="button"
+                disabled={!ready}
                 onClick={() => jump(c.t)}
                 className={cn(
-                  "rounded-full border px-2.5 py-1 text-xs transition-colors duration-micro",
+                  "rounded-full border px-2.5 py-1 text-xs transition-colors duration-micro disabled:opacity-50",
                   i === current ? "border-transparent bg-brand-solid text-white" : "border-border/80 text-muted-foreground hover:bg-fill-ghost hover:text-foreground",
                 )}
               >
-                <span className="mr-1.5 font-mono opacity-70">{Math.floor(c.t / 60)}:{String(Math.floor(c.t % 60)).padStart(2, "0")}</span>
+                <span className="mr-1.5 font-mono opacity-70">
+                  {Math.floor(c.t / 60)}:{String(Math.floor(c.t % 60)).padStart(2, "0")}
+                </span>
                 {c.label}
               </button>
             ))}

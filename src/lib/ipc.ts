@@ -592,3 +592,63 @@ export async function notifyTest(delayMs = 0): Promise<void> {
   if (!IS_TAURI) return;
   return call<void>("notify_test", { delayMs });
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Content cache (study guides and videos from Railway; src-tauri/src/content.rs)
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/** One guide the content cache holds: its summary (JSON text) and hash. */
+export interface ContentManifestRow {
+  id: string;
+  course: string;
+  position: number;
+  sha: string;
+  summary: string;
+}
+
+/** What the last content sync did, for Settings and the status line. */
+export interface ContentStatus {
+  configured: boolean;
+  lastSyncAt: string | null;
+  lastError: string | null;
+  guides: number;
+  assets: number;
+}
+
+export interface ContentSyncReport {
+  guidesUpdated: number;
+  guidesRemoved: number;
+  assetsUpdated: number;
+  assetsRemoved: number;
+}
+
+/** Guides in the local cache. Empty outside Tauri or before the first sync. */
+export async function contentManifest(): Promise<ContentManifestRow[]> {
+  if (!IS_TAURI) return [];
+  return call<ContentManifestRow[]>("content_manifest");
+}
+
+/** A cached guide's JSON text, or null when the cache doesn't have it. */
+export async function contentGuide(id: string): Promise<string | null> {
+  if (!IS_TAURI) return null;
+  return call<string | null>("content_guide", { id });
+}
+
+/** Absolute path of a cached asset (a video, its poster), or null. */
+export async function contentAsset(path: string): Promise<string | null> {
+  if (!IS_TAURI) return null;
+  return call<string | null>("content_asset", { path });
+}
+
+export async function contentStatus(): Promise<ContentStatus | null> {
+  if (!IS_TAURI) return null;
+  return call<ContentStatus>("content_status");
+}
+
+/** Pull new or changed guides and videos from Railway now. */
+export async function contentSync(): Promise<ContentSyncReport> {
+  return call<ContentSyncReport>("content_sync");
+}
+
+/** Emitted by the backend after a content sync that changed something. */
+export const CONTENT_EVENT = "content:synced";

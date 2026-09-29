@@ -19,7 +19,7 @@ import { Inline } from "@/components/study/Blocks";
 import { cn } from "@/lib/utils";
 import { courses } from "@/study";
 import { drillsForGuide } from "@/study/drills";
-import { guideById } from "@/study/loadGuides";
+import { guideSummary } from "@/study/loadGuides";
 import { attemptsRecent, type AttemptRecord } from "@/study/mastery";
 import { mistakes } from "@/study/plan";
 import { courseTick } from "@/components/study/courseTick";
@@ -116,7 +116,7 @@ export default function StudyMistakes() {
 }
 
 function MistakeRow({ a }: { a: AttemptRecord }) {
-  const guide = guideById(a.guideId);
+  const guide = guideSummary(a.guideId);
   const section = guide?.sections.find((s) => s.id === a.sectionId);
   const drill = drillsForGuide(a.guideId).find((d) => d.id === a.drillId);
   const slug = a.guideId.split("/")[0];

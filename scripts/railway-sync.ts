@@ -38,7 +38,9 @@ const IDENTIFIER = "dev.codewithali.semester-command";
 /** Postgres schema holding the mirror. Override only for testing. */
 const SCHEMA = process.env.SEMESTER_PG_SCHEMA ?? "semester";
 /** Tables that describe the database itself, not your data. */
-const SKIP = new Set(["_sqlx_migrations", "sqlite_sequence"]);
+// content_* tables are a cache of what content:push publishes (schema "content");
+// mirroring them would store every guide and video twice.
+const SKIP = new Set(["_sqlx_migrations", "sqlite_sequence", "content_guide", "content_asset", "content_meta"]);
 
 // ── Where things are ────────────────────────────────────────────────────────
 

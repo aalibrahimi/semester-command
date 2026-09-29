@@ -25,7 +25,8 @@ import { courseBySlug, formatDate, daysUntil } from "@/study";
 import type { CheckBlock } from "@/study/guide";
 import { drillsForGuide } from "@/study/drills";
 import { breakdown as buildBreakdown, buildExam, examFormat, gradeItem, type ExamAnswer, type ExamItem } from "@/study/exam";
-import { guidesForCourse } from "@/study/loadGuides";
+import { useGuides } from "@/study/loadGuides";
+import { GuideLoading } from "@/components/study/GuideLoading";
 import { recordAttempt, recordExam, recordReview } from "@/study/mastery";
 
 const BODY = "text-[15px] leading-[1.75] text-foreground/90";
@@ -41,7 +42,8 @@ type Phase = "intro" | "running" | "results";
 export default function StudyExam() {
   const { course: cslug } = useParams();
   const course = courseBySlug(cslug);
-  const guides = useMemo(() => (course ? guidesForCourse(course.slug, course.guides) : []), [course]);
+  const guideIds = useMemo(() => (course ? course.guides.map((slug) => `${course.slug}/${slug}`) : []), [course]);
+  const { guides, loading: guidesLoading } = useGuides(guideIds);
   const fmt = examFormat(course?.slug ?? "");
   const pool = useMemo(() => guides.map((g) => ({ guide: g, drills: drillsForGuide(g.id) })).filter((x) => x.drills.length > 0), [guides]);
 
@@ -151,6 +153,7 @@ export default function StudyExam() {
   }, [phase, saved, answers, items, course, guides, left]);
 
   if (!course) return <Navigate to="/" replace />;
+  if (guidesLoading) return <GuideLoading />;
 
   const days = daysUntil(course.exam.date);
 
