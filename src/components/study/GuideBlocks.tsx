@@ -426,13 +426,17 @@ function FigureView({ id, svg, viewBox, caption }: { id: string; svg: string; vi
       >
         <Maximize2 className="h-3.5 w-3.5" />
       </button>
-      <svg viewBox={viewBox} className="mx-auto h-auto w-full max-w-[640px] cursor-zoom-in" onClick={() => setBig(true)} dangerouslySetInnerHTML={{ __html: svg }} />
-      <figcaption className="mx-auto mt-4 max-w-[680px] text-sm leading-relaxed text-muted-foreground">{caption}</figcaption>
+      <svg viewBox={viewBox} className="study-svg mx-auto h-auto w-full max-w-[640px] cursor-zoom-in" onClick={() => setBig(true)} dangerouslySetInnerHTML={{ __html: svg }} />
+      <figcaption className="mx-auto mt-4 max-w-[680px] text-sm leading-relaxed text-muted-foreground">
+        <Inline text={caption} />
+      </figcaption>
       {big && (
         <div role="dialog" aria-modal="true" aria-label="Figure, enlarged" className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-background/90 p-6 backdrop-blur-sm" onClick={() => setBig(false)}>
           <div className="flex max-h-full w-full max-w-[1100px] flex-col gap-3 overflow-auto rounded-2xl border border-border bg-card p-6 shadow-elevated">
-            <svg viewBox={viewBox} className="mx-auto h-auto max-h-[78vh] w-full" dangerouslySetInnerHTML={{ __html: svg }} />
-            <p className="text-sm leading-relaxed text-muted-foreground">{caption}</p>
+            <svg viewBox={viewBox} className="study-svg mx-auto h-auto max-h-[78vh] w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              <Inline text={caption} />
+            </p>
           </div>
         </div>
       )}

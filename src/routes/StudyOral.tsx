@@ -15,11 +15,12 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BookOpen, Check, Circle, Mic, MicOff, Pause, Play, RotateCcw, Shuffle, Square } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Circle, Mic, MicOff, Pause, Play, RotateCcw, Shuffle, Square } from "lucide-react";
 import { Inline } from "@/components/study/Blocks";
 import { cn } from "@/lib/utils";
 import { courseBySlug, daysUntil } from "@/study";
 import { ORAL_APPLY_SECONDS, ORAL_EXPLAIN_SECONDS, oralConcepts, type OralConcept, type OralProblem } from "@/study/oral";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 type Phase = "choose" | "explain" | "explain-check" | "apply" | "apply-check" | "done";
 
@@ -203,15 +204,9 @@ export default function StudyOral() {
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-8 pb-20 pt-6">
-      <Link to={`/study/${course.slug}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> {course.code}
-      </Link>
-      <h1 className="mt-3 flex items-center gap-2 font-display text-2xl font-semibold tracking-tight">
-        <Mic className="h-5 w-5 text-brand-fg" /> Oral exam practice
-      </h1>
-      <p className="mt-1 max-w-[80ch] text-sm text-muted-foreground">
+      <PageHeader back={{ to: `/study/${course.slug}`, label: course.code }} icon={Mic} title="Oral exam practice">
         {course.exam.format} {days >= 0 && `${days} day${days === 1 ? "" : "s"} to go.`} Each round: explain a concept out loud in 2 minutes, then apply it to a fresh problem in 3. Speak, don't type.
-      </p>
+      </PageHeader>
 
       {phase !== "choose" && concept && (
         <Stepper phase={phase} />

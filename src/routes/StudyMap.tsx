@@ -74,13 +74,15 @@ export default function StudyMap() {
   const graph = useMemo(() => (guide ? buildGraph(guide) : null), [guide]);
   const boxRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
+  // The graph box only exists once the guide has loaded (guides load lazily
+  // and the page shows a spinner first), so re-attach when it appears.
   useEffect(() => {
     const el = boxRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([e]) => setBox({ w: e.contentRect.width, h: e.contentRect.height }));
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [guideLoading, guide]);
   const placed = useMemo(() => (graph && box.w ? layout(graph, box.w, box.h) : []), [graph, box]);
 
   // Pan / zoom, in screen space.
@@ -192,7 +194,7 @@ export default function StudyMap() {
                       key={p.id}
                       role="button"
                       tabIndex={0}
-                      aria-label={`${p.term} — ${status(p)}${isSel ? ", selected" : ""}`}
+                      aria-label={`${p.term}: ${status(p)}${isSel ? ", selected" : ""}`}
                       aria-pressed={isSel}
                       transform={`translate(${p.x - p.w / 2}, ${p.y - p.h / 2})`}
                       className="cursor-pointer outline-none focus-visible:[&>rect]:stroke-[2.5]"

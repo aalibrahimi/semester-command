@@ -13,13 +13,14 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BookOpen, Brain, Clock, Gauge, Layers, Target } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Clock, Gauge, Layers, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { courseBySlug, daysUntil } from "@/study";
 import { drillsForGuide } from "@/study/drills";
 import { summariesForCourse, useGuideIndexVersion } from "@/study/loadGuides";
 import { attemptsRecent, reviewsAll, sectionsAll } from "@/study/mastery";
 import { readiness, type Level, type PlanStep, type Readiness, type TopicScore } from "@/study/readiness";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const LEVEL: Record<Level, { label: string; text: string; bar: string; chip: string }> = {
   ready: { label: "Ready", text: "text-on-track-fg", bar: "bg-on-track", chip: "bg-on-track/15 text-on-track-fg" },
@@ -65,23 +66,18 @@ export default function StudyReady() {
 
   return (
     <div className="mx-auto w-full max-w-[1320px] px-8 pb-20 pt-6 2xl:px-10">
-      <Link to={`/study/${course.slug}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> {course.code}
-      </Link>
-      <div className="mt-3 flex flex-wrap items-end gap-x-6 gap-y-2">
-        <div className="min-w-0 flex-1">
-          <h1 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight">
-            <Gauge className="h-5 w-5 text-brand-fg" /> Ready for the {course.exam.label}?
-          </h1>
-          <p className="mt-1 max-w-[80ch] text-sm text-muted-foreground">
-            {days < 0 ? "This exam has passed." : days === 0 ? "The exam is today." : `${days} day${days === 1 ? "" : "s"} to go.`} Every topic on the exam, scored from
-            what you've actually done: how you marked each section, your recent drill answers, and your recall cards.
-          </p>
-        </div>
-        <Link to={`/study/${course.slug}/exam`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium hover:bg-fill-ghost">
-          <Layers className="h-3.5 w-3.5" /> Take a mock exam
-        </Link>
-      </div>
+      <PageHeader
+        back={{ to: `/study/${course.slug}`, label: course.code }}
+        icon={Gauge}
+        title={`Ready for the ${course.exam.label}?`}
+        actions={
+          <Link to={`/study/${course.slug}/exam`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium hover:bg-fill-ghost">
+            <Layers className="h-3.5 w-3.5" /> Take a mock exam
+          </Link>
+        }
+      >
+        {days < 0 ? "This exam has passed." : days === 0 ? "The exam is today." : `${days} day${days === 1 ? "" : "s"} to go.`} Every topic on the exam, scored from what you've actually done: how you marked each section, your recent drill answers, and your recall cards.
+      </PageHeader>
 
       {/* ── Overall ───────────────────────────────────────────────────── */}
       <section className="mt-6 grid gap-5 rounded-2xl border border-border/70 bg-card p-6 shadow-card md:grid-cols-[auto_1fr] md:items-center">

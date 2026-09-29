@@ -14,7 +14,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ListX, RotateCcw } from "lucide-react";
+import { ListX, RotateCcw } from "lucide-react";
 import { Inline } from "@/components/study/Blocks";
 import { cn } from "@/lib/utils";
 import { courses } from "@/study";
@@ -24,6 +24,7 @@ import { attemptsRecent, type AttemptRecord } from "@/study/mastery";
 import { mistakes } from "@/study/plan";
 import { courseTick } from "@/components/study/courseTick";
 import { calendarDays } from "@/lib/courseWork";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const SOURCE: Record<AttemptRecord["source"], string> = { read: "reading", focus: "focus", exam: "mock exam" };
 
@@ -71,13 +72,9 @@ export default function StudyMistakes() {
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-8 pb-16 pt-6">
-      <Link to="/" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> Today
-      </Link>
-      <h1 className="mt-3 flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-        <ListX className="h-5 w-5 text-at-risk-fg" /> Mistake log
-      </h1>
-      <p className="mt-1 text-sm text-muted-foreground">Every drill answer you got wrong, newest first. The night before an exam, read this before the book.</p>
+      <PageHeader back={{ to: "/", label: "Today" }} icon={ListX} iconClass="text-at-risk-fg" title="Mistake log">
+        Every drill answer you got wrong, newest first. The night before an exam, read this before the book.
+      </PageHeader>
 
       <div className="mt-5 flex flex-wrap gap-1.5">
         <button type="button" onClick={() => setCourse("all")} className={cn("chip", course === "all" ? "bg-brand/[0.12] text-brand-fg" : "bg-fill-ghost text-muted-foreground hover:text-foreground")}>

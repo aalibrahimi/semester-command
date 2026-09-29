@@ -55,7 +55,7 @@ function TileView({ tile }: { tile: Tile }) {
             {tile.items.map((d) => (
               <li key={d.id} className={LINE}>
                 <span className="font-semibold text-foreground">{d.term}</span>
-                <span className="text-muted-foreground"> — </span>
+                <span className="text-muted-foreground"> – </span>
                 <span className="text-foreground/85">
                   <Inline text={d.body} />
                 </span>
@@ -227,14 +227,15 @@ export default function StudyCheatSheet() {
   const [heights, setHeights] = useState<Map<string, number>>(new Map());
   const [printing, setPrinting] = useState(false);
 
-  // Available body box — re-measured on resize.
+  // Available body box, re-measured on resize. The box only exists once the
+  // guide has loaded (guides load lazily), so re-attach when it appears.
   useEffect(() => {
     const el = bodyRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([e]) => setBox({ w: e.contentRect.width, h: e.contentRect.height }));
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [guideLoading, guide]);
 
   // Tile heights at column width — read from the probe after layout.
   useLayoutEffect(() => {
@@ -349,7 +350,7 @@ export default function StudyCheatSheet() {
                 </button>
               </div>
             )}
-            {tiles.length === 0 && <p className="text-sm text-muted-foreground">Nothing to show — turn a filter back on.</p>}
+            {tiles.length === 0 && <p className="text-sm text-muted-foreground">Nothing to show: turn a filter back on.</p>}
           </div>
         )}
 

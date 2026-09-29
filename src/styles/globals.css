@@ -378,3 +378,18 @@
     display: none !important;
   }
 }
+
+/* ── Study figures ─────────────────────────────────────────────────────
+   Figures were drawn at different times with seven different font stacks.
+   Give them all the app's two faces: Geist for words, Geist Mono wherever a
+   figure asked for a monospace (code, numbers in cells). CSS beats the SVG
+   font-family attribute, so no figure needs rebuilding. */
+.study-svg {
+  font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+}
+.study-svg [font-family]:not([font-family*="mono" i]) {
+  font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+}
+.study-svg [font-family*="mono" i] {
+  font-family: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+}
