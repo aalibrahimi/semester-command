@@ -26,12 +26,23 @@ export function classify(assignments: AssignmentDetail[], now: number) {
 }
 
 
+/**
+ * Whole calendar days from `now`'s date to `d`'s date, in local time: 0 for
+ * later today, 1 for tomorrow, -1 for yesterday. Rounds instead of flooring
+ * because a day with a daylight-saving switch is 23 or 25 hours long, and
+ * flooring 47 hours to "1 day" once turned a Monday deadline into
+ * "due tomorrow" on the Saturday before the March switch.
+ */
+export function calendarDays(d: Date, now: number): number {
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - start.getTime()) / DAY);
+}
+
 /** "due today", "due tomorrow", or "due Mon": for pills and headers. */
 export function dueWhen(iso: string, now: number): string {
   const d = new Date(iso);
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  const days = Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - start.getTime()) / DAY);
+  const days = calendarDays(d, now);
   if (days < 0) return "overdue";
   if (days === 0) return "due today";
   if (days === 1) return "due tomorrow";

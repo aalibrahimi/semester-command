@@ -34,6 +34,7 @@ import { attemptsRecent, examsRecent, reviewsAll, sectionsAll } from "@/study/ma
 import { plan, type Action } from "@/study/plan";
 import { courseProgress } from "@/study/progress";
 import type { CourseSummary, TriageRow } from "@/types";
+import { calendarDays } from "@/lib/courseWork";
 
 const DAY = 86_400_000;
 
@@ -49,9 +50,7 @@ function rowSub(r: TriageRow, label: string, now: number): string {
   if (r.dueAt) {
     const d = new Date(r.dueAt);
     const time = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(d);
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    const days = Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - start.getTime()) / DAY);
+    const days = calendarDays(d, now);
     parts.push(
       d.getTime() < now ? `was due ${dayLabel(d)}` : days === 0 ? `due today, ${time}` : days === 1 ? `due tomorrow, ${time}` : `due ${dayLabel(d)}`,
     );

@@ -23,7 +23,7 @@ import { daysUntil, formatDate } from "@/study";
 import type { Course } from "@/study/types";
 import { useCourseData } from "@/hooks/useCourseStudy";
 import { DoNextLabel as Label, DoNextRow as Row } from "./DoNext";
-import { classify, isDone } from "@/lib/courseWork";
+import { calendarDays, classify, isDone } from "@/lib/courseWork";
 import type { AssignmentDetail, CourseSummary, GroupDetail, InstructorRow } from "@/types";
 
 const DAY = 86_400_000;
@@ -39,7 +39,7 @@ function whenText(a: AssignmentDetail, now: number): string {
   const t = d.getTime();
   const time = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(d);
   if (t < now) return `was due ${dayLabel(d)}`;
-  const days = Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()) / DAY);
+  const days = calendarDays(d, now);
   if (days === 0) return `due today, ${time}`;
   if (days === 1) return `due tomorrow, ${time}`;
   return `due ${dayLabel(d)}`;

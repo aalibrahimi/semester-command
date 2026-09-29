@@ -23,13 +23,13 @@ import { guideById } from "@/study/loadGuides";
 import { attemptsRecent, type AttemptRecord } from "@/study/mastery";
 import { mistakes } from "@/study/plan";
 import { courseTick } from "@/components/study/courseTick";
+import { calendarDays } from "@/lib/courseWork";
 
 const SOURCE: Record<AttemptRecord["source"], string> = { read: "reading", focus: "focus", exam: "mock exam" };
 
 function dayLabel(iso: string): string {
   const d = new Date(iso);
-  const today = new Date();
-  const diff = Math.floor((new Date(today.toDateString()).getTime() - new Date(d.toDateString()).getTime()) / 86_400_000);
+  const diff = -calendarDays(d, Date.now());
   if (diff === 0) return "Today";
   if (diff === 1) return "Yesterday";
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
