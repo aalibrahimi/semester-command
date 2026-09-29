@@ -200,7 +200,7 @@ async fn daily_digest(app: &AppHandle, db: &Db) -> Result<(), sqlx::Error> {
             format!(
                 "{} ({})",
                 r.name.as_deref().unwrap_or("Untitled"),
-                r.course_code.as_deref().unwrap_or("—")
+                r.course_code.as_deref().unwrap_or("–")
             )
         })
         .collect();
@@ -239,6 +239,28 @@ pub fn session_died(app: &AppHandle) {
 pub async fn on_sync_changes(app: &AppHandle, changes: &SyncChanges) {
     use tauri::Manager;
     let db = app.state::<Db>().inner().clone();
+
+    for l in &changes.new_lectures {
+        // Keyed on the file: the same upload never announces twice, even if
+        // the professor renames it.
+        let key = format!("lecture:{}:{}", l.course_id, l.file_id);
+        if let Ok(false) = already_sent(&db, &key).await {
+            let _ = mark_sent(&db, &key).await;
+            let code = l.course_code.as_deref().unwrap_or("A course");
+            inbox::deliver(
+                app,
+                Note::new(
+                    "lecture",
+                    format!("{code}: new lecture posted"),
+                    format!(
+                        "{}. Added to the lectures waiting for a study chapter.",
+                        l.name
+                    ),
+                )
+                .route("/study/lectures".to_string()),
+            );
+        }
+    }
 
     for m in &changes.course_moves {
         // Keyed on the rounded pair, so a regrade back and forth cannot ping

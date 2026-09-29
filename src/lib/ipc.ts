@@ -640,6 +640,30 @@ export async function contentAsset(path: string): Promise<string | null> {
   return call<string | null>("content_asset", { path });
 }
 
+/** A lecture file seen on Canvas (migration 0018). */
+export interface LectureFileRow {
+  courseId: string;
+  fileId: string;
+  name: string;
+  /** When Canvas says it was uploaded; null when found through a module. */
+  createdAt: string | null;
+  firstSeenAt: string;
+  /** Seen after the course's first (baseline) scan. */
+  isNew: boolean;
+  dismissed: boolean;
+}
+
+export async function lectureFilesList(): Promise<LectureFileRow[]> {
+  if (!IS_TAURI) return [];
+  return call<LectureFileRow[]>("lecture_files_list");
+}
+
+/** Hide a lecture from (or bring it back to) the "needs a chapter" list. */
+export async function lectureFileDismiss(courseId: string, fileId: string, dismissed: boolean): Promise<void> {
+  if (!IS_TAURI) return;
+  return call<void>("lecture_file_dismiss", { courseId, fileId, dismissed });
+}
+
 export async function contentStatus(): Promise<ContentStatus | null> {
   if (!IS_TAURI) return null;
   return call<ContentStatus>("content_status");

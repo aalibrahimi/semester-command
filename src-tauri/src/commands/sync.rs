@@ -23,6 +23,10 @@ pub struct SyncStatus {
     /// Display-ready. `None` unless `phase` is `Error`.
     pub message: Option<String>,
     pub auth_mode: AuthModeTag,
+    /// RFC 3339. When the last run of any outcome finished.
+    pub last_attempt_at: Option<String>,
+    /// Minutes between automatic runs, so the UI can say when the next one is.
+    pub interval_minutes: u32,
 }
 
 /// The sync engine's states.
@@ -95,16 +99,95 @@ pub async fn get_sync_status(app: AppHandle) -> CommandResult<SyncStatus> {
     };
 
     let db = app.state::<Db>().inner().clone();
-    let last_synced_at = queries::last_ok_sync(&db)
-        .await
-        .map_err(|e| CommandError::storage(format!("Could not read sync history: {e}")))?;
+    let read = |e: sqlx::Error| CommandError::storage(format!("Could not read sync history: {e}"));
+    let last_synced_at = queries::last_ok_sync(&db).await.map_err(read)?;
+    let last_attempt_at = queries::last_sync_attempt(&db).await.map_err(read)?;
+
+    // A run that failed after the last good one: say so, in plain words,
+    // instead of letting "synced 3h ago" quietly grow.
+    let (phase, message) = match phase {
+        SyncPhase::Idle => match queries::failed_since_ok(&db).await.map_err(read)? {
+            Some((_, err)) => (SyncPhase::Error, Some(describe_sync_error(err.as_deref()))),
+            None => (SyncPhase::Idle, None),
+        },
+        other => (other, None),
+    };
 
     Ok(SyncStatus {
         phase,
         last_synced_at,
-        message: None,
+        message,
         auth_mode,
+        last_attempt_at,
+        interval_minutes: 30,
     })
+}
+
+/// Turn a stored sync error into one sentence a person can act on. The raw
+/// text stays in `sync_log` (and the debug view) for diagnosis.
+pub fn describe_sync_error(raw: Option<&str>) -> String {
+    let raw = raw.unwrap_or("").trim();
+    let low = raw.to_lowercase();
+    if low.contains("session expired") {
+        "Your Canvas sign-in expired. Reconnect to keep grades and due dates current.".into()
+    } else if low.contains("rate-limiting") || low.contains("http 429") {
+        "Canvas asked the app to slow down. It will try again on the next scheduled sync.".into()
+    } else if low.contains("network problem")
+        || low.contains("timed out")
+        || low.contains("dns")
+        || low.contains("connect")
+    {
+        "Couldn't reach Canvas. Check your internet connection; the app will retry on its own."
+            .into()
+    } else if let Some(code) = low
+        .split("http ")
+        .nth(1)
+        .and_then(|r| r.get(..3))
+        .and_then(|c| c.parse::<u16>().ok())
+    {
+        if code >= 500 {
+            format!("Canvas had a server problem (HTTP {code}). It usually clears up; the app will retry.")
+        } else {
+            format!("Canvas refused a request (HTTP {code}). Try Sync now; if it keeps happening, reconnect.")
+        }
+    } else if low.contains("could not parse") {
+        "Canvas sent something the app didn't expect. Try Sync now; if it repeats, it's a bug worth reporting.".into()
+    } else if raw.is_empty() {
+        "The last sync didn't finish. Try Sync now.".into()
+    } else {
+        let short: String = raw.chars().take(140).collect();
+        format!("The last sync failed: {short}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::describe_sync_error;
+
+    #[test]
+    fn plain_words_for_common_failures() {
+        assert!(
+            describe_sync_error(Some("Canvas session expired: sign in again"))
+                .contains("Reconnect")
+        );
+        assert!(describe_sync_error(Some(
+            "network problem talking to Canvas: error sending request"
+        ))
+        .contains("internet"));
+        assert!(
+            describe_sync_error(Some("Canvas returned HTTP 503 for /api/v1/courses"))
+                .contains("HTTP 503")
+        );
+        assert!(
+            describe_sync_error(Some("Canvas returned HTTP 403 for /api/v1/courses"))
+                .contains("refused")
+        );
+        assert!(describe_sync_error(Some(
+            "Canvas is rate-limiting us and retries were exhausted"
+        ))
+        .contains("slow down"));
+        assert!(describe_sync_error(None).contains("didn't finish"));
+    }
 }
 
 /// Kick a sync and return immediately; progress lands on the `sync:` event

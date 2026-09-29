@@ -20,6 +20,7 @@ import { listen } from "@tauri-apps/api/event";
 import { Search as SearchIcon } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { InboxBell } from "@/components/inbox/InboxBell";
+import { CanvasStatus } from "@/components/layout/CanvasStatus";
 import { ToastStack } from "@/components/inbox/NotificationCard";
 import { useToastStack } from "@/lib/toastStack";
 import { markRead } from "@/lib/inbox";
@@ -125,6 +126,7 @@ export function AppShell() {
           />
 
           <div className="ml-auto flex items-center gap-2">
+            <CanvasStatus />
             <InboxBell />
             {/* Styled as the reference's floating search pill rather than a
                 bordered button — same ⌘K affordance, softer body language. */}
@@ -151,7 +153,7 @@ export function AppShell() {
         {isReconnectRequired && (
           <div className="flex shrink-0 items-center gap-2 border-b border-critical/30 bg-critical/10 px-6 py-1.5 text-xs text-critical-fg">
             <span className="min-w-0 truncate">
-              Canvas session expired — grades and due dates shown are from the last sync.
+              Canvas session expired: grades and due dates shown are from the last sync.
             </span>
             <Link
               to="/settings"

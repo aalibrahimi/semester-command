@@ -113,6 +113,31 @@ pub async fn files_search(
     .await
 }
 
+/// Every file in a course, newest first, as raw JSON (only id, name and
+/// created_at are read). 403 for students in many courses: callers treat
+/// that as "closed", never as a failure.
+pub async fn course_files_recent(
+    client: &CanvasClient,
+    course_id: &str,
+) -> Result<Vec<serde_json::Value>, CanvasError> {
+    client
+        .get_all(&format!(
+            "/courses/{course_id}/files?sort=created_at&order=desc"
+        ))
+        .await
+}
+
+/// Modules with their items, as raw JSON (for File items inside modules,
+/// which is how some professors post slides when Files is closed).
+pub async fn course_modules(
+    client: &CanvasClient,
+    course_id: &str,
+) -> Result<Vec<serde_json::Value>, CanvasError> {
+    client
+        .get_all(&format!("/courses/{course_id}/modules?include[]=items"))
+        .await
+}
+
 /// TAs of one course.
 pub async fn tas(
     client: &CanvasClient,

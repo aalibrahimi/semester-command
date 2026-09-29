@@ -77,6 +77,34 @@ pub async fn last_ok_sync(db: &Db) -> Result<Option<String>, sqlx::Error> {
     .map(Option::flatten)
 }
 
+/// The newest finished sync run that failed AFTER the last successful one:
+/// `(finished_at, error)`. `None` when the latest finished run succeeded.
+///
+/// This is what lets the status say "last sync failed" instead of quietly
+/// showing an ever-older "synced 3h ago".
+pub async fn failed_since_ok(db: &Db) -> Result<Option<(String, Option<String>)>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT finished_at, error FROM sync_log
+         WHERE entity = 'sync' AND ok = 0 AND finished_at IS NOT NULL
+           AND id > COALESCE((SELECT MAX(id) FROM sync_log WHERE entity = 'sync' AND ok = 1), 0)
+         ORDER BY id DESC LIMIT 1",
+    )
+    .fetch_optional(db)
+    .await
+}
+
+/// When the last sync run of any outcome finished, if ever.
+pub async fn last_sync_attempt(db: &Db) -> Result<Option<String>, sqlx::Error> {
+    sqlx::query_scalar(
+        "SELECT finished_at FROM sync_log
+         WHERE entity = 'sync' AND finished_at IS NOT NULL
+         ORDER BY id DESC LIMIT 1",
+    )
+    .fetch_optional(db)
+    .await
+    .map(Option::flatten)
+}
+
 /// All courses, for the debug view and (later) the sidebar.
 pub async fn all_courses(db: &Db) -> Result<Vec<CourseRow>, sqlx::Error> {
     sqlx::query_as("SELECT * FROM courses ORDER BY course_code, name")

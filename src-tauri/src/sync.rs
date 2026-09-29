@@ -102,6 +102,8 @@ pub struct SyncChanges {
     /// Assignments Canvas newly flagged `missing` — always notified.
     pub missing_flips: Vec<GradeEvent>,
     pub new_assignments: usize,
+    /// Lecture files first seen this run (crate::lectures).
+    pub new_lectures: Vec<crate::lectures::NewLecture>,
 }
 
 impl SyncChanges {
@@ -110,6 +112,7 @@ impl SyncChanges {
             && self.course_moves.is_empty()
             && self.missing_flips.is_empty()
             && self.new_assignments == 0
+            && self.new_lectures.is_empty()
     }
 }
 
@@ -430,6 +433,16 @@ async fn sync_one_course(
         Ok(_) => {}
         Err(CanvasError::SessionExpired) => return Err(CanvasError::SessionExpired),
         Err(e) => tracing::info!(course_id, error = %e, "syllabus fetch failed; continuing"),
+    }
+
+    // New lecture slides: Files and Modules are both read; a closed one is
+    // normal. Only session death propagates.
+    match crate::lectures::scan_course(db, client, course_id, course.parsed.course_code.as_deref())
+        .await
+    {
+        Ok(fresh) => summary.changes.new_lectures.extend(fresh),
+        Err(CanvasError::SessionExpired) => return Err(CanvasError::SessionExpired),
+        Err(e) => tracing::info!(course_id, error = %e, "lecture scan failed; continuing"),
     }
 
     // Instructors are nice-to-have: a 403 here (SJSU hides rosters in some

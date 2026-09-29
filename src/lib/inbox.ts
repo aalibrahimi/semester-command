@@ -14,7 +14,7 @@
  */
 import { useEffect, useSyncExternalStore } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { AlarmClock, Bell, CalendarClock, FlaskConical, GraduationCap, Plug, RefreshCw, TriangleAlert } from "lucide-react";
+import { AlarmClock, Bell, CalendarClock, FlaskConical, GraduationCap, Plug, Presentation, RefreshCw, TriangleAlert } from "lucide-react";
 import { IS_TAURI, inboxList, inboxMarkRead } from "@/lib/ipc";
 import type { InboxItem } from "@/types";
 
@@ -35,6 +35,7 @@ const KINDS: Record<string, KindMeta> = {
   digest: { label: "Today", icon: CalendarClock, disc: "bg-brand/15 text-brand-fg", bar: "bg-brand" },
   session: { label: "Canvas", icon: Plug, disc: "bg-critical/15 text-critical-fg", bar: "bg-critical" },
   sync: { label: "Sync", icon: RefreshCw, disc: "bg-foreground/10 text-foreground/80", bar: "bg-foreground/40" },
+  lecture: { label: "Lecture", icon: Presentation, disc: "bg-brand/15 text-brand-fg", bar: "bg-brand" },
   test: { label: "Test", icon: FlaskConical, disc: "bg-brand/15 text-brand-fg", bar: "bg-brand" },
 };
 
@@ -43,7 +44,7 @@ export function kindMeta(kind: string): KindMeta {
 }
 
 /** Filter chips on the Inbox page, in this order. */
-export const KIND_FILTERS = ["deadline", "missing", "grade", "digest", "session", "sync"] as const;
+export const KIND_FILTERS = ["deadline", "missing", "grade", "lecture", "digest", "session", "sync"] as const;
 
 /* ── Time ──────────────────────────────────────────────────────────────────── */
 

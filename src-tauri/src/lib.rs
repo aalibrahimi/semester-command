@@ -32,6 +32,7 @@ pub mod degree;
 pub mod grades;
 pub mod ical;
 pub mod inbox;
+pub mod lectures;
 pub mod mcp;
 pub mod notify;
 pub mod settings;
@@ -84,6 +85,8 @@ pub fn run() {
             commands::content::content_manifest,
             commands::content::content_status,
             commands::content::content_sync,
+            commands::lectures::lecture_files_list,
+            commands::lectures::lecture_file_dismiss,
             commands::auth::auth_status,
             commands::auth::clear_session,
             commands::auth::harvest_session,
@@ -283,7 +286,7 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
                     } else {
                         commands::auth::emit_status(
                             &app,
-                            Some("Your saved Canvas session has expired — sign in again.".into()),
+                            Some("Your saved Canvas session has expired: sign in again.".into()),
                         )
                         .await;
                     }
@@ -396,8 +399,8 @@ pub async fn update_tray_menu(app: &tauri::AppHandle) {
                 })
                 .unwrap_or_default();
             format!(
-                "{} · {} — {}",
-                r.course_code.as_deref().unwrap_or("—"),
+                "{} · {}: {}",
+                r.course_code.as_deref().unwrap_or("–"),
                 r.name.as_deref().unwrap_or("Untitled"),
                 due
             )

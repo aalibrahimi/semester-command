@@ -36,6 +36,7 @@ import StudySlides from "@/routes/StudySlides";
 import StudyExam from "@/routes/StudyExam";
 import StudyReady from "@/routes/StudyReady";
 import StudyOral from "@/routes/StudyOral";
+import StudyLectures from "@/routes/StudyLectures";
 import StudyMistakes from "@/routes/StudyMistakes";
 import Settings from "@/routes/Settings";
 import Inbox from "@/routes/Inbox";
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="study" element={<Navigate to="/" replace />} />
               <Route path="study/:course" element={<StudyCourse />} />
               <Route path="study/mistakes" element={<StudyMistakes />} />
+              <Route path="study/lectures" element={<StudyLectures />} />
               <Route path="study/:course/exam" element={<StudyExam />} />
               <Route path="study/:course/ready" element={<StudyReady />} />
               <Route path="study/:course/oral" element={<StudyOral />} />

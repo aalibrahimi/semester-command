@@ -23,6 +23,7 @@ pub mod data;
 pub mod degree;
 pub mod grades;
 pub mod inbox;
+pub mod lectures;
 pub mod settings;
 pub mod study;
 pub mod sync;
@@ -91,7 +92,7 @@ impl From<crate::canvas::client::CanvasError> for CommandError {
         let (kind, message) = match &e {
             E::SessionExpired => (
                 ErrorKind::SessionExpired,
-                "Canvas session expired — sign in again from Settings.".to_string(),
+                "Canvas session expired: sign in again from Settings.".to_string(),
             ),
             E::RateLimited => (
                 ErrorKind::RateLimited,
@@ -99,7 +100,7 @@ impl From<crate::canvas::client::CanvasError> for CommandError {
             ),
             E::Network(_) => (
                 ErrorKind::Network,
-                "Could not reach Canvas — check your connection.".to_string(),
+                "Could not reach Canvas: check your connection.".to_string(),
             ),
             E::NoAuth => (
                 ErrorKind::SessionExpired,

@@ -21,6 +21,7 @@ import type { Course } from "@/study/types";
 import type { SectionStatus } from "@/study/mastery";
 import type { Action } from "@/study/plan";
 import { oralConcepts } from "@/study/oral";
+import { useLectureQueue } from "@/study/lectureQueue";
 import { ago, stopRoute, type ChapterProgress, type CourseProgress } from "@/study/progress";
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { courseTick } from "@/components/study/courseTick";
@@ -80,6 +81,7 @@ export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean
   const guides = summariesForCourse(c.slug, c.guides);
   const [tab, setTab] = useState<"lectures" | "exam">("lectures");
   const { prog, actions } = useCourseData(c, guides);
+  const posted = useLectureQueue().waiting.filter((w) => w.course?.slug === c.slug);
 
   const warns = c.alerts?.filter((a) => a.kind === "warn") ?? [];
   const infos = c.alerts?.filter((a) => a.kind === "info") ?? [];
@@ -106,6 +108,24 @@ export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean
         {/* ── Main column ─────────────────────────────────────────────── */}
         {tab === "lectures" ? (
           <div className="flex min-w-0 flex-col gap-8">
+            {posted.length > 0 && (
+              <section className="rounded-xl border border-at-risk/40 bg-at-risk/[0.06] px-4 py-3.5">
+                <h2 className="flex items-center gap-2 text-sm font-semibold">
+                  <Presentation className="h-4 w-4 text-at-risk-fg" /> Posted on Canvas, no chapter yet
+                </h2>
+                <ul className="mt-2 flex flex-col gap-1 text-sm">
+                  {posted.map((w) => (
+                    <li key={w.row.fileId} className="truncate text-foreground/90">
+                      {w.row.name}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/study/lectures" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand-fg hover:underline">
+                  Ask Claude to write {posted.length === 1 ? "it" : "them"} <ArrowRight className="h-3 w-3" />
+                </Link>
+              </section>
+            )}
+
             {guides.length > 0 && (
               <section>
                 <h2 className={H2}>Written</h2>

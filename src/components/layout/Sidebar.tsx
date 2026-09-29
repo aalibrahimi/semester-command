@@ -41,6 +41,8 @@ import {
 import { cn } from "@/lib/utils";
 import { shortcut } from "@/lib/platform";
 import { sinceSync } from "@/lib/format";
+import { canvasHealth } from "@/lib/canvasHealth";
+import type { SyncStatus } from "@/types";
 import { parseCourseLabel } from "@/lib/courseLabel";
 import { openCanvasLogin } from "@/lib/ipc";
 import { Fragment } from "react";
@@ -216,7 +218,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                     )}
                     {!collapsed && c.gradeable && (
                       <span data-numeric className="ml-auto shrink-0 font-mono text-2xs tabular-nums text-muted-foreground">
-                        {c.grade.currentPct !== null ? `${c.grade.currentPct.toFixed(0)}%` : "—"}
+                        {c.grade.currentPct !== null ? `${c.grade.currentPct.toFixed(0)}%` : "–"}
                       </span>
                     )}
                   </NavLink>
@@ -274,8 +276,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
       <div className="shrink-0 border-t border-border/60 p-2">
         <SyncIndicator
           collapsed={collapsed}
-          phase={status.phase}
-          lastSyncedAt={status.lastSyncedAt}
+          status={status}
           isReconnectRequired={isReconnectRequired}
         />
 
@@ -386,15 +387,14 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
  */
 function SyncIndicator({
   collapsed,
-  phase,
-  lastSyncedAt,
+  status,
   isReconnectRequired,
 }: {
   collapsed: boolean;
-  phase: string;
-  lastSyncedAt: string | null;
+  status: SyncStatus;
   isReconnectRequired: boolean;
 }) {
+  const { phase, lastSyncedAt } = status;
   if (isReconnectRequired) {
     const content = (
       <button
@@ -413,7 +413,7 @@ function SyncIndicator({
       <Tooltip>
         <TooltipTrigger asChild>{content}</TooltipTrigger>
         <TooltipContent side="right">
-          Your Canvas session expired — grades on screen are stale
+          Your Canvas session expired: grades on screen are stale
         </TooltipContent>
       </Tooltip>
     ) : (
@@ -422,6 +422,9 @@ function SyncIndicator({
   }
 
   const syncing = phase === "syncing";
+  // Same reading as the header pill: green when current, amber when the
+  // last run failed or nothing has synced for two hours.
+  const h = canvasHealth(status);
   const label = syncing ? "syncing…" : `synced ${sinceSync(lastSyncedAt)}`;
 
   const content = (
@@ -434,7 +437,7 @@ function SyncIndicator({
       {syncing ? (
         <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" />
       ) : (
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-locked" />
+        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", h.tone === "ok" ? "bg-on-track" : h.tone === "warn" ? "bg-at-risk" : "bg-locked")} />
       )}
       {!collapsed && <span className="truncate">{label}</span>}
     </div>

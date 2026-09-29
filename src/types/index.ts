@@ -61,6 +61,10 @@ export interface SyncStatus {
   /** Which auth path produced the current data (§2.0). Drives the "not from
    *  Canvas" marks in the UI. */
   authMode: AuthMode;
+  /** ISO-8601. When the last run of any outcome finished. */
+  lastAttemptAt?: string | null;
+  /** Minutes between automatic runs. */
+  intervalMinutes?: number;
 }
 
 /**
