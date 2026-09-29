@@ -1656,6 +1656,1182 @@
           "id": "insertion.d47d0aa6"
         },
         {
+          "type": "stepper",
+          "title": "The same sort, line by line: code on the left, array on the right",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    5,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "insertion_sort([8, 5, 2, 6, 9]). a[0] alone is a sorted hand (green). The loop on line 2 hands us one new card at a time."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    null,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 1. Line 3 lifts the key, 5, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    null,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 0. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    8,
+                    null,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[0] = 8 > 5? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    8,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 6 copies 8 one slot right, into the hole. The hole is now at index 0. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    5
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    8,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: i = −1: nothing left to compare, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    2,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 5 into the hole at index 0. Now a[0..1] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    null,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 2. Line 3 lifts the key, 2, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    null,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 1. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    8,
+                    null,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[1] = 8 > 2? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 8 one slot right, into the hole. The hole is now at index 1. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[0] = 5 > 2? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    5,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 5 one slot right, into the hole. The hole is now at index 0. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    5,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: i = −1: nothing left to compare, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    6,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 2 into the hole at index 0. Now a[0..2] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    null,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 3. Line 3 lifts the key, 6, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    null,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 2. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    8,
+                    null,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[2] = 8 > 6? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 8 one slot right, into the hole. The hole is now at index 2. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: a[1] = 5 > 6? **No**, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 6 into the hole at index 2. Now a[0..3] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    9
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    null
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 4. Line 3 lifts the key, 9, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    9
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    null
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 3. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    9
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    null
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: a[3] = 8 > 9? **No**, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 9 into the hole at index 4. Now a[0..4] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "j ran past the end, so the for loop on line 2 is done. Sorted: [2, 5, 6, 8, 9]."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def insertion_sort(a):\n    for j in range(1, len(a)):\n        key = a[j]\n        i = j - 1\n        while i >= 0 and a[i] > key:\n            a[i + 1] = a[i]     # slide right\n            i -= 1\n        a[i + 1] = key          # drop in\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2
+              ]
+            ],
+            "vars": [
+              {
+                "a": "[8, 5, 2, 6, 9]"
+              },
+              {
+                "j": "1",
+                "key": "5"
+              },
+              {
+                "j": "1",
+                "key": "5",
+                "i": "0"
+              },
+              {
+                "j": "1",
+                "key": "5",
+                "i": "0",
+                "a[i]": "8"
+              },
+              {
+                "j": "1",
+                "key": "5",
+                "i": "-1"
+              },
+              {
+                "j": "1",
+                "key": "5",
+                "i": "-1"
+              },
+              {
+                "j": "1",
+                "a": "[5, 8, 2, 6, 9]"
+              },
+              {
+                "j": "2",
+                "key": "2"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "1"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "1",
+                "a[i]": "8"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "0"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "0",
+                "a[i]": "5"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "-1"
+              },
+              {
+                "j": "2",
+                "key": "2",
+                "i": "-1"
+              },
+              {
+                "j": "2",
+                "a": "[2, 5, 8, 6, 9]"
+              },
+              {
+                "j": "3",
+                "key": "6"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "2"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "2",
+                "a[i]": "8"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "1"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "1"
+              },
+              {
+                "j": "3",
+                "a": "[2, 5, 6, 8, 9]"
+              },
+              {
+                "j": "4",
+                "key": "9"
+              },
+              {
+                "j": "4",
+                "key": "9",
+                "i": "3"
+              },
+              {
+                "j": "4",
+                "key": "9",
+                "i": "3"
+              },
+              {
+                "j": "4",
+                "a": "[2, 5, 6, 8, 9]"
+              },
+              {
+                "a": "[2, 5, 6, 8, 9]"
+              }
+            ]
+          },
+          "id": "insertion.3be7df27"
+        },
+        {
           "type": "sim",
           "sim": "sort",
           "caption": "Insertion sort on your own array, one shift at a time, with the comparison and shift counts live. Type a reversed array (9, 8, 7, 6, 5) and confirm n(n−1)/2 shifts; type a sorted one and confirm zero.",

@@ -1,4 +1,5 @@
 from c146common import *
+from cs146_traces import TRACE, insertion_trace, merge_trace, mergesort_trace, heapify_trace, partition_trace, quicksort_trace
 import fig4
 
 FG = fig4.figures()
@@ -183,6 +184,7 @@ for n in [1, 2, 16, 1000, 1_000_000]:
     D("Merge", "Take **two sorted lists** and produce **one sorted list** containing everything from both, by repeatedly taking the smaller of the two front items."),
     WHY("**Why merging is easy but sorting is hard.** In two sorted piles, the smallest item overall must be on the front of one pile: nothing buried can be smaller than the front of its own pile. So you never search. You just compare two fronts, take the smaller, and repeat. Each step places one item for good."),
     ST("Merging [2, 5, 8, 12] and [3, 6, 9, 10] (HW 5 Problem 1)", merge_frames([2, 5, 8, 12], [3, 6, 9, 10])),
+    TRACE("merge, line by line (smaller example: [1, 4, 9] and [2, 3, 10, 11])", merge_trace([1, 4, 9], [2, 3, 10, 11])),
     P("**Cost of one merge.** Every step copies one item to the output, and nothing is copied twice. Merging lists with n items in total therefore takes about **n steps: O(n)**."),
     MERGE_JAVA,
     WORLD("**Merging sorted lists is a daily job for software.** Your email app showing messages from several accounts in one timeline is merging lists already sorted by date. A database answering 'join these two tables' often sorts both and merges them (a 'merge join'). Version control tools merge ordered sequences of lines. When data is already sorted, merging is the cheapest way to combine it."),
@@ -234,6 +236,10 @@ print(merge([2, 5, 8, 12], [3, 6, 9, 10]))
   {"id": "mergesort", "heading": "Merge sort, top to bottom", "blocks": [
     D("Merge sort", "Split the array in half, merge-sort each half, then **merge** the two sorted halves. A piece of size 1 is already sorted (the base case)."),
     ST("Merge sort on [50, 20, 60, 30, 10]: split down, merge up", ms_frames([50, 20, 60, 30, 10])),
+    TRACE("The recursion, call by call: which call is running, and who is waiting", mergesort_trace([50, 20, 60, 30, 10])),
+    {"type": "video", "src": "/study-videos/cs146-merge-sort.mp4", "slide": "Watch it move",
+     "caption": "Merge sort on [7, 3, 9, 1, 4, 8, 2, 6] as a 2.5-minute video: the splits going down, then every merge coming back up, with the call stack under the code. Use the chips to jump to a merge.",
+     "chapters": [{"t": 0, "label": "Start"}, {"t": 18, "label": "First merge"}, {"t": 100, "label": "Final merge"}, {"t": 147, "label": "Runtime"}]},
     P("Merge sort is an hourglass. Going **down** it only cuts (no comparisons at all). Coming **up** it merges, and every comparison in the whole algorithm happens on the way up."),
     SIM("sort", "Merge sort on your own array. Watch the splits go down to single elements and the merges come back up; the window shows which slice is being worked on. Count the levels for n = 8.", {"algorithm": "merge", "array": [7, 3, 9, 1, 4, 8, 2, 6]}),
     MS_TRACE,

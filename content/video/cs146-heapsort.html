@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+const CODE = `def heapsort(a):
+    n = len(a)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(a, i, n)        # build
+    for end in range(n - 1, 0, -1):
+        a[0], a[end] = a[end], a[0]
+        heapify(a, 0, end)      # fix root
+
+def heapify(a, i, n):
+    while True:
+        l, r = 2 * i + 1, 2 * i + 2
+        largest = i
+        if l < n and a[l] > a[largest]:
+            largest = l
+        if r < n and a[r] > a[largest]:
+            largest = r
+        if largest == i: return
+        a[i], a[largest] = a[largest], a[i]
+        i = largest
+`;
+const A0 = [1, 2, 3, 4, 5, 6, 7];   // HW 8 Problem 1
+// tree slot positions (index → x, y) and array cell positions
+const TP = [[880, 140], [720, 238], [1040, 238], [640, 336], [800, 336], [960, 336], [1120, 336]];
+const AX = (k) => 616 + k * 88, AY = 470;
+
+function edges(size) {
+  let g = "";
+  for (let k = 1; k < size; k++) {
+    const [x1, y1] = TP[(k - 1) >> 1], [x2, y2] = TP[k];
+    g += `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='${C.line}' stroke-width='3'/>`;
+  }
+  for (let k = 0; k < 7; k++) g += txt(AX(k), AY + 50, String(k), { size: 13, fill: C.mute, mono: true, anchor: "middle" });
+  g += txt(560, AY + 7, "a", { size: 18, fill: C.mute, mono: true, w: 700 });
+  return g;
+}
+
+video({
+  title: "Heapsort", sub: "CS 146 · Lecture 8 · build a max-heap, then peel off the max", code: CODE,
+  build(rec) {
+    const a = [...A0], n = a.length;
+    let size = n;
+    const leg = legend([["checking", C.blue], ["bigger child", C.amber], ["sorted", C.green]]);
+    function paint({ look = [], big = null, swap = [] } = {}) {
+      a.forEach((v, k) => {
+        const inHeap = k < size;
+        let fill = inHeap ? C.slate : C.green, ring = null;
+        if (look.includes(k)) fill = C.blue;
+        if (k === big) fill = C.amber;
+        if (swap.includes(k)) ring = C.fg;
+        const z = swap.includes(k) ? 2 : 0;
+        rec.set("t" + v, { kind: "node", x: TP[k][0], y: TP[k][1], val: v, fill, ring, op: inHeap ? 1 : 0, r: 30, z });
+        rec.set("a" + v, { kind: "cell", x: AX(k), y: AY, val: v, fill, ring, op: 1, s: 58, z });
+      });
+      rec.extra = leg + edges(size);
+      rec.ptrs = [];
+    }
+    function sink(i, m, detail, extraLines) {
+      while (true) {
+        const l = 2 * i + 1, r = 2 * i + 2;
+        let big = i;
+        if (l < m && a[l] > a[big]) big = l;
+        if (r < m && a[r] > a[big]) big = r;
+        const kids = [l, r].filter((c) => c < m);
+        if (!kids.length) {
+          paint({ look: [i] });
+          rec.snap(`${a[i]} reached a leaf (index ${i} has no children). Stop.`, [10, 11, 17], detail ? 2.4 : 1.6);
+          return;
+        }
+        paint({ look: [i, ...kids], big: big === i ? null : big });
+        if (big === i) {
+          rec.snap(`${a[i]} vs its children (${kids.map((c) => a[c]).join(", ")}): ${a[i]} is biggest. Heap property holds, stop.`, [11, 12, 13, 15, 17], detail ? 3 : 2);
+          return;
+        }
+        rec.snap(detail
+          ? `heapify(${i}): compare ${a[i]} with its children ${kids.map((c) => a[c]).join(" and ")}. The biggest is **${a[big]}**.`
+          : `${a[i]} vs ${kids.map((c) => a[c]).join(", ")}: the bigger child is **${a[big]}**.`, [11, 12, 13, 14, 15, 16], detail ? 3 : 2);
+        [a[i], a[big]] = [a[big], a[i]];
+        paint({ swap: [i, big] });
+        rec.snap(`Swap: ${a[i]} moves up, ${a[big]} sinks to index ${big}. Keep going from there.`, [18, 19], detail ? 2.8 : 1.9);
+        i = big;
+      }
+    }
+
+    rec.mark("Start");
+    rec.card("Heapsort", "Lecture 8 · HW 8's array [1, 2, 3, 4, 5, 6, 7]", 4.5,
+      "The same 7 numbers, drawn twice: as a tree (top) and as the array it really is (bottom).");
+    paint();
+    rec.snap("Index k's children live at 2k + 1 and 2k + 2. The tree is just a way of looking at the array.", [1, 2], 4);
+    rec.mark("Build the heap");
+    rec.snap("Phase 1, build the heap: fix every non-leaf, from the last one (index 2) back to the root.", [3], 3.2);
+    for (let i = (n >> 1) - 1; i >= 0; i--) {
+      paint({ look: [i] });
+      rec.snap(`heapify(a, ${i}, 7): fix the little tree rooted at index ${i} (value ${a[i]}).`, [3, 4, 9], 2.4);
+      sink(i, n, i === (n >> 1) - 1, []);
+    }
+    paint({ look: [0] });
+    rec.snap(`It's a max-heap: every parent ≥ its children. The biggest value, **${a[0]}**, sits at the root.`, [4], 3.4);
+    rec.mark("Sort");
+    rec.snap("Phase 2, sort: swap the root (the max) to the back, shrink the heap by one, fix the root.", [5], 3.2);
+    for (let end = n - 1; end > 0; end--) {
+      const first = end === n - 1;
+      paint({ swap: [0, end] });
+      rec.snap(`Swap the root ${a[0]} with the last heap item ${a[end]} (index ${end}).`, [5, 6], first ? 2.8 : 2);
+      [a[0], a[end]] = [a[end], a[0]];
+      size = end;
+      paint({ look: [0] });
+      rec.snap(`**${a[end]} is in its final place** (green) and leaves the heap. Now ${a[0]} sinks from the root.`, [6, 7], first ? 3 : 2.2);
+      sink(0, end, first, []);
+    }
+    size = 0;
+    paint();
+    rec.snap("Sorted, inside the same array. n swaps, each followed by an O(log n) sink: **O(n log n)**.", [], 4.5);
+    rec.mark("Runtime");
+    rec.card("O(n log n), in place", "Always, even in the worst case. No extra array like merge sort needs.", 4.5,
+      "Build the heap once (O(n)), then n − 1 rounds of swap + heapify (O(log n) each).");
+  },
+});
+</script></body></html>

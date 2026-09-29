@@ -1,4 +1,5 @@
 from c146common import *
+from cs146_traces import TRACE, insertion_trace, merge_trace, mergesort_trace, heapify_trace, partition_trace, quicksort_trace
 
 SLUG = "9-quicksort"
 O = lambda sid, pred: old_block(SLUG, sid, pred)
@@ -31,6 +32,7 @@ g = {
   {"id": "partition", "heading": "partition: the one step that does all the work", "blocks": [
     O("partition", lambda b: b["type"] == "definition"),
     ST("partition(a, 0, 4) on [9, 3, 1, 7, 5] (the slide's example)", partition_frames([9, 3, 1, 7, 5], 0, 4)),
+    TRACE("partition(a, 0, 4), line by line", partition_trace([9, 3, 1, 7, 5], 0, 4)),
     P("Watch the colors: **green** is 'known to be ≤ pivot', **amber** is 'known to be > pivot', white is 'not checked yet'. **j is the scout** walking right; **i is the boundary** of the green zone. A small item gets swapped into the green zone; a big one is simply walked past."),
     O("partition", lambda b: b["type"] == "example"),
     ST("Your turn from the slides: partition(a, 2, 7) on [19, 9, 5, 1, 8, 7, 2, 3, 4, 6]", partition_frames([19, 9, 5, 1, 8, 7, 2, 3, 4, 6], 2, 7)),
@@ -84,6 +86,10 @@ print(a, "pivot landed at", p)
   {"id": "quicksort", "heading": "quicksort: partition, then recurse on both sides", "blocks": [
     O("quicksort", lambda b: b["type"] == "example" and "quicksort(a, low, high)" in b["body"]),
     ST("quicksort on [2, 8, 7, 1, 3, 5, 6, 4] (the slide's example)", quicksort_frames([2, 8, 7, 1, 3, 5, 6, 4])),
+    TRACE("The recursion on a smaller array, [5, 2, 8, 1, 4]: which call is running, and who is waiting", quicksort_trace([5, 2, 8, 1, 4])),
+    {"type": "video", "src": "/study-videos/cs146-quicksort.mp4", "slide": "Watch it move",
+     "caption": "Quicksort on the slide's array as a 2.5-minute video: code on the left, bars on the right. Every partition, every swap, and which calls are waiting on the stack. Use the chips to jump, or slow it to 0.75×.",
+     "chapters": [{"t": 0, "label": "Start"}, {"t": 5, "label": "First partition"}, {"t": 46, "label": "Left side"}, {"t": 87, "label": "Right side"}, {"t": 137, "label": "Runtime"}]},
     P("Notice what is **not** there: no merge step. Once the pivot is in place and both sides are sorted, the whole range is sorted, because every left item ≤ pivot < every right item. And the pivot is **left out** of both recursive calls (p − 1 and p + 1): it's already done."),
     O("quicksort", lambda b: b["type"] == "table"),
     O("quicksort", lambda b: b["type"] == "prose" and "on the way" in b["md"]),

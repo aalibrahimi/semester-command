@@ -1,0 +1,128 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+const CODE = `def merge_sort(a, lo, hi):
+    if lo >= hi: return
+    mid = (lo + hi) // 2
+    merge_sort(a, lo, mid)
+    merge_sort(a, mid + 1, hi)
+    merge(a, lo, mid, hi)
+
+def merge(a, lo, mid, hi):
+    i, j, out = lo, mid + 1, []
+    while i <= mid and j <= hi:
+        if a[i] <= a[j]:
+            out.append(a[i]); i += 1
+        else:
+            out.append(a[j]); j += 1
+    out += a[i:mid + 1] + a[j:hi + 1]
+    a[lo:hi + 1] = out
+`;
+const A0 = [7, 3, 9, 1, 4, 8, 2, 6];   // Lecture 4's divide-and-conquer example
+const X = (k) => 574 + k * 88, TOP = 318, BOT = 566, BH = (v) => 18 + v * 17;
+
+video({
+  title: "Merge sort", sub: "CS 146 · Lecture 4 · split down to single items, merge back up", code: CODE,
+  build(rec) {
+    const a = [...A0], n = a.length;
+    const stack = [];
+    const sortedRuns = new Set();
+    rec.extra = legend([["left half", C.blue], ["right half", C.violet], ["merged", C.green]]) +
+      txt(528, TOP + 8, "a", { size: 18, mono: true, fill: C.mute, w: 700, anchor: "end" }) +
+      txt(528, BOT + 8, "out", { size: 18, mono: true, fill: C.mute, w: 700, anchor: "end" });
+    function paint({ lo = 0, hi = n - 1, mid = null, look = [], done = [] } = {}) {
+      a.forEach((v, k) => {
+        if (v === null) return;
+        let fill = sortedRuns.has(k) ? "#2b7a5c" : C.slate, op = k < lo || k > hi ? 0.3 : 1, ring = null;
+        if (mid !== null && k >= lo && k <= hi) fill = k <= mid ? C.blue : C.violet;
+        if (look.includes(k)) ring = C.fg;
+        rec.set("v" + v, { kind: "bar", x: X(k), y: TOP, h: BH(v), val: v, fill, op, ring, w: 58, fs: 20 });
+      });
+      rec.zones = [{ x: X(lo) - 42, y: 100, w: X(hi) - X(lo) + 84, h: 262, col: C.blue, label: `merge_sort(a, ${lo}, ${hi})` }];
+      rec.vars = "call stack: " + stack.map(([l, h]) => `ms(${l},${h})`).join(" → ");
+      rec.ptrs = [];
+    }
+
+    rec.mark("Start");
+    rec.card("Merge sort", "Lecture 4 · [7, 3, 9, 1, 4, 8, 2, 6]", 4.5,
+      "Cutting is free. All the real work happens when two sorted halves are merged.");
+    let merges = 0;
+    function ms(lo, hi) {
+      stack.push([lo, hi]);
+      if (lo >= hi) {
+        sortedRuns.add(lo);
+        paint({ lo, hi });
+        rec.snap(`merge_sort(${lo}, ${hi}): one item. Line 2 returns at once: **one item is already sorted**.`, [1, 2], merges === 0 ? 2.6 : 1.5);
+        stack.pop();
+        return;
+      }
+      const mid = (lo + hi) >> 1;
+      paint({ lo, hi, mid });
+      rec.snap(`merge_sort(${lo}, ${hi}): mid = (${lo} + ${hi}) // 2 = ${mid}. Left half a[${lo}..${mid}], right half a[${mid + 1}..${hi}].`, [1, 3], hi - lo === n - 1 ? 3.4 : 2.2);
+      ms(lo, mid);
+      ms(mid + 1, hi);
+      merge(lo, mid, hi);
+      stack.pop();
+    }
+
+    function merge(lo, mid, hi) {
+      const detail = merges === 0 || hi - lo === n - 1;
+      if (merges === 0) rec.mark("First merge");
+      if (hi - lo === n - 1) rec.mark("Final merge");
+      merges++;
+      paint({ lo, hi, mid });
+      rec.snap(`Both halves of a[${lo}..${hi}] are sorted. Line 6: **merge** them.`, [6, 8, 9], detail ? 2.8 : 1.8);
+      let i = lo, j = mid + 1, k = 0;
+      const slot = (q) => X(lo + q);
+      const put = (idx) => {
+        const v = a[idx];
+        rec.set("v" + v, { ...rec.get("v" + v), x: slot(k), y: BOT, fill: C.green, ring: null, op: 1, z: 2 });
+        a[idx] = null; k++;
+      };
+      const ptrs = () => {
+        rec.ptrs = [];
+        if (i <= mid) rec.ptrs.push({ x: X(i), y: TOP + 6, label: "i", col: C.blue, up: true });
+        if (j <= hi) rec.ptrs.push({ x: X(j), y: TOP + 6, label: "j", col: C.violet, up: true });
+      };
+      while (i <= mid && j <= hi) {
+        paint({ lo, hi, mid, look: [i, j] });
+        ptrs();
+        const takeLeft = a[i] <= a[j];
+        rec.snap(`Compare the fronts: ${a[i]} vs ${a[j]}. The smaller, **${Math.min(a[i], a[j])}**, is the smallest item left anywhere.`, [10, 11], detail ? 2.6 : 1.6);
+        put(takeLeft ? i : j);
+        if (takeLeft) i++; else j++;
+        ptrs();
+        rec.snap(`${takeLeft ? "Take it from the left" : "Take it from the right"} half. Only that finger moves on.`, takeLeft ? [12] : [13, 14], detail ? 2.2 : 1.3);
+      }
+      const rest = [];
+      while (i <= mid) { rest.push(a[i]); put(i); i++; }
+      while (j <= hi) { rest.push(a[j]); put(j); j++; }
+      rec.ptrs = [];
+      rec.snap(`One half ran out. The leftovers (${rest.join(", ")}) are already sorted: copy them over, no comparisons.`, [15], detail ? 2.6 : 1.6);
+      // copy back up
+      const out = [];
+      for (let q = 0; q < hi - lo + 1; q++) {
+        const id = Object.keys(rec.items).find((key) => rec.items[key].y === BOT && Math.abs(rec.items[key].x - slot(q)) < 1);
+        out.push(rec.items[id].val);
+      }
+      out.forEach((v, q) => { a[lo + q] = v; sortedRuns.add(lo + q); });
+      paint({ lo, hi });
+      rec.snap(`Line 16 copies out back into a[${lo}..${hi}]: **[${out.join(", ")}]**. This call returns.`, [16], detail ? 2.8 : 1.8);
+    }
+
+    ms(0, n - 1);
+    rec.zones = [];
+    rec.vars = "";
+    paint({ lo: 0, hi: n - 1 });
+    rec.zones = [];
+    rec.vars = "";
+    rec.snap("Sorted. log₂ 8 = 3 levels of merging, n = 8 copies per level: **O(n log n)**, every time.", [], 4.5);
+    rec.mark("Runtime");
+    rec.card("O(n log n), always", "Best, average and worst case are the same. The price: an extra array for out.", 4.5,
+      "Same pattern as the recursion tree: T(n) = 2T(n/2) + n.");
+  },
+});
+</script></body></html>

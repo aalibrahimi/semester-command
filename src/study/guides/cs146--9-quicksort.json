@@ -326,6 +326,316 @@
           "id": "partition.79283631"
         },
         {
+          "type": "stepper",
+          "title": "partition(a, 0, 4), line by line",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "partition(a, 0, 4). Line 2: pivot = a[4] = 5. Line 3: i = -1, so the green '≤ 5' zone starts out empty.",
+              "hl": [
+                4
+              ],
+              "ptrs": {
+                "j": 0,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "Line 4: j = 0. Line 5: is a[0] = 9 ≤ 5? **No**. Skip the body: 9 joins the amber '> 5' zone just by being walked past.",
+              "hl": [
+                0
+              ],
+              "ptrs": {
+                "j": 0,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "Line 4: j = 1. Line 5: is a[1] = 3 ≤ 5? **Yes**.",
+              "hl": [
+                1
+              ],
+              "warn": [
+                0
+              ],
+              "ptrs": {
+                "j": 1,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                9,
+                1,
+                7,
+                5
+              ],
+              "caption": "Line 6: i = 0. Line 7 swaps a[0] and a[1]. The green zone is now a[0..0].",
+              "hl": [
+                0
+              ],
+              "done": [
+                0
+              ],
+              "warn": [
+                1
+              ],
+              "ptrs": {
+                "i": 0,
+                "j": 2,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                9,
+                1,
+                7,
+                5
+              ],
+              "caption": "Line 4: j = 2. Line 5: is a[2] = 1 ≤ 5? **Yes**.",
+              "hl": [
+                2
+              ],
+              "done": [
+                0
+              ],
+              "warn": [
+                1
+              ],
+              "ptrs": {
+                "i": 0,
+                "j": 2,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "Line 6: i = 1. Line 7 swaps a[1] and a[2]. The green zone is now a[0..1].",
+              "hl": [
+                1
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                2
+              ],
+              "ptrs": {
+                "i": 1,
+                "j": 3,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "Line 4: j = 3. Line 5: is a[3] = 7 ≤ 5? **No**. Skip the body: 7 joins the amber '> 5' zone just by being walked past.",
+              "hl": [
+                3
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                2
+              ],
+              "ptrs": {
+                "i": 1,
+                "j": 3,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "The for loop is done (j reached 4, the pivot). Line 8 swaps the pivot into a[i + 1] = a[2], right after the green zone.",
+              "hl": [
+                4,
+                2
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                2,
+                3
+              ],
+              "ptrs": {
+                "i": 1,
+                "pivot": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                5,
+                7,
+                9
+              ],
+              "caption": "Line 9 returns 2. 5 sits at its FINAL sorted position: everything left of it is ≤ 5, everything right is bigger.",
+              "hl": [
+                2
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "warn": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "return": 2
+              }
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def partition(a, low, high):\n    pivot = a[high]\n    i = low - 1\n    for j in range(low, high):\n        if a[j] <= pivot:\n            i += 1\n            a[i], a[j] = a[j], a[i]\n    a[i + 1], a[high] = a[high], a[i + 1]\n    return i + 1\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                8
+              ],
+              [
+                9
+              ]
+            ],
+            "vars": [
+              {
+                "pivot": "5",
+                "i": "-1"
+              },
+              {
+                "pivot": "5",
+                "i": "-1",
+                "j": "0",
+                "a[j]": "9"
+              },
+              {
+                "pivot": "5",
+                "i": "-1",
+                "j": "1",
+                "a[j]": "3"
+              },
+              {
+                "pivot": "5",
+                "i": "0",
+                "j": "1",
+                "a": "[3, 9, 1, 7, 5]"
+              },
+              {
+                "pivot": "5",
+                "i": "0",
+                "j": "2",
+                "a[j]": "1"
+              },
+              {
+                "pivot": "5",
+                "i": "1",
+                "j": "2",
+                "a": "[3, 1, 9, 7, 5]"
+              },
+              {
+                "pivot": "5",
+                "i": "1",
+                "j": "3",
+                "a[j]": "7"
+              },
+              {
+                "pivot": "5",
+                "i": "1"
+              },
+              {
+                "pivot": "5",
+                "return": "2",
+                "a": "[3, 1, 5, 7, 9]"
+              }
+            ]
+          },
+          "id": "partition.0ad87925"
+        },
+        {
           "type": "prose",
           "md": "Watch the colors: **green** is 'known to be ≤ pivot', **amber** is 'known to be > pivot', white is 'not checked yet'. **j is the scout** walking right; **i is the boundary** of the green zone. A small item gets swapped into the green zone; a big one is simply walked past.",
           "id": "partition.98caea9b"
@@ -1204,6 +1514,487 @@
           ],
           "slide": true,
           "id": "quicksort.31f0c367"
+        },
+        {
+          "type": "stepper",
+          "title": "The recursion on a smaller array, [5, 2, 8, 1, 4]: which call is running, and who is waiting",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                5,
+                2,
+                8,
+                1,
+                4
+              ],
+              "caption": "quicksort(0, 4) on [5, 2, 8, 1, 4]. Line 2: lo < hi, so line 3 partitions around the last item, 4.",
+              "hl": [
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                4,
+                5,
+                8
+              ],
+              "caption": "partition returned p = 2: 4 is final. Line 4 now sorts the left side, a[0..1]. This call waits.",
+              "hl": [
+                2
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                1,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(0, 1) on [2, 1]. Line 2: lo < hi, so line 3 partitions around the last item, 1.",
+              "hl": [
+                1
+              ],
+              "done": [
+                2
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "partition returned p = 0: 1 is final. Line 4 now sorts the left side, a[0..-1]. This call waits.",
+              "hl": [
+                0
+              ],
+              "done": [
+                2
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(0, -1): an empty range (lo > hi). Line 2 is false, return at once.",
+              "done": [
+                0,
+                2
+              ],
+              "dim": [
+                1,
+                3,
+                4
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "Back in quicksort(0, 1): the left side is done. Line 5 sorts the right side, a[1..1].",
+              "hl": [
+                0
+              ],
+              "done": [
+                2
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(1, 1): lo < hi is false (one item), so this call does nothing. a[1] = 2 is final.",
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 1,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "Back in quicksort(0, 4): the left side is done. Line 5 sorts the right side, a[3..4].",
+              "hl": [
+                2
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(3, 4) on [5, 8]. Line 2: lo < hi, so line 3 partitions around the last item, 8.",
+              "hl": [
+                4
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "partition returned p = 4: 8 is final. Line 4 now sorts the left side, a[3..3]. This call waits.",
+              "hl": [
+                4
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(3, 3): lo < hi is false (one item), so this call does nothing. a[3] = 5 is final.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 3
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "Back in quicksort(3, 4): the left side is done. Line 5 sorts the right side, a[5..4].",
+              "hl": [
+                4
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "quicksort(5, 4): an empty range (lo > hi). Line 2 is false, return at once.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                8
+              ],
+              "caption": "The first call returned: [1, 2, 4, 5, 8]. There is no merge step: each partition already put its pivot in place, and the two sides never mix again.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def quicksort(a, lo, hi):\n    if lo < hi:\n        p = partition(a, lo, hi)\n        quicksort(a, lo, p - 1)     # left of pivot\n        quicksort(a, p + 1, hi)     # right of pivot\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                5
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                5
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                5
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                5
+              ]
+            ],
+            "vars": [
+              {
+                "lo": "0",
+                "hi": "4",
+                "pivot": "4",
+                "stack": "qs(0,4)"
+              },
+              {
+                "lo": "0",
+                "hi": "4",
+                "p": "2",
+                "stack": "qs(0,4)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "pivot": "1",
+                "stack": "qs(0,4) → qs(0,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "p": "0",
+                "stack": "qs(0,4) → qs(0,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "-1",
+                "stack": "qs(0,4) → qs(0,1) → qs(0,-1)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "p": "0",
+                "stack": "qs(0,4) → qs(0,1)"
+              },
+              {
+                "lo": "1",
+                "hi": "1",
+                "stack": "qs(0,4) → qs(0,1) → qs(1,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "4",
+                "p": "2",
+                "stack": "qs(0,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "pivot": "8",
+                "stack": "qs(0,4) → qs(3,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "p": "4",
+                "stack": "qs(0,4) → qs(3,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "3",
+                "stack": "qs(0,4) → qs(3,4) → qs(3,3)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "p": "4",
+                "stack": "qs(0,4) → qs(3,4)"
+              },
+              {
+                "lo": "5",
+                "hi": "4",
+                "stack": "qs(0,4) → qs(3,4) → qs(5,4)"
+              },
+              {
+                "stack": "(empty)"
+              }
+            ]
+          },
+          "id": "quicksort.92a5af3e"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-quicksort.mp4",
+          "slide": "Watch it move",
+          "caption": "Quicksort on the slide's array as a 2.5-minute video: code on the left, bars on the right. Every partition, every swap, and which calls are waiting on the stack. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Start"
+            },
+            {
+              "t": 5,
+              "label": "First partition"
+            },
+            {
+              "t": 46,
+              "label": "Left side"
+            },
+            {
+              "t": 87,
+              "label": "Right side"
+            },
+            {
+              "t": 137,
+              "label": "Runtime"
+            }
+          ],
+          "id": "quicksort.87c48595"
         },
         {
           "type": "prose",

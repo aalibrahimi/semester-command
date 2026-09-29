@@ -1,7 +1,7 @@
 /**
  * render.mjs: turn a timeline page (an HTML file that defines
  * window.render(t) and window.DURATION) into the three files a guide's
- * video block needs: public/study-videos/<name>.mp4, .webm and .jpg.
+ * video block needs: content/media/study-videos/<name>.mp4, .webm and .jpg.
  *
  *   node content/video/render.mjs content/video/cs146-hash-tables.html
  *   node content/video/render.mjs <page.html> --still 12 40 90   (PNG stills only, to check a scene)
@@ -28,7 +28,7 @@ if (!page) {
   process.exit(1);
 }
 const name = basename(page, ".html");
-const outBase = join(ROOT, "public", "study-videos", name);
+const outBase = join(ROOT, "content", "media", "study-videos", name);
 
 const exe = process.env.CHROMIUM_PATH;
 const browser = await chromium.launch(exe ? { executablePath: exe } : { channel: "chrome" });

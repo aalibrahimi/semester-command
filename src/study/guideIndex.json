@@ -155,7 +155,7 @@
    }
   ],
   "exerciseCount": 12,
-  "sha": "201475bd3d5be1feb286a7ae1504eb20803fcb11020f29676340f439372c170a"
+  "sha": "0004e2ca604de6406087e146cb47b495f2e24ee26a6d077d8c9c91566b762798"
  },
  {
   "id": "cs146/4-big-o-merge-sort",
@@ -219,7 +219,7 @@
    }
   ],
   "exerciseCount": 11,
-  "sha": "5a86af1b1bb60fed45710c8c3afc3e8b64cb381bb4774298feaead12a6c59e6e"
+  "sha": "3dd4282094e8bb210ddf6c197c716dff2db3c1a0ca86c03de3e1fe2ac4e3aeb9"
  },
  {
   "id": "cs146/6-recurrences",
@@ -362,7 +362,7 @@
    }
   ],
   "exerciseCount": 11,
-  "sha": "7782b2c2862a2e080df46a10920b026de59394258627331affe7a4129884e0db"
+  "sha": "a63d3348ae8b196cef1a368a0dd33cc41dd3db2219b1c8f85f8d705a9923ba18"
  },
  {
   "id": "cs146/9-quicksort",
@@ -406,7 +406,7 @@
    }
   ],
   "exerciseCount": 9,
-  "sha": "3c9ecec889d6cb6edf7127f6c25548d6d130840f6782a4aa2b9052097cc60274"
+  "sha": "30ea5ce741c0574cc22fe824de665ee02628181ae9c9501219eefee1ff5e4ba0"
  },
  {
   "id": "cs154/1-sets-functions",

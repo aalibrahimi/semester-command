@@ -2086,6 +2086,817 @@
           "id": "merge.6e1ec79c"
         },
         {
+          "type": "stepper",
+          "title": "merge, line by line (smaller example: [1, 4, 9] and [2, 3, 10, 11])",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    1,
+                    4,
+                    9
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    2,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "merge([1, 4, 9], [2, 3, 10, 11]). Both inputs are already sorted. Lines 2 and 3: an empty output, and two fingers i and j at the front of each pile.",
+              "ptrs": {
+                "i": [
+                  0,
+                  0
+                ],
+                "j": [
+                  1,
+                  0
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    1,
+                    4,
+                    9
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    2,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 4: both piles still have cards, so keep going. Line 5 compares the fronts: left[0] = 1 ≤ right[0] = 2? **Yes**.",
+              "ptrs": {
+                "i": [
+                  0,
+                  0
+                ],
+                "j": [
+                  1,
+                  0
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    2,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Lines 6 and 7: 1 goes to the output and i moves forward. j stays put.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  0
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    2,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 4: both piles still have cards, so keep going. Line 5 compares the fronts: left[1] = 4 ≤ right[0] = 2? **No**.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  0
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Lines 9 and 10: 2 goes to the output and j moves forward. i stays put.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    3,
+                    10,
+                    11
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 4: both piles still have cards, so keep going. Line 5 compares the fronts: left[1] = 4 ≤ right[1] = 3? **No**.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Lines 9 and 10: 3 goes to the output and j moves forward. i stays put.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    4,
+                    9
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 4: both piles still have cards, so keep going. Line 5 compares the fronts: left[1] = 4 ≤ right[2] = 10? **Yes**.",
+              "ptrs": {
+                "i": [
+                  0,
+                  1
+                ],
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    null,
+                    9
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Lines 6 and 7: 4 goes to the output and i moves forward. j stays put.",
+              "ptrs": {
+                "i": [
+                  0,
+                  2
+                ],
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    null,
+                    9
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    null,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 4: both piles still have cards, so keep going. Line 5 compares the fronts: left[2] = 9 ≤ right[2] = 10? **Yes**.",
+              "ptrs": {
+                "i": [
+                  0,
+                  2
+                ],
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    9,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Lines 6 and 7: 9 goes to the output and i moves forward. j stays put.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    10,
+                    11
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    9,
+                    null,
+                    null
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 4 fails: left is empty, so the loop ends. Whatever is left in the other pile is already sorted and bigger than everything in out.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "left",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "right",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    9,
+                    10,
+                    11
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                }
+              ],
+              "caption": "Lines 11 and 12 copy the leftovers ([10, 11]) straight across, no comparisons. Line 13 returns [1, 2, 3, 4, 9, 10, 11]. Every card moved exactly once: **O(n)**."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def merge(left, right):\n    out = []\n    i, j = 0, 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            out.append(left[i])\n            i += 1\n        else:\n            out.append(right[j])\n            j += 1\n    out.extend(left[i:])     # leftovers\n    out.extend(right[j:])\n    return out\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                8,
+                9,
+                10
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                8,
+                9,
+                10
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                4
+              ],
+              [
+                11,
+                12,
+                13
+              ]
+            ],
+            "vars": [
+              {
+                "i": "0",
+                "j": "0",
+                "out": "[]"
+              },
+              {
+                "i": "0",
+                "j": "0",
+                "L[i]": "1",
+                "R[j]": "2"
+              },
+              {
+                "i": "1",
+                "j": "0",
+                "out": "[1]"
+              },
+              {
+                "i": "1",
+                "j": "0",
+                "L[i]": "4",
+                "R[j]": "2"
+              },
+              {
+                "i": "1",
+                "j": "1",
+                "out": "[1, 2]"
+              },
+              {
+                "i": "1",
+                "j": "1",
+                "L[i]": "4",
+                "R[j]": "3"
+              },
+              {
+                "i": "1",
+                "j": "2",
+                "out": "[1, 2, 3]"
+              },
+              {
+                "i": "1",
+                "j": "2",
+                "L[i]": "4",
+                "R[j]": "10"
+              },
+              {
+                "i": "2",
+                "j": "2",
+                "out": "[1, 2, 3, 4]"
+              },
+              {
+                "i": "2",
+                "j": "2",
+                "L[i]": "9",
+                "R[j]": "10"
+              },
+              {
+                "i": "3",
+                "j": "2",
+                "out": "[1, 2, 3, 4, 9]"
+              },
+              {
+                "i": "3",
+                "j": "2"
+              },
+              {
+                "out": "[1, 2, 3, 4, 9, 10, 11]"
+              }
+            ]
+          },
+          "id": "merge.6548a825"
+        },
+        {
           "type": "prose",
           "md": "**Cost of one merge.** Every step copies one item to the output, and nothing is copied twice. Merging lists with n items in total therefore takes about **n steps: O(n)**.",
           "id": "merge.cf459bff"
@@ -2482,6 +3293,609 @@
           ],
           "slide": true,
           "id": "mergesort.3071267f"
+        },
+        {
+          "type": "stepper",
+          "title": "The recursion, call by call: which call is running, and who is waiting",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(0, 4) on [50, 20, 60, 30, 10]. Line 4: mid = (0 + 4) // 2 = 2. Now line 5 calls itself on the left half, a[0..2]. This call **waits** until that one returns.",
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(0, 2) on [50, 20, 60]. Line 4: mid = (0 + 2) // 2 = 1. Now line 5 calls itself on the left half, a[0..1]. This call **waits** until that one returns.",
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(0, 1) on [50, 20]. Line 4: mid = (0 + 1) // 2 = 0. Now line 5 calls itself on the left half, a[0..0]. This call **waits** until that one returns.",
+              "dim": [
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(0, 0): one item, 50. Line 2 is true, so line 3 returns right away. A single item is already sorted.",
+              "hl": [
+                0
+              ],
+              "dim": [
+                1,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 0
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(0, 1): the left half is sorted. Line 6 calls itself on the right half, a[1..1].",
+              "done": [
+                0
+              ],
+              "dim": [
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                50,
+                20,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(1, 1): one item, 20. Line 2 is true, so line 3 returns right away. A single item is already sorted.",
+              "hl": [
+                1
+              ],
+              "dim": [
+                0,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 1,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(0, 1) again: both halves are sorted, so line 7 merges them. a[0..1] is now [20, 50]. This call returns to whoever called it.",
+              "hl": [
+                0,
+                1
+              ],
+              "dim": [
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 1
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(0, 2): the left half is sorted. Line 6 calls itself on the right half, a[2..2].",
+              "done": [
+                0,
+                1
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(2, 2): one item, 60. Line 2 is true, so line 3 returns right away. A single item is already sorted.",
+              "hl": [
+                2
+              ],
+              "dim": [
+                0,
+                1,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 2,
+                "hi": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(0, 2) again: both halves are sorted, so line 7 merges them. a[0..2] is now [20, 50, 60]. This call returns to whoever called it.",
+              "hl": [
+                0,
+                1,
+                2
+              ],
+              "dim": [
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 2
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(0, 4): the left half is sorted. Line 6 calls itself on the right half, a[3..4].",
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(3, 4) on [30, 10]. Line 4: mid = (3 + 4) // 2 = 3. Now line 5 calls itself on the left half, a[3..3]. This call **waits** until that one returns.",
+              "dim": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(3, 3): one item, 30. Line 2 is true, so line 3 returns right away. A single item is already sorted.",
+              "hl": [
+                3
+              ],
+              "dim": [
+                0,
+                1,
+                2,
+                4
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 3
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "Back in merge_sort(3, 4): the left half is sorted. Line 6 calls itself on the right half, a[4..4].",
+              "done": [
+                3
+              ],
+              "dim": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                30,
+                10
+              ],
+              "caption": "merge_sort(4, 4): one item, 10. Line 2 is true, so line 3 returns right away. A single item is already sorted.",
+              "hl": [
+                4
+              ],
+              "dim": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "ptrs": {
+                "lo": 4,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                20,
+                50,
+                60,
+                10,
+                30
+              ],
+              "caption": "Back in merge_sort(3, 4) again: both halves are sorted, so line 7 merges them. a[3..4] is now [10, 30]. This call returns to whoever called it.",
+              "hl": [
+                3,
+                4
+              ],
+              "dim": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "lo": 3,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                10,
+                20,
+                30,
+                50,
+                60
+              ],
+              "caption": "Back in merge_sort(0, 4) again: both halves are sorted, so line 7 merges them. a[0..4] is now [10, 20, 30, 50, 60]. This call returns to whoever called it.",
+              "hl": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "lo": 0,
+                "hi": 4
+              }
+            },
+            {
+              "kind": "array",
+              "cells": [
+                10,
+                20,
+                30,
+                50,
+                60
+              ],
+              "caption": "The very first call returned: [10, 20, 30, 50, 60] is sorted. Notice the pattern: calls go DOWN until one item is left, then merges happen on the way back UP. That's the recursion tree, walked left to right.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def merge_sort(a, lo, hi):\n    if lo >= hi:\n        return                  # 0 or 1 item\n    mid = (lo + hi) // 2\n    merge_sort(a, lo, mid)      # left half\n    merge_sort(a, mid + 1, hi)  # right half\n    merge(a, lo, mid, hi)       # combine\n",
+            "lines": [
+              [
+                1,
+                4,
+                5
+              ],
+              [
+                1,
+                4,
+                5
+              ],
+              [
+                1,
+                4,
+                5
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                6
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                7
+              ],
+              [
+                6
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                7
+              ],
+              [
+                6
+              ],
+              [
+                1,
+                4,
+                5
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                6
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                7
+              ],
+              [
+                7
+              ],
+              [
+                7
+              ]
+            ],
+            "vars": [
+              {
+                "lo": "0",
+                "hi": "4",
+                "mid": "2",
+                "stack": "ms(0,4)"
+              },
+              {
+                "lo": "0",
+                "hi": "2",
+                "mid": "1",
+                "stack": "ms(0,4) → ms(0,2)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "mid": "0",
+                "stack": "ms(0,4) → ms(0,2) → ms(0,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "0",
+                "stack": "ms(0,4) → ms(0,2) → ms(0,1) → ms(0,0)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "mid": "0",
+                "stack": "ms(0,4) → ms(0,2) → ms(0,1)"
+              },
+              {
+                "lo": "1",
+                "hi": "1",
+                "stack": "ms(0,4) → ms(0,2) → ms(0,1) → ms(1,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "1",
+                "stack": "ms(0,4) → ms(0,2) → ms(0,1)"
+              },
+              {
+                "lo": "0",
+                "hi": "2",
+                "mid": "1",
+                "stack": "ms(0,4) → ms(0,2)"
+              },
+              {
+                "lo": "2",
+                "hi": "2",
+                "stack": "ms(0,4) → ms(0,2) → ms(2,2)"
+              },
+              {
+                "lo": "0",
+                "hi": "2",
+                "stack": "ms(0,4) → ms(0,2)"
+              },
+              {
+                "lo": "0",
+                "hi": "4",
+                "mid": "2",
+                "stack": "ms(0,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "mid": "3",
+                "stack": "ms(0,4) → ms(3,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "3",
+                "stack": "ms(0,4) → ms(3,4) → ms(3,3)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "mid": "3",
+                "stack": "ms(0,4) → ms(3,4)"
+              },
+              {
+                "lo": "4",
+                "hi": "4",
+                "stack": "ms(0,4) → ms(3,4) → ms(4,4)"
+              },
+              {
+                "lo": "3",
+                "hi": "4",
+                "stack": "ms(0,4) → ms(3,4)"
+              },
+              {
+                "lo": "0",
+                "hi": "4",
+                "stack": "ms(0,4)"
+              },
+              {
+                "stack": "(empty)"
+              }
+            ]
+          },
+          "id": "mergesort.ba079362"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-merge-sort.mp4",
+          "slide": "Watch it move",
+          "caption": "Merge sort on [7, 3, 9, 1, 4, 8, 2, 6] as a 2.5-minute video: the splits going down, then every merge coming back up, with the call stack under the code. Use the chips to jump to a merge.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Start"
+            },
+            {
+              "t": 18,
+              "label": "First merge"
+            },
+            {
+              "t": 100,
+              "label": "Final merge"
+            },
+            {
+              "t": 147,
+              "label": "Runtime"
+            }
+          ],
+          "id": "mergesort.efc1a0fd"
         },
         {
           "type": "prose",

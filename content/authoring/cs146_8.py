@@ -1,4 +1,5 @@
 from c146common import *
+from cs146_traces import TRACE, insertion_trace, merge_trace, mergesort_trace, heapify_trace, partition_trace, quicksort_trace
 import fig8
 
 FG = fig8.figures()
@@ -93,6 +94,7 @@ print(is_max_heap([16, 4, 10, 14, 7, 9, 3, 2, 8, 1]))
   {"id": "heapify", "heading": "heapify: let one value sink", "blocks": [
     D("heapify(a, i)", "Fix **one** node: if a[i] is smaller than a child, swap it with its **larger** child and repeat from there, until it's bigger than both children or reaches a leaf. It assumes both subtrees under i are already heaps."),
     ST("heapify(a, 1): the 4 sinks to where it belongs (Lecture 8)", heapify_frames([16, 4, 10, 14, 7, 9, 3, 2, 8, 1], 1)),
+    TRACE("heapify(a, 1), line by line", heapify_trace([16, 4, 10, 14, 7, 9, 3, 2, 8, 1], 1)),
     THINK("**Always swap with the LARGER child.** If you swapped with the smaller one, the bigger child would end up under a smaller parent and you'd break the heap you were fixing. Bigger child goes up; the sinking value goes down."),
     O("heapify", lambda b: b["type"] == "example"),
     O("heapify", lambda b: b["type"] == "prose" and "assumes" in b["md"]),
@@ -162,6 +164,9 @@ print(a)
   {"id": "sort", "heading": "heapSort: pull the max out, n times", "blocks": [
     D("heapSort(a)", "buildHeap once. Then repeat: swap the root (the max) with the last item of the heap, shrink the heap by one, heapify the root."),
     ST("heapSort on [7, 5, 6, 4, 2, 1, 3]", heapsort_frames([7, 5, 6, 4, 2, 1, 3])),
+    {"type": "video", "src": "/study-videos/cs146-heapsort.mp4", "slide": "Watch it move",
+     "caption": "The whole of heapsort in 2 minutes, on HW 8's array [1, 2, 3, 4, 5, 6, 7]: build the heap, then peel off the max seven times. The tree and the array move together, so you see they are the same thing.",
+     "chapters": [{"t": 0, "label": "Start"}, {"t": 9, "label": "Build the heap"}, {"t": 45, "label": "Sort"}, {"t": 117, "label": "Runtime"}]},
     O("sort", lambda b: b["type"] == "example"),
     O("sort", lambda b: b["type"] == "sim"),
     O("sort", lambda b: b["type"] == "table" and "Question" in b["columns"]),

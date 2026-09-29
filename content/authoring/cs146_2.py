@@ -1,4 +1,5 @@
 from c146common import *
+from cs146_traces import TRACE, insertion_trace, merge_trace, mergesort_trace, heapify_trace, partition_trace, quicksort_trace
 import fig2
 
 FG = fig2.figures()
@@ -275,6 +276,7 @@ print(to_list(a))
   {"id": "insertion", "heading": "Insertion sort", "blocks": [
     D("Insertion sort", "Keep a **sorted left part**. Take the next item (the **key**), slide it left past every bigger item, and drop it in. Repeat until the left part is the whole array."),
     ST("Insertion sort on [8, 5, 2, 6, 9] (HW 3 Problem 2)", ins_frames([8, 5, 2, 6, 9])),
+    TRACE("The same sort, line by line: code on the left, array on the right", insertion_trace([8, 5, 2, 6, 9])),
     SIM("sort", "Insertion sort on your own array, one shift at a time, with the comparison and shift counts live. Type a reversed array (9, 8, 7, 6, 5) and confirm n(n−1)/2 shifts; type a sorted one and confirm zero.", {"algorithm": "insertion", "array": [7, 3, 9, 1, 4, 8, 2]}),
     O("insertion", lambda b: b["type"] == "example" and "insertionSort(int[] a)" in b["body"]),
     O("insertion", lambda b: b["type"] == "example" and "proof" in b["title"].lower()),
