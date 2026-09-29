@@ -53,9 +53,8 @@ export const courses: Course[] = [
       "Heap index formulas; trace heapify, buildHeap, heapSort, extract; buildHeap is O(n), heapSort O(1) space.",
       "(After Sep 21–Oct 5) partition trace, counting sort, hash collisions, BST delete, AVL rotations.",
     ],
-    guides: ["0-notation", "2-adts-invariants-insertion", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "11-hash-tables"],
+    guides: ["0-notation", "2-adts-invariants-insertion", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "10-linear-sorts", "11-hash-tables"],
     planned: [
-      { label: "Lecture 10", title: "Linear-time sorts (Sep 23)" },
       { label: "Lecture 12", title: "Binary search trees (Sep 30)" },
       { label: "Lecture 13", title: "AVL trees (Oct 5)" },
     ],
@@ -185,9 +184,8 @@ export const courses: Course[] = [
       "Substitution, movement, fragment-answer tests with correct pass/fail.",
       "Head directionality for English, Japanese, Arabic.",
     ],
-    guides: ["0-what-syntax-is", "1-universals", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure"],
+    guides: ["0-what-syntax-is", "1-universals", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure", "7-x-bar"],
     planned: [
-      { label: "Week 7", title: "X-bar theory (Sep 29–Oct 1)" },
       { label: "Week 8", title: "Arguments, adjuncts, theta roles · Oral Exam 1 prep" },
     ],
   },

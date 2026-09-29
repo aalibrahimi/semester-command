@@ -8,7 +8,7 @@
  * [S [NP [D the] [N dog]] [VP [V chased] [NP [D the] [N cat]]]]. Unbalanced
  * brackets are reported rather than drawn. Selecting a node highlights the
  * words it spans, prints them as a string, and suggests the pro-form for
- * its category (NP → it/they, VP → do so, PP → there/then, N' → one(s)).
+ * its category (NP → it/they, VP or V′ → do so, PP → there/then, N′ → one(s)).
  */
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -94,6 +94,9 @@ const PROFORM: Record<string, string> = {
   DP: "a pronoun: it / they / she / him (pronouns replace the whole DP, determiner included)",
   TP: "a clause: 'so' after think ('I think so'), or check it as the complement of 'that'",
   "N'": "one / ones",
+  "N′": "one / ones (in X-bar theory, 'one' replaces an N′)",
+  "V'": "do so (in X-bar theory, 'do so' replaces a V′)",
+  "V′": "do so (in X-bar theory, 'do so' replaces a V′)",
   Nbar: "one / ones",
   VP: "do so (too)",
   PP: "there (place) / then (time)",

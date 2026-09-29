@@ -16,6 +16,7 @@ import { drills as cs146BigO } from "./cs146--4-big-o-merge-sort";
 import { drills as cs146Recurrences } from "./cs146--6-recurrences";
 import { drills as cs146Heaps } from "./cs146--8-heaps-heapsort-pq";
 import { drills as cs146Quick } from "./cs146--9-quicksort";
+import { drills as cs146Linear } from "./cs146--10-linear-sorts";
 import { drills as cs146Hash } from "./cs146--11-hash-tables";
 import { drills as cs154Sets } from "./cs154--1-sets-functions";
 import { drills as cs154Strings } from "./cs154--3-strings-languages";
@@ -33,6 +34,7 @@ import { drills as ling112Categories } from "./ling112--2-categories";
 import { drills as ling112Heads } from "./ling112--4-heads-dependents";
 import { drills as ling112Constituency } from "./ling112--5-constituency-tests";
 import { drills as ling112Phrase } from "./ling112--6-phrase-structure";
+import { drills as ling112XBar } from "./ling112--7-x-bar";
 import { drills as ling115Corpus } from "./ling115--1-what-is-a-corpus";
 import { drills as ling115Regex } from "./ling115--4-regex";
 import { drills as ling115Tokens } from "./ling115--5-words-tokens-normalization";
@@ -53,6 +55,7 @@ const ALL: Drill[][] = [
   cs146Recurrences,
   cs146Heaps,
   cs146Quick,
+  cs146Linear,
   cs146Hash,
   cs154Sets,
   cs154Strings,
@@ -70,6 +73,7 @@ const ALL: Drill[][] = [
   ling112Heads,
   ling112Constituency,
   ling112Phrase,
+  ling112XBar,
   ling115Corpus,
   ling115Regex,
   ling115Tokens,

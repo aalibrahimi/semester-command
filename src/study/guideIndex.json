@@ -53,6 +53,55 @@
   "sha": "56bb86b7eb78bd96ff0e2a47587038a9a87025af5f51230ffc5435bed31d71a1"
  },
  {
+  "id": "cs146/10-linear-sorts",
+  "course": "cs146",
+  "lessons": "Lecture 10",
+  "title": "Linear-time sorts: bucket, counting and radix sort",
+  "summary": "Why comparison sorts can't beat n log n, and how three sorts beat it anyway by opening the boxes: bucket sort for evenly spread numbers, counting sort for small integer ranges (with the cumulative count and the backwards pass that keeps it stable), and radix sort digit by digit. Trace each one and pick the right one for a situation.",
+  "estimatedMinutes": 70,
+  "requires": [
+   "cs146/2-adts-invariants-insertion",
+   "cs146/4-big-o-merge-sort",
+   "cs146/9-quicksort"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: sorting faster than n log n"
+   },
+   {
+    "id": "limits",
+    "heading": "The speed limit of comparison sorts"
+   },
+   {
+    "id": "bucket",
+    "heading": "Bucket sort: numbers spread evenly"
+   },
+   {
+    "id": "counting",
+    "heading": "Counting sort: small integer ranges"
+   },
+   {
+    "id": "radix",
+    "heading": "Radix sort: one digit at a time"
+   },
+   {
+    "id": "choose",
+    "heading": "Which sort for which data?"
+   },
+   {
+    "id": "apps",
+    "heading": "Where linear-time sorts show up"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "23be6db5b33bdc28cf7ff1155cc05aaa2ede167f9a4c09be849c46ea3bd6321a"
+ },
+ {
   "id": "cs146/11-hash-tables",
   "course": "cs146",
   "lessons": "Lecture 11",
@@ -1072,6 +1121,51 @@
   ],
   "exerciseCount": 6,
   "sha": "e8c0322e9a4f1afacaadff55d3d430de6a906247f43026379dff7e81136b1d13"
+ },
+ {
+  "id": "ling112/7-x-bar",
+  "course": "ling112",
+  "lessons": "Week 7",
+  "title": "X-bar theory: bar levels, specifiers, complements and adjuncts",
+  "summary": "See what Week 6's flat trees can't show, add the bar level (V′, N′) that 'do so' and 'one' actually replace, and use the X-bar template to tell a specifier, a complement and an adjunct apart by position. Draw X-bar trees for sentences with subjects, possessors and stacked adjuncts.",
+  "estimatedMinutes": 65,
+  "requires": [
+   "ling112/4-heads-dependents",
+   "ling112/5-constituency-tests",
+   "ling112/6-phrase-structure"
+  ],
+  "sections": [
+   {
+    "id": "why",
+    "heading": "Start here: what flat trees can't show"
+   },
+   {
+    "id": "bar",
+    "heading": "Bar levels: the missing middle layer"
+   },
+   {
+    "id": "template",
+    "heading": "The X-bar template"
+   },
+   {
+    "id": "spec",
+    "heading": "Specifiers: subjects and possessors"
+   },
+   {
+    "id": "np",
+    "heading": "Inside the noun phrase: one targets N′"
+   },
+   {
+    "id": "oral",
+    "heading": "If this is your oral-exam concept"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 5,
+  "sha": "52bc695587502368a39e622f56834b3c3840eedb0b1f69c0a8b036df99f12adf"
  },
  {
   "id": "ling115/1-what-is-a-corpus",

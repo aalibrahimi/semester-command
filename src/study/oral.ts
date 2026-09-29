@@ -230,6 +230,44 @@ const LING112: OralConcept[] = [
     ],
   },
   {
+    id: "xbar",
+    title: "X-bar theory",
+    prompt: "What is X-bar theory, and why do we need bar levels?",
+    guideId: "ling112/7-x-bar",
+    sectionId: "template",
+    points: [
+      { label: "The problem", detail: "Flat trees have no node for units like 'circle the track', and can't tell a complement from an adjunct." },
+      { label: "The evidence", detail: "do so replaces V′ strings and one replaces N′ strings (handout (1) and (11)), so the tree needs a middle layer." },
+      { label: "The template", detail: "XP → YP X′ (specifier); X′ → X′ ZP (adjunct); X′ → X WP (complement). Every phrase has XP, X′ and X." },
+      { label: "Positions", detail: "Complement = sister of the head; adjunct = sister of X′ under X′; specifier = sister of X′ under XP." },
+      { label: "Why adjuncts stack", detail: "X′ → X′ ZP has X′ on both sides, so it can repeat; the complement and specifier rules can't." },
+      { label: "Specifiers", detail: "The subject is the specifier of TP; a possessor is the specifier of a DP headed by 's." },
+    ],
+    problems: [
+      {
+        task: "Draw 'The dog chased the cat in the yard' in X-bar form (brackets are fine) and name every dependent of 'chased'.",
+        checklist: [
+          "TP: the subject DP 'the dog' is the specifier; T = PAST",
+          "T′ → T VP",
+          "Lowest V′: [V chased] + complement DP 'the cat'",
+          "'in the yard' is an adjunct: a second V′ above the first",
+          "Every phrase has all three levels (DP, D′, D; NP, N′, N; PP, P′, P)",
+        ],
+        model: "[TP [DP [D′ [D the] [NP [N′ [N dog]]]]] [T′ [T PAST] [VP [V′ [V′ [V chased] [DP [D′ [D the] [NP [N′ [N cat]]]]]] [PP [P′ [P in] [DP [D′ [D the] [NP [N′ [N yard]]]]]]]]]]]. 'The cat' is the complement: sister of V. 'In the yard' is an adjunct: sister of the lower V′. 'The dog' is the specifier of TP.",
+      },
+      {
+        task: "In 'those heavy sacks of flour in the corner', prove 'sacks of flour' is a unit smaller than the NP, and say where 'of flour' attaches.",
+        checklist: [
+          "one-substitution: 'those heavy ones in the corner' (ones = sacks of flour)",
+          "So 'sacks of flour' is an N′",
+          "'of flour' is the complement: sister of N 'sacks' on the lowest N′",
+          "Evidence: *'those heavy ones of flour' fails, because a complement can't be left behind",
+        ],
+        model: "'Those heavy ones in the corner' works, with 'ones' standing for 'sacks of flour', so that string is an N′. 'Of flour' is the complement of 'sacks': it sits with the head on the lowest N′. That's why '*those heavy ones of flour' fails: 'one' can't strand a complement.",
+      },
+    ],
+  },
+  {
     id: "direction",
     title: "Head directionality",
     prompt: "What is head directionality, and why is it called a parameter?",

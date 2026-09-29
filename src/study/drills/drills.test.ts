@@ -145,3 +145,45 @@ describe("oracle: hash tables", () => {
     }
   });
 });
+
+describe("linear-time sort oracles (recomputed from the prompt)", () => {
+  const G = "cs146/10-linear-sorts";
+  const arrays = (s: string) => [...s.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].split(",").map((x) => Number(x.trim())));
+
+  it("counting!cumulative is a left-to-right running total", () => {
+    for (const i of instances(G, "counting!cumulative")) {
+      const [c] = arrays(i.prompt);
+      let run = 0;
+      expect(answerOf(i)).toBe(c.map((x) => (run += x)).join(" → "));
+    }
+  });
+
+  it("counting!seat equals the stable position of the last element", () => {
+    for (const i of instances(G, "counting!seat")) {
+      const [a] = arrays(i.prompt);
+      const x = a[a.length - 1];
+      // The last copy of x takes the last seat among the x's in sorted order.
+      const sorted = [...a].sort((p, q) => p - q);
+      expect(Number(answerOf(i))).toBe(sorted.lastIndexOf(x));
+    }
+  });
+
+  it("radix!pass is a stable sort on one digit", () => {
+    for (const i of instances(G, "radix!pass")) {
+      const [a] = arrays(i.prompt);
+      const p = i.prompt.includes("100s") ? 2 : i.prompt.includes("10s") ? 1 : 0;
+      const d = (x: number) => Math.floor(x / 10 ** p) % 10;
+      const buckets: number[][] = Array.from({ length: 10 }, () => []);
+      for (const x of a) buckets[d(x)].push(x);
+      expect(answerOf(i)).toBe(buckets.flat().join(" → "));
+    }
+  });
+
+  it("bucket!index is the floor of n·x", () => {
+    for (const i of instances(G, "bucket!index")) {
+      const n = Number(/n = (\d+)/.exec(i.prompt)![1]);
+      const x = Number(/does (\d*\.\d+)/.exec(i.prompt)![1]);
+      expect(Number(answerOf(i))).toBe(Math.floor(n * x + 1e-9));
+    }
+  });
+});

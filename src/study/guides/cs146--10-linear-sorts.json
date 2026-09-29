@@ -1,0 +1,5181 @@
+{
+  "id": "cs146/10-linear-sorts",
+  "course": "cs146",
+  "lessons": "Lecture 10",
+  "title": "Linear-time sorts: bucket, counting and radix sort",
+  "summary": "Why comparison sorts can't beat n log n, and how three sorts beat it anyway by opening the boxes: bucket sort for evenly spread numbers, counting sort for small integer ranges (with the cumulative count and the backwards pass that keeps it stable), and radix sort digit by digit. Trace each one and pick the right one for a situation.",
+  "estimatedMinutes": 70,
+  "sourceNote": "Lecture 10 'Linear Time Sorts' (Wed Sep 23) slides and HW 10, CLRS 8.1 to 8.4. The bucket example [.78, .17, …], the counting example [4, 1, 0, 2, 1, 0] and 'Your turn' [3, 0, 2, 2, 1], the radix example [329, 457, …], the summary table and the applications are Poon's. HW 10 answers are computed by the script that builds this chapter.",
+  "requires": [
+    "cs146/2-adts-invariants-insertion",
+    "cs146/4-big-o-merge-sort",
+    "cs146/9-quicksort"
+  ],
+  "sections": [
+    {
+      "id": "map",
+      "heading": "The big picture: sorting faster than n log n",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every sort so far (insertion, merge, heap, quicksort) works by **comparing two items** and asking which is smaller. This lecture proves that approach has a speed limit, then breaks through it with three sorts that never compare items against each other. They pay for it with an assumption about the input.",
+          "slide": "What this chapter answers",
+          "id": "map.5d1b9b32"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "Lecture 10 agenda",
+            "question": "Sort in Θ(n) by not comparing",
+            "steps": [
+              {
+                "title": "The speed limit",
+                "sub": "comparison sorts need Ω(n log n)",
+                "result": "black boxes",
+                "tone": "brand"
+              },
+              {
+                "title": "Bucket sort",
+                "sub": "numbers spread evenly in [0, 1)",
+                "result": "Θ(n) on average",
+                "tone": "green"
+              },
+              {
+                "title": "Counting sort",
+                "sub": "integers in a small range 0..k",
+                "result": "Θ(n + k)",
+                "tone": "amber"
+              },
+              {
+                "title": "Radix sort",
+                "sub": "numbers with d digits",
+                "result": "Θ(d(n + b))",
+                "tone": "red"
+              },
+              {
+                "title": "Pick the right one",
+                "sub": "match the sort to the data",
+                "result": "exam favorite"
+              }
+            ]
+          },
+          "caption": "The lecture's five parts, in order.",
+          "slide": "Five steps",
+          "id": "map.163438ac"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters** When the data has structure (ages 0 to 120, 32-bit IP addresses, sensor readings spread evenly), a linear-time sort is not a small win: sorting 100 million ages with counting sort does about 100 million steps, while any comparison sort does billions. Knowing *when* you're allowed to use one is the skill the exam tests.",
+          "label": "why",
+          "id": "map.470fbc36"
+        }
+      ]
+    },
+    {
+      "id": "limits",
+      "heading": "The speed limit of comparison sorts",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Comparison sort",
+          "body": "A sort that decides the order **only** by comparing pairs of elements (is a[i] ≤ a[j]?). Insertion sort, merge sort, heapsort and quicksort are all comparison sorts.",
+          "slide": "Comparison sorts",
+          "id": "limits.8f71d48b"
+        },
+        {
+          "type": "definition",
+          "term": "Black box",
+          "body": "Poon's picture: a comparison sort treats each element like a **closed box**. It can't look inside; the only question it may ask is 'is box A lighter than box B?'. Every answer is one yes or no.",
+          "id": "limits.3ac57fc6"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='24' font-size='14' font-weight='800'>Comparison sorts: boxes stay closed</text><text x='20' y='42' font-size='11.5' opacity='0.7'>The only question allowed: which of these two is lighter?</text><g><title>A closed box. A comparison sort can't see what's inside; it can only compare two boxes.</title><rect x='24' y='64' width='56' height='46' rx='6' fill='rgb(var(--accent-fg) / 0.14)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='52' y='95' text-anchor='middle' font-size='20' font-weight='800' opacity='0.55'>?</text></g><g><title>A closed box. A comparison sort can't see what's inside; it can only compare two boxes.</title><rect x='96' y='64' width='56' height='46' rx='6' fill='rgb(var(--accent-fg) / 0.14)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='124' y='95' text-anchor='middle' font-size='20' font-weight='800' opacity='0.55'>?</text></g><g><title>A closed box. A comparison sort can't see what's inside; it can only compare two boxes.</title><rect x='168' y='64' width='56' height='46' rx='6' fill='rgb(var(--accent-fg) / 0.14)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='196' y='95' text-anchor='middle' font-size='20' font-weight='800' opacity='0.55'>?</text></g><g><title>A closed box. A comparison sort can't see what's inside; it can only compare two boxes.</title><rect x='240' y='64' width='56' height='46' rx='6' fill='rgb(var(--accent-fg) / 0.14)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='268' y='95' text-anchor='middle' font-size='20' font-weight='800' opacity='0.55'>?</text></g><g><title>One comparison answers one yes/no question. Sorting n items this way needs at least about n log n of them in the worst case.</title><path d='M52 122 Q88 146 124 122' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.6' stroke-dasharray='4 3'/><text x='88' y='160' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--at-risk))'>A &lt; B ?</text></g><text x='20' y='196' font-size='12'>Insertion, merge, heap, quicksort: <tspan font-weight='800' fill='rgb(var(--critical))'>Ω(n log n)</tspan> comparisons, no way around it.</text><text x='360' y='24' font-size='14' font-weight='800'>Linear-time sorts: open the boxes</text><text x='360' y='42' font-size='11.5' opacity='0.7'>Read the value, then compute where it goes.</text><g><title>An opened box: the value is 3, so it can go straight to slot 3. No comparison needed.</title><rect x='364' y='64' width='56' height='46' rx='6' fill='rgb(var(--on-track) / 0.14)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><path d='M360 64 L374 48 L430 48 L424 64' fill='rgb(var(--on-track) / 0.08)' stroke='rgb(var(--on-track))' stroke-width='1.2'/><text x='392' y='94' text-anchor='middle' font-size='18' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>3</text></g><g><title>An opened box: the value is 0, so it can go straight to slot 0. No comparison needed.</title><rect x='436' y='64' width='56' height='46' rx='6' fill='rgb(var(--on-track) / 0.14)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><path d='M432 64 L446 48 L502 48 L496 64' fill='rgb(var(--on-track) / 0.08)' stroke='rgb(var(--on-track))' stroke-width='1.2'/><text x='464' y='94' text-anchor='middle' font-size='18' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>0</text></g><g><title>An opened box: the value is 2, so it can go straight to slot 2. No comparison needed.</title><rect x='508' y='64' width='56' height='46' rx='6' fill='rgb(var(--on-track) / 0.14)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><path d='M504 64 L518 48 L574 48 L568 64' fill='rgb(var(--on-track) / 0.08)' stroke='rgb(var(--on-track))' stroke-width='1.2'/><text x='536' y='94' text-anchor='middle' font-size='18' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>2</text></g><g><title>An opened box: the value is 1, so it can go straight to slot 1. No comparison needed.</title><rect x='580' y='64' width='56' height='46' rx='6' fill='rgb(var(--on-track) / 0.14)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><path d='M576 64 L590 48 L646 48 L640 64' fill='rgb(var(--on-track) / 0.08)' stroke='rgb(var(--on-track))' stroke-width='1.2'/><text x='608' y='94' text-anchor='middle' font-size='18' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>1</text></g><g><title>Slot 0 of the output.</title><rect x='364' y='150' width='56' height='30' rx='5' fill='none' stroke='currentColor' stroke-opacity='0.35'/><text x='392' y='196' text-anchor='middle' font-size='10.5' opacity='0.6' font-family='ui-monospace, SFMono-Regular, monospace'>0</text></g><g><title>Slot 1 of the output.</title><rect x='436' y='150' width='56' height='30' rx='5' fill='none' stroke='currentColor' stroke-opacity='0.35'/><text x='464' y='196' text-anchor='middle' font-size='10.5' opacity='0.6' font-family='ui-monospace, SFMono-Regular, monospace'>1</text></g><g><title>Slot 2 of the output.</title><rect x='508' y='150' width='56' height='30' rx='5' fill='none' stroke='currentColor' stroke-opacity='0.35'/><text x='536' y='196' text-anchor='middle' font-size='10.5' opacity='0.6' font-family='ui-monospace, SFMono-Regular, monospace'>2</text></g><g><title>Slot 3 of the output.</title><rect x='580' y='150' width='56' height='30' rx='5' fill='none' stroke='currentColor' stroke-opacity='0.35'/><text x='608' y='196' text-anchor='middle' font-size='10.5' opacity='0.6' font-family='ui-monospace, SFMono-Regular, monospace'>3</text></g><path d='M392 112 C392 132 608 128 608 148' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#ah10)'/><path d='M464 112 C464 132 392 128 392 148' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#ah10)'/><path d='M536 112 C536 132 536 128 536 148' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#ah10)'/><path d='M608 112 C608 132 464 128 464 148' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.5' marker-end='url(#ah10)'/><defs><marker id='ah10' viewBox='0 0 8 8' refX='7' refY='4' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L8 4 L0 8 Z' fill='rgb(var(--on-track))'/></marker></defs><text x='360' y='222' font-size='12'>Counting, radix, bucket: <tspan font-weight='800' fill='rgb(var(--on-track))'>Θ(n)</tspan> when the values are small or evenly spread.</text></g>",
+          "viewBox": "0 0 700 236",
+          "caption": "Left: a comparison sort only weighs pairs of closed boxes. Right: a linear-time sort opens each box, reads the value, and computes the slot directly. Hover the boxes.",
+          "slide": "Closed boxes vs open boxes",
+          "id": "limits.14bf7994"
+        },
+        {
+          "type": "definition",
+          "term": "The lower bound Ω(n log n)",
+          "body": "**Any** comparison sort needs at least about n log n comparisons in the worst case, no matter how clever. Poon states it and says the proof is outside this course. (The idea: there are n! possible orders, and each yes/no answer can at best cut the possibilities in half, so you need about log₂(n!) ≈ n log n answers.)",
+          "id": "limits.1ff84586"
+        },
+        {
+          "type": "prose",
+          "md": "**So how can anything be faster?** Stop comparing. A linear-time sort **opens the boxes**: it looks at the actual value (or one digit of it) and uses arithmetic to compute where the element belongs. The lower bound only applies to sorts that compare, so these sorts are allowed to beat it.",
+          "slide": "How to beat it",
+          "id": "limits.56969548"
+        },
+        {
+          "type": "trap",
+          "body": "'Linear time' does not mean these sorts are better in general. Each one only works on a certain kind of data (small integer range, fixed number of digits, evenly spread values). On the wrong data they are slow or don't apply at all.",
+          "source": "Lecture 10",
+          "points": null,
+          "slide": "Trap: not a free lunch",
+          "id": "limits.79e4a414"
+        },
+        {
+          "type": "check",
+          "prompt": "Merge sort runs in Θ(n log n). Could a smarter comparison sort run in Θ(n) in the worst case?",
+          "answer": "No. Every comparison sort needs Ω(n log n) comparisons in the worst case. To go faster you must stop comparing and use the values themselves.",
+          "sectionRef": "limits",
+          "id": "limits.40ca6651"
+        }
+      ]
+    },
+    {
+      "id": "bucket",
+      "heading": "Bucket sort: numbers spread evenly",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Bucket sort",
+          "body": "For n numbers spread **evenly (uniformly)** over [0, 1). Make n buckets, bucket i covering [i/n, (i+1)/n). Drop each number x into bucket **⌊n · x⌋**, sort each bucket with insertion sort, then read the buckets in order.",
+          "slide": "Definition",
+          "id": "bucket.6b667a2a"
+        },
+        {
+          "type": "definition",
+          "term": "Uniformly distributed",
+          "body": "Every part of the range is equally likely. With n numbers and n buckets, that means about **one number per bucket** on average, so each bucket's insertion sort is tiny.",
+          "id": "bucket.8d91c7c6"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "What happens",
+            "Time"
+          ],
+          "rows": [
+            [
+              "1. Create",
+              "n empty buckets",
+              "Θ(n)"
+            ],
+            [
+              "2. Distribute",
+              "x goes to bucket ⌊n·x⌋",
+              "Θ(n)"
+            ],
+            [
+              "3. Sort each bucket",
+              "insertion sort, buckets are tiny",
+              "Θ(n) for uniform data"
+            ],
+            [
+              "4. Concatenate",
+              "read buckets 0 to n − 1",
+              "Θ(n)"
+            ]
+          ],
+          "title": "Poon's four steps and their runtimes",
+          "slide": "Four steps",
+          "id": "bucket.436ae2ad"
+        },
+        {
+          "type": "prose",
+          "md": "**Watch it run** on the slide's ten numbers. The code is on the left; each lit line is what just happened to the buckets on the right.",
+          "slide": "Code, line by line",
+          "id": "bucket.9c07a6dd"
+        },
+        {
+          "type": "stepper",
+          "title": "Bucket sort on [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68] (the slide's example)",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "bucket_sort on the slide's 10 numbers, all in [0, 1). Lines 2 and 3: n = 10, so make 10 empty buckets. Bucket i holds the range [i/10, (i+1)/10)."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .78 goes to bucket ⌊10 × .78⌋ = ⌊7.8⌋ = **7**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .17 goes to bucket ⌊10 × .17⌋ = ⌊1.7⌋ = **1**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .39 goes to bucket ⌊10 × .39⌋ = ⌊3.9⌋ = **3**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .26 goes to bucket ⌊10 × .26⌋ = ⌊2.6⌋ = **2**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .72 goes to bucket ⌊10 × .72⌋ = ⌊7.2⌋ = **7**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    5
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 5: .94 goes to bucket ⌊10 × .94⌋ = ⌊9.4⌋ = **9**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    6
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    ".21",
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .21 goes to bucket ⌊10 × .21⌋ = ⌊2.1⌋ = **2**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    7
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    ".12",
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    ".21",
+                    null
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .12 goes to bucket ⌊10 × .12⌋ = ⌊1.2⌋ = **1**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    8
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    ".12",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    ".21",
+                    ".23"
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .23 goes to bucket ⌊10 × .23⌋ = ⌊2.3⌋ = **2**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [
+                    9
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".17",
+                    ".12",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    ".21",
+                    ".23"
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 5: .68 goes to bucket ⌊10 × .68⌋ = ⌊6.8⌋ = **6**. No comparisons: arithmetic picks the bucket."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".26",
+                    ".21",
+                    ".23"
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 7: bucket 1 has 2 items (.17, .12). Insertion sort puts them in order. Buckets are tiny, so this is cheap."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".21",
+                    ".23",
+                    ".26"
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".78",
+                    ".72",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 7: bucket 2 has 3 items (.26, .21, .23). Insertion sort puts them in order. Buckets are tiny, so this is cheap."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".21",
+                    ".23",
+                    ".26"
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".72",
+                    ".78",
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "Line 7: bucket 7 has 2 items (.78, .72). Insertion sort puts them in order. Buckets are tiny, so this is cheap."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".21",
+                    ".23",
+                    ".26"
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".72",
+                    ".78",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "caption": "The other buckets have 0 or 1 items: already sorted, nothing to do."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    ".78",
+                    ".17",
+                    ".39",
+                    ".26",
+                    ".72",
+                    ".94",
+                    ".21",
+                    ".12",
+                    ".23",
+                    ".68"
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                },
+                {
+                  "label": "B0",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B1",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    null
+                  ]
+                },
+                {
+                  "label": "B2",
+                  "cells": [
+                    ".21",
+                    ".23",
+                    ".26"
+                  ]
+                },
+                {
+                  "label": "B3",
+                  "cells": [
+                    ".39",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B4",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B5",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B6",
+                  "cells": [
+                    ".68",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B7",
+                  "cells": [
+                    ".72",
+                    ".78",
+                    null
+                  ]
+                },
+                {
+                  "label": "B8",
+                  "cells": [
+                    null,
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "B9",
+                  "cells": [
+                    ".94",
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "label": "out",
+                  "cells": [
+                    ".12",
+                    ".17",
+                    ".21",
+                    ".23",
+                    ".26",
+                    ".39",
+                    ".68",
+                    ".72",
+                    ".78",
+                    ".94"
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                  ]
+                }
+              ],
+              "caption": "Lines 9 and 10: glue the buckets together in order, 0 to 9. Every bucket's range is below the next one's, so the result is sorted."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def bucket_sort(a):\n    n = len(a)\n    buckets = [[] for _ in range(n)]\n    for x in a:\n        buckets[int(n * x)].append(x)\n    for b in buckets:\n        insertion_sort(b)\n    out = []\n    for b in buckets:\n        out += b\n    return out\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ]
+            ],
+            "vars": [
+              {
+                "n": "10"
+              },
+              {
+                "x": ".78",
+                "n * x": "7.8",
+                "bucket": "7"
+              },
+              {
+                "x": ".17",
+                "n * x": "1.7",
+                "bucket": "1"
+              },
+              {
+                "x": ".39",
+                "n * x": "3.9",
+                "bucket": "3"
+              },
+              {
+                "x": ".26",
+                "n * x": "2.6",
+                "bucket": "2"
+              },
+              {
+                "x": ".72",
+                "n * x": "7.2",
+                "bucket": "7"
+              },
+              {
+                "x": ".94",
+                "n * x": "9.4",
+                "bucket": "9"
+              },
+              {
+                "x": ".21",
+                "n * x": "2.1",
+                "bucket": "2"
+              },
+              {
+                "x": ".12",
+                "n * x": "1.2",
+                "bucket": "1"
+              },
+              {
+                "x": ".23",
+                "n * x": "2.3",
+                "bucket": "2"
+              },
+              {
+                "x": ".68",
+                "n * x": "6.8",
+                "bucket": "6"
+              },
+              {
+                "b": "B1",
+                "size": "2"
+              },
+              {
+                "b": "B2",
+                "size": "3"
+              },
+              {
+                "b": "B7",
+                "size": "2"
+              },
+              {},
+              {
+                "out": "[.12, .17, .21, .23, .26, .39, .68, .72, .78, .94]"
+              }
+            ]
+          },
+          "id": "bucket.7928027a"
+        },
+        {
+          "type": "prose",
+          "md": "**Runtime.** Average case **Θ(n)**: every step is linear when the data is uniform. Worst case: whatever the **inner sort** costs. If every number lands in one bucket (say all are between 0.30 and 0.39), bucket sort becomes one insertion sort on n items: **Θ(n²)**.",
+          "id": "bucket.e2f24687"
+        },
+        {
+          "type": "trap",
+          "body": "Bucket sort's Θ(n) is an **average** that depends on the uniform assumption. The worst case is the inner sort's worst case (Θ(n²) with insertion sort). Poon's slide: 'Worst-case time complexity: runtime of secondary sort'.",
+          "source": "Lecture 10 slide 21",
+          "points": null,
+          "slide": "Trap: the worst case",
+          "id": "bucket.034ab64e"
+        },
+        {
+          "type": "check",
+          "prompt": "n = 10. Which bucket does 0.55 go to? And 0.05?",
+          "answer": "⌊10 × 0.55⌋ = ⌊5.5⌋ = **5**. ⌊10 × 0.05⌋ = ⌊0.5⌋ = **0**.",
+          "sectionRef": "bucket",
+          "id": "bucket.a10bccec"
+        },
+        {
+          "type": "check",
+          "prompt": "You bucket-sort 1,000 numbers that are all between 0.40 and 0.41. What happens?",
+          "answer": "With 1,000 buckets of width 0.001, they spread over only about 10 buckets (≈100 each), and each bucket's insertion sort does about 100² / 2 steps. Far from linear: the data isn't uniform over [0, 1).",
+          "sectionRef": "bucket",
+          "id": "bucket.1277091c"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: which bucket?",
+          "task": "Write `bucket_of(x, n)` returning ⌊n·x⌋, then distribute the slide's numbers into 10 buckets.",
+          "starter": "def bucket_of(x, n):\n    # return the bucket index for x in [0, 1)\n    return 0\n\na = [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68]\nbuckets = [[] for _ in range(10)]\nfor x in a:\n    buckets[bucket_of(x, 10)].append(x)\nprint(buckets)\n",
+          "check": "assert bucket_of(.78, 10) == 7 and bucket_of(.17, 10) == 1 and bucket_of(.94, 10) == 9, \"bucket_of(.78, 10) should be 7: int(10 * .78).\"\nassert bucket_of(.05, 10) == 0, \"Small numbers go to bucket 0.\"",
+          "solution": "def bucket_of(x, n):\n    return int(n * x)\n\na = [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68]\nbuckets = [[] for _ in range(10)]\nfor x in a:\n    buckets[bucket_of(x, 10)].append(x)\nprint(buckets)\n",
+          "hints": [
+            "int() rounds a positive number down, like floor.",
+            "return int(n * x)"
+          ],
+          "success": "That one line is the whole trick: arithmetic instead of comparisons.",
+          "id": "bucket.3f9d2fc2"
+        }
+      ]
+    },
+    {
+      "id": "counting",
+      "heading": "Counting sort: small integer ranges",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Counting sort",
+          "body": "For n **integers** whose values are all in **[0, k]**. The big idea (Poon's slide): for each element x, figure out **how many elements are ≤ x**, then put x straight into its sorted position.",
+          "slide": "Definition",
+          "id": "counting.be931813"
+        },
+        {
+          "type": "definition",
+          "term": "k",
+          "body": "The largest possible value, so the values are 0, 1, …, k. The **count** array has k + 1 slots, one per possible value. In the slide's example a = [4, 1, 0, 2, 1, 0], n = 6 and k = 4.",
+          "id": "counting.b70e1391"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "What it does",
+            "Slide example (a = [4, 1, 0, 2, 1, 0], k = 4)"
+          ],
+          "rows": [
+            [
+              "0. Create arrays",
+              "count: k + 1 zeros; output: n empty seats",
+              "count = [0, 0, 0, 0, 0], output = [_, _, _, _, _, _]"
+            ],
+            [
+              "1. Count",
+              "count[x] += 1 for each x",
+              "count = [2, 2, 1, 0, 1]"
+            ],
+            [
+              "2. Cumulative",
+              "count[v] += count[v − 1], left to right",
+              "count = [2, 4, 5, 5, 6]"
+            ],
+            [
+              "3. Build output",
+              "walk a **backwards**; seat = count[x] − 1; then count[x] −= 1",
+              "output = [0, 0, 1, 1, 2, 4]"
+            ]
+          ],
+          "title": "The four steps",
+          "slide": "Four steps",
+          "id": "counting.d430bc49"
+        },
+        {
+          "type": "definition",
+          "term": "Cumulative count",
+          "body": "After step 2, **count[v] = how many elements are ≤ v**. Poon's analogy: it **saves seats** in the output. Two elements are ≤ 0, so save seats 0 and 1 for the zeros; four are ≤ 1, so the ones take seats 2 and 3; and so on.",
+          "id": "counting.69721010"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='24' font-size='14' font-weight='800'>Cumulative count = seats saved in the output</text><text x='20' y='42' font-size='11.5' opacity='0.7'>a = [4, 1, 0, 2, 1, 0], k = 4. count after step 2: [2, 4, 5, 5, 6]</text><text x='20' y='96' font-size='12' font-weight='700' font-family='ui-monospace, SFMono-Regular, monospace'>output</text><g><title>Seat 0: saved for a 0. count[0] = 2 means 2 items are ≤ 0, so the 0s end at seat 1.</title><rect x='90' y='70' width='64' height='40' rx='6' fill='rgb(var(--accent-fg) / 0.16)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='122.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>0</text></g><g><title>Seat 1: saved for a 0. count[0] = 2 means 2 items are ≤ 0, so the 0s end at seat 1.</title><rect x='160' y='70' width='64' height='40' rx='6' fill='rgb(var(--accent-fg) / 0.16)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='192.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>0</text></g><path d='M90 122 L90 128 L224 128 L224 122' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.3'/><text x='157.0' y='146' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' font-weight='700'>count[0] = 2</text><g><title>Seat 2: saved for a 1. count[1] = 4 means 4 items are ≤ 1, so the 1s end at seat 3.</title><rect x='230' y='70' width='64' height='40' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='262.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>1</text></g><g><title>Seat 3: saved for a 1. count[1] = 4 means 4 items are ≤ 1, so the 1s end at seat 3.</title><rect x='300' y='70' width='64' height='40' rx='6' fill='rgb(var(--on-track) / 0.16)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='332.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>1</text></g><path d='M230 122 L230 128 L364 128 L364 122' fill='none' stroke='rgb(var(--on-track))' stroke-width='1.3'/><text x='297.0' y='162' text-anchor='middle' font-size='11' fill='rgb(var(--on-track))' font-weight='700'>count[1] = 4</text><g><title>Seat 4: saved for a 2. count[2] = 5 means 5 items are ≤ 2, so the 2s end at seat 4.</title><rect x='370' y='70' width='64' height='40' rx='6' fill='rgb(var(--at-risk) / 0.16)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='402.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>2</text></g><path d='M370 122 L370 128 L434 128 L434 122' fill='none' stroke='rgb(var(--at-risk))' stroke-width='1.3'/><text x='402.0' y='146' text-anchor='middle' font-size='11' fill='rgb(var(--at-risk))' font-weight='700'>count[2] = 5</text><g><title>Seat 5: saved for a 4. count[4] = 6 means 6 items are ≤ 4, so the 4s end at seat 5.</title><rect x='440' y='70' width='64' height='40' rx='6' fill='rgb(var(--accent-fg) / 0.16)' stroke='rgb(var(--accent-fg))' stroke-width='1.4'/><text x='472.0' y='96' text-anchor='middle' font-size='16' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>4</text></g><path d='M440 122 L440 128 L504 128 L504 122' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='1.3'/><text x='472.0' y='162' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' font-weight='700'>count[4] = 6</text><text x='122.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>0</text><text x='192.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>1</text><text x='262.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>2</text><text x='332.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>3</text><text x='402.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><text x='472.0' y='64' text-anchor='middle' font-size='10' opacity='0.55' font-family='ui-monospace, SFMono-Regular, monospace'>5</text><g><title>No 3s in the input: count[3] = count[2] = 5, so zero seats are saved for 3.</title><text x='20' y='188' font-size='11.5' opacity='0.85'>No 3s: count[3] = count[2] = 5, so zero seats.</text><text x='20' y='204' font-size='11.5' opacity='0.85'>Value v's seats end at index count[v] − 1.</text></g></g>",
+          "viewBox": "0 0 520 214",
+          "caption": "The cumulative count [2, 4, 5, 5, 6] drawn as seats in the output. Each value's seats end at index count[v] − 1. Hover the seats.",
+          "slide": "Cumulative count = saved seats",
+          "id": "counting.c648c35a"
+        },
+        {
+          "type": "stepper",
+          "title": "counting_sort([4, 1, 0, 2, 1, 0], k = 4), line by line (the slide's example)",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "counting_sort([4, 1, 0, 2, 1, 0], k = 4). Step 0: count has k + 1 = 5 zeros (one per value 0..4); output has n = 6 empty seats."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    4
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[0] = 4, so count[4] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    1,
+                    0,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[1] = 1, so count[1] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    0,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[2] = 0, so count[0] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    1,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[3] = 2, so count[2] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    2,
+                    1,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[4] = 1, so count[1] goes up by one, to 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    5
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    2,
+                    1,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[5] = 0, so count[0] goes up by one, to 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    2,
+                    1,
+                    0,
+                    1
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1 done: count = [2, 2, 1, 0, 1] says how many of each value there are: 2 × 0, 2 × 1, 1 × 2, 0 × 3, 1 × 4."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    4,
+                    1,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[1] = count[0] + count[1] = 2 + 2 = **4**. Now 4 items are ≤ 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[2] = count[1] + count[2] = 4 + 1 = **5**. Now 5 items are ≤ 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    5,
+                    1
+                  ],
+                  "hl": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[3] = count[2] + count[3] = 5 + 0 = **5**. Now 5 items are ≤ 3."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    3,
+                    4
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[4] = count[3] + count[4] = 5 + 1 = **6**. Now 6 items are ≤ 4."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    5,
+                    6
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2 done: count = [2, 4, 5, 5, 6] is the cumulative count. Read it as seats: the 2 zeros take seats 0..1, and value v's last seat is count[v] − 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    5
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    4,
+                    5,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Step 3, j = 5: x = 0. Its seat is count[0] − 1 = 2 − 1 = **1**. Place it, then count[0] drops to 1 so the next 0 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    3,
+                    5,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    0,
+                    null,
+                    1,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 4: x = 1. Its seat is count[1] − 1 = 4 − 1 = **3**. Place it, then count[1] drops to 3 so the next 1 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    0,
+                    null,
+                    1,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    1,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 3: x = 2. Its seat is count[2] − 1 = 5 − 1 = **4**. Place it, then count[2] drops to 4 so the next 2 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    0,
+                    null,
+                    1,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 2: x = 0. Its seat is count[0] − 1 = 1 − 1 = **0**. Place it, then count[0] drops to 0 so the next 0 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    0,
+                    1,
+                    1,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 1: x = 1. Its seat is count[1] − 1 = 3 − 1 = **2**. Place it, then count[1] drops to 2 so the next 1 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    5
+                  ],
+                  "hl": [
+                    4
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    0,
+                    1,
+                    1,
+                    2,
+                    4
+                  ],
+                  "hl": [
+                    5
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 0: x = 4. Its seat is count[4] − 1 = 6 − 1 = **5**. Place it, then count[4] drops to 5 so the next 4 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    4,
+                    1,
+                    0,
+                    2,
+                    1,
+                    0
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    5
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    0,
+                    1,
+                    1,
+                    2,
+                    4
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Done: output = [0, 0, 1, 1, 2, 4]. Walking j backwards is what keeps equal values in their original order (stable): the last 0 in a got the last seat for its value."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def counting_sort(a, k):\n    count = [0] * (k + 1)\n    output = [None] * len(a)\n    for x in a:\n        count[x] += 1\n    for v in range(1, k + 1):\n        count[v] += count[v - 1]\n    for j in reversed(range(len(a))):\n        x = a[j]\n        output[count[x] - 1] = x\n        count[x] -= 1\n    return output\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                12
+              ]
+            ],
+            "vars": [
+              {
+                "n": "6",
+                "k": "4"
+              },
+              {
+                "x": "4",
+                "count[4]": "1"
+              },
+              {
+                "x": "1",
+                "count[1]": "1"
+              },
+              {
+                "x": "0",
+                "count[0]": "1"
+              },
+              {
+                "x": "2",
+                "count[2]": "1"
+              },
+              {
+                "x": "1",
+                "count[1]": "2"
+              },
+              {
+                "x": "0",
+                "count[0]": "2"
+              },
+              {
+                "count": "[2, 2, 1, 0, 1]"
+              },
+              {
+                "v": "1",
+                "count": "[2, 4, 1, 0, 1]"
+              },
+              {
+                "v": "2",
+                "count": "[2, 4, 5, 0, 1]"
+              },
+              {
+                "v": "3",
+                "count": "[2, 4, 5, 5, 1]"
+              },
+              {
+                "v": "4",
+                "count": "[2, 4, 5, 5, 6]"
+              },
+              {
+                "count": "[2, 4, 5, 5, 6]"
+              },
+              {
+                "j": "5",
+                "x": "0",
+                "seat": "1",
+                "count": "[1, 4, 5, 5, 6]"
+              },
+              {
+                "j": "4",
+                "x": "1",
+                "seat": "3",
+                "count": "[1, 3, 5, 5, 6]"
+              },
+              {
+                "j": "3",
+                "x": "2",
+                "seat": "4",
+                "count": "[1, 3, 4, 5, 6]"
+              },
+              {
+                "j": "2",
+                "x": "0",
+                "seat": "0",
+                "count": "[0, 3, 4, 5, 6]"
+              },
+              {
+                "j": "1",
+                "x": "1",
+                "seat": "2",
+                "count": "[0, 2, 4, 5, 6]"
+              },
+              {
+                "j": "0",
+                "x": "4",
+                "seat": "5",
+                "count": "[0, 2, 4, 5, 5]"
+              },
+              {
+                "output": "[0, 0, 1, 1, 2, 4]"
+              }
+            ]
+          },
+          "id": "counting.40c3f577"
+        },
+        {
+          "type": "definition",
+          "term": "Stable",
+          "body": "A sort is **stable** if equal values keep their original left-to-right order. Counting sort walks a **backwards** in step 3 so that the **last** copy of a value takes the **last** seat for that value. Stability matters because radix sort (next section) is built on it.",
+          "id": "counting.a7ac4283"
+        },
+        {
+          "type": "stepper",
+          "title": "Your turn from the slides: a = [3, 0, 2, 2, 1]",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "counting_sort([3, 0, 2, 2, 1], k = 3). Step 0: count has k + 1 = 4 zeros (one per value 0..3); output has n = 5 empty seats."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    0,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    3
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[0] = 3, so count[3] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    0,
+                    0,
+                    1
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[1] = 0, so count[0] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    0,
+                    1,
+                    1
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[2] = 2, so count[2] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    0,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[3] = 2, so count[2] goes up by one, to 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1: a[4] = 1, so count[1] goes up by one, to 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    2,
+                    1
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 1 done: count = [1, 1, 2, 1] says how many of each value there are: 1 × 0, 1 × 1, 2 × 2, 1 × 3."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[1] = count[0] + count[1] = 1 + 1 = **2**. Now 2 items are ≤ 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    1
+                  ],
+                  "hl": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[2] = count[1] + count[2] = 2 + 2 = **4**. Now 4 items are ≤ 2."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5
+                  ],
+                  "hl": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2: count[3] = count[2] + count[3] = 4 + 1 = **5**. Now 5 items are ≤ 3."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [],
+                  "done": []
+                }
+              ],
+              "caption": "Step 2 done: count = [1, 2, 4, 5] is the cumulative count. Read it as seats: the 1 zeros take seats 0..0, and value v's last seat is count[v] − 1."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    4,
+                    5
+                  ],
+                  "hl": [
+                    1
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    1,
+                    null,
+                    null,
+                    null
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Step 3, j = 4: x = 1. Its seat is count[1] − 1 = 2 − 1 = **1**. Place it, then count[1] drops to 1 so the next 1 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    3,
+                    5
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    1,
+                    null,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 3: x = 2. Its seat is count[2] − 1 = 4 − 1 = **3**. Place it, then count[2] drops to 3 so the next 2 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    1,
+                    1,
+                    2,
+                    5
+                  ],
+                  "hl": [
+                    2
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    null,
+                    1,
+                    2,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    1,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 2: x = 2. Its seat is count[2] − 1 = 3 − 1 = **2**. Place it, then count[2] drops to 2 so the next 2 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    5
+                  ],
+                  "hl": [
+                    0
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    2,
+                    null
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 1: x = 0. Its seat is count[0] − 1 = 1 − 1 = **0**. Place it, then count[0] drops to 0 so the next 0 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    4
+                  ],
+                  "hl": [
+                    3
+                  ]
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    2,
+                    3
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Step 3, j = 0: x = 3. Its seat is count[3] − 1 = 5 − 1 = **4**. Place it, then count[3] drops to 4 so the next 3 takes the seat before."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    3,
+                    0,
+                    2,
+                    2,
+                    1
+                  ],
+                  "hl": [],
+                  "done": []
+                },
+                {
+                  "label": "count",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    4
+                  ],
+                  "hl": []
+                },
+                {
+                  "label": "output",
+                  "cells": [
+                    0,
+                    1,
+                    2,
+                    2,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Done: output = [0, 1, 2, 2, 3]. Walking j backwards is what keeps equal values in their original order (stable): the last 1 in a got the last seat for its value."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def counting_sort(a, k):\n    count = [0] * (k + 1)\n    output = [None] * len(a)\n    for x in a:\n        count[x] += 1\n    for v in range(1, k + 1):\n        count[v] += count[v - 1]\n    for j in reversed(range(len(a))):\n        x = a[j]\n        output[count[x] - 1] = x\n        count[x] -= 1\n    return output\n",
+            "lines": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                6
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                8,
+                9,
+                10,
+                11
+              ],
+              [
+                12
+              ]
+            ],
+            "vars": [
+              {
+                "n": "5",
+                "k": "3"
+              },
+              {
+                "x": "3",
+                "count[3]": "1"
+              },
+              {
+                "x": "0",
+                "count[0]": "1"
+              },
+              {
+                "x": "2",
+                "count[2]": "1"
+              },
+              {
+                "x": "2",
+                "count[2]": "2"
+              },
+              {
+                "x": "1",
+                "count[1]": "1"
+              },
+              {
+                "count": "[1, 1, 2, 1]"
+              },
+              {
+                "v": "1",
+                "count": "[1, 2, 2, 1]"
+              },
+              {
+                "v": "2",
+                "count": "[1, 2, 4, 1]"
+              },
+              {
+                "v": "3",
+                "count": "[1, 2, 4, 5]"
+              },
+              {
+                "count": "[1, 2, 4, 5]"
+              },
+              {
+                "j": "4",
+                "x": "1",
+                "seat": "1",
+                "count": "[1, 1, 4, 5]"
+              },
+              {
+                "j": "3",
+                "x": "2",
+                "seat": "3",
+                "count": "[1, 1, 3, 5]"
+              },
+              {
+                "j": "2",
+                "x": "2",
+                "seat": "2",
+                "count": "[1, 1, 2, 5]"
+              },
+              {
+                "j": "1",
+                "x": "0",
+                "seat": "0",
+                "count": "[0, 1, 2, 5]"
+              },
+              {
+                "j": "0",
+                "x": "3",
+                "seat": "4",
+                "count": "[0, 1, 2, 4]"
+              },
+              {
+                "output": "[0, 1, 2, 2, 3]"
+              }
+            ]
+          },
+          "id": "counting.4cd6f657"
+        },
+        {
+          "type": "prose",
+          "md": "**Runtime.** Step 0: Θ(1) to set up (Poon's slide). Step 1: Θ(n). Step 2: Θ(k). Step 3: Θ(n). Total **Θ(n + k)**. It's linear exactly when k is not much bigger than n.",
+          "slide": "Runtime",
+          "id": "counting.66f68cb3"
+        },
+        {
+          "type": "diagram",
+          "kind": "compare",
+          "data": {
+            "left": {
+              "title": "Good case",
+              "sub": "1,000,000 numbers, values 0..100",
+              "tone": "brand"
+            },
+            "right": {
+              "title": "Bad case",
+              "sub": "100 numbers, one of them 100,000,000",
+              "tone": "red"
+            },
+            "rows": [
+              {
+                "label": "n",
+                "left": "1,000,000",
+                "right": "100"
+              },
+              {
+                "label": "k",
+                "left": "100",
+                "right": "100,000,000 = n⁴"
+              },
+              {
+                "label": "Θ(n + k)",
+                "left": "≈ Θ(n): linear",
+                "right": "≈ Θ(n⁴): the count array has 100 million slots"
+              }
+            ]
+          },
+          "caption": "Poon's two examples: counting sort depends on the range k, not just on n.",
+          "slide": "When k ruins it",
+          "id": "counting.c1399d7b"
+        },
+        {
+          "type": "trap",
+          "body": "In step 3 the seat is **count[x] − 1**, not count[x]: count[x] says how many items are ≤ x, and seats are numbered from 0. Then decrement count[x] so the next copy of x lands one seat earlier.",
+          "source": "HW 10",
+          "points": null,
+          "slide": "Trap: the − 1",
+          "id": "counting.f021d327"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 10 Problem 1: A = [6, 0, 2, 0, 1, 3, 4, 6, 1, 3, 2], k = 6. (a) What is the count array C after counting frequencies?",
+          "answer": "C = **[2, 2, 2, 2, 1, 0, 2]** (two 0s, two 1s, two 2s, two 3s, one 4, zero 5s, two 6s).",
+          "sectionRef": "counting",
+          "id": "counting.b4f86355"
+        },
+        {
+          "type": "check",
+          "prompt": "(b) What is C after the cumulative-count step?",
+          "answer": "C = **[2, 4, 6, 8, 9, 9, 11]**. Each entry adds the one before it.",
+          "sectionRef": "counting",
+          "id": "counting.94f326cc"
+        },
+        {
+          "type": "check",
+          "prompt": "(c) What is the final sorted array, and how are the last three elements A[10], A[9], A[8] placed?",
+          "answer": "Sorted: **[0, 0, 1, 1, 2, 2, 3, 3, 4, 6, 6]**.\n\nj = 10: A[10] = 2, seat C[2] − 1 = 5, so B[5] = 2; C[2] becomes 5. B = [_, _, _, _, _, 2, _, _, _, _, _]\n\nj = 9: A[9] = 3, seat C[3] − 1 = 7, so B[7] = 3; C[3] becomes 7. B = [_, _, _, _, _, 2, _, 3, _, _, _]\n\nj = 8: A[8] = 1, seat C[1] − 1 = 3, so B[3] = 1; C[1] becomes 3. B = [_, _, _, 1, _, 2, _, 3, _, _, _]",
+          "sectionRef": "counting",
+          "id": "counting.f97c3d84"
+        },
+        {
+          "type": "code",
+          "title": "Your turn: write counting sort",
+          "task": "Fill in the three loops of counting sort. Walk step 3 backwards so the sort is stable.",
+          "starter": "def counting_sort(a, k):\n    count = [0] * (k + 1)\n    output = [None] * len(a)\n    # step 1: count each value\n    # step 2: cumulative count\n    # step 3: walk a backwards, place each x at count[x] - 1, then decrement\n    return output\n\nprint(counting_sort([4, 1, 0, 2, 1, 0], 4))\n",
+          "check": "assert counting_sort([4, 1, 0, 2, 1, 0], 4) == [0, 0, 1, 1, 2, 4], \"The slide's example should give [0, 0, 1, 1, 2, 4].\"\nassert counting_sort([3, 0, 2, 2, 1], 3) == [0, 1, 2, 2, 3], \"The 'Your turn' array should give [0, 1, 2, 2, 3].\"\nassert counting_sort([6, 0, 2, 0, 1, 3, 4, 6, 1, 3, 2], 6) == [0, 0, 1, 1, 2, 2, 3, 3, 4, 6, 6], \"HW 10's array should come out sorted.\"",
+          "solution": "def counting_sort(a, k):\n    count = [0] * (k + 1)\n    output = [None] * len(a)\n    for x in a:\n        count[x] += 1\n    for v in range(1, k + 1):\n        count[v] += count[v - 1]\n    for j in range(len(a) - 1, -1, -1):\n        x = a[j]\n        output[count[x] - 1] = x\n        count[x] -= 1\n    return output\n\nprint(counting_sort([4, 1, 0, 2, 1, 0], 4))\n",
+          "hints": [
+            "Step 1: `for x in a: count[x] += 1`.",
+            "Step 2: `for v in range(1, k + 1): count[v] += count[v - 1]`.",
+            "Step 3: `for j in range(len(a) - 1, -1, -1):` then `output[count[a[j]] - 1] = a[j]` and `count[a[j]] -= 1`."
+          ],
+          "success": "No comparisons anywhere: three loops, Θ(n + k).",
+          "id": "counting.a6a55f58"
+        }
+      ]
+    },
+    {
+      "id": "radix",
+      "heading": "Radix sort: one digit at a time",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Radix sort",
+          "body": "For numbers that all have **d digits** in base b (b = 10 for decimal). Sort the whole array by the **last** digit (the 1s), then by the 10s digit, then the 100s, and so on, using a **stable** sort each time. After d passes, it's sorted.",
+          "slide": "Definition",
+          "id": "radix.b5819eb6"
+        },
+        {
+          "type": "definition",
+          "term": "Least significant digit (LSD)",
+          "body": "The rightmost digit, the one worth least. Radix sort starts there and works left. (In 329, the LSD is 9 and the most significant digit is 3.)",
+          "id": "radix.9bd788f9"
+        },
+        {
+          "type": "stepper",
+          "title": "radix_sort on [329, 457, 657, 839, 436, 720, 355] (the slide's example)",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "329",
+                    "457",
+                    "657",
+                    "839",
+                    "436",
+                    "720",
+                    "355"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "radix_sort([329, 457, 657, 839, 436, 720, 355], d = 3). Every number has 3 digits. We sort by ONE digit at a time, starting from the right."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "32[9]",
+                    "45[7]",
+                    "65[7]",
+                    "83[9]",
+                    "43[6]",
+                    "72[0]",
+                    "35[5]"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "Pass 1: look only at the 1s digit (in brackets): 9, 7, 7, 9, 6, 0, 5."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "72[0]",
+                    "35[5]",
+                    "43[6]",
+                    "45[7]",
+                    "65[7]",
+                    "32[9]",
+                    "83[9]"
+                  ],
+                  "hl": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                }
+              ],
+              "caption": "Line 3: sort stably by that digit. Ties keep their previous order, which is what the earlier passes built. a = [720, 355, 436, 457, 657, 329, 839]."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "7[2]0",
+                    "3[5]5",
+                    "4[3]6",
+                    "4[5]7",
+                    "6[5]7",
+                    "3[2]9",
+                    "8[3]9"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "Pass 2: look only at the 10s digit (in brackets): 2, 5, 3, 5, 5, 2, 3."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "7[2]0",
+                    "3[2]9",
+                    "4[3]6",
+                    "8[3]9",
+                    "3[5]5",
+                    "4[5]7",
+                    "6[5]7"
+                  ],
+                  "hl": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                }
+              ],
+              "caption": "Line 3: sort stably by that digit. Ties keep their previous order, which is what the earlier passes built. a = [720, 329, 436, 839, 355, 457, 657]."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "[7]20",
+                    "[3]29",
+                    "[4]36",
+                    "[8]39",
+                    "[3]55",
+                    "[4]57",
+                    "[6]57"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "Pass 3: look only at the 100s digit (in brackets): 7, 3, 4, 8, 3, 4, 6."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "[3]29",
+                    "[3]55",
+                    "[4]36",
+                    "[4]57",
+                    "[6]57",
+                    "[7]20",
+                    "[8]39"
+                  ],
+                  "hl": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                }
+              ],
+              "caption": "Line 3: sort stably by that digit. Ties keep their previous order, which is what the earlier passes built. a = [329, 355, 436, 457, 657, 720, 839]."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "a",
+                  "cells": [
+                    "329",
+                    "355",
+                    "436",
+                    "457",
+                    "657",
+                    "720",
+                    "839"
+                  ],
+                  "hl": []
+                }
+              ],
+              "caption": "After 3 passes the whole array is sorted: [329, 355, 436, 457, 657, 720, 839]. d passes × Θ(n + b) each = Θ(d(n + b))."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def radix_sort(a, d):\n    for p in range(d):   # 1s, 10s, 100s\n        a = stable_sort(a, digit, p)\n    return a\n\ndef digit(x, p):\n    return (x // 10 ** p) % 10\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                2,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                2,
+                6,
+                7
+              ],
+              [
+                3
+              ],
+              [
+                4
+              ]
+            ],
+            "vars": [
+              {
+                "d": "3"
+              },
+              {
+                "p": "0",
+                "digits": "[9, 7, 7, 9, 6, 0, 5]"
+              },
+              {
+                "p": "0",
+                "a": "[720, 355, 436, 457, 657, 329, 839]"
+              },
+              {
+                "p": "1",
+                "digits": "[2, 5, 3, 5, 5, 2, 3]"
+              },
+              {
+                "p": "1",
+                "a": "[720, 329, 436, 839, 355, 457, 657]"
+              },
+              {
+                "p": "2",
+                "digits": "[7, 3, 4, 8, 3, 4, 6]"
+              },
+              {
+                "p": "2",
+                "a": "[329, 355, 436, 457, 657, 720, 839]"
+              },
+              {
+                "a": "[329, 355, 436, 457, 657, 720, 839]"
+              }
+            ]
+          },
+          "id": "radix.c1f2944e"
+        },
+        {
+          "type": "prose",
+          "md": "**Why start from the right, and why must each pass be stable?** Each pass sorts by one digit and keeps ties in the order the earlier passes left them. After the 10s pass, numbers with the same 10s digit are still ordered by their 1s digit. So the last pass, on the most significant digit, breaks ties using everything sorted before it. If a pass weren't stable, it would scramble that work.",
+          "label": "think",
+          "id": "radix.1535e2f2"
+        },
+        {
+          "type": "prose",
+          "md": "**Which stable sort does each pass use?** Counting sort, with k = b − 1 (a digit is 0..9 in base 10). Each pass is Θ(n + b), and there are d passes: **Θ(d(n + b))**. When d is a constant and b isn't huge, that's **Θ(n)**.",
+          "slide": "Runtime",
+          "id": "radix.1a963b87"
+        },
+        {
+          "type": "example",
+          "title": "Poon's example: 32-bit integers",
+          "body": "A 32-bit integer is 4 bytes. Treat each byte (8 bits) as one digit in base b = 2⁸ = 256.\n\n  d = 4 digits, b = 256\n  Θ(d(n + b)) = Θ(4(n + 256)) = Θ(n)\n\nd and b don't grow with n, so sorting a billion IP addresses is linear.",
+          "slide": "32-bit integers",
+          "id": "radix.e72f7f97"
+        },
+        {
+          "type": "trap",
+          "body": "Radix sort needs a **stable** inner sort. Using an unstable one (like quicksort) for each digit gives wrong answers, not just slow ones.",
+          "source": "Lecture 10",
+          "points": null,
+          "slide": "Trap: stability",
+          "id": "radix.cff3d6c1"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 10 Problem 2: radix-sort [170, 045, 075, 090, 002, 802, 024, 066] in base 10. Show the list after each pass.",
+          "answer": "After the 1s: **[170, 090, 002, 802, 024, 045, 075, 066]**.\n\nAfter the 10s: **[002, 802, 024, 045, 066, 170, 075, 090]**.\n\nAfter the 100s: **[002, 024, 045, 066, 075, 090, 170, 802]**.",
+          "sectionRef": "radix",
+          "id": "radix.382067ba"
+        },
+        {
+          "type": "check",
+          "prompt": "How many passes does radix sort need for 6-digit phone extensions in base 10? What does each pass cost?",
+          "answer": "d = 6 passes, each a counting sort with k = 9: Θ(n + 10). Total Θ(6(n + 10)) = Θ(n).",
+          "sectionRef": "radix",
+          "id": "radix.b7f801de"
+        }
+      ]
+    },
+    {
+      "id": "choose",
+      "heading": "Which sort for which data?",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Counting sort",
+            "Radix sort",
+            "Bucket sort"
+          ],
+          "rows": [
+            [
+              "Input",
+              "non-negative integers in a small range",
+              "non-negative integers with a fixed number of digits",
+              "numbers (often decimals) spread evenly over a range"
+            ],
+            [
+              "Compares?",
+              "no",
+              "no",
+              "no, except inside a bucket"
+            ],
+            [
+              "Stable?",
+              "yes",
+              "yes (needs a stable inner sort)",
+              "yes, if the inner sort is"
+            ],
+            [
+              "Time",
+              "Θ(n + k)",
+              "Θ(d(n + b))",
+              "average Θ(n); worst = inner sort, e.g. Θ(n²)"
+            ],
+            [
+              "Breaks when",
+              "k is huge",
+              "d or b is huge",
+              "the data is not evenly spread"
+            ],
+            [
+              "Poon's example",
+              "exam scores 0 to 100",
+              "phone numbers, SSNs",
+              "decimals between 0.0 and 1.0"
+            ]
+          ],
+          "title": "Poon's summary table",
+          "slide": "Summary",
+          "id": "choose.acde988c"
+        },
+        {
+          "type": "prose",
+          "md": "**How to choose, in three questions.** Are they integers in a small range (k not much bigger than n)? → **counting sort**. Are they integers or strings with a fixed number of digits? → **radix sort**. Are they numbers spread evenly across a known range? → **bucket sort**. None of those? → a comparison sort (merge sort or quicksort).",
+          "id": "choose.71b2984b"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 10 Problem 3a: 10 million Employee objects sorted by a unique 8-digit ID. Which sort?",
+          "answer": "**Radix sort**: d = 8 digits in base 10, so Θ(8(n + 10)) = Θ(n). Counting sort directly would need a count array of 100 million slots (k = 10⁸, ten times n); radix keeps each pass to 10 slots.",
+          "sectionRef": "choose",
+          "id": "choose.514c8ce2"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 10 Problem 3b: 500,000 floating-point timestamps from an experiment that fires at random, unpredictable intervals. Which sort?",
+          "answer": "Bucket sort needs values spread **evenly**, and nothing guarantees that here: bursts of events would pile into a few buckets and push it toward Θ(n²). Counting and radix need integers. So use a comparison sort: **merge sort** (Θ(n log n) always) or quicksort.",
+          "sectionRef": "choose",
+          "id": "choose.d60f14fa"
+        },
+        {
+          "type": "check",
+          "prompt": "HW 10 Problem 3c: the ages of 2 million residents, integers from 0 to 110. Which sort?",
+          "answer": "**Counting sort**: k = 110 is tiny next to n = 2,000,000, so Θ(n + k) = Θ(n).",
+          "sectionRef": "choose",
+          "id": "choose.b5a53ef9"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "heading": "Where linear-time sorts show up",
+      "blocks": [
+        {
+          "type": "diagram",
+          "kind": "cards",
+          "data": {
+            "cards": [
+              {
+                "title": "Counting sort",
+                "lines": [
+                  "Histograms in image processing: how many pixels have each color value.",
+                  "Sorting user records by age (0 to 120)."
+                ],
+                "badge": "small ranges",
+                "tone": "brand"
+              },
+              {
+                "title": "Radix sort",
+                "lines": [
+                  "64-bit integers and fixed-length strings.",
+                  "Routers sorting 32-bit IP addresses.",
+                  "DNA sequences over {A, C, G, T}."
+                ],
+                "badge": "fixed-size keys",
+                "tone": "green"
+              },
+              {
+                "title": "Bucket sort",
+                "lines": [
+                  "Sensor readings and financial data.",
+                  "Map coordinates: a 2D grid of buckets finds nearby points fast."
+                ],
+                "badge": "evenly spread data",
+                "tone": "amber"
+              }
+            ]
+          },
+          "caption": "Poon's professional applications slide.",
+          "slide": "Applications",
+          "id": "apps.b88da303"
+        },
+        {
+          "type": "prose",
+          "md": "**You've used one today.** A photo editor's histogram (the little mountain chart of brightness values) is counting sort's step 1: count how many pixels have each of the 256 brightness values. It's linear because k = 255 never changes, however big the photo.",
+          "label": "world",
+          "id": "apps.9cf492dc"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Comparison sort",
+              "Orders items only by comparing pairs. Needs Ω(n log n) comparisons in the worst case."
+            ],
+            [
+              "Lower bound",
+              "A speed no algorithm of that kind can beat."
+            ],
+            [
+              "Bucket sort",
+              "n buckets, x goes to ⌊n·x⌋, sort each, concatenate. Average Θ(n) on uniform data."
+            ],
+            [
+              "Uniform distribution",
+              "Every part of the range is equally likely."
+            ],
+            [
+              "Counting sort",
+              "Integers in [0, k]: count, cumulative count, place backwards. Θ(n + k)."
+            ],
+            [
+              "Cumulative count",
+              "count[v] = how many items are ≤ v: the seats saved for values up to v."
+            ],
+            [
+              "Stable",
+              "Equal values keep their original order."
+            ],
+            [
+              "Radix sort",
+              "Stable sort by each digit, least significant first. Θ(d(n + b))."
+            ],
+            [
+              "d, b",
+              "Number of digits / the base (10 for decimal, 256 for bytes)."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "which-bucket",
+      "title": "Bucket index",
+      "prompt": "Bucket sort with n = 8 buckets. Which bucket does 0.30 go to?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**2**: ⌊8 × 0.30⌋ = ⌊2.4⌋ = 2."
+      ],
+      "why": "The bucket formula is the one piece of arithmetic bucket sort needs.",
+      "choices": [
+        {
+          "text": "2",
+          "feedback": "Yes: ⌊8 × 0.30⌋ = ⌊2.4⌋ = 2."
+        },
+        {
+          "text": "3",
+          "feedback": "8 × 0.30 = 2.4, and the floor of 2.4 is 2, not 3."
+        },
+        {
+          "text": "0",
+          "feedback": "Only numbers below 0.125 go to bucket 0."
+        },
+        {
+          "text": "8",
+          "feedback": "Buckets are numbered 0 to 7."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "bucket"
+    },
+    {
+      "id": "cumulative",
+      "title": "Cumulative count",
+      "prompt": "After counting, count = [1, 3, 0, 2]. What is the cumulative count?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**[1, 4, 4, 6]**: each entry is the running total."
+      ],
+      "why": "count[v] then says how many items are ≤ v.",
+      "choices": [
+        {
+          "text": "[1, 4, 4, 6]",
+          "feedback": "Yes: 1, 1+3, 4+0, 4+2."
+        },
+        {
+          "text": "[1, 3, 0, 2]",
+          "feedback": "That's the count before step 2."
+        },
+        {
+          "text": "[6, 5, 2, 2]",
+          "feedback": "That adds from the right."
+        },
+        {
+          "text": "[1, 4, 3, 5]",
+          "feedback": "Each entry adds the new running total, not the previous raw count."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "counting"
+    },
+    {
+      "id": "why-backwards",
+      "title": "Why backwards?",
+      "prompt": "Why does counting sort's step 3 walk the input from the end to the start?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "Backwards keeps it **stable**, which radix sort depends on."
+      ],
+      "why": "A favorite 'why' question.",
+      "choices": [
+        {
+          "text": "To keep equal values in their original order (stable)",
+          "feedback": "Yes: the last copy of a value takes the last seat for that value."
+        },
+        {
+          "text": "It's faster that way",
+          "feedback": "Both directions take Θ(n)."
+        },
+        {
+          "text": "To avoid a negative index",
+          "feedback": "The seat is count[x] − 1, which is ≥ 0 either way."
+        },
+        {
+          "text": "Because count was built backwards",
+          "feedback": "count was built left to right."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "counting"
+    },
+    {
+      "id": "radix-time",
+      "title": "Radix runtime",
+      "prompt": "Radix sort on n numbers with d digits in base b costs…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Θ(d(n + b))**, which is Θ(n) when d and b are constants."
+      ],
+      "why": "Poon's 32-bit example: d = 4, b = 256.",
+      "choices": [
+        {
+          "text": "Θ(d(n + b))",
+          "feedback": "Yes: d passes of a Θ(n + b) counting sort."
+        },
+        {
+          "text": "Θ(n log n)",
+          "feedback": "That's the comparison-sort bound radix sort beats."
+        },
+        {
+          "text": "Θ(n + b)",
+          "feedback": "That's ONE pass."
+        },
+        {
+          "text": "Θ(n^d)",
+          "feedback": "Passes add up, they don't multiply."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "radix"
+    },
+    {
+      "id": "pick-ages",
+      "title": "Pick the sort",
+      "prompt": "Sort the exam scores (integers 0 to 100) of 300 students. Best choice?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Counting sort**: integers in a small range. Poon's own example scenario."
+      ],
+      "why": "Match the data to the sort.",
+      "choices": [
+        {
+          "text": "Counting sort",
+          "feedback": "Yes: k = 100 is small, so Θ(n + k)."
+        },
+        {
+          "text": "Bucket sort",
+          "feedback": "Scores are integers, not evenly spread decimals."
+        },
+        {
+          "text": "Radix sort with base 2",
+          "feedback": "Works, but more passes than needed."
+        },
+        {
+          "text": "Quicksort",
+          "feedback": "Θ(n log n) when Θ(n + k) is available."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "choose"
+    },
+    {
+      "id": "counting-seat",
+      "title": "Where does it go?",
+      "prompt": "Cumulative count = [2, 4, 5, 5, 6]. Walking backwards, the next element is x = 1. At which index of output does it go?",
+      "hints": [
+        "count[1] says how many items are ≤ 1.",
+        "Seats are numbered from 0, so subtract one.",
+        "count[1] = 4, so the seat is 4 − 1."
+      ],
+      "solution": [
+        "count[1] − 1 = 4 − 1 = **3**. Then count[1] becomes 3."
+      ],
+      "why": "The − 1 is the most common slip.",
+      "accept": [
+        "3"
+      ],
+      "sectionRef": "counting"
+    }
+  ]
+}
