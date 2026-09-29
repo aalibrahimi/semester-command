@@ -34,6 +34,7 @@ import { plan, type Action } from "@/study/plan";
 import { courseProgress } from "@/study/progress";
 import type { CourseSummary, TriageRow } from "@/types";
 import { calendarDays } from "@/lib/courseWork";
+import { ExamFocus } from "./ExamFocus";
 
 const DAY = 86_400_000;
 
@@ -166,6 +167,9 @@ export function TodayView({
           )}
         </div>
       </div>
+
+      {/* ── Exams within two weeks lead the page ────────────────────── */}
+      <ExamFocus />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         {/* ── Do next ─────────────────────────────────────────────── */}
