@@ -1,0 +1,577 @@
+{
+  "id": "cs146/9-quicksort",
+  "course": "cs146",
+  "lessons": "Lecture 9",
+  "title": "Quicksort: partition, recursion, and why the worst case is n²",
+  "summary": "Trace Lomuto partition on paper (pivot, i, j, the final swap, the return value); run quicksort's recursion on an array; write its recurrence and explain the Θ(n²) worst case, the Θ(n log n) best and average case, and how real libraries avoid the worst case.",
+  "estimatedMinutes": 60,
+  "sourceNote": "Lecture 9 slides 'Quicksort' (Sep 21), HW 9 (due Sep 23), CLRS ch. 7. Builds on merge sort (Lecture 5) and recurrences (Lectures 6 and 7).",
+  "requires": [
+    "cs146/4-big-o-merge-sort",
+    "cs146/6-recurrences"
+  ],
+  "sections": [
+    {
+      "id": "why",
+      "heading": "Why quicksort exists",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem with merge sort** Merge sort is always Θ(n log n), but it needs a second array the size of the input to merge into: O(n) extra memory. **Quicksort** sorts *in place*, inside the one array, and on typical inputs it is the fastest comparison sort in practice. That is why it (or a close cousin) is what `Arrays.sort` uses for primitive types in Java and what C's `qsort` is named after.",
+          "label": "why",
+          "slide": "Why another sort?",
+          "id": "why.a5137c2b"
+        },
+        {
+          "type": "prose",
+          "md": "**Poon's analogy: sorting by height** Pick one student as the **pivot**. Everyone shorter moves to their left, everyone taller to their right. The pivot is now standing exactly where they would be in a fully sorted line, even though the two groups are still messy. Now do the same thing inside each group. When every group is size 0 or 1, the whole line is sorted.",
+          "slide": "Sorting a class by height",
+          "id": "why.8353fffc"
+        },
+        {
+          "type": "definition",
+          "term": "Pivot",
+          "body": "The one element chosen to split the array. After partitioning, smaller-or-equal elements are to its left, larger to its right, and **the pivot is in its final sorted position**. In this lecture the pivot is always the **last** element of the part being sorted (this is called **Lomuto** quicksort).",
+          "id": "why.146ac9b4"
+        }
+      ]
+    },
+    {
+      "id": "partition",
+      "heading": "partition: the one step that does all the work",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "partition(a, low, high)",
+          "body": "Works only on `a[low..high]`. Picks `pivot = a[high]`, moves every element ≤ pivot to the left part, puts the pivot right after them, and **returns the pivot's new index**.",
+          "id": "partition.68e0018c"
+        },
+        {
+          "type": "example",
+          "title": "The pseudocode (Lecture 9)",
+          "body": "partition(a, low, high):\n    pivot = a[high]\n    i = low - 1              // zone of '≤ pivot' is empty\n    for j = low to high - 1  // j scouts, skips pivot\n        if a[j] <= pivot\n            i++              // grow the zone\n            swap a[i] with a[j]  // pull it in\n    swap a[i+1] with a[high] // pivot after zone\n    return i + 1",
+          "slide": "partition, line by line",
+          "id": "partition.48bc8e6b"
+        },
+        {
+          "type": "prose",
+          "md": "Two markers do the work. **j is the scout**: it walks left to right over every element except the pivot. **i is the boundary**: everything from `low` to `i` is known to be ≤ pivot. When the scout finds a small element, the boundary grows by one and the small element is swapped into the new spot. Big elements are simply walked past; they end up between the boundary and the scout.",
+          "id": "partition.2c70f4d5"
+        },
+        {
+          "type": "stepper",
+          "title": "partition on [9, 3, 1, 7, 5] (the slide's example)",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "partition(a, 0, 4). The pivot is the last element, a[4] = 5. i starts at −1: the '≤ pivot' zone is empty. j (the scout) starts at 0.",
+              "hl": [
+                4
+              ],
+              "note": "pivot = 5, i = −1"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                9,
+                3,
+                1,
+                7,
+                5
+              ],
+              "caption": "j = 0: is 9 ≤ 5? No. Skip it. i stays −1.",
+              "hl": [
+                0
+              ],
+              "note": "i = −1, j = 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                9,
+                1,
+                7,
+                5
+              ],
+              "caption": "j = 1: is 3 ≤ 5? Yes. i++ → 0, then swap a[0] and a[1]. The 3 moves into the '≤ pivot' zone, which is now a[0..0].",
+              "hl": [
+                0,
+                1
+              ],
+              "note": "i = 0, j = 1"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "j = 2: is 1 ≤ 5? Yes. i++ → 1, swap a[1] and a[2]. The zone a[0..1] = 3, 1 holds everything small so far.",
+              "hl": [
+                1,
+                2
+              ],
+              "note": "i = 1, j = 2"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                9,
+                7,
+                5
+              ],
+              "caption": "j = 3: is 7 ≤ 5? No. Skip. The loop stops before high, so we are done scouting.",
+              "hl": [
+                3
+              ],
+              "note": "i = 1, j = 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                1,
+                5,
+                7,
+                9
+              ],
+              "caption": "Last step: swap a[i+1] = a[2] with the pivot a[4]. The 5 lands at index 2, its final sorted place. Return 2.",
+              "hl": [
+                2
+              ],
+              "done": [
+                2
+              ],
+              "note": "return i + 1 = 2"
+            }
+          ],
+          "slide": true,
+          "id": "partition.740fbf6b"
+        },
+        {
+          "type": "sim",
+          "sim": "sort",
+          "caption": "Pick *quicksort* and press Next to watch every partition step. Then type your own array. Try an already sorted one like 1, 2, 3, 4, 5, 6 and count the comparisons.",
+          "params": {
+            "algorithm": "quick",
+            "array": [
+              9,
+              3,
+              1,
+              7,
+              5
+            ]
+          },
+          "slide": "Try it",
+          "id": "partition.937a2943"
+        },
+        {
+          "type": "prose",
+          "md": "**Runtime of partition** The loop runs once for each element from `low` to `high − 1`, doing constant work each time. So partition on n elements is **Θ(n)**.",
+          "id": "partition.2b1f31dc"
+        },
+        {
+          "type": "trap",
+          "body": "Returning i instead of i + 1. After the loop, i points at the last small element; the pivot goes one to the right of it, at i + 1, and that is what partition returns.",
+          "source": "Lecture 9, HW 9",
+          "points": null,
+          "slide": "Off by one",
+          "id": "partition.79a34b4c"
+        },
+        {
+          "type": "trap",
+          "body": "Counting indexes from `low` instead of from 0. partition returns an index into the **whole** array. On the slide's 'Your turn' (a = [19, 9, 5, 1, 8, 7, 2, 3, 4, 6], low = 2, high = 7), the pivot is a[7] = 3 and it lands at **index 4** of the whole array. The slide's answer says 'index 3' because its picture starts at a[1]; when you write your own answer, count from a[0].",
+          "source": "Lecture 9 'Your turn'",
+          "points": null,
+          "id": "partition.e5f84dca"
+        },
+        {
+          "type": "check",
+          "prompt": "partition([4, 8, 2, 6, 5], 0, 4): what is the array afterwards, and what is returned?",
+          "answer": "Pivot 5. j=0: 4 ≤ 5, i=0 (swap with itself). j=1: 8 skip. j=2: 2 ≤ 5, i=1, swap → [4, 2, 8, 6, 5]. j=3: 6 skip. Final swap a[2] ↔ a[4] → [4, 2, 5, 6, 8]. Return 2.",
+          "sectionRef": "partition",
+          "id": "partition.d2fcc263"
+        }
+      ]
+    },
+    {
+      "id": "quicksort",
+      "heading": "quicksort: partition, then recurse on both sides",
+      "blocks": [
+        {
+          "type": "example",
+          "title": "The pseudocode",
+          "body": "quicksort(a, low, high):\n    if low < high                  // 2+ elements\n        p = partition(a, low, high) // p is final\n        quicksort(a, low, p - 1)    // left side\n        quicksort(a, p + 1, high)   // right side\n\nFirst call: quicksort(a, 0, n - 1)",
+          "slide": "Three lines",
+          "id": "quicksort.29b95e53"
+        },
+        {
+          "type": "prose",
+          "md": "Notice what is **not** there: no merge step. Once the pivot is in place and both sides are sorted, the whole range is sorted, because every left element ≤ pivot < every right element. And the pivot is **excluded** from both recursive calls (p − 1 and p + 1): it is already done.",
+          "id": "quicksort.34e24c92"
+        },
+        {
+          "type": "stepper",
+          "title": "Tracing quicksort on [2, 8, 7, 1, 3, 5, 6, 4] (the slide's example)",
+          "frames": [
+            {
+              "kind": "lines",
+              "lines": [
+                "Q(a, 0, 7)   a = [2, 8, 7, 1, 3, 5, 6, 4]"
+              ],
+              "active": 0,
+              "caption": "Sort the whole array. low = 0 < high = 7, so partition."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Q(a, 0, 7)   a = [2, 8, 7, 1, 3, 5, 6, 4]",
+                "  P(a, 0, 7) → a = [2, 1, 3, 4, 7, 5, 6, 8], p = 3"
+              ],
+              "active": 1,
+              "caption": "Pivot 4 lands at index 3. Everything left of it is ≤ 4, everything right is > 4. Index 3 is finished forever."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Q(a, 0, 7)",
+                "  P → p = 3",
+                "  Q(a, 0, 2) on [2, 1, 3]",
+                "    P(a, 0, 2) → no change, p = 2"
+              ],
+              "active": 3,
+              "caption": "Recurse on the left part, indexes 0 to 2. Pivot 3 is already the biggest, so it stays at index 2."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "Q(a, 0, 7)",
+                "  P → p = 3",
+                "  Q(a, 0, 2) → p = 2",
+                "    Q(a, 0, 1) on [2, 1]",
+                "      P(a, 0, 1) → a = [1, 2, …], p = 0"
+              ],
+              "active": 4,
+              "caption": "Left of that: [2, 1] with pivot 1. It moves to index 0."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "      Q(a, 0, −1) → base case (empty)",
+                "      Q(a, 1, 1)  → base case (one element)",
+                "    Q(a, 3, 2)    → base case (empty)"
+              ],
+              "active": 0,
+              "caption": "Base case: low ≥ high means 0 or 1 elements. Nothing to sort. This is where the recursion stops."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "  Q(a, 4, 7) on [7, 5, 6, 8]",
+                "    P(a, 4, 7) → no change, p = 7",
+                "    Q(a, 4, 6) on [7, 5, 6] → p = 5 …",
+                "    Q(a, 8, 7) → base case"
+              ],
+              "active": 0,
+              "caption": "Now the right side of the first pivot. The same three lines, over and over, until every element has been a pivot or a base case."
+            },
+            {
+              "kind": "lines",
+              "lines": [
+                "a = [1, 2, 3, 4, 5, 6, 7, 8]"
+              ],
+              "active": 0,
+              "caption": "Sorted, in place. There was never a merge step: once both sides are sorted around the pivot, the whole thing is sorted."
+            }
+          ],
+          "slide": true,
+          "id": "quicksort.e9b48d9d"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Binary search",
+            "Merge sort",
+            "Quicksort"
+          ],
+          "rows": [
+            [
+              "Divide",
+              "split at the midpoint",
+              "split at the midpoint (free)",
+              "**partition** (Θ(n), the real work)"
+            ],
+            [
+              "Conquer",
+              "search ONE half",
+              "sort both halves",
+              "sort both sides"
+            ],
+            [
+              "Combine",
+              "nothing",
+              "**merge** (Θ(n), the real work)",
+              "nothing"
+            ]
+          ],
+          "title": "Where the work happens (Lecture 9 slide 23)",
+          "slide": "Divide and conquer, compared",
+          "id": "quicksort.fd98027b"
+        },
+        {
+          "type": "prose",
+          "md": "That table is the one idea to remember: merge sort does its work on the way **up** (merging), quicksort does its work on the way **down** (partitioning).",
+          "id": "quicksort.b1f07426"
+        },
+        {
+          "type": "check",
+          "prompt": "In quicksort(a, low, high), why is the base case `low < high` and not `low <= high`?",
+          "answer": "When low = high there is one element, and one element is already sorted. When low > high the range is empty. Both mean: nothing to do.",
+          "sectionRef": "quicksort",
+          "id": "quicksort.a343acdb"
+        }
+      ]
+    },
+    {
+      "id": "analysis",
+      "heading": "How fast? It depends on the pivot",
+      "blocks": [
+        {
+          "type": "example",
+          "title": "The recurrence",
+          "body": "Let q = size of the left side after partition.\nThe right side has n − q − 1 (the pivot is in neither).\n\nT(n) = T(q) + T(n − q − 1) + Θ(n)\n                              └ partition",
+          "slide": "The quicksort recurrence",
+          "id": "analysis.a6963a3e"
+        },
+        {
+          "type": "prose",
+          "md": "Unlike merge sort, **q is not fixed**. It depends on where the pivot lands, which depends on the data. So there is no single recurrence; there is a best one and a worst one.",
+          "id": "analysis.1be5a5d9"
+        },
+        {
+          "type": "example",
+          "title": "Worst case: the input is already sorted",
+          "body": "a = [1, 2, 3, 4, 5]. The pivot (last) is always the biggest.\nLeft side gets n − 1 elements, right side gets 0.\n\nT(n) = T(n − 1) + T(0) + Θ(n) = T(n − 1) + Θ(n)\n     = n + (n − 1) + … + 2 + 1\n     = n(n + 1)/2 = Θ(n²)",
+          "answer": "Θ(n²)",
+          "slide": "Worst case: sorted input",
+          "id": "analysis.8538e9d4"
+        },
+        {
+          "type": "example",
+          "title": "Best case: the pivot lands in the middle every time",
+          "body": "Both sides get about n/2.\n\nT(n) = 2T(n/2) + Θ(n)\n\nThat is exactly merge sort's recurrence. Master method case 2 → Θ(n log n).",
+          "answer": "Θ(n log n)",
+          "slide": "Best case: even splits",
+          "id": "analysis.e4d4f583"
+        },
+        {
+          "type": "prose",
+          "md": "**Average case** On random input the splits are uneven but not terrible, and quicksort is still **Θ(n log n)**. Even a lopsided 9-to-1 split at every level gives Θ(n log n): the tree is deeper (log base 10/9 instead of 2) but still logarithmic, and each level still costs Θ(n). CLRS 7.4 has the proof.",
+          "id": "analysis.c26d8182"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Quicksort",
+            "Merge sort",
+            "Heap sort"
+          ],
+          "rows": [
+            [
+              "Time, average",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "Θ(n log n)"
+            ],
+            [
+              "Time, worst",
+              "O(n²)",
+              "Θ(n log n)",
+              "Θ(n log n)"
+            ],
+            [
+              "In practice",
+              "usually fastest",
+              "consistent",
+              "consistent"
+            ],
+            [
+              "Stable?",
+              "no",
+              "yes",
+              "no"
+            ],
+            [
+              "Extra space",
+              "O(log n) call stack",
+              "O(n)",
+              "O(1)"
+            ],
+            [
+              "In place?",
+              "yes",
+              "no",
+              "yes"
+            ]
+          ],
+          "title": "The three n log n sorts (Lecture 9 slide 31)",
+          "slide": "Quicksort vs merge sort vs heap sort",
+          "id": "analysis.d2b89e86"
+        },
+        {
+          "type": "trap",
+          "body": "Saying quicksort's worst case is n log n, or that it happens on random input. The worst case is Θ(n²), and for Lomuto it happens on **already sorted** (or reverse sorted) input, the input you would think is easiest.",
+          "source": "Lecture 9",
+          "points": null,
+          "slide": "The surprising worst case",
+          "id": "analysis.ab6f1170"
+        },
+        {
+          "type": "check",
+          "prompt": "Why does quicksort use O(log n) extra space if it sorts in place?",
+          "answer": "The recursion itself: each pending call sits on the call stack. With balanced splits the recursion is about log n deep. (In the worst case it is n deep.)",
+          "sectionRef": "analysis",
+          "id": "analysis.3cff740c"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "heading": "How real code avoids the worst case",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Nobody ships the version from class as-is: one sorted input and it crawls. Real implementations change **how the pivot is chosen** or **how partition works**.",
+          "slide": "Professional quicksort",
+          "id": "practice.2c4a4b7a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Fix",
+            "Idea",
+            "Why it helps"
+          ],
+          "rows": [
+            [
+              "Randomized pivot",
+              "pick a random index, swap it to the end, then partition as usual",
+              "sorted input no longer means bad pivots; the n² case becomes astronomically unlikely"
+            ],
+            [
+              "Median of three",
+              "pivot = median of first, middle, last",
+              "a sorted array now gets a perfect middle pivot"
+            ],
+            [
+              "Hoare partition",
+              "two markers start at both ends and walk toward each other, swapping out-of-place pairs",
+              "fewer swaps than Lomuto on average"
+            ]
+          ],
+          "title": "Three fixes (Lecture 9 slide 33)",
+          "id": "practice.c24f1368"
+        },
+        {
+          "type": "prose",
+          "md": "**Where you will meet this** Java's `Arrays.sort(int[])` is a dual-pivot quicksort; C's `qsort` and C++'s `std::sort` are quicksort hybrids that switch to insertion sort on small pieces (the same trick as your Project 1 hybrid) and to heap sort if the recursion gets too deep. Interviewers ask for `partition` constantly because it tests loops, indexes and invariants in ten lines.",
+          "id": "practice.57479a9d"
+        },
+        {
+          "type": "check",
+          "prompt": "Randomizing the pivot changes the worst-case running time to what?",
+          "answer": "Nothing: the worst case is still O(n²) (an unlucky random pick every time). What changes is that no particular input causes it, so the **expected** time on every input is Θ(n log n).",
+          "sectionRef": "practice",
+          "id": "practice.44c64b08"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "trace-partition",
+      "title": "Trace partition yourself",
+      "prompt": "Run partition(a, 0, 5) on a = [6, 2, 9, 1, 7, 4]. Write the array after every swap, the final array, and the return value.",
+      "hints": [
+        "pivot = a[5] = 4. i starts at −1. j goes from 0 to 4.",
+        "Only 2 and 1 are ≤ 4. Each time you find one: i++, then swap a[i] and a[j].",
+        "After the loop, swap a[i+1] with a[5]. What is i at that point?"
+      ],
+      "solution": [
+        "pivot = 4, i = −1.",
+        "j=0: 6 > 4, skip.",
+        "j=1: 2 ≤ 4 → i = 0, swap a[0], a[1] → [2, 6, 9, 1, 7, 4].",
+        "j=2: 9 skip.",
+        "j=3: 1 ≤ 4 → i = 1, swap a[1], a[3] → [2, 1, 9, 6, 7, 4].",
+        "j=4: 7 skip.",
+        "Final swap a[2] ↔ a[5] → [2, 1, 4, 6, 7, 9]. Return 2."
+      ],
+      "why": "Tracing is how Poon tests partition, and it is exactly what HW 9 Question 1 asks for on a longer array.",
+      "sectionRef": "partition"
+    },
+    {
+      "id": "worst-input",
+      "title": "Pick the worst input",
+      "prompt": "Which input makes Lomuto quicksort (pivot = last element) take Θ(n²) time?",
+      "hints": [
+        "Bad means the pivot keeps landing at one end.",
+        "Where does the pivot land if it is the largest element?",
+        "Which common input makes the last element the largest in every subarray?"
+      ],
+      "solution": [
+        "If the array is sorted, the last element is the maximum, so every partition puts n − 1 elements on the left and 0 on the right.",
+        "T(n) = T(n−1) + Θ(n) = Θ(n²)."
+      ],
+      "why": "Sorted data is extremely common in real systems (data that is appended in time order, for one), which is exactly why no library ships plain Lomuto.",
+      "choices": [
+        {
+          "text": "An already sorted array",
+          "feedback": "Right. The pivot is always the max, so each call only peels off one element."
+        },
+        {
+          "text": "A random array",
+          "feedback": "Random input gives Θ(n log n) on average: splits are uneven but not consistently terrible."
+        },
+        {
+          "text": "An array where every element is different",
+          "feedback": "Distinct values don't matter by themselves; the order does."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "analysis"
+    },
+    {
+      "id": "java-partition",
+      "title": "Write partition in Java (HW 9 Question 2)",
+      "prompt": "Write `public static int partition(int[] a, int low, int high)` from the pseudocode, with a `swap` helper. Test it on the example above: partition(new int[]{9, 3, 1, 7, 5}, 0, 4) must return 2 and leave the array as [3, 1, 5, 7, 9].",
+      "hints": [
+        "Translate line by line. `pivot = a[high]`, `i = low - 1`, a for loop with `j < high` (not ≤).",
+        "The swap helper: `int t = a[i]; a[i] = a[j]; a[j] = t;`",
+        "Check the two classic slips: the loop must stop before `high`, and the method returns `i + 1`."
+      ],
+      "solution": [
+        "Declare pivot and i from the first two pseudocode lines.",
+        "for (int j = low; j < high; j++) with the if / i++ / swap inside.",
+        "After the loop: swap(a, i + 1, high); return i + 1;",
+        "Run the test: print the array with Arrays.toString and the returned index."
+      ],
+      "why": "Writing it once from scratch is the fastest way to make the i/j invariant stick, and partition is one of the most-asked interview snippets.",
+      "sectionRef": "partition"
+    }
+  ]
+}

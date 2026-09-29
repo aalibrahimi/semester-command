@@ -1,0 +1,288 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:#0e1014;}
+  #stage{width:1280px;height:720px;}
+  svg{display:block}
+</style></head>
+<body><div id="stage"></div>
+<script>
+const W = 1280, H = 720;
+const C = { bg:"#0e1014", card:"#171a21", line:"#2a2f3a", fg:"#e8ebf1", mute:"#8d95a5",
+  blue:"#5b8def", green:"#34c38f", amber:"#f0a93b", red:"#ef5a6f", violet:"#a78bfa" };
+const F = "font-family='Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto'";
+const M = "font-family='ui-monospace, SFMono-Regular, Menlo, monospace'";
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease = x => { x=clamp(x); return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2; };
+const lerp = (a,b,t)=>a+(b-a)*t;
+const seg = (t,a,b)=>ease((t-a)/(b-a));         // 0..1 eased progress between a and b
+const fade = (t,a,b,out=null,outEnd=null)=>{ let v=clamp((t-a)/(b-a)); if(out!==null) v*=1-clamp((t-out)/(outEnd-out)); return v; };
+
+function txt(x,y,s,o={}){ return `<text x='${x}' y='${y}' ${o.mono?M:F} font-size='${o.size||20}' font-weight='${o.w||500}' fill='${o.fill||C.fg}' text-anchor='${o.anchor||"start"}' opacity='${o.op??1}'>${s}</text>`; }
+function rect(x,y,w,h,o={}){ return `<rect x='${x}' y='${y}' width='${w}' height='${h}' rx='${o.r??10}' fill='${o.fill||"none"}' stroke='${o.stroke||"none"}' stroke-width='${o.sw||1.5}' opacity='${o.op??1}' ${o.dash?`stroke-dasharray='${o.dash}'`:""}/>`; }
+function soft(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`; }
+
+function book(x,y,col,o={}){ // a book spine centered at x, top y
+  const w=o.w||26,h=o.h||70;
+  return `<g opacity='${o.op??1}'>${rect(x-w/2,y,w,h,{r:4,fill:col})}<line x1='${x-w/2+4}' y1='${y+8}' x2='${x+w/2-4}' y2='${y+8}' stroke='white' stroke-opacity='.55' stroke-width='2'/><line x1='${x-w/2+4}' y1='${y+h-8}' x2='${x+w/2-4}' y2='${y+h-8}' stroke='white' stroke-opacity='.55' stroke-width='2'/></g>`;
+}
+function caption(s, t0, t1, t){
+  const op = fade(t,t0,t0+.4,t1-.4,t1); if(op<=0) return "";
+  return `<g opacity='${op}'>${rect(140,626,1000,70,{r:16,fill:soft(C.card,.96),stroke:C.line})}${txt(640,669,s,{size:21,anchor:"middle",w:500})}</g>`;
+}
+function heading(s, sub, t, t0, t1){
+  const op = fade(t,t0,t0+.5,t1-.5,t1); if(op<=0) return "";
+  return `<g opacity='${op}'>${txt(60,62,s,{size:32,w:800})}${sub?txt(60,94,sub,{size:18,fill:C.mute}):""}</g>`;
+}
+function caps(list,t){ return list.map(([a,b,s])=>caption(s,a,b,t)).join(""); }
+
+const BOOKS = [
+  {t:"Bible", n:5, col:C.blue},
+  {t:"The Great Gatsby", n:14, col:C.amber},
+  {t:"Odyssey", n:7, col:C.green},
+  {t:"Dracula", n:7, col:C.red},
+  {t:"Pride and Prejudice", n:17, col:C.violet},
+];
+
+/* ── Scenes ─────────────────────────────────────────────────────────── */
+const S = [];
+// 0. Title
+S.push({a:0,b:5,draw(t){
+  const op=fade(t,0,.8,4.2,5);
+  return `<g opacity='${op}'>${txt(640,300,"Hash tables",{size:72,w:800,anchor:"middle"})}${txt(640,352,"CS 146 · Lecture 11 · the library analogy, step by step",{size:24,fill:C.mute,anchor:"middle"})}
+  ${[0,1,2,3,4].map(i=>book(560+i*40,410-Math.sin((t*2+i)*1.3)*6,BOOKS[i].col,{w:28,h:80})).join("")}</g>`;
+}});
+// 1. Phase 1
+S.push({a:5,b:17,draw(t){
+  const L=t-5; let s=heading("Phase 1: one cubby reserved per book","A library with 1,000 cubbies and only 5 books",L,0,12);
+  const op=fade(L,0,.5,11.5,12); const cols=40, rows=12, cw=26, ch=30, x0=120, y0=140;
+  let g="";
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){ const i=r*cols+c; const show=clamp((L-0.3-r*0.08)/0.4); if(show<=0) continue;
+    const used=i<5; g+=rect(x0+c*cw,y0+r*ch,cw-4,ch-4,{r:3,stroke:used?BOOKS[i].col:C.line,sw:used?2:1,fill:used?soft(BOOKS[i].col,.18):"none",op:show}); }
+  BOOKS.forEach((b,i)=>{ const p=seg(L,1.6+i*.5,2.3+i*.5); if(p<=0) return; const x=x0+i*cw+(cw-4)/2; const y=lerp(y0-120,y0+3,p); g+=book(x,y,b.col,{w:14,h:20}); });
+  const pb=seg(L,5,6.5); g+=`<g opacity='${pb}'>${rect(x0,y0+rows*ch+24,1040,26,{r:13,fill:soft(C.red,.15),stroke:C.red})}${rect(x0,y0+rows*ch+24,Math.max(10,1040*0.005),26,{r:13,fill:C.green})}${txt(x0+14,y0+rows*ch+43,"used: 5 of 1,000 (0.5%)",{size:15,w:700})}${txt(x0+1040,y0+rows*ch+43,"995 wasted",{size:16,w:800,fill:C.red,anchor:"end"})}</g>`;
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.5,5,"Each book gets its own reserved cubby. Search = walk straight to it: O(1)."],[5.2,11.6,"Fast, but 995 of the 1,000 cubbies hold nothing. That's the waste."]],L);
+  return s;
+}});
+// 2. Phase 2
+const P2 = {a:17,b:45};
+function cubbies(x0,y0,o={}){ let g=""; for(let i=0;i<10;i++){ const x=x0+i*92; const hl=o.hl===i;
+  g+=rect(x,y0,80,110,{r:10,stroke:hl?C.red:C.line,sw:hl?3:1.5,fill:hl?soft(C.red,.12):soft(C.card,.6)}); g+=txt(x+40,y0+138,i,{size:22,w:800,fill:C.blue,anchor:"middle"}); } return g; }
+S.push({a:P2.a,b:P2.b,draw(t){
+  const L=t-P2.a; let s=heading("Phase 2: only 10 cubbies, and a rule","Rule: count the letters, keep the last digit (letters mod 10)",L,0,28);
+  const op=fade(L,0,.5,27.5,28); const X0=180, Y0=400; let g=cubbies(X0,Y0);
+  const per=4.6, start=1.2;
+  
+  BOOKS.forEach((b,i)=>{
+    const t0=start+i*per, L2=L-t0; if(L2<0) return;
+    const slot=b.n%10, cx=X0+slot*92+40;
+    const occupied = BOOKS.slice(0,i).some(q=>q.n%10===slot);
+    // title card + counting
+    const cardOp=fade(L2,0,.3,per-.4,per);
+    const counted=Math.min(b.n, Math.floor(clamp(L2/1.5)*b.n));
+    if(cardOp>0){
+      g+=`<g opacity='${cardOp}'>${rect(180,110,920,170,{r:16,fill:C.card,stroke:C.line})}${book(230,140,b.col,{w:30,h:90})}
+        ${txt(280,170,b.t,{size:30,w:800})}
+        ${txt(280,216,`${counted} letters`,{size:24,mono:true,fill:C.mute})}
+        ${L2>1.6?txt(520,216,`→ ${b.n} mod 10 = `,{size:24,mono:true,fill:C.mute}):""}
+        ${L2>1.9?txt(770,216,slot,{size:34,w:900,mono:true,fill:occupied?C.red:C.blue}):""}
+        ${L2>2.3&&occupied?txt(280,258,"cubby 7 is already taken: collision!",{size:22,w:800,fill:C.red}):""}</g>`;
+    }
+    // fly into cubby (the landed state is drawn by phase2Books)
+    const p=seg(L2,2.2,3.2);
+    const k=BOOKS.slice(0,i).filter(q=>q.n%10===slot).length;
+    const tx = k===0? cx : cx+(k===1?-24:24), ty = k===0? Y0+18 : Y0-104;
+    if(p>0 && L2<3.2){ g+=book(lerp(230,tx,p),lerp(290,ty,p),b.col,{w:26,h:74}); }
+  });
+  // redraw hl if collision happening
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.5,start+2.2,"The mayor allows only 10 cubbies. The rule turns ANY title into a cubby number."],
+    [start+per*2+2.4,start+per*3,"Odyssey: 7 letters → cubby 7. Fine."],
+    [start+per*3+2.3,start+per*4+.2,"Dracula also has 7 letters. Cubby 7 already holds Odyssey. That's a collision."],
+    [start+per*4+2.3,28,"Pride and Prejudice: 17 letters → 7 again. Two books have nowhere to go."]],L);
+  return s;
+}});
+// Phase 2 persistent placement layer (books that landed stay in cubbies)
+function phase2Books(L,X0,Y0){ let g=""; const start=1.2, per=4.6;
+  BOOKS.forEach((b,i)=>{ const slot=b.n%10; const t0=start+i*per; if(L<t0+3.2) return;
+    const k=BOOKS.slice(0,i).filter(q=>q.n%10===slot).length; const cx=X0+slot*92+40;
+    if(k===0) g+=book(cx,Y0+18,b.col,{w:26,h:74});
+    else { const x=cx+(k===1?-24:24), y=Y0-104; const sh=(L-t0-3.2)<.6?Math.sin((L-t0)*60)*5:0;
+      g+=book(x+sh,y,b.col,{w:26,h:74})+rect(x-20,y-6,40,86,{r:8,stroke:C.red,sw:2.5,dash:"6 5"}); }
+  });
+  return g; }
+S.push({a:P2.a,b:P2.b,draw(t){ const L=t-P2.a; const op=fade(L,0,.5,27.5,28); return `<g opacity='${op}'>${phase2Books(L,180,400)}</g>`; }});
+
+// 3. Phase 3: chains
+const P3={a:45,b:66};
+S.push({a:P3.a,b:P3.b,draw(t){
+  const L=t-P3.a; let s=heading("Phase 3: a chain for each cubby","A second or third book is clipped onto the cubby's chain",L,0,21);
+  const op=fade(L,0,.5,20.5,21); const X0=180,Y0=200; let g=cubbies(X0,Y0);
+  // settled books
+  [["Bible",5,C.blue],["The Great Gatsby",4,C.amber],["Odyssey",7,C.green]].forEach(([n,sl,c])=>g+=book(X0+sl*92+40,Y0+18,c,{w:26,h:74}));
+  const cx=X0+7*92+40;
+  const ch=seg(L,1,2.2); // chain drop
+  if(ch>0){ g+=`<line x1='${cx}' y1='${Y0+110}' x2='${cx}' y2='${Y0+110+ch*210}' stroke='${C.mute}' stroke-width='4' stroke-dasharray='8 6'/>`; }
+  const d=seg(L,2.2,3.2), p=seg(L,3.4,4.4);
+  if(d>0) g+=book(lerp(cx+200,cx,d),Y0+150,C.red,{w:26,h:74})+ (d>=1?txt(cx+30,Y0+195,"Dracula",{size:18,w:700,fill:C.red}):"");
+  if(p>0) g+=book(lerp(cx+200,cx,p),Y0+250,C.violet,{w:26,h:74})+ (p>=1?txt(cx+30,Y0+295,"Pride and Prejudice",{size:18,w:700,fill:C.violet}):"");
+  if(L>2.2) g+=txt(cx,Y0-14,"Odyssey",{size:18,w:700,fill:C.green,anchor:"middle"});
+  // search Dracula
+  const q=L-6;
+  if(q>0){
+    g+=`<g opacity='${fade(q,0,.4)}'>${rect(60,140,300,52,{r:12,fill:C.card,stroke:C.blue})}${txt(80,174,'search("Dracula")',{size:22,mono:true,w:700,fill:C.blue})}</g>`;
+    const stops=[[cx,Y0+55],[cx,Y0+187],[cx,Y0+287]];
+    let k= q<2?-1: q<4?0: q<6?1: 1;
+    if(k>=0){ const [x,y]=stops[k]; const pulse=1+Math.sin(q*6)*.06; g+=`<circle cx='${x}' cy='${y}' r='${54*pulse}' fill='none' stroke='${k===1&&q>4.2?C.green:C.blue}' stroke-width='4'/>`; }
+    if(q>2.5) g+=txt(cx+50,Y0+66,"✗ Odyssey",{size:24,w:900,fill:C.red});
+    if(q>4.6) g+=txt(cx-40,Y0+196,"✓",{size:30,w:900,fill:C.green,anchor:"end"});
+  }
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.3,5.8,"The librarian buys chains. Extra books hang from the cubby they map to."],
+    [6,8,"search(\"Dracula\"): the rule says cubby 7."],[8,10,"Is the book in cubby 7 Dracula? No, it's Odyssey. Follow the chain."],
+    [10,14,"Next book on the chain: Dracula. Found it, in 2 looks."],
+    [14,21,"Nothing is lost and space stays small. Cost: a long chain means more looks."]],L);
+  return s;
+}});
+// 4. Translate
+const P4={a:66,b:76};
+S.push({a:P4.a,b:P4.b,draw(t){
+  const L=t-P4.a; let s=heading("From the library to computer science","",L,0,10);
+  const op=fade(L,0,.5,9.5,10);
+  const rows=[["book title","key"],["the physical book","value"],["wall of cubbies","array T"],["one cubby","slot T[i]"],["letters mod 10","hash function h(k)"],["two books, one cubby","collision"],["the chain","linked list (chaining)"]];
+  let g="";
+  rows.forEach(([a,b],i)=>{ const p=seg(L,.4+i*.7,1+i*.7); if(p<=0) return; const y=150+i*62;
+    g+=`<g opacity='${p}'>${rect(200,y,360,48,{r:10,fill:C.card,stroke:C.line})}${txt(380,y+31,a,{size:20,anchor:"middle"})}
+      <path d='M575 ${y+24} L${lerp(575,690,p)} ${y+24}' stroke='${C.blue}' stroke-width='3'/>${p>.9?`<path d='M682 ${y+17} L694 ${y+24} L682 ${y+31}z' fill='${C.blue}'/>`:""}
+      ${rect(710,y,370,48,{r:10,fill:soft(C.blue,.12),stroke:C.blue})}${txt(895,y+31,b,{size:20,w:800,anchor:"middle",fill:C.fg})}</g>`; });
+  s+=`<g opacity='${op}'>${g}</g>`;
+  return s;
+}});
+// 5. Hash trace with chaining
+const P5={a:76,b:112};
+const INS=[[42,"a"],[17,"b"],[82,"c"],[37,"d"],[55,"e"],[99,"f"]];
+function tableSlots(x,y,rh,m,hl){ let g=""; for(let i=0;i<m;i++){ g+=rect(x,y+i*rh,60,rh-6,{r:6,stroke:hl===i?C.amber:C.line,sw:hl===i?3:1.5,fill:hl===i?soft(C.amber,.12):C.card}); g+=txt(x-14,y+i*rh+rh/2+4,i,{size:18,w:800,fill:C.blue,anchor:"end"}); } return g; }
+function nodeBox(x,y,k,col,o={}){ return `<g opacity='${o.op??1}'>${rect(x,y,86,40,{r:8,fill:soft(col,.18),stroke:col,sw:2})}${txt(x+28,y+27,k,{size:19,w:800,mono:true,anchor:"middle"})}<line x1='${x+56}' y1='${y}' x2='${x+56}' y2='${y+40}' stroke='${col}' stroke-opacity='.6'/>${o.last?txt(x+71,y+26,"/",{size:16,mono:true,fill:C.mute,anchor:"middle"}):`<circle cx='${x+71}' cy='${y+20}' r='4' fill='${col}'/>`}</g>`; }
+S.push({a:P5.a,b:P5.b,draw(t){
+  const L=t-P5.a; let s=heading("A real hash table: h(k) = k mod 10, chaining","Insert six (key, value) pairs. New nodes go at the HEAD of the chain.",L,0,36);
+  const op=fade(L,0,.5,35.5,36);
+  const TX=560, TY=130, RH=48; const per=5.2, start=1.2;
+  let hl=null, g="";
+  // queue of keys
+  INS.forEach(([k],i)=>{ const t0=start+i*per; const gone=L>t0+.2; if(!gone) g+=`${rect(70+i*62,560,52,40,{r:8,fill:C.card,stroke:C.line})}${txt(96+i*62,587,k,{size:18,w:700,mono:true,anchor:"middle"})}`; });
+  g+=txt(70,548,"to insert:",{size:15,fill:C.mute});
+  // hash box
+  g+=rect(250,270,180,90,{r:14,fill:soft(C.amber,.14),stroke:C.amber,sw:2.5})+txt(340,310,"h(k)",{size:26,w:900,mono:true,anchor:"middle"})+txt(340,340,"k mod 10",{size:16,mono:true,fill:C.mute,anchor:"middle"});
+  // chains state
+  const chains={};
+  INS.forEach(([k,v],i)=>{
+    const t0=start+i*per, L2=L-t0; if(L2<0) return; const j=k%10;
+    const before=(chains[j]||[]).slice();
+    if(L2<per){
+      // token travel: queue→h (0.2-1.2), show calc (1.2-2.2), h→slot (2.2-3.2), shift + insert (3.2-4.2)
+      const a=seg(L2,.2,1.2), b=seg(L2,2.2,3.2);
+      let x,y; if(L2<1.2){ x=lerp(96+i*62,340,a); y=lerp(580,248,a);} else if(L2<2.2){x=340;y=248;} else { x=lerp(340,TX+160,b); y=lerp(248,TY+j*RH+19,b); }
+      if(L2>=1.2&&L2<2.4) g+=`${rect(210,380,260,48,{r:10,fill:C.card,stroke:C.amber})}${txt(340,412,`${k} mod 10 = ${j}`,{size:22,w:800,mono:true,anchor:"middle",fill:C.amber})}`;
+      if(L2>=2.2) hl=j;
+      const shift=seg(L2,3.0,3.8);
+      // existing chain drawn shifted
+      before.forEach((kk,idx)=>{ const nx=TX+100+idx*120+shift*120; g+=nodeBox(nx,TY+j*RH-1,kk,idx===0&&L2<3?C.green:C.amber,{last:idx===before.length-1}); if(idx<before.length-1) g+=`<line x1='${nx+86}' y1='${TY+j*RH+19}' x2='${nx+118}' y2='${TY+j*RH+19}' stroke='${C.mute}' stroke-width='2'/>`; });
+      if(L2<3.8){ g+=`${rect(x-30,y-20,60,40,{r:8,fill:C.green})}${txt(x,y+7,k,{size:19,w:900,mono:true,anchor:"middle",fill:"#0e1014"})}`; }
+      else { g+=nodeBox(TX+100,TY+j*RH-1,k,C.green,{last:before.length===0}); if(before.length) g+=`<line x1='${TX+186}' y1='${TY+j*RH+19}' x2='${TX+218}' y2='${TY+j*RH+19}' stroke='${C.mute}' stroke-width='2'/>`; }
+      chains[j]=[k,...before]; chains._active=j;
+    } else chains[j]=[k,...before];
+  });
+  // draw settled chains (except the one animating)
+  Object.keys(chains).filter(x=>x!=="_active").forEach(js=>{ const j=+js; if(chains._active===j) return; const arr=chains[j];
+    arr.forEach((kk,idx)=>{ const nx=TX+100+idx*120; g+=nodeBox(nx,TY+j*RH-1,kk,idx===0?C.green:C.amber,{last:idx===arr.length-1}); if(idx<arr.length-1) g+=`<line x1='${nx+86}' y1='${TY+j*RH+19}' x2='${nx+118}' y2='${TY+j*RH+19}' stroke='${C.mute}' stroke-width='2'/>`; });
+    g+=`<line x1='${TX+60}' y1='${TY+j*RH+19}' x2='${TX+98}' y2='${TY+j*RH+19}' stroke='${C.blue}' stroke-width='2.5'/>`; });
+  if(chains._active!==undefined && L<start+6*per && (L-start)%per>=3.8) g+=`<line x1='${TX+60}' y1='${TY+chains._active*RH+19}' x2='${TX+98}' y2='${TY+chains._active*RH+19}' stroke='${C.blue}' stroke-width='2.5'/>`;
+  g=tableSlots(TX,TY,RH,10,hl)+g;
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.3,start+.2,"Keys go through the hash function to get a slot."],
+    [start+1.2,start+per,"h(42) = 42 mod 10 = 2. Slot 2 is empty: 42 becomes its chain."],
+    [start+per+1.2,start+2*per,"h(17) = 7. Slot 7 is empty too."],
+    [start+2*per+1.2,start+3*per,"h(82) = 2: collision with 42. No overwrite: 82 goes at the head, 42 slides back."],
+    [start+3*per+1.2,start+4*per,"h(37) = 7: collision with 17. 37 goes to the head of chain 7."],
+    [start+4*per+1.2,start+6*per,"55 → slot 5, 99 → slot 9. All six pairs stored, nothing lost."],
+    [start+6*per,36,"Insert at head is O(1): no walking to the end of the chain."]],L);
+  return s;
+}});
+// 6. Search 17
+const P6={a:112,b:124};
+S.push({a:P6.a,b:P6.b,draw(t){
+  const L=t-P6.a; let s=heading("search(17): hash, then walk the chain","",L,0,12);
+  const op=fade(L,0,.5,11.5,12); const TX=560,TY=130,RH=48; let g=tableSlots(TX,TY,RH,10,L>2?7:null);
+  const ch={2:[82,42],5:[55],7:[37,17],9:[99]};
+  Object.entries(ch).forEach(([j,arr])=>{ j=+j; g+=`<line x1='${TX+60}' y1='${TY+j*RH+19}' x2='${TX+98}' y2='${TY+j*RH+19}' stroke='${C.blue}' stroke-width='2.5'/>`;
+    arr.forEach((k,i)=>{ const nx=TX+100+i*120; g+=nodeBox(nx,TY+j*RH-1,k,i===0?C.green:C.amber,{last:i===arr.length-1}); if(i<arr.length-1) g+=`<line x1='${nx+86}' y1='${TY+j*RH+19}' x2='${nx+118}' y2='${TY+j*RH+19}' stroke='${C.mute}' stroke-width='2'/>`; }); });
+  g+=rect(250,270,180,90,{r:14,fill:soft(C.amber,.14),stroke:C.amber,sw:2.5})+txt(340,310,"h(k)",{size:26,w:900,mono:true,anchor:"middle"})+txt(340,340,"k mod 10",{size:16,mono:true,fill:C.mute,anchor:"middle"});
+  if(L>.8&&L<2.4) g+=`${rect(210,380,260,48,{r:10,fill:C.card,stroke:C.amber})}${txt(340,412,"17 mod 10 = 7",{size:22,w:800,mono:true,anchor:"middle",fill:C.amber})}`;
+  const y7=TY+7*RH+19;
+  if(L>3){ const x = L<5.5? TX+143 : TX+263; const good=L>=5.5; g+=`<rect x='${x-50}' y='${y7-28}' width='100' height='56' rx='12' fill='none' stroke='${good?C.green:C.red}' stroke-width='4'/>`;
+    if(L>4) g+=txt(TX+143,y7-38,"37? no",{size:18,w:800,fill:C.red,anchor:"middle"});
+    if(L>6) g+=txt(TX+263,y7-38,"17? yes",{size:18,w:800,fill:C.green,anchor:"middle"}); }
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.3,2.8,"Step 1: compute the slot. h(17) = 7."],[2.8,5.5,"Step 2: check the head of chain 7. It's 37. Not a match: follow next."],[5.5,8.5,"Step 3: the next node is 17. Found, in 2 looks."],[8.5,12,"So search costs O(1) to hash + O(chain length) to walk."]],L);
+  return s;
+}});
+// 7. Load factor + resize
+const P7={a:124,b:146};
+S.push({a:P7.a,b:P7.b,draw(t){
+  const L=t-P7.a; let s=heading("Keep chains short: load factor and resizing","α = n / m  (items ÷ slots) = the average chain length",L,0,22);
+  const op=fade(L,0,.5,21.5,22);
+  const keys=[5,12,7,20]; const nShown = L<2?0: L<3.2?1: L<4.4?2: L<5.6?3: 4;
+  const grow=seg(L,9,11); const m = L<9?4:8; const TX=300,TY=150;
+  let g="";
+  const RH = 52;
+  for(let i=0;i<m;i++){ const y=TY+i*(L<9?RH*1.4:RH); g+=rect(TX,y,60,40,{r:6,stroke:C.line,fill:C.card,op:L<9?1:clamp(grow*2- (i>=4?1:0))})+txt(TX-14,y+26,i,{size:18,w:800,fill:C.blue,anchor:"end"}); }
+  const shownKeys=keys.slice(0,nShown);
+  const counts={};
+  shownKeys.forEach(k=>{ const j0=k%4, j1=k%8; const c0=(counts["a"+j0]=(counts["a"+j0]||0)+1)-1; const c1=(counts["b"+j1]=(counts["b"+j1]||0)+1)-1;
+    const y0=TY+j0*RH*1.4, y1=TY+j1*RH; const x0=TX+100+c0*100, x1=TX+100+c1*100;
+    const x=lerp(x0,x1,grow), y=lerp(y0,y1,grow);
+    const mm = grow>.5?8:4; const later = shownKeys.slice(shownKeys.indexOf(k)+1).some(q=>q%mm===k%mm);
+    g+=nodeBox(x,y,k,L>9?C.green:C.amber,{last:!later}); if(later) g+=`<line x1='${x+86}' y1='${y+20}' x2='${x+100}' y2='${y+20}' stroke='${C.mute}' stroke-width='2'/>`; });
+  const n=nShown, alpha=n/m;
+  // meter
+  const mx=820,my=200;
+  g+=rect(mx,my,360,200,{r:16,fill:C.card,stroke:C.line});
+  g+=txt(mx+24,my+44,`n = ${n}   m = ${m}`,{size:24,mono:true,w:700});
+  g+=txt(mx+24,my+92,`α = ${n}/${m} = ${alpha.toFixed(2)}`,{size:28,mono:true,w:900,fill:alpha>0.75?C.red:C.green});
+  g+=rect(mx+24,my+120,312,22,{r:11,fill:soft(C.mute,.15)})+rect(mx+24,my+120,Math.min(312,312*alpha),22,{r:11,fill:alpha>0.75?C.red:C.green});
+  g+=`<line x1='${mx+24+312*.75}' y1='${my+112}' x2='${mx+24+312*.75}' y2='${my+150}' stroke='${C.fg}' stroke-width='2' stroke-dasharray='4 3'/>`+txt(mx+24+312*.75,my+172,"α_max = 0.75",{size:15,fill:C.mute,anchor:"middle"});
+  if(L>9&&L<12) g+=txt(760,128,"resize: m = 4 → 8, re-insert every key with k mod 8",{size:22,w:800,fill:C.amber,anchor:"middle"});
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[0.3,2,"Start with m = 4 slots. We'll insert 5, 12, 7, 20."],[2,5.6,"Each insert raises α. At 3 keys, α = 0.75: right at the limit."],
+    [5.6,9,"Key 20: α = 4/4 = 1.00, above 0.75. The table is too full."],
+    [9,13,"Resize: double m to 8 and re-insert every key. The slots change, because h depends on m."],
+    [13,17.5,"That copy is O(n), but α drops back to 0.5, so chains stay short."],
+    [17.5,22,"Resizes get rarer as the table grows, so the average insert stays O(1): amortized O(1)."]],L);
+  return s;
+}});
+// 8. Summary
+const P8={a:146,b:158};
+S.push({a:P8.a,b:P8.b,draw(t){
+  const L=t-P8.a; let s=heading("The bottom line","",L,0,12);
+  const op=fade(L,0,.5,11,12);
+  const cards=[["insert(k, v)","hash, add at head","O(1)",C.green],["search(k)","hash, walk the chain","O(α) → O(1)",C.blue],["delete(k)","hash, walk, unlink","O(α) → O(1)",C.amber],["resize","copy all n items","O(n), but rare",C.red]];
+  let g=""; cards.forEach(([a,b,c,col],i)=>{ const p=seg(L,.3+i*.5,.9+i*.5); const x=90+i*280, y=lerp(260,220,p);
+    g+=`<g opacity='${p}'>${rect(x,y,250,220,{r:18,fill:soft(col,.12),stroke:col,sw:2})}${txt(x+125,y+56,a,{size:24,w:800,mono:true,anchor:"middle"})}${txt(x+125,y+100,b,{size:18,fill:C.mute,anchor:"middle"})}${txt(x+125,y+160,c,{size:26,w:900,anchor:"middle",fill:col})}</g>`; });
+  s+=`<g opacity='${op}'>${g}</g>`;
+  s+=caps([[2.5,12,"Good hash function + chaining + resizing = every operation amortized O(1)."]],L);
+  return s;
+}});
+
+const DURATION = 158;
+function render(t){
+  let out=`<svg xmlns='http://www.w3.org/2000/svg' width='${W}' height='${H}' viewBox='0 0 ${W} ${H}'><rect width='${W}' height='${H}' fill='${C.bg}'/>`;
+  for(const sc of S){ if(t>=sc.a && t<sc.b) out+=sc.draw(t); }
+  // progress bar
+  out+=`<rect x='0' y='${H-4}' width='${W*t/DURATION}' height='4' fill='${C.blue}'/>`;
+  out+="</svg>";
+  document.getElementById("stage").innerHTML=out;
+}
+window.render=render; window.DURATION=DURATION;
+render(0);
+</script></body></html>

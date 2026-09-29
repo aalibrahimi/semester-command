@@ -79,3 +79,7 @@ cookies.json
 /coverage/
 _to_delete/
 Claude outputs/
+
+# Content authoring scratch (figure previews, video stills)
+/content/.preview/
+__pycache__/
