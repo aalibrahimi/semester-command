@@ -34,6 +34,13 @@ export type Frame =
    *  in the array only. Items keep their identity, so a swap is drawn as
    *  the two values trading places along the edge, in both views. */
   | { kind: "heap"; a: number[]; size?: number; hl?: number[]; done?: number[]; note?: string; caption: string }
+  /** A binary search tree of any shape. Nodes are identified by key, so a
+   *  node that moves (a deletion re-links it, an insert shifts its
+   *  neighbours) glides to its new place. `hl` = the node in focus,
+   *  `path` = keys visited so far (their edges light up), `done` = green,
+   *  `warn` = amber (about to be removed), `out` = a row of keys under the
+   *  tree (a traversal's output so far). */
+  | { kind: "bst"; root: BstNode | null; hl?: number[]; path?: number[]; done?: number[]; warn?: number[]; out?: number[]; outLabel?: string; note?: string; caption: string }
   /** A recursion tree drawn level by level. `levels[i].nodes` are the labels
    *  inside the boxes; `work` is the per-level total shown on the right.
    *  Frames add levels cumulatively — pass the full list each time. */
@@ -53,6 +60,13 @@ export type Frame =
       meter?: { label: string; value: number; tone?: "brand" | "green" | "amber" | "red"; low?: string; high?: string };
       caption: string;
     };
+
+/** One node of a `bst` frame: a key and up to two children. */
+export interface BstNode {
+  k: number;
+  l?: BstNode | null;
+  r?: BstNode | null;
+}
 
 export interface Deadline {
   date: string;

@@ -28,7 +28,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Frame } from "@/study/types";
+import type { BstNode, Frame } from "@/study/types";
 import { Inline } from "./Blocks";
 import { CodeHighlight } from "./CodeHighlight";
 
@@ -334,6 +334,101 @@ function HeapView({ frame, large, caption, minH }: { frame: Extract<Frame, { kin
   );
 }
 
+/* ── BST frames: a binary search tree of any shape ──────────────────────── */
+
+interface Placed {
+  k: number;
+  x: number;
+  depth: number;
+  parent: number | null;
+}
+
+/** In-order position gives x, depth gives y: a BST drawn this way reads left
+ *  to right in sorted order, which is the point of the picture. */
+function placeBst(root: BstNode | null | undefined): Placed[] {
+  const out: Placed[] = [];
+  let i = 0;
+  const walk = (n: BstNode | null | undefined, depth: number, parent: number | null) => {
+    if (!n) return;
+    walk(n.l, depth + 1, n.k);
+    out.push({ k: n.k, x: i++, depth, parent });
+    walk(n.r, depth + 1, n.k);
+  };
+  walk(root, 0, null);
+  return out;
+}
+
+function BstView({ frame, large, caption, minH }: { frame: Extract<Frame, { kind: "bst" }>; large?: boolean; caption?: string; minH: number }) {
+  const nodes = placeBst(frame.root);
+  const count = Math.max(1, nodes.length);
+  const depth = Math.max(0, ...nodes.map((n) => n.depth)) + 1;
+  const rowH = large ? 64 : 56;
+  const r = large ? 21 : 18;
+  const treeH = depth * rowH;
+  const at = new Map(nodes.map((n) => [n.k, { x: ((n.x + 0.5) / count) * 100, y: r + 4 + n.depth * rowH }]));
+  const hl = new Set(frame.hl ?? []);
+  const path = new Set(frame.path ?? []);
+  const done = new Set(frame.done ?? []);
+  const warn = new Set(frame.warn ?? []);
+  const focus = [...hl].filter((k) => at.has(k));
+  const fx = focus.length ? focus.reduce((s, k) => s + at.get(k)!.x, 0) / focus.length : 50;
+  const stage = useRef<HTMLDivElement>(null);
+  useFlip(stage, 18);
+  const state = (k: number): CellState => (hl.has(k) ? "hl" : warn.has(k) ? "warn" : done.has(k) ? "done" : path.has(k) ? "dim" : "plain");
+  const cellW = large ? 46 : 38;
+
+  return (
+    <div ref={stage} className="flex w-full flex-col items-center gap-4">
+      <div className="flex w-full max-w-[600px] flex-col">
+        {caption !== undefined && <Bubble text={caption} x={`${fx}%`} minH={minH} />}
+        <div className="relative w-full" style={{ height: treeH }}>
+          <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox={`0 0 100 ${treeH}`} preserveAspectRatio="none" aria-hidden>
+            {nodes.map((n) => {
+              if (n.parent === null) return null;
+              const p = at.get(n.parent)!;
+              const c = at.get(n.k)!;
+              const on = (path.has(n.k) || hl.has(n.k)) && (path.has(n.parent) || hl.has(n.parent));
+              return <line key={`${n.parent}-${n.k}`} x1={p.x} y1={p.y} x2={c.x} y2={c.y} vectorEffect="non-scaling-stroke" stroke={on ? "rgb(var(--accent))" : "rgb(var(--foreground) / 0.18)"} strokeWidth={on ? 3 : 1.5} strokeLinecap="round" />;
+            })}
+          </svg>
+          {nodes.map((n) => {
+            const p = at.get(n.k)!;
+            const st = state(n.k);
+            return (
+              <div key={n.k} data-flip={`b:${n.k}`} className="absolute" style={{ left: `calc(${p.x}% - ${r}px)`, top: p.y - r, width: r * 2, height: r * 2 }}>
+                <div
+                  data-numeric
+                  className={cn(
+                    "flex h-full w-full items-center justify-center rounded-full border font-mono font-semibold",
+                    "transition-[opacity,background-color,border-color,box-shadow,transform]",
+                    EASE,
+                    large ? "text-base" : "text-sm",
+                    CELL[st === "dim" ? "plain" : st],
+                    st === "dim" && "ring-2 ring-brand/40",
+                  )}
+                >
+                  {n.k}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {frame.out && (
+        <div className="flex flex-wrap items-center justify-center gap-1.5">
+          <span className="mr-1 font-mono text-2xs text-muted-foreground">{frame.outLabel ?? "visited"}</span>
+          {frame.out.map((k, i) => (
+            <span key={`${k}-${i}`} data-numeric className={cn("flex items-center justify-center rounded-lg border font-mono text-sm font-semibold duration-300 animate-in fade-in-0 zoom-in-95", i === frame.out!.length - 1 ? CELL.hl : CELL.done)} style={{ width: cellW, height: cellW - 10 }}>
+              {k}
+            </span>
+          ))}
+        </div>
+      )}
+      {frame.note && <div className="text-center font-mono text-xs text-muted-foreground">{frame.note}</div>}
+    </div>
+  );
+}
+
 /* ── Timeline frames: a story moving along a line of dates ───────────────── */
 
 const DOT_TONE: Record<string, string> = {
@@ -491,6 +586,9 @@ export function FrameView({ frame, large, caption, minH = 0 }: { frame: Frame; l
         </div>
       );
 
+    case "bst":
+      return <BstView frame={frame} large={large} caption={caption} minH={minH} />;
+
     case "tree":
       return top(
         <div className="flex flex-col gap-2.5">
@@ -618,6 +716,10 @@ export interface CodeTrace {
 
 export function Stepper({ title, frames, trace }: { title: string; frames: Frame[]; trace?: CodeTrace }) {
   const [wide, setWide] = useState(false);
+  // Side by side, each half is about 36 characters of code wide. Longer
+  // lines would scroll and hide the comparison you're meant to read, so the
+  // code goes on top and the picture underneath instead.
+  const longCode = !!trace && Math.max(...trace.code.split("\n").map((l) => l.length)) > 36;
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(() => !prefersReducedMotion());
   const [visible, setVisible] = useState(() => typeof IntersectionObserver === "undefined");
@@ -683,7 +785,7 @@ export function Stepper({ title, frames, trace }: { title: string; frames: Frame
           and the caption spans both underneath. */}
       {trace ? (
         <div className="px-5 pb-5 pt-3">
-          <div className={cn("grid items-start gap-4", wide ? "grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : "grid-cols-1 md:grid-cols-2")}>
+          <div className={cn("grid items-start gap-4", wide ? "grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : longCode ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
             <CodePanel code={trace.code} lit={trace.lines[i] ?? []} vars={trace.vars?.[i]} large={wide} />
             <div className="min-w-0 rounded-xl px-2 py-3" style={{ backgroundImage: "radial-gradient(rgb(var(--foreground) / 0.07) 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
               <FrameView frame={frame} large={wide} />
