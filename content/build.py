@@ -22,6 +22,7 @@ SCRIPTS = [
     ("cs146/7-master-method", "cs146_7.py"), ("cs146/8-heaps-heapsort-pq", "cs146_8.py"),
     ("cs146/9-quicksort", "cs146_9.py"), ("cs146/10-linear-sorts", "cs146_10.py"),
     ("cs146/11-hash-tables", "cs146_11.py"),
+    ("cs146/12-binary-search-trees", "cs146_12.py"),
     ("cs154/8-nfa-intro", "cs154_8.py"),
     ("hist15/1-slavery", "h15_1.py"), ("hist15/3-declaration", "h15_3.py"), ("hist15/12-reform", "h15_12.py"),
     ("ling112/0-what-syntax-is", "ling112_0.py"), ("ling112/1-universals", "ling112_1.py"),

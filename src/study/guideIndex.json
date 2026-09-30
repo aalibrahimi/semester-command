@@ -162,6 +162,62 @@
   "sha": "41d41c00b04d6371c9eaab2ccf54249f95bc11bc454e2b11c428845428815f11"
  },
  {
+  "id": "cs146/12-binary-search-trees",
+  "course": "cs146",
+  "lessons": "Lecture 12",
+  "title": "Binary search trees: search, traversal, insert and delete",
+  "summary": "Why ordered data needs more than a hash table; the tree vocabulary and the BST property; search, min, max and successor; in-, pre- and post-order traversal; insert as a new leaf; the three delete cases (leaf, one child, two children with the successor); and why every operation is O(h), which is O(log n) balanced and O(n) when keys arrive sorted.",
+  "estimatedMinutes": 75,
+  "requires": [
+   "cs146/4-big-o-merge-sort",
+   "cs146/11-hash-tables"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: fast AND in order"
+   },
+   {
+    "id": "terms",
+    "heading": "Tree words, one at a time"
+   },
+   {
+    "id": "property",
+    "heading": "The BST property: the one rule"
+   },
+   {
+    "id": "search",
+    "heading": "Search, min, max and successor"
+   },
+   {
+    "id": "traversal",
+    "heading": "Traversals: visiting every node"
+   },
+   {
+    "id": "insert",
+    "heading": "Insert: a new key becomes a leaf"
+   },
+   {
+    "id": "delete",
+    "heading": "Delete: three cases"
+   },
+   {
+    "id": "runtime",
+    "heading": "How fast? It depends on the height"
+   },
+   {
+    "id": "apps",
+    "heading": "Where BSTs show up"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 5,
+  "sha": "53dff56b1cfe233098ba348a45bf983f0bbd8c41bd629cfdd9fa07fbd5ee0bbe"
+ },
+ {
   "id": "cs146/2-adts-invariants-insertion",
   "course": "cs146",
   "lessons": "Lectures 2–3",

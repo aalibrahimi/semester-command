@@ -146,6 +146,89 @@ describe("oracle: hash tables", () => {
   });
 });
 
+/* ── Oracles: CS 146 Lecture 12 (binary search trees) ─────────────────── */
+
+describe("oracle: binary search trees", () => {
+  const G = "cs146/12-binary-search-trees";
+  // An independent BST: parent pointers in a Map, no recursion shared with the drill.
+  type T = { root?: number; l: Map<number, number>; r: Map<number, number> };
+  const make = (keys: number[]): T => {
+    const t: T = { l: new Map(), r: new Map() };
+    for (const k of keys) {
+      if (t.root === undefined) { t.root = k; continue; }
+      let x = t.root;
+      for (;;) {
+        const side = k < x ? t.l : t.r;
+        const next = side.get(x);
+        if (next === undefined) { side.set(x, k); break; }
+        x = next;
+      }
+    }
+    return t;
+  };
+  const walk = (t: T, x: number | undefined, kind: string, out: number[] = []): number[] => {
+    if (x === undefined) return out;
+    if (kind === "pre") out.push(x);
+    walk(t, t.l.get(x), kind, out);
+    if (kind === "in") out.push(x);
+    walk(t, t.r.get(x), kind, out);
+    if (kind === "post") out.push(x);
+    return out;
+  };
+  const depth = (t: T, x: number | undefined): number => (x === undefined ? -1 : 1 + Math.max(depth(t, t.l.get(x)), depth(t, t.r.get(x))));
+  const keysOf = (p: string) => nums(p.split("Insert")[1].split("(in that order)")[0]);
+  const seq = (i: DrillInstance) => nums(answerOf(i));
+
+  it("traversal!order matches the named traversal", () => {
+    for (const inst of instances(G, "traversal!order")) {
+      const t = make(keysOf(inst.prompt));
+      const kind = inst.prompt.match(/its (in|pre|post)-order/)![1];
+      expect(seq(inst)).toEqual(walk(t, t.root, kind));
+    }
+  });
+  it("search!path follows smaller-left, bigger-right from the root", () => {
+    for (const inst of instances(G, "search!path")) {
+      const t = make(keysOf(inst.prompt));
+      const k = nums(inst.prompt.split("search(root,")[1])[0];
+      const path: number[] = [];
+      let x = t.root;
+      while (x !== undefined) { path.push(x); if (x === k) break; x = (k < x ? t.l : t.r).get(x); }
+      expect(seq(inst)).toEqual(path);
+    }
+  });
+  it("insert!parent names the node the new key hangs from", () => {
+    for (const inst of instances(G, "insert!parent")) {
+      const keys = keysOf(inst.prompt);
+      const k = nums(inst.prompt.split("Now insert")[1])[0];
+      const t = make([...keys, k]);
+      const [side, p] = [answerOf(inst).startsWith("left") ? t.l : t.r, nums(answerOf(inst))[0]];
+      expect(side.get(p)).toBe(k);
+    }
+  });
+  it("delete!replace is the smallest key bigger than the deleted one", () => {
+    for (const inst of instances(G, "delete!replace")) {
+      const keys = keysOf(inst.prompt);
+      const d = nums(inst.prompt.split("Now delete")[1])[0];
+      const t = make(keys);
+      expect(t.l.has(d) && t.r.has(d)).toBe(true);
+      expect(Number(answerOf(inst))).toBe(Math.min(...keys.filter((x) => x > d)));
+    }
+  });
+  it("search!successor is the next key in sorted order", () => {
+    for (const inst of instances(G, "search!successor")) {
+      const keys = keysOf(inst.prompt);
+      const k = nums(inst.prompt.split("successor of")[1])[0];
+      expect(Number(answerOf(inst))).toBe(Math.min(...keys.filter((x) => x > k)));
+    }
+  });
+  it("runtime!height counts edges on the longest path", () => {
+    for (const inst of instances(G, "runtime!height")) {
+      const t = make(keysOf(inst.prompt));
+      expect(Number(answerOf(inst))).toBe(depth(t, t.root));
+    }
+  });
+});
+
 describe("linear-time sort oracles (recomputed from the prompt)", () => {
   const G = "cs146/10-linear-sorts";
   const arrays = (s: string) => [...s.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].split(",").map((x) => Number(x.trim())));

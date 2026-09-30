@@ -53,9 +53,8 @@ export const courses: Course[] = [
       "Heap index formulas; trace heapify, buildHeap, heapSort, extract; buildHeap is O(n), heapSort O(1) space.",
       "(After Sep 21–Oct 5) partition trace, counting sort, hash collisions, BST delete, AVL rotations.",
     ],
-    guides: ["0-notation", "2-adts-invariants-insertion", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "10-linear-sorts", "11-hash-tables"],
+    guides: ["0-notation", "2-adts-invariants-insertion", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "10-linear-sorts", "11-hash-tables", "12-binary-search-trees"],
     planned: [
-      { label: "Lecture 12", title: "Binary search trees (Sep 30)" },
       { label: "Lecture 13", title: "AVL trees (Oct 5)" },
     ],
   },
