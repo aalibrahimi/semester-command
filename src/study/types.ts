@@ -40,7 +40,11 @@ export type Frame =
    *  `path` = keys visited so far (their edges light up), `done` = green,
    *  `warn` = amber (about to be removed), `out` = a row of keys under the
    *  tree (a traversal's output so far). */
-  | { kind: "bst"; root: BstNode | null; hl?: number[]; path?: number[]; done?: number[]; warn?: number[]; out?: number[]; outLabel?: string; note?: string; caption: string }
+  /**
+   * A binary search tree. `tags` puts a small label under a node, keyed by
+   * the node's key (AVL chapters show "H 2 · B +1" there).
+   */
+  | { kind: "bst"; root: BstNode | null; hl?: number[]; path?: number[]; done?: number[]; warn?: number[]; out?: number[]; outLabel?: string; note?: string; tags?: Record<string, string>; caption: string }
   /** A recursion tree drawn level by level. `levels[i].nodes` are the labels
    *  inside the boxes; `work` is the per-level total shown on the right.
    *  Frames add levels cumulatively — pass the full list each time. */
@@ -92,6 +96,13 @@ export interface Course {
   guides: string[];
   /** Lectures that exist on Canvas but aren't written yet. */
   planned: { label: string; title: string }[];
+  /**
+   * A whole-exam review guide (slug, like "midterm-crash-course"), shown as a
+   * banner above the chapter list and on the Ready page. Kept out of
+   * `guides` on purpose: it repeats the chapters' topics, so progress and
+   * readiness would count every topic twice.
+   */
+  review?: string;
 }
 
 /** A slide, as derived from a guide (src/study/index.ts). */

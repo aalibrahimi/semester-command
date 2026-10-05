@@ -13,7 +13,7 @@
  */
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CalendarClock, CheckCircle2, ChevronRight, Circle, CircleDot, Clock, Gauge, Info, Mic, PencilLine, Presentation, RotateCcw, Target, Timer } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CalendarClock, Clapperboard, CheckCircle2, ChevronRight, Circle, CircleDot, Clock, Gauge, Info, Mic, PencilLine, Presentation, RotateCcw, Target, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { prefetchGuide, summariesForCourse, useGuideIndexVersion, type GuideSummary } from "@/study/loadGuides";
 import { courseBySlug, daysUntil, formatDate } from "@/study";
@@ -72,6 +72,42 @@ export default function StudyCourse() {
 }
 
 /**
+ * The course's whole-exam review guide (Course.review), as a banner above
+ * the tabs: the fastest way in when the exam is close. Hidden when the
+ * course has none or the guide isn't in the index yet.
+ */
+function ReviewBanner({ c }: { c: Course }) {
+  const g = c.review ? summariesForCourse(c.slug, [c.review])[0] : undefined;
+  if (!g) return null;
+  const days = daysUntil(c.exam.date);
+  return (
+    <Link
+      to={`/study/${g.id}`}
+      onMouseEnter={() => prefetchGuide(g.id)}
+      className="group mt-6 flex items-center gap-4 rounded-2xl border border-brand/40 bg-gradient-to-r from-brand/[0.10] via-brand/[0.04] to-transparent px-5 py-4 transition-colors duration-micro hover:border-brand/70"
+    >
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-solid text-primary-foreground shadow-card">
+        <Clapperboard className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="font-display text-base font-semibold tracking-tight">{g.title}</span>
+          {days >= 0 && (
+            <span className="chip bg-at-risk/15 text-at-risk-fg">
+              {c.exam.label} {days === 0 ? "today" : `in ${days} day${days === 1 ? "" : "s"}`}
+            </span>
+          )}
+        </span>
+        <span className="mt-0.5 block text-sm text-muted-foreground">
+          {g.sections.length} short topics, each with videos and links into the full chapter · about {Math.round(g.estimatedMinutes / 60)} hours
+        </span>
+      </span>
+      <ArrowRight className="h-4 w-4 shrink-0 text-brand-fg transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
+/**
  * The course's study material: Lectures / Exam tabs, the chapter list and
  * the rail. Used by the /study/:course page and, embedded, by the Study tab
  * of a course's page (CourseDetail).
@@ -103,6 +139,8 @@ export function StudyCourseView({ c, embedded }: { c: Course; embedded?: boolean
           </button>
         ))}
       </div>
+
+      <ReviewBanner c={c} />
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* ── Main column ─────────────────────────────────────────────── */}

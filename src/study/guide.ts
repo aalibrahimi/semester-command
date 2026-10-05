@@ -65,10 +65,16 @@ export type GuideBlock =
 /** A verified external link that teaches this exact block's idea — an
  *  interactive visualization or a video. Curated and CHECKED (the URL was
  *  actually opened before being committed), never a search-results dump. */
+/**
+ * A "go deeper" pointer under a block. An https URL opens in the browser
+ * (a checked video or site); a path starting with "/study/" is a link to
+ * another chapter's section inside the app, like
+ * "/study/cs146/12-binary-search-trees?s=delete" (kind "chapter").
+ */
 export interface GuideResource {
   label: string;
   url: string;
-  kind?: "video" | "site";
+  kind?: "video" | "site" | "chapter";
 }
 
 interface BlockBase {

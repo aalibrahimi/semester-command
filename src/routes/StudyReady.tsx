@@ -71,9 +71,16 @@ export default function StudyReady() {
         icon={Gauge}
         title={`Ready for the ${course.exam.label}?`}
         actions={
-          <Link to={`/study/${course.slug}/exam`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium hover:bg-fill-ghost">
-            <Layers className="h-3.5 w-3.5" /> Take a mock exam
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {course.review && (
+              <Link to={`/study/${course.slug}/${course.review}`} className="flex items-center gap-1.5 rounded-lg bg-brand-solid px-3 py-2 text-xs font-medium text-primary-foreground hover:opacity-90">
+                <BookOpen className="h-3.5 w-3.5" /> Crash course
+              </Link>
+            )}
+            <Link to={`/study/${course.slug}/exam`} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium hover:bg-fill-ghost">
+              <Layers className="h-3.5 w-3.5" /> Take a mock exam
+            </Link>
+          </div>
         }
       >
         {days < 0 ? "This exam has passed." : days === 0 ? "The exam is today." : `${days} day${days === 1 ? "" : "s"} to go.`} Every topic on the exam, scored from what you've actually done: how you marked each section, your recent drill answers, and your recall cards.

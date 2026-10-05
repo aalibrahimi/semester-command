@@ -362,9 +362,11 @@ function BstView({ frame, large, caption, minH }: { frame: Extract<Frame, { kind
   const nodes = placeBst(frame.root);
   const count = Math.max(1, nodes.length);
   const depth = Math.max(0, ...nodes.map((n) => n.depth)) + 1;
-  const rowH = large ? 64 : 56;
+  const tags = frame.tags ?? {};
+  const tagged = Object.keys(tags).length > 0;
+  const rowH = (large ? 64 : 56) + (tagged ? 18 : 0);
   const r = large ? 21 : 18;
-  const treeH = depth * rowH;
+  const treeH = depth * rowH - (tagged ? 4 : 0);
   const at = new Map(nodes.map((n) => [n.k, { x: ((n.x + 0.5) / count) * 100, y: r + 4 + n.depth * rowH }]));
   const hl = new Set(frame.hl ?? []);
   const path = new Set(frame.path ?? []);
@@ -409,6 +411,11 @@ function BstView({ frame, large, caption, minH }: { frame: Extract<Frame, { kind
                 >
                   {n.k}
                 </div>
+                {tags[n.k] !== undefined && (
+                  <div data-numeric className={cn("absolute left-1/2 top-full mt-0.5 -translate-x-1/2 whitespace-nowrap rounded px-1 font-mono text-[10px] leading-4", warn.has(n.k) ? "bg-critical/15 text-critical-fg" : "text-muted-foreground")}>
+                    {tags[n.k]}
+                  </div>
+                )}
               </div>
             );
           })}

@@ -78,8 +78,10 @@ function drawItem(it) {
   }
   if (it.kind === "node") {
     const r = it.r || 30;
+    // it.sub: a small label under the node (the AVL video shows "H 1 · B +1")
     return `<g opacity='${it.op}'><circle cx='${it.x}' cy='${it.y}' r='${r}' fill='${it.fill}' ${ring}/>` +
-      txt(it.x, it.y + 8, it.val, { size: 22, w: 800, mono: true, anchor: "middle" }) + "</g>";
+      txt(it.x, it.y + 8, it.val, { size: 22, w: 800, mono: true, anchor: "middle" }) +
+      (it.sub ? txt(it.x, it.y + r + 19, it.sub, { size: 14, w: 600, mono: true, anchor: "middle", fill: it.subFill || C.mute }) : "") + "</g>";
   }
   const s = it.s || 52;
   return `<g opacity='${it.op}'><rect x='${it.x - s / 2}' y='${it.y - s / 2}' width='${s}' height='${s}' rx='10' fill='${it.fill}' ${ring}/>` +

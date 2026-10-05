@@ -121,7 +121,22 @@ for (const f of readdirSync(dir)) {
 }
 
 for (const g of guides) for (const r of (g.requires as string[]) ?? []) if (!ids.has(r)) problems.push(`${g.id}: requires unknown guide ${r}`);
+// In-app "go deeper" links ("/study/<course>/<chapter>?s=<section>") must
+// land on a real chapter and section, so a renamed section can't leave a
+// dead link in the crash course.
+const sectionsOf = new Map(guides.map((g) => [g.id as string, new Set(((g.sections as Record<string, unknown>[]) ?? []).map((s) => s.id as string))]));
+for (const g of guides)
+  for (const s of (g.sections as Record<string, unknown>[]) ?? [])
+    for (const b of (s.blocks as Record<string, unknown>[]) ?? [])
+      for (const r of (b.resources as { url: string }[]) ?? []) {
+        if (!r.url.startsWith("/")) continue;
+        const m = r.url.match(/^\/study\/([^/?]+\/[^/?]+)(?:\?s=([\w-]+))?$/);
+        if (!m) problems.push(`${String(b.id)}: bad in-app link ${r.url}`);
+        else if (!sectionsOf.has(m[1])) problems.push(`${String(b.id)}: link to unknown chapter ${m[1]}`);
+        else if (m[2] && !sectionsOf.get(m[1])!.has(m[2])) problems.push(`${String(b.id)}: link to unknown section ${m[1]}?s=${m[2]}`);
+      }
 for (const c of courses) for (const slug of c.guides) if (!ids.has(`${c.slug}/${slug}`)) problems.push(`courses.ts: ${c.slug} lists missing guide ${slug}`);
+for (const c of courses) if (c.review && !ids.has(`${c.slug}/${c.review}`)) problems.push(`courses.ts: ${c.slug} review guide ${c.review} is missing`);
 
 if (problems.length) {
   console.error(`check:guides — ${problems.length} problem(s):\n  ${problems.join("\n  ")}`);
