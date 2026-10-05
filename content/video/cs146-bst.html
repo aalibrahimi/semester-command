@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+/* Binary search trees (Lecture 12): build Poon's example tree, insert 10,
+   then his three delete cases, each on the original tree. Node x position
+   = in-order rank, y = depth, so the picture re-lays itself after every
+   change and nodes glide to their new spots. */
+const CODE = `def insert(t, k):         # new key = new leaf
+    if t is None: return Node(k)
+    if k < t.key: t.left = insert(t.left, k)
+    else: t.right = insert(t.right, k)
+    return t
+
+def delete(t, k):
+    if t is None: return None
+    if k < t.key: t.left = delete(t.left, k)
+    elif k > t.key:
+        t.right = delete(t.right, k)
+    else:
+        if t.left is None: return t.right
+        if t.right is None: return t.left
+        s = find_min(t.right)    # successor
+        t.key = s.key            # copy it up
+        t.right = delete(t.right, s.key)
+    return t
+`;
+const KEYS = [15, 6, 18, 3, 7, 17, 20, 2, 5, 13, 9];
+const X0 = 540, X1 = 1240, Y0 = 150, ROW = 84;
+
+const node = (k) => ({ k, l: null, r: null });
+function ins(t, k) { if (!t) return node(k); if (k < t.k) t.l = ins(t.l, k); else t.r = ins(t.r, k); return t; }
+const build = (ks) => ks.reduce((t, k) => ins(t, k), null);
+function inorder(t, out = []) { if (t) { inorder(t.l, out); out.push(t.k); inorder(t.r, out); } return out; }
+function place(t) {
+  const order = inorder(t), pos = {};
+  const w = (X1 - X0) / Math.max(order.length, 1);
+  (function walk(n, d, p) { if (!n) return; pos[n.k] = { x: X0 + (order.indexOf(n.k) + 0.5) * w, y: Y0 + d * ROW, p }; walk(n.l, d + 1, n.k); walk(n.r, d + 1, n.k); })(t, 0, null);
+  return pos;
+}
+function pathTo(t, k) { const p = []; while (t) { p.push(t.k); if (k === t.k) break; t = k < t.k ? t.l : t.r; } return p; }
+
+video({
+  title: "Binary search trees", sub: "CS 146 · Lecture 12 · insert, then the three delete cases", code: CODE,
+  build(rec) {
+    let t = null;
+    const leg = legend([["walking", C.blue], ["new / moved", C.green], ["deleted", C.red], ["successor", C.amber]]);
+    // draw the current tree; colors: {key: color}; lit: keys whose edge to the parent is lit
+    function paint(colors = {}, lit = [], gone = []) {
+      const pos = place(t);
+      let edges = "";
+      for (const [k, p] of Object.entries(pos)) {
+        if (p.p === null) continue;
+        const q = pos[p.p], on = lit.includes(Number(k));
+        edges += `<line x1='${q.x}' y1='${q.y}' x2='${p.x}' y2='${p.y}' stroke='${on ? C.blue : C.line}' stroke-width='${on ? 5 : 3}'/>`;
+      }
+      for (const id of Object.keys(rec.items)) if (!(id.slice(1) in pos)) rec.set(id, { op: 0 });
+      for (const [k, p] of Object.entries(pos)) rec.set("n" + k, { kind: "node", x: p.x, y: p.y, val: k, fill: colors[k] || C.slate, ring: colors[k] ? C.fg : null, op: 1, r: 26, z: colors[k] ? 2 : 0 });
+      for (const k of gone) if (rec.get("n" + k)) rec.set("n" + k, { fill: C.red, op: 0 });
+      rec.extra = leg + edges;
+    }
+    function walk(k, lines, verb) {
+      const p = pathTo(t, k);
+      for (let i = 0; i < p.length; i++) {
+        const cur = p[i];
+        if (cur === k) break;
+        const go = k < cur ? "left" : "right";
+        paint({ [cur]: C.blue }, p.slice(1, i + 1));
+        rec.snap(`${verb} ${k}: ${k} ${k < cur ? "<" : ">"} ${cur}, so go **${go}**.`, lines(go), 1.7);
+      }
+      return p;
+    }
+
+    rec.mark("Build");
+    rec.card("Binary search trees", "Lecture 12 · left subtree smaller, right subtree bigger, at EVERY node", 4.5,
+      "Every operation walks ONE path from the root, so everything costs O(h), the tree's height.");
+    for (const k of KEYS) {
+      t = ins(t, k);
+      paint({ [k]: C.green });
+      rec.snap(KEYS.indexOf(k) === 0 ? `insert ${k}: the tree is empty, so **${k} becomes the root**.` : `insert ${k}: walk down (smaller left, bigger right) and hang it as a **new leaf**.`, [1, 2, 3, 4], KEYS.indexOf(k) < 3 ? 2.4 : 1.25);
+    }
+    paint();
+    rec.snap("Poon's example tree. Read it left to right: **2 3 5 6 7 9 13 15 17 18 20**, sorted. That's in-order.", [], 4);
+
+    rec.mark("Insert 10");
+    walk(10, (go) => go === "left" ? [2, 3] : [2, 4], "insert");
+    t = ins(t, 10);
+    paint({ 10: C.green }, pathTo(t, 10).slice(1));
+    rec.snap("9's right spot is empty: **10 becomes 9's right child**. Nothing else moved. A new key is always a leaf.", [2], 3.6);
+
+    // Case 1: leaf
+    rec.mark("Delete a leaf");
+    t = build(KEYS); paint();
+    rec.snap("Back to the original tree. **Delete case 1: a leaf.** delete(5).", [7], 2.6);
+    walk(5, (go) => go === "left" ? [9] : [10, 11], "delete");
+    paint({ 5: C.red }, pathTo(t, 5).slice(1));
+    rec.snap("Found 5. It has **no children**: return None, so 3's right link becomes empty.", [12, 13], 3);
+    t = build(KEYS.filter((k) => k !== 5)); paint({}, [], [5]);
+    rec.snap("5 is gone. Nobody else moves.", [13], 2.6);
+
+    // Case 2: one child
+    rec.mark("Delete with one child");
+    t = build(KEYS); paint();
+    rec.snap("**Case 2: one child.** delete(7). 7 has only a right child, 13.", [7], 2.8);
+    walk(7, (go) => go === "left" ? [9] : [10, 11], "delete");
+    paint({ 7: C.red, 13: C.green }, pathTo(t, 7).slice(1));
+    rec.snap("7's left is None, so return 7's right child: **13 (with its subtree) takes 7's place.**", [13], 3.4);
+    t = build(KEYS.filter((k) => k !== 7)); paint({ 13: C.green, 9: C.green }, [], [7]);
+    rec.snap("6 now points straight at 13. 9 came along, still below 13. Still a valid BST.", [13, 18], 3.2);
+
+    // Case 3: two children
+    rec.mark("Delete with two children");
+    t = build(KEYS); paint();
+    rec.snap("**Case 3: two children.** delete(3). 3 has both 2 and 5. Who can take its place?", [7], 3);
+    paint({ 3: C.red }, pathTo(t, 3).slice(1));
+    rec.snap("Found 3. Both children exist, so lines 13 and 14 don't return.", [12, 13, 14], 2.6);
+    paint({ 3: C.red, 5: C.amber }, [5]);
+    rec.snap("Its **successor** = the minimum of its RIGHT subtree: go right once (5), then left as far as you can. 5 has no left: it's 5.", [15], 4.2);
+    rec.snap("Why the successor? It's bigger than everything on 3's left and smaller than everything else on the right. It fits exactly.", [15], 4);
+    // copy up: the successor node glides into 3's spot, 3 fades
+    // copy up: drawn on the finished tree, so 5 glides into 3's spot and 3 fades
+    t = build([15, 6, 18, 5, 7, 17, 20, 2, 13, 9]); paint({ 5: C.amber }, [], [3]);  // the tree delete(3) really leaves
+    rec.snap("Copy 5's key up into 3's node (line 16)...", [16], 2.8);
+    paint({ 5: C.green });
+    rec.snap("...then delete the old 5 from the right subtree (line 17). It was a leaf, so that's case 1. Done.", [17], 3.6);
+    paint();
+    rec.snap("In-order check: **2 5 6 7 9 13 15 17 18 20**. Still sorted, so still a BST.", [18], 3.6);
+
+    rec.mark("Runtime");
+    rec.card("O(h) for everything", "balanced: h ≈ log n · keys inserted in sorted order: h = n − 1", 5,
+      "Insert 1, 2, 3, ... in order and the tree becomes a chain: O(n). That's the problem AVL trees fix.");
+  },
+});
+</script></body></html>

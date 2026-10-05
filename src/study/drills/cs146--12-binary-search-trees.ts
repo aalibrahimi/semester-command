@@ -249,12 +249,13 @@ export const drills: Drill[] = [
         steps.push(`Case 1: ${k} has a right child, so the successor is the minimum of that right subtree.`, `Right once, then left all the way: ${walk.join(" → ")}.`);
       } else {
         const path = searchPath(t, k).path;
-        steps.push(`Case 2: ${k} has no right child, so walk up until you arrive from a LEFT child.`);
-        for (let i = path.length - 2; i >= 0; i--) {
-          const fromLeft = path[i + 1] < path[i];
-          steps.push(`Up to ${path[i]}: came from its ${fromLeft ? "left" : "right"} child${fromLeft ? ", stop." : ", keep going."}`);
-          if (fromLeft) break;
+        // Poon's top-down Case 2 (updated Lecture 12 slides): search from the
+        // root; each LEFT step makes that node the candidate.
+        steps.push(`Case 2: ${k} has no right child. Search from the root toward ${k}; every LEFT step makes that node the candidate.`);
+        for (const x of path.slice(0, -1)) {
+          steps.push(k < x ? `${k} < ${x}: step left, candidate = ${x}.` : `${k} > ${x}: step right, candidate unchanged.`);
         }
+        steps.push(`Reached ${k}: the last candidate is the successor.`);
       }
       steps.push(`Successor of ${k} = ${succ}. Check: it's the next number after ${k} in sorted order.`);
       return {

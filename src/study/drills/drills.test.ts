@@ -229,6 +229,65 @@ describe("oracle: binary search trees", () => {
   });
 });
 
+/* ── Oracles: CS 146 Lecture 13 (AVL trees) ─────────────────────────── */
+
+describe("oracle: AVL trees", () => {
+  const G = "cs146/13-avl-trees";
+  // Independent AVL: nodes in a Map keyed by key, recursive, recomputes
+  // heights from scratch instead of trusting stored ones.
+  type T = { k: number; l?: T; r?: T };
+  const ht = (t?: T): number => (t ? 1 + Math.max(ht(t.l), ht(t.r)) : -1);
+  const bal = (t: T) => ht(t.l) - ht(t.r);
+  const rr = (x: T): T => { const y = x.l!; x.l = y.r; y.r = x; return y; };
+  const lr = (x: T): T => { const y = x.r!; x.r = y.l; y.l = x; return y; };
+  const ins = (t: T | undefined, k: number, log: string[]): T => {
+    if (!t) return { k };
+    if (k < t.k) t.l = ins(t.l, k, log);
+    else if (k > t.k) t.r = ins(t.r, k, log);
+    else return t;
+    const b = bal(t);
+    if (b > 1) { if (k < t.l!.k) { log.push("LL"); return rr(t); } log.push("LR"); t.l = lr(t.l!); return rr(t); }
+    if (b < -1) { if (k > t.r!.k) { log.push("RR"); return lr(t); } log.push("RL"); t.r = rr(t.r!); return lr(t); }
+    return t;
+  };
+  const bst = (ks: number[]) => { let root: T | undefined; for (const k of ks) { if (!root) { root = { k }; continue; } let x = root; for (;;) { const side = k < x.k ? "l" : "r"; if (!x[side]) { x[side] = { k }; break; } x = x[side]!; } } return root!; };
+  const findT = (t: T | undefined, k: number): T | undefined => (!t || t.k === k ? t : findT(k < t.k ? t.l : t.r, k));
+  const keysOf = (p: string) => nums(p.split("Insert")[1].split("(in that order)")[0]);
+
+  it("balance!b is H(left) − H(right) on the plain BST", () => {
+    for (const inst of instances(G, "balance!b")) {
+      const t = bst(keysOf(inst.prompt));
+      const k = nums(inst.prompt.split("B(")[1])[0];
+      expect(Number(answerOf(inst).replace("−", "-"))).toBe(bal(findT(t, k)!));
+    }
+  });
+  it("insert!case names the one rotation the last key causes", () => {
+    for (const inst of instances(G, "insert!case")) {
+      const keys = keysOf(inst.prompt);
+      const log: string[] = [];
+      let t: T | undefined;
+      for (const k of keys) t = ins(t, k, log);
+      expect(log.length).toBe(1);
+      expect(answerOf(inst)).toBe(log[0]);
+    }
+  });
+  it("hw!root is the root after all AVL inserts", () => {
+    for (const inst of instances(G, "hw!root")) {
+      let t: T | undefined;
+      for (const k of keysOf(inst.prompt)) t = ins(t, k, []);
+      expect(Number(answerOf(inst))).toBe(t!.k);
+    }
+  });
+  it("runtime!height matches a from-scratch AVL build of 1..n", () => {
+    for (const inst of instances(G, "runtime!height")) {
+      const n = nums(inst.prompt.split("…,")[1])[0];
+      let t: T | undefined;
+      for (let k = 1; k <= n; k++) t = ins(t, k, []);
+      expect(Number(answerOf(inst))).toBe(ht(t));
+    }
+  });
+});
+
 describe("linear-time sort oracles (recomputed from the prompt)", () => {
   const G = "cs146/10-linear-sorts";
   const arrays = (s: string) => [...s.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].split(",").map((x) => Number(x.trim())));

@@ -215,7 +215,62 @@
    }
   ],
   "exerciseCount": 5,
-  "sha": "53dff56b1cfe233098ba348a45bf983f0bbd8c41bd629cfdd9fa07fbd5ee0bbe"
+  "sha": "80cb7a3dc0da4584ca3d616d14f4f82d6c532d96cbc67e288da0e442276f449c"
+ },
+ {
+  "id": "cs146/13-avl-trees",
+  "course": "cs146",
+  "lessons": "Lecture 13",
+  "title": "AVL trees: heights, balance, rotations, insert and delete",
+  "summary": "Why a plain BST can turn into a linked list; height H and balance B = H(left) − H(right) at every node; the AVL property |B| ≤ 1; rightRotate and leftRotate in O(1); insert's four cases (LL, LR, RR, RL) and why it needs at most one rotation set; delete's cases decided by the heavier child's balance and why it can cascade up to the root; everything O(log n), guaranteed.",
+  "estimatedMinutes": 70,
+  "requires": [
+   "cs146/12-binary-search-trees"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The big picture: a BST that can't go bad"
+   },
+   {
+    "id": "balance",
+    "heading": "Measuring balance: H and B"
+   },
+   {
+    "id": "property",
+    "heading": "The AVL property: |B| ≤ 1 everywhere"
+   },
+   {
+    "id": "rotations",
+    "heading": "Rotations: the O(1) fix"
+   },
+   {
+    "id": "insert",
+    "heading": "Insert: go down, then fix on the way up"
+   },
+   {
+    "id": "hw",
+    "heading": "HW 13, worked"
+   },
+   {
+    "id": "delete",
+    "heading": "Delete: same idea, but it can cascade"
+   },
+   {
+    "id": "runtime",
+    "heading": "How fast? O(log n), guaranteed"
+   },
+   {
+    "id": "apps",
+    "heading": "Where balanced trees show up"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 5,
+  "sha": "19d3f0f275b736e1e57fdbb8b5d5aec61efa37915d6425a75f6e045f9f16bcea"
  },
  {
   "id": "cs146/2-adts-invariants-insertion",
@@ -512,6 +567,79 @@
   ],
   "exerciseCount": 9,
   "sha": "30ea5ce741c0574cc22fe824de665ee02628181ae9c9501219eefee1ff5e4ba0"
+ },
+ {
+  "id": "cs146/midterm-crash-course",
+  "course": "cs146",
+  "lessons": "Midterm review",
+  "title": "Midterm crash course: Lectures 2 to 13 on one page",
+  "summary": "Every topic on the Oct 12 midterm, condensed to what you need to explain it: the idea in one sentence, the few definitions that matter, one small example, the trap that costs points, and why it matters. Each topic links straight into the full chapter section when you need the slow version, and the videos are right where they help.",
+  "estimatedMinutes": 120,
+  "requires": [],
+  "sections": [
+   {
+    "id": "start",
+    "heading": "How to use this (read first, 2 minutes)"
+   },
+   {
+    "id": "adts",
+    "heading": "1. ADTs, stacks, queues, linked lists (Lecture 2)"
+   },
+   {
+    "id": "invariants",
+    "heading": "2. Loop invariants and insertion sort (Lectures 2 to 3)"
+   },
+   {
+    "id": "bigo",
+    "heading": "3. Big-O, Omega, Theta and the growth ladder (Lecture 4)"
+   },
+   {
+    "id": "dc",
+    "heading": "4. Divide and conquer, binary search, merge sort (Lectures 4 to 5)"
+   },
+   {
+    "id": "recurrences",
+    "heading": "5. Recurrences and the recursion tree (Lecture 6)"
+   },
+   {
+    "id": "master",
+    "heading": "6. The master method (Lecture 7)"
+   },
+   {
+    "id": "heaps",
+    "heading": "7. Heaps, heap sort, priority queues (Lecture 8)"
+   },
+   {
+    "id": "quicksort",
+    "heading": "8. Quicksort (Lecture 9)"
+   },
+   {
+    "id": "linear",
+    "heading": "9. The n log n limit and linear-time sorts (Lecture 10)"
+   },
+   {
+    "id": "hash",
+    "heading": "10. Hash tables (Lecture 11)"
+   },
+   {
+    "id": "bst",
+    "heading": "11. Binary search trees (Lecture 12)"
+   },
+   {
+    "id": "avl",
+    "heading": "12. AVL trees (Lecture 13)"
+   },
+   {
+    "id": "compare",
+    "heading": "The comparison tables (the highest-value page)"
+   },
+   {
+    "id": "night",
+    "heading": "The night before: the traps, all in one list"
+   }
+  ],
+  "exerciseCount": 14,
+  "sha": "911884041b81fdcee7b2bf7e2c315260cfb6ee39421ac0c683f453e1bf7a5e7f"
  },
  {
   "id": "cs154/1-sets-functions",

@@ -1,0 +1,115 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+/* AVL trees (Lecture 13): heights and balances under every node, then
+   Poon's Example 2 (30, 10, 20: case LR) and HW 13 Problem 1 (15, 20, 25,
+   10, 8: RR then LL). A real AVL insert runs here and records a snapshot
+   at every step, so the H, B, cases and rotations are computed. */
+const CODE = `def insert(n, k):
+    # 1. plain BST insert (new leaf, H = 0)
+    # 2. on the way back up, at every node:
+    n.h = 1 + max(H(n.left), H(n.right))
+    b = H(n.left) - H(n.right)
+    if b > 1 and k < n.left.key:     # LL
+        return right_rotate(n)
+    if b > 1:                         # LR
+        n.left = left_rotate(n.left)
+        return right_rotate(n)
+    if b < -1 and k > n.right.key:   # RR
+        return left_rotate(n)
+    if b < -1:                        # RL
+        n.right = right_rotate(n.right)
+        return left_rotate(n)
+    return n
+`;
+const X0 = 560, X1 = 1220, Y0 = 150, ROW = 100;
+const Ht = (n) => (n ? n.h : -1), B = (n) => Ht(n.l) - Ht(n.r);
+const fix = (n) => { n.h = 1 + Math.max(Ht(n.l), Ht(n.r)); };
+function rr(x) { const y = x.l; x.l = y.r; y.r = x; fix(x); fix(y); return y; }
+function lr(x) { const y = x.r; x.r = y.l; y.l = x; fix(x); fix(y); return y; }
+function inorder(t, o = []) { if (t) { inorder(t.l, o); o.push(t.k); inorder(t.r, o); } return o; }
+const fmtB = (b) => (b > 0 ? "+" + b : b < 0 ? "−" + -b : "0");
+
+video({
+  title: "AVL trees", sub: "CS 146 · Lecture 13 · keep |B| ≤ 1 at every node with rotations", code: CODE,
+  build(rec) {
+    let root = null;
+    const leg = legend([["walking / checking", C.blue], ["new", C.green], ["unbalanced", C.red], ["rotated", C.amber]]);
+    function paint(colors = {}, showB = null) {
+      const order = inorder(root), pos = {};
+      const w = (X1 - X0) / Math.max(order.length, 1);
+      (function walk(n, d, p) { if (!n) return; pos[n.k] = { x: X0 + (order.indexOf(n.k) + .5) * w, y: Y0 + d * ROW, p, n }; walk(n.l, d + 1, n.k); walk(n.r, d + 1, n.k); })(root, 0, null);
+      let edges = "";
+      for (const v of Object.values(pos)) if (v.p !== null) { const q = pos[v.p]; edges += `<line x1='${q.x}' y1='${q.y}' x2='${v.x}' y2='${v.y}' stroke='${C.line}' stroke-width='3'/>`; }
+      for (const id of Object.keys(rec.items)) if (!(id.slice(1) in pos)) rec.set(id, { op: 0 });
+      for (const [k, v] of Object.entries(pos)) {
+        const shown = showB === null || showB.has(Number(k));
+        const b = B(v.n), bad = shown && Math.abs(b) > 1;
+        const sub = `H ${v.n.h}` + (shown ? ` · B ${fmtB(b)}` : "");
+        rec.set("n" + k, { kind: "node", x: v.x, y: v.y, val: k, fill: colors[k] || C.slate, ring: colors[k] ? C.fg : null, op: 1, r: 28, z: colors[k] ? 2 : 0, sub, subFill: bad ? C.red : C.mute });
+      }
+      rec.extra = leg + edges;
+    }
+    // AVL insert that snapshots as it goes (path stack instead of recursion,
+    // so the whole tree can be drawn mid-operation)
+    function insert(k, slow) {
+      const stack = []; let n = root;
+      while (n) { stack.push(n); n = k < n.k ? n.l : n.r; }
+      const leaf = { k, l: null, r: null, h: 0 };
+      if (!stack.length) root = leaf; else if (k < stack.at(-1).k) stack.at(-1).l = leaf; else stack.at(-1).r = leaf;
+      const seen = new Set([k]);
+      paint({ [k]: C.green }, seen);
+      rec.snap(stack.length ? `insert(${k}): walk down like a plain BST; ${k} becomes a new leaf with **H = 0**.` : `insert(${k}): the tree is empty, so ${k} is the root. H = 0.`, [1, 2], slow ? 3 : 2.2);
+      for (let i = stack.length - 1; i >= 0; i--) {
+        const x = stack[i], parent = stack[i - 1] || null;
+        fix(x); seen.add(x.k);
+        const b = B(x);
+        if (Math.abs(b) <= 1) {
+          paint({ [x.k]: C.blue }, seen);
+          rec.snap(`Back up at ${x.k}: H = ${x.h}, B = ${Ht(x.l)} − (${Ht(x.r)}) = ${fmtB(b)}. Balanced, keep going up.`.replace("(-1)", "(−1)").replace("= -1 ", "= −1 "), [4, 5, 16], slow ? 3 : 2);
+          continue;
+        }
+        const left = b > 1, child = left ? x.l : x.r;
+        const outer = left ? k < child.k : k > child.k;
+        const cs = left ? (outer ? "LL" : "LR") : (outer ? "RR" : "RL");
+        paint({ [x.k]: C.red }, seen);
+        rec.snap(`At ${x.k}: B = ${fmtB(b)}. **Unbalanced!** From ${x.k}, the path to ${k} goes ${left ? "left" : "right"}, then ${(k < child.k) ? "left" : "right"}: case **${cs}**.`, cs === "LL" ? [4, 5, 6] : cs === "LR" ? [4, 5, 6, 8] : cs === "RR" ? [4, 5, 6, 8, 11] : [4, 5, 6, 8, 11, 13], 4);
+        if (cs === "LR" || cs === "RL") {
+          const nc = cs === "LR" ? lr(child) : rr(child);
+          if (left) x.l = nc; else x.r = nc;
+          paint({ [x.k]: C.red, [nc.k]: C.amber }, seen);
+          rec.snap(`Zig-zag: straighten it first. ${cs === "LR" ? "left_rotate" : "right_rotate"}(${child.k}) lifts ${nc.k}. Now it's a straight line (case ${cs === "LR" ? "LL" : "RR"}).`, cs === "LR" ? [9] : [14], 4);
+        }
+        const y = left ? rr(x) : lr(x);
+        if (!parent) root = y; else if (parent.l === x) parent.l = y; else parent.r = y;
+        for (let j = i - 1; j >= 0; j--) fix(stack[j]);
+        paint({ [y.k]: C.amber }, null);
+        rec.snap(`${left ? "right_rotate" : "left_rotate"}(${x.k}): **${y.k} moves up**, ${x.k} goes down to the ${left ? "right" : "left"}. Every |B| ≤ 1 again. Insert never needs more than one fix.`, cs === "LL" ? [7] : cs === "LR" ? [10] : cs === "RR" ? [12] : [15], 4.4);
+        return;
+      }
+      paint({}, null);
+      rec.snap(`No node has |B| > 1, so no rotation.`, [16], slow ? 2.4 : 1.8);
+    }
+
+    rec.mark("H and B");
+    rec.card("AVL trees", "Lecture 13 · a BST that rebalances itself", 4,
+      "H = edges down to the deepest leaf (a leaf is 0, null is −1). B = Ht(left) − Ht(right). Rule: |B| ≤ 1 everywhere.");
+    rec.mark("Case LR");
+    rec.card("Example 2: insert 30, 10, 20", "the zig-zag case: two rotations", 3.5, "Poon's Example 2. One rotation won't fix a zig-zag; watch why it takes two.");
+    root = null;
+    for (const k of [30, 10, 20]) insert(k, true);
+    rec.mark("HW 13");
+    rec.card("HW 13: insert 15, 20, 25, 10, 8", "show H and B after every insert", 3.5, "Problem 1 of Homework 13, step by step.");
+    root = null; rec.items = {};
+    for (const k of [15, 20, 25, 10, 8]) insert(k, false);
+    paint({}, null);
+    rec.snap("Final tree: 20 on top, every node balanced. Rotations used: **RR** (inserting 25), then **LL** (inserting 8).", [], 5);
+    rec.mark("Runtime");
+    rec.card("O(log n), guaranteed", "rotation: O(1) · insert: ≤ 1 rotation set · delete: can cascade up to the root", 5,
+      "The tree's height stays O(log n) for ANY insertion order, so search, insert and delete are O(log n).");
+  },
+});
+</script></body></html>

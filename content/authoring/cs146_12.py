@@ -71,6 +71,9 @@ g = {
       ("Insert and delete", "new leaf; three delete cases", "the exam's traces", "amber"),
       ("Runtime", "everything is O(h)", "balanced vs degenerate", "red"),
     ], "The lecture's parts, in order.", eyebrow="Lecture 12 agenda", slide="The plan"),
+    {"type": "video", "src": "/study-videos/cs146-bst.mp4", "slide": "Watch it first",
+     "caption": "The lecture's mechanics as a 90-second animation: building Poon's example tree, insert 10, then the three delete cases on the original tree. Use the chips to jump, or slow it to 0.75×.",
+     "chapters": [{"t": 0, "label": "Build the tree"}, {"t": 26, "label": "Insert 10"}, {"t": 38, "label": "Delete a leaf"}, {"t": 51, "label": "One child"}, {"t": 64, "label": "Two children"}, {"t": 88, "label": "Runtime"}]},
     WHY("**Why it matters** Every 'sorted map' you'll use (Java's `TreeMap`, a database index answering `WHERE age > 25`) is a balanced BST underneath. The midterm traces insert and delete on a tree by hand, and next lecture (AVL trees) only makes sense once this one does."),
   ]},
   {"id": "terms", "heading": "Tree words, one at a time", "blocks": [
@@ -100,11 +103,15 @@ g = {
     D("Successor and predecessor", "The **successor** of a key is the next bigger key in the tree (the smallest key greater than it). The **predecessor** is the next smaller one. In sorted order 2, 3, 5, 6, 7, 9, 13, 15, …, the successor of 13 is 15."),
     T(["Case", "Where the successor is", "Example"], [
       ["The node has a right child", "the **minimum of its right subtree**: go right once, then left all the way", "successor(6) = 7; successor(15) = 17"],
-      ["No right child", "walk **up** until you arrive from a LEFT child; that parent is it", "successor(13) = 15"],
-      ["No right child and you never arrive from the left", "it's the maximum: no successor", "successor(20) = none"],
-    ], title="Finding the successor (Poon's two cases)", slide="Successor cases"),
-    ST("The successor, both cases", successor_frames()),
-    C("In the example tree, what is the successor of 5?", "5 has no right child, so walk up: 5 is the RIGHT child of 3, keep going; 3 is the LEFT child of 6, stop. Successor = **6**."),
+      ["No right child", "the **lowest ancestor whose left child is also an ancestor**. Poon's way to find it: search from the **root** toward the node; every time you step **left**, that node becomes the candidate (overwrite the old one); right steps change nothing. When you reach the node, the candidate is the successor", "successor(13) = 15; successor(9) = 13"],
+      ["No right child, and you never stepped left", "it's the maximum: no successor", "successor(20) = none"],
+    ], title="Finding the successor (Poon's two cases, as in his updated Oct 1 slides)", slide="Successor cases"),
+    THINK("**Why the left steps?** Stepping left at a node means the target is SMALLER than that node, so that node is a bigger key that could come next. The last left step is the closest such node: the smallest key that is still bigger than the target. Right steps pass nodes that are smaller than the target, which can never be its successor."),
+    {**ST("The successor, both cases", successor_frames()), "resources": [
+      {"label": "Poon's video: successor of 9 (Canvas)", "url": "https://sjsu.instructure.com/courses/1629570/files/89088667", "kind": "video"},
+      {"label": "Poon's video: successor of 13 (Canvas)", "url": "https://sjsu.instructure.com/courses/1629570/files/89088648", "kind": "video"},
+      {"label": "BST visualizer (USFCA)", "url": "https://www.cs.usfca.edu/~galles/visualization/BST.html", "kind": "site"}]},
+    C("In the example tree, what is the successor of 5?", "5 has no right child, so search from the root: 5 < 15, step left (candidate 15); 5 < 6, step left (candidate 6); 5 > 3, step right (no change); reached 5. Successor = **6**."),
     C("What is the predecessor of 15?", "The mirror rule: the maximum of the LEFT subtree. Go left to 6, then right as far as possible: 7, 13. Predecessor = **13**."),
   ]},
   {"id": "traversal", "heading": "Traversals: visiting every node", "blocks": [
@@ -165,7 +172,9 @@ print(inorder(t)); print(preorder(t)); print(postorder(t))
   ]},
   {"id": "insert", "heading": "Insert: a new key becomes a leaf", "blocks": [
     D("Insert", "Walk down exactly like search. When you reach an empty spot, put the new node there. A new key **always becomes a leaf**; nothing already in the tree moves.", slide="Definition"),
-    TRACE("insert(root, 10): the slide's example, line by line", INS_PAIR),
+    {**TRACE("insert(root, 10): the slide's example, line by line", INS_PAIR), "resources": [
+      {"label": "Poon's video: what happens when insert() returns (Canvas)", "url": "https://sjsu.instructure.com/courses/1629570/files/89089843", "kind": "video"}]},
+    THINK("**How the new node gets linked in (Poon's added slide).** The recursion bottoms out at an empty spot and returns the new node. That return lands in the call running on the new node's **parent**, which does `root.left = …` or `root.right = …` and links it in. Every ancestor above also reassigns its child link as the recursion unwinds, but with the same pointer it already had, so nothing else changes. That's why insert (and delete) **return** a node: Java passes references by value, so returning the new subtree root is how the caller learns about the change."),
     P("**Why insert returns root.** In Java (and Python), reassigning a parameter inside a function doesn't change the caller's variable. So each call **returns** the root of its subtree, and the caller stores it back: `root.left = insert(root.left, key)`. Where nothing changed, the same child is stored back. At the empty spot, the returned node is the new one, and that's how it gets linked in (Poon's 'node relinking' slide).", slide="Why return root"),
     ST(f"HW 12 Question 1: inserting {L(HW_KEYS)} into an empty tree", build_frames(HW_KEYS)),
     C(f"HW 12 Question 1: after inserting {L(HW_KEYS)}, describe the tree level by level.", f"Each node with the side it hangs on:\n\n{levels(HW)}\n\nIn-order check: {L(HW_IN)}."),
@@ -229,8 +238,8 @@ print(inorder(t)); print(preorder(t)); print(postorder(t))
      ["Yes: a chain of 10 nodes has 9 edges.", "That's about log₂ 10, the balanced height.", "Height counts edges, not nodes.", "Not balanced: every key went right."],
      "**9** = n − 1: the degenerate case.", "Why the next lecture (AVL) exists.", ref="runtime"),
   MC("successor-case2", "Successor without a right child", "In Poon's example, what is the successor of 9? (9 is 13's left child and has no children.)", ["13", "15", "7", "none"], 0,
-     ["Yes: 9 has no right child; its parent 13 is reached from a LEFT child, so 13.", "15 is the successor of 13, one step further.", "7 is smaller than 9.", "9 isn't the maximum."],
-     "**13**: walk up, and the first time you come up from a left child, that parent is the successor.", "Case 2 of the successor rule.", ref="search"),
+     ["Yes: searching from the root, the left steps are at 15 and then 13. The last one, 13, is the successor.", "15 was a candidate, but 13 replaced it (the last left step wins).", "7 is smaller than 9: we stepped RIGHT at 7.", "9 isn't the maximum: we stepped left on the way down."],
+     "**13**: search from the root (15 left, 6 right, 7 right, 13 left). The last left step was at 13.", "Case 2 of the successor rule.", ref="search"),
   FILL("search-count", "Count the comparisons", "In Poon's example tree, how many nodes does search(root, 9) look at, including 9 itself?", ["5", "five"],
        ["Write the path: start at 15.", "9 < 15 go left; 9 > 6 go right; 9 > 7 go right; 9 < 13 go left.", "Count the nodes on 15 → 6 → 7 → 13 → 9."],
        ["15 → 6 → 7 → 13 → 9: **5** nodes, one per level down to depth 4."],

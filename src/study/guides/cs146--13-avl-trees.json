@@ -1,0 +1,3257 @@
+{
+  "id": "cs146/13-avl-trees",
+  "course": "cs146",
+  "lessons": "Lecture 13",
+  "title": "AVL trees: heights, balance, rotations, insert and delete",
+  "summary": "Why a plain BST can turn into a linked list; height H and balance B = H(left) − H(right) at every node; the AVL property |B| ≤ 1; rightRotate and leftRotate in O(1); insert's four cases (LL, LR, RR, RL) and why it needs at most one rotation set; delete's cases decided by the heavier child's balance and why it can cascade up to the root; everything O(log n), guaranteed.",
+  "estimatedMinutes": 70,
+  "sourceNote": "Lecture 13 'AVL Trees' (Mon Oct 5) slides as revised the same day (with the cascading-delete example) and Homework 13. The H and B values on Lecture 12's tree, Examples 1 and 2 (30, 20, 10 and 30, 10, 20), the rotation pseudocode, both case tables, the insert and delete pseudocode and the cascading delete of 10 are Poon's. Every tree in this chapter is computed by an AVL implementation (cs146_13_trace.py) that reproduces his examples exactly.",
+  "requires": [
+    "cs146/12-binary-search-trees"
+  ],
+  "sections": [
+    {
+      "id": "map",
+      "heading": "The big picture: a BST that can't go bad",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Lecture 12 ended on a problem. A BST is fast when it's bushy, but its shape depends on the order keys arrive. Insert 2, 3, 4, 6, … in sorted order and every key goes right: the tree becomes a **linked list**, and search, insert and delete all slow down to **O(n)**. An **AVL tree** is a BST that checks its own shape after every insert and delete and fixes it on the spot, so its height stays about log n **no matter what order the keys come in**.",
+          "slide": "The problem with BSTs",
+          "id": "map.cfd4dab3"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Shape",
+            "Height",
+            "search / insert / delete"
+          ],
+          "rows": [
+            [
+              "BST, keys in mixed order",
+              "bushy",
+              "about log n",
+              "O(log n)"
+            ],
+            [
+              "BST, keys in sorted order",
+              "a chain",
+              "n − 1",
+              "**O(n)**"
+            ],
+            [
+              "AVL tree, any order",
+              "always bushy",
+              "O(log n), guaranteed",
+              "**O(log n)**"
+            ]
+          ],
+          "title": "Why AVL trees exist",
+          "slide": "Performance depends on balance",
+          "id": "map.b8c20661"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "Lecture 13 agenda",
+            "question": "Keep the tree balanced automatically",
+            "steps": [
+              {
+                "title": "Measure balance",
+                "sub": "height H and balance B at each node",
+                "result": "the numbers",
+                "tone": "brand"
+              },
+              {
+                "title": "The AVL rule",
+                "sub": "|B| ≤ 1 at every node",
+                "result": "the promise",
+                "tone": "green"
+              },
+              {
+                "title": "Rotations",
+                "sub": "rightRotate, leftRotate in O(1)",
+                "result": "the fix",
+                "tone": "amber"
+              },
+              {
+                "title": "Insert",
+                "sub": "BST insert, then fix going up: LL LR RR RL",
+                "result": "at most one fix",
+                "tone": "brand"
+              },
+              {
+                "title": "Delete",
+                "sub": "BST delete, then fix going up",
+                "result": "can cascade",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "Lecture 13's agenda, in order.",
+          "slide": "The plan",
+          "id": "map.753ae6b9"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-avl.mp4",
+          "slide": "Watch it first",
+          "caption": "AVL insert as a 95-second animation, with H and B under every node: Poon's Example 2 (the zig-zag LR case, two rotations), then all of HW 13 Problem 1. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 4,
+              "label": "Case LR"
+            },
+            {
+              "t": 40,
+              "label": "HW 13 Problem 1"
+            },
+            {
+              "t": 91,
+              "label": "Runtime"
+            }
+          ],
+          "id": "map.33c1a533"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters** This is the last lecture before the midterm (Mon Oct 12), and Poon's HW 13 asks you to insert keys by hand, write the balance factor, and name the case. Every 'sorted map' in real software is a self-balancing tree like this one, because nobody can promise their keys won't arrive sorted.",
+          "label": "why",
+          "id": "map.d047d3fa"
+        }
+      ]
+    },
+    {
+      "id": "balance",
+      "heading": "Measuring balance: H and B",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Height H(node)",
+          "body": "The number of **edges** on the longest path from the node down to a leaf. A leaf has **H = 0**. An empty spot (null) has **H(null) = −1**. Same 'count edges' rule as Lecture 12's tree height.",
+          "id": "balance.2339b3d8"
+        },
+        {
+          "type": "definition",
+          "term": "Balance B(node)",
+          "body": "**B(node) = H(left child) − H(right child).** Left minus right, in that order. If B is −1, 0 or 1, the node is balanced. **B > 1**: left-heavy. **B < −1**: right-heavy.",
+          "id": "balance.f320c0a1"
+        },
+        {
+          "type": "stepper",
+          "title": "Heights and balances on Lecture 12's tree (slides 12 to 17)",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 5,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "l": null,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9,
+                        "l": null,
+                        "r": null
+                      },
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "Lecture 12's example tree, with every node's height H. A leaf has H = 0. H(node) = edges on the longest path down to a leaf.",
+              "tags": {
+                "15": "H 4",
+                "6": "H 3",
+                "3": "H 1",
+                "2": "H 0",
+                "5": "H 0",
+                "7": "H 2",
+                "13": "H 1",
+                "9": "H 0",
+                "18": "H 1",
+                "17": "H 0",
+                "20": "H 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 5,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "l": null,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9,
+                        "l": null,
+                        "r": null
+                      },
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "B(6) = H(3) − H(7) = 1 − 2 = −1. Balanced.",
+              "tags": {
+                "15": "H 4",
+                "6": "H 3 · B -1",
+                "3": "H 1",
+                "2": "H 0",
+                "5": "H 0",
+                "7": "H 2",
+                "13": "H 1",
+                "9": "H 0",
+                "18": "H 1",
+                "17": "H 0",
+                "20": "H 0"
+              },
+              "hl": [
+                6
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 5,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "l": null,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9,
+                        "l": null,
+                        "r": null
+                      },
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "B(13) = H(9) − H(null) = 0 − (−1) = 1. Balanced.",
+              "tags": {
+                "15": "H 4",
+                "6": "H 3",
+                "3": "H 1",
+                "2": "H 0",
+                "5": "H 0",
+                "7": "H 2",
+                "13": "H 1 · B +1",
+                "9": "H 0",
+                "18": "H 1",
+                "17": "H 0",
+                "20": "H 0"
+              },
+              "hl": [
+                13
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 5,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "l": null,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9,
+                        "l": null,
+                        "r": null
+                      },
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "B(9) = H(null) − H(null) = −1 − (−1) = 0. Balanced.",
+              "tags": {
+                "15": "H 4",
+                "6": "H 3",
+                "3": "H 1",
+                "2": "H 0",
+                "5": "H 0",
+                "7": "H 2",
+                "13": "H 1",
+                "9": "H 0 · B 0",
+                "18": "H 1",
+                "17": "H 0",
+                "20": "H 0"
+              },
+              "hl": [
+                9
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 5,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "l": null,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9,
+                        "l": null,
+                        "r": null
+                      },
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "B(15) = H(6) − H(18) = 3 − 1 = 2. NOT balanced: this tree is a BST but not an AVL tree.",
+              "tags": {
+                "15": "H 4 · B +2",
+                "6": "H 3",
+                "3": "H 1",
+                "2": "H 0",
+                "5": "H 0",
+                "7": "H 2",
+                "13": "H 1",
+                "9": "H 0",
+                "18": "H 1",
+                "17": "H 0",
+                "20": "H 0"
+              },
+              "hl": [
+                15
+              ],
+              "warn": [
+                15
+              ]
+            }
+          ],
+          "slide": true,
+          "resources": [
+            {
+              "label": "Heights and depth (Lecture 12 chapter)",
+              "url": "/study/cs146/12-binary-search-trees?s=terms",
+              "kind": "chapter"
+            }
+          ],
+          "id": "balance.9a4e2a95"
+        },
+        {
+          "type": "example",
+          "title": "Why H(null) = −1",
+          "body": "13 has a left child 9 and no right child.\n\n  B(13) = H(9) − H(null) = 0 − (−1) = 1\n\nWith H(null) = −1, a leaf works out too: H(leaf) = 1 + max(−1, −1) = 0. The −1 makes one formula work for every node.",
+          "answer": "B(13) = 1",
+          "id": "balance.850108c7"
+        },
+        {
+          "type": "prose",
+          "md": "**Store H in every node.** Poon's AVL nodes keep their height as a field. Then B(node) is just two lookups and a subtraction: **O(1)**. Without the stored heights you'd have to walk the whole subtree to measure it, which would wreck the O(log n) we're after.",
+          "label": "think",
+          "id": "balance.52478ca1"
+        },
+        {
+          "type": "trap",
+          "body": "Two sign and counting slips cost points: writing B as right − left (Poon's is **left − right**, so left-heavy is positive), and counting **nodes** instead of edges for H (a leaf is 0, not 1; an empty child is −1, not 0).",
+          "source": "HW 13, Midterm",
+          "points": null,
+          "id": "balance.c46c276d"
+        }
+      ]
+    },
+    {
+      "id": "property",
+      "heading": "The AVL property: |B| ≤ 1 everywhere",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "AVL tree",
+          "body": "A BST where, **for every node**, the heights of its left and right subtrees differ by at most 1. Two rules at once: the **BST property** (left smaller, right bigger) and the **AVL property** (|B(x)| ≤ 1 for every x).",
+          "id": "property.d645c8e7"
+        },
+        {
+          "type": "prose",
+          "md": "Lecture 12's example tree is a valid BST but **not** an AVL tree: B(15) = H(6) − H(18) = 3 − 1 = 2. Imbalance can hide anywhere, which is why it's measured at **every** node, not just the root.",
+          "id": "property.a1ce1a7f"
+        },
+        {
+          "type": "prose",
+          "md": "**Why 'at most 1' is enough** Requiring perfectly equal heights would be impossible for most sizes (try 2 nodes). Allowing a difference of 1 is loose enough to keep up cheaply and still tight enough that the height can't grow beyond O(log n).",
+          "label": "why",
+          "id": "property.1b9f4324"
+        },
+        {
+          "type": "check",
+          "prompt": "A node's left subtree has height 2 and its right child is null. What is its B, and is the AVL property OK?",
+          "answer": "B = 2 − (−1) = **3**. Not balanced: it's left-heavy and needs fixing.",
+          "sectionRef": "property",
+          "id": "property.10020297"
+        }
+      ]
+    },
+    {
+      "id": "rotations",
+      "heading": "Rotations: the O(1) fix",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "A **rotation** swaps a parent and child's places (the parent-child relationship is reversed) while keeping the BST order. If x is **left-heavy**, `rightRotate(x)` moves weight to the right: its left child y comes up. If x is **right-heavy**, `leftRotate(x)` does the mirror image.",
+          "slide": "What a rotation does",
+          "id": "rotations.5007e054"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='24' font-size='14' font-weight='800'>rightRotate(x): y moves up, the middle subtree changes parents</text><text x='120' y='52' text-anchor='middle' font-size='12' opacity='0.7'>before (x is left-heavy)</text><line x1='150' y1='80' x2='100' y2='135' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='150' y1='80' x2='205' y2='135' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='100' y1='135' x2='65' y2='178' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='100' y1='135' x2='135' y2='178' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><circle cx='150' cy='80' r='17' fill='rgb(var(--accent-fg) / 0.22)' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='150' y='85' text-anchor='middle' font-size='14' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>x</text><circle cx='100' cy='135' r='17' fill='rgb(var(--on-track) / 0.22)' stroke='rgb(var(--on-track))' stroke-width='2'/><text x='100' y='140' text-anchor='middle' font-size='14' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>y</text><g><title>A: everything smaller than y</title><path d='M65 178 L35 230 L95 230 Z' fill='rgb(var(--on-track) / 0.18)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='65' y='218' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))' font-family='ui-monospace, SFMono-Regular, monospace'>A</text></g><g><title>T2: between y and x. This is the piece that moves.</title><path d='M135 178 L105 230 L165 230 Z' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='135' y='218' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--at-risk))' font-family='ui-monospace, SFMono-Regular, monospace'>T2</text></g><g><title>C: everything bigger than x</title><path d='M205 152 L175 204 L235 204 Z' fill='rgb(var(--critical) / 0.18)' stroke='rgb(var(--critical))' stroke-width='1.4'/><text x='205' y='192' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))' font-family='ui-monospace, SFMono-Regular, monospace'>C</text></g><path d='M262 150 L318 150' stroke='rgb(var(--accent-fg))' stroke-width='2.5' marker-end='url(#arr)'/><text x='290' y='140' text-anchor='middle' font-size='11' fill='rgb(var(--accent-fg))' font-weight='700'>O(1)</text><defs><marker id='arr' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 Z' fill='rgb(var(--accent-fg))'/></marker></defs><text x='440' y='52' text-anchor='middle' font-size='12' opacity='0.7'>after</text><line x1='420' y1='80' x2='365' y2='135' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='420' y1='80' x2='470' y2='135' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='470' y1='135' x2='435' y2='178' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><line x1='470' y1='135' x2='505' y2='178' stroke='currentColor' stroke-opacity='0.4' stroke-width='1.5'/><circle cx='420' cy='80' r='17' fill='rgb(var(--on-track) / 0.22)' stroke='rgb(var(--on-track))' stroke-width='2'/><text x='420' y='85' text-anchor='middle' font-size='14' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>y</text><circle cx='470' cy='135' r='17' fill='rgb(var(--accent-fg) / 0.22)' stroke='rgb(var(--accent-fg))' stroke-width='2'/><text x='470' y='140' text-anchor='middle' font-size='14' font-weight='800' font-family='ui-monospace, SFMono-Regular, monospace'>x</text><g><title>A stays y's left subtree</title><path d='M365 152 L335 204 L395 204 Z' fill='rgb(var(--on-track) / 0.18)' stroke='rgb(var(--on-track))' stroke-width='1.4'/><text x='365' y='192' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--on-track))' font-family='ui-monospace, SFMono-Regular, monospace'>A</text></g><g><title>T2 is now x's LEFT subtree: still bigger than y, smaller than x</title><path d='M435 178 L405 230 L465 230 Z' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.4'/><text x='435' y='218' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--at-risk))' font-family='ui-monospace, SFMono-Regular, monospace'>T2</text></g><g><title>C stays x's right subtree</title><path d='M505 178 L475 230 L535 230 Z' fill='rgb(var(--critical) / 0.18)' stroke='rgb(var(--critical))' stroke-width='1.4'/><text x='505' y='218' text-anchor='middle' font-size='12' font-weight='700' fill='rgb(var(--critical))' font-family='ui-monospace, SFMono-Regular, monospace'>C</text></g><text x='20' y='262' font-size='11.5' opacity='0.85'>In-order before and after: A, y, T2, x, C. Same order, so the BST property holds. leftRotate is the mirror image.</text></g>",
+          "viewBox": "0 0 560 276",
+          "caption": "rightRotate(x): y comes up, x goes down to the right, and the middle subtree T2 (keys between y and x) becomes x's left child. Hover each piece.",
+          "id": "rotations.9dfdea5a"
+        },
+        {
+          "type": "stepper",
+          "title": "rightRotate(30), step by step, then leftRotate undoes it",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 40,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "x = 30, y = 30's left child 20. Every key in 20's right subtree (here just 25) is between 20 and 30: bigger than y, smaller than x.",
+              "tags": {
+                "30": "H 2",
+                "20": "H 1",
+                "10": "H 0",
+                "25": "H 0",
+                "40": "H 0"
+              },
+              "hl": [
+                30,
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 40,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "rightRotate(30), step 1: y = x.left (20), temp = y.right (25). That middle subtree is the piece that has to change parents.",
+              "tags": {
+                "30": "H 2",
+                "20": "H 1",
+                "10": "H 0",
+                "25": "H 0",
+                "40": "H 0"
+              },
+              "hl": [
+                25
+              ],
+              "path": [
+                30,
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 40,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "Step 2: y.right = x and x.left = temp. 20 is on top, 30 is its right child, and 25 moved over to be 30's LEFT child. 25 is still between 20 and 30, so the BST order is kept.",
+              "tags": {
+                "20": "H 2",
+                "10": "H 0",
+                "30": "H 1",
+                "25": "H 0",
+                "40": "H 0"
+              },
+              "hl": [
+                20
+              ],
+              "done": [
+                25
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 40,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "Step 3: update heights, CHILD first (30 is now lower), then the parent (20). Step 4: return y, the new root of this subtree. Three pointer changes: O(1).",
+              "tags": {
+                "20": "H 2 · B -1",
+                "10": "H 0",
+                "30": "H 1 · B 0",
+                "25": "H 0",
+                "40": "H 0"
+              },
+              "hl": [
+                30,
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 40,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "leftRotate(20) is the mirror image and undoes it: 30 back on top, 25 back under 20. A rotation never changes the in-order sequence: 10, 20, 25, 30, 40.",
+              "tags": {
+                "30": "H 2",
+                "20": "H 1",
+                "10": "H 0",
+                "25": "H 0",
+                "40": "H 0"
+              },
+              "hl": [
+                30
+              ],
+              "done": [
+                25
+              ]
+            }
+          ],
+          "slide": true,
+          "id": "rotations.d3cdee12"
+        },
+        {
+          "type": "example",
+          "title": "rightRotate pseudocode (slide 30; leftRotate is the mirror)",
+          "body": "rightRotate(x):\n  y = x.left            // step 1: the nodes involved\n  temp = y.right\n  y.right = x           // step 2: rotate\n  x.left = temp\n  x.h = 1 + max(x.left.h, x.right.h)   // step 3: CHILD first\n  y.h = 1 + max(y.left.h, y.right.h)   //         then parent\n  return y              // step 4: new root of this subtree",
+          "answer": "O(1)",
+          "id": "rotations.07ad3489"
+        },
+        {
+          "type": "trap",
+          "body": "Updating heights in the wrong order. After the rotation x is BELOW y, so x's height must be recomputed first; y's height depends on it. Update y first and y uses x's stale height.",
+          "source": "Lecture 13 slide 29",
+          "points": null,
+          "id": "rotations.d69cd633"
+        },
+        {
+          "type": "trap",
+          "body": "Forgetting the middle subtree (temp). If you just set y.right = x, y now has two right children and the old y.right is lost. It has to become x's left child.",
+          "source": "Lecture 13 slides 27 to 28",
+          "points": null,
+          "id": "rotations.224be524"
+        }
+      ]
+    },
+    {
+      "id": "insert",
+      "heading": "Insert: go down, then fix on the way up",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Step 1:** a plain BST insert: walk down and add the key as a new leaf (H = 0). **Step 2:** go back **up** the same path. At every node: update H = 1 + max(H(left), H(right)), compute B, and rebalance if |B| > 1.",
+          "slide": "insert strategy",
+          "id": "insert.838b5db7"
+        },
+        {
+          "type": "stepper",
+          "title": "Example 1: insert 30, 20, 10 (case LL)",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": null,
+              "caption": "insert(30) into an empty tree."
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "Empty spot: 30 becomes a new leaf with H = 0.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "Done inserting 30. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "done": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "insert(20). Step 1 is a plain BST insert: walk down (smaller left, bigger right) to an empty spot.",
+              "tags": {
+                "30": "H 0 · B 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "20 < 30: go left.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Empty spot: 20 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "30": "H 0",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Back at 30: H = 1 + max(H(left), H(right)) = 1, B = 0 − (−1) = 1. Balanced, keep going up.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Done inserting 20. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "20": "H 0 · B 0"
+              },
+              "done": [
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "insert(10). Step 1 is a plain BST insert: walk down (smaller left, bigger right) to an empty spot.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "20": "H 0 · B 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "10 < 30: go left.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "10 < 20: go left.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Empty spot: 10 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "30": "H 1",
+                "20": "H 0",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                30,
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Back at 20: H = 1 + max(H(left), H(right)) = 1, B = 0 − (−1) = 1. Balanced, keep going up.",
+              "tags": {
+                "30": "H 1",
+                "20": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "At 30: B = 2. **Imbalance!** 30 is left-heavy. The new key 10 went into the left child 20's outer side (left of 20): case **LL**.",
+              "tags": {
+                "30": "H 2 · B +2",
+                "20": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ],
+              "warn": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "right_rotate(30): 20 moves up and 30 becomes its right child. Heights are updated child first, then parent. The subtree is balanced again.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "10": "H 0 · B 0",
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "done": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 10. One rotation set (LL) fixed it, and the heights above are back to what they were, so nothing else changes.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "10": "H 0 · B 0",
+                "30": "H 0 · B 0"
+              },
+              "done": [
+                10
+              ]
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def insert(node, key):\n    if node is None:\n        return Node(key)               # new leaf, H = 0\n    if key < node.key:\n        node.left = insert(node.left, key)\n    elif key > node.key:\n        node.right = insert(node.right, key)\n    else:\n        return node                    # ignore duplicates\n    node.h = 1 + max(H(node.left), H(node.right))\n    b = H(node.left) - H(node.right)\n    if b > 1:                          # left-heavy\n        if key < node.left.key:        # LL\n            return right_rotate(node)\n        node.left = left_rotate(node.left)     # LR\n        return right_rotate(node)\n    if b < -1:                         # right-heavy\n        if key > node.right.key:       # RR\n            return left_rotate(node)\n        node.right = right_rotate(node.right)  # RL\n        return left_rotate(node)\n    return node\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                22
+              ],
+              [
+                1
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                22
+              ],
+              [
+                22
+              ],
+              [
+                1
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                22
+              ],
+              [
+                10,
+                11,
+                12,
+                13
+              ],
+              [
+                14
+              ],
+              [
+                22
+              ]
+            ],
+            "vars": [
+              {
+                "key": "30"
+              },
+              {
+                "key": "30"
+              },
+              {
+                "key": "30"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "30"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "30",
+                "b": "1"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10",
+                "node.key": "30"
+              },
+              {
+                "key": "10",
+                "node.key": "20"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10",
+                "node.key": "20",
+                "b": "1"
+              },
+              {
+                "key": "10",
+                "node.key": "30",
+                "b": "2"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10"
+              }
+            ]
+          },
+          "id": "insert.94c2f073"
+        },
+        {
+          "type": "stepper",
+          "title": "Example 2: insert 30, 10, 20 (case LR: two rotations)",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": null,
+              "caption": "insert(30) into an empty tree."
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "Empty spot: 30 becomes a new leaf with H = 0.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "Done inserting 30. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "done": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "insert(10). Step 1 is a plain BST insert: walk down (smaller left, bigger right) to an empty spot.",
+              "tags": {
+                "30": "H 0 · B 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": null,
+                "r": null
+              },
+              "caption": "10 < 30: go left.",
+              "tags": {
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Empty spot: 10 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "30": "H 0",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Back at 30: H = 1 + max(H(left), H(right)) = 1, B = 0 − (−1) = 1. Balanced, keep going up.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "Done inserting 10. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "done": [
+                10
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "insert(20). Step 1 is a plain BST insert: walk down (smaller left, bigger right) to an empty spot.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "20 < 30: go left.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "20 > 10: go right.",
+              "tags": {
+                "30": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": null
+              },
+              "caption": "Empty spot: 20 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "30": "H 1",
+                "10": "H 0",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                30,
+                10
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": null
+              },
+              "caption": "Back at 10: H = 1 + max(H(left), H(right)) = 1, B = −1 − (0) = −1. Balanced, keep going up.",
+              "tags": {
+                "30": "H 1",
+                "10": "H 1 · B -1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": null
+              },
+              "caption": "At 30: B = 2. **Imbalance!** 30 is left-heavy. The new key 20 went into the left child 10's inner side (right of 10): case **LR**.",
+              "tags": {
+                "30": "H 2 · B +2",
+                "10": "H 1 · B -1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                30
+              ],
+              "warn": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 30,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": null
+              },
+              "caption": "LR needs two rotations. First left_rotate(10): now the heavy side is straight, the same shape as case LL.",
+              "tags": {
+                "30": "H 2 · B +2",
+                "20": "H 1 · B +1",
+                "10": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "warn": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "right_rotate(30): 20 moves up and 30 becomes its right child. Heights are updated child first, then parent. The subtree is balanced again.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "10": "H 0 · B 0",
+                "30": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "done": [
+                30
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 30,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 20. One rotation set (LR) fixed it, and the heights above are back to what they were, so nothing else changes.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "10": "H 0 · B 0",
+                "30": "H 0 · B 0"
+              },
+              "done": [
+                20
+              ]
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def insert(node, key):\n    if node is None:\n        return Node(key)               # new leaf, H = 0\n    if key < node.key:\n        node.left = insert(node.left, key)\n    elif key > node.key:\n        node.right = insert(node.right, key)\n    else:\n        return node                    # ignore duplicates\n    node.h = 1 + max(H(node.left), H(node.right))\n    b = H(node.left) - H(node.right)\n    if b > 1:                          # left-heavy\n        if key < node.left.key:        # LL\n            return right_rotate(node)\n        node.left = left_rotate(node.left)     # LR\n        return right_rotate(node)\n    if b < -1:                         # right-heavy\n        if key > node.right.key:       # RR\n            return left_rotate(node)\n        node.right = right_rotate(node.right)  # RL\n        return left_rotate(node)\n    return node\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                22
+              ],
+              [
+                1
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                22
+              ],
+              [
+                22
+              ],
+              [
+                1
+              ],
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                6,
+                7
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                22
+              ],
+              [
+                10,
+                11,
+                12,
+                13
+              ],
+              [
+                15
+              ],
+              [
+                16
+              ],
+              [
+                22
+              ]
+            ],
+            "vars": [
+              {
+                "key": "30"
+              },
+              {
+                "key": "30"
+              },
+              {
+                "key": "30"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10",
+                "node.key": "30"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10",
+                "node.key": "30",
+                "b": "1"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "30"
+              },
+              {
+                "key": "20",
+                "node.key": "10"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "10",
+                "b": "-1"
+              },
+              {
+                "key": "20",
+                "node.key": "30",
+                "b": "2"
+              },
+              {
+                "key": "20",
+                "node.key": "30"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20"
+              }
+            ]
+          },
+          "id": "insert.73efbf9d"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Case",
+            "B(node)",
+            "Formation (from the node toward the new key)",
+            "Rotation set"
+          ],
+          "rows": [
+            [
+              "**LL**",
+              "> 1, left-heavy",
+              "left child, then its left",
+              "rightRotate(node)"
+            ],
+            [
+              "**LR**",
+              "> 1, left-heavy",
+              "left child, then its right",
+              "leftRotate(node.left), then rightRotate(node)"
+            ],
+            [
+              "**RR**",
+              "< −1, right-heavy",
+              "right child, then its right",
+              "leftRotate(node)"
+            ],
+            [
+              "**RL**",
+              "< −1, right-heavy",
+              "right child, then its left",
+              "rightRotate(node.right), then leftRotate(node)"
+            ]
+          ],
+          "title": "Insert cases (Poon's slide 51)",
+          "slide": "Insert cases",
+          "id": "insert.b24a3258"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='60' y='32' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--accent-fg))'>LL</text><line x1='60' y1='60' x2='26' y2='108' stroke='rgb(var(--accent-fg))' stroke-width='2'/><line x1='26' y1='108' x2='-8' y2='156' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='60' cy='60' r='14' fill='rgb(var(--accent-fg) / 0.18)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='60' y='90' text-anchor='middle' font-size='9.5' opacity='0.75'>node</text><circle cx='26' cy='108' r='14' fill='rgb(var(--accent-fg) / 0.18)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='26' y='138' text-anchor='middle' font-size='9.5' opacity='0.75'>child</text><circle cx='-8' cy='156' r='14' fill='rgb(var(--on-track) / 0.3)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='-8' y='186' text-anchor='middle' font-size='9.5' opacity='0.75'>new</text><text x='60' y='196' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>rightRotate(node)</text><text x='200' y='32' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--at-risk))'>LR</text><line x1='200' y1='60' x2='166' y2='108' stroke='rgb(var(--at-risk))' stroke-width='2'/><line x1='166' y1='108' x2='200' y2='156' stroke='rgb(var(--at-risk))' stroke-width='2'/><circle cx='200' cy='60' r='14' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='200' y='90' text-anchor='middle' font-size='9.5' opacity='0.75'>node</text><circle cx='166' cy='108' r='14' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='166' y='138' text-anchor='middle' font-size='9.5' opacity='0.75'>child</text><circle cx='200' cy='156' r='14' fill='rgb(var(--on-track) / 0.3)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='200' y='186' text-anchor='middle' font-size='9.5' opacity='0.75'>new</text><text x='200' y='196' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>leftRotate(child)</text><text x='200' y='212' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>then rightRotate(node)</text><text x='340' y='32' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--accent-fg))'>RR</text><line x1='340' y1='60' x2='374' y2='108' stroke='rgb(var(--accent-fg))' stroke-width='2'/><line x1='374' y1='108' x2='408' y2='156' stroke='rgb(var(--accent-fg))' stroke-width='2'/><circle cx='340' cy='60' r='14' fill='rgb(var(--accent-fg) / 0.18)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='340' y='90' text-anchor='middle' font-size='9.5' opacity='0.75'>node</text><circle cx='374' cy='108' r='14' fill='rgb(var(--accent-fg) / 0.18)' stroke='rgb(var(--accent-fg))' stroke-width='1.6'/><text x='374' y='138' text-anchor='middle' font-size='9.5' opacity='0.75'>child</text><circle cx='408' cy='156' r='14' fill='rgb(var(--on-track) / 0.3)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='408' y='186' text-anchor='middle' font-size='9.5' opacity='0.75'>new</text><text x='340' y='196' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>leftRotate(node)</text><text x='480' y='32' text-anchor='middle' font-size='15' font-weight='800' fill='rgb(var(--at-risk))'>RL</text><line x1='480' y1='60' x2='514' y2='108' stroke='rgb(var(--at-risk))' stroke-width='2'/><line x1='514' y1='108' x2='480' y2='156' stroke='rgb(var(--at-risk))' stroke-width='2'/><circle cx='480' cy='60' r='14' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='480' y='90' text-anchor='middle' font-size='9.5' opacity='0.75'>node</text><circle cx='514' cy='108' r='14' fill='rgb(var(--at-risk) / 0.18)' stroke='rgb(var(--at-risk))' stroke-width='1.6'/><text x='514' y='138' text-anchor='middle' font-size='9.5' opacity='0.75'>child</text><circle cx='480' cy='156' r='14' fill='rgb(var(--on-track) / 0.3)' stroke='rgb(var(--on-track))' stroke-width='1.6'/><text x='480' y='186' text-anchor='middle' font-size='9.5' opacity='0.75'>new</text><text x='480' y='196' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>rightRotate(child)</text><text x='480' y='212' text-anchor='middle' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace'>then leftRotate(node)</text><text x='20' y='244' font-size='11.5' opacity='0.85'>Read the two steps from the unbalanced node down toward the new key. Straight line (LL, RR): one rotation. Zig-zag (LR, RL): two.</text></g>",
+          "viewBox": "0 0 560 258",
+          "caption": "The four formations. In the code, the case is chosen by comparing the new key with the heavy child's key: smaller than the left child means LL, bigger means LR (mirror for the right).",
+          "id": "insert.e960627f"
+        },
+        {
+          "type": "prose",
+          "md": "**Naming the case in two seconds:** stand at the unbalanced node and say which way you go to reach the new key, twice. Left, left: LL. Left, right: LR. A straight line needs one rotation; a zig-zag needs two, because the first rotation straightens it into the straight-line case.",
+          "label": "think",
+          "id": "insert.c09446d2"
+        },
+        {
+          "type": "trap",
+          "body": "Fixing a zig-zag (LR or RL) with a single rotation. Slide 46 shows it: rightRotate(30) on 30, 10, 20 just moves the heaviness to the other side, and the tree is still unbalanced. Straighten first (leftRotate the child), then rotate the node.",
+          "source": "Lecture 13 slide 46, HW 13",
+          "points": null,
+          "id": "insert.49e3b79d"
+        },
+        {
+          "type": "prose",
+          "md": "**Runtime.** Down: O(log n), because the tree's height is O(log n). Up: O(1) work at each of O(log n) nodes. Total **O(log n)**. And insert needs **at most one rotation set**: the rotation puts the subtree back to the height it had before the insert, so nothing above it changes.",
+          "id": "insert.bd3be91b"
+        }
+      ]
+    },
+    {
+      "id": "hw",
+      "heading": "HW 13, worked",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Problem 1:** insert 15, 20, 25, 10, 8 into an empty AVL tree, showing every node's balance and the rotation used. Step through it, then check the table.",
+          "id": "hw.e8deda05"
+        },
+        {
+          "type": "stepper",
+          "title": "HW 13 Problem 1: insert 15, 20, 25, 10, 8",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": null,
+              "caption": "insert(15) into an empty tree."
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": null
+              },
+              "caption": "Empty spot: 15 becomes a new leaf with H = 0.",
+              "tags": {
+                "15": "H 0 · B 0"
+              },
+              "hl": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": null
+              },
+              "caption": "Done inserting 15. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "15": "H 0 · B 0"
+              },
+              "done": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": null
+              },
+              "caption": "insert(20). Step 1 is a plain BST insert: walk down (smaller left, bigger right) to an empty spot.",
+              "tags": {
+                "15": "H 0 · B 0"
+              }
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": null
+              },
+              "caption": "20 > 15: go right.",
+              "tags": {
+                "15": "H 0 · B 0"
+              },
+              "hl": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Empty spot: 20 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "15": "H 0",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Back at 15: H = 1 + max(H(left), H(right)) = 1, B = −1 − (0) = −1. Balanced, keep going up.",
+              "tags": {
+                "15": "H 1 · B -1",
+                "20": "H 0 · B 0"
+              },
+              "hl": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": {
+                  "k": 20,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 20. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "15": "H 1 · B -1",
+                "20": "H 0 · B 0"
+              },
+              "done": [
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": {
+                  "k": 20,
+                  "l": null,
+                  "r": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "Empty spot: 25 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "15": "H 1",
+                "20": "H 0",
+                "25": "H 0 · B 0"
+              },
+              "hl": [
+                25
+              ],
+              "path": [
+                15,
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": null,
+                "r": {
+                  "k": 20,
+                  "l": null,
+                  "r": {
+                    "k": 25,
+                    "l": null,
+                    "r": null
+                  }
+                }
+              },
+              "caption": "At 15: B = -2. **Imbalance!** 15 is right-heavy. The new key 25 went into the right child 20's outer side (right of 20): case **RR**.",
+              "tags": {
+                "15": "H 2 · B -2",
+                "20": "H 1 · B -1",
+                "25": "H 0 · B 0"
+              },
+              "hl": [
+                15
+              ],
+              "warn": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "left_rotate(15): 20 moves up and 15 becomes its left child. Heights are updated child first, then parent. The subtree is balanced again.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "15": "H 0 · B 0",
+                "25": "H 0 · B 0"
+              },
+              "hl": [
+                20
+              ],
+              "done": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": null,
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 25. One rotation set (RR) fixed it, and the heights above are back to what they were, so nothing else changes.",
+              "tags": {
+                "20": "H 1 · B 0",
+                "15": "H 0 · B 0",
+                "25": "H 0 · B 0"
+              },
+              "done": [
+                25
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Empty spot: 10 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "20": "H 1",
+                "15": "H 0",
+                "10": "H 0 · B 0",
+                "25": "H 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                20,
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 10. No rotation needed: every node on the path has |B| ≤ 1.",
+              "tags": {
+                "20": "H 2 · B +1",
+                "15": "H 1 · B +1",
+                "10": "H 0 · B 0",
+                "25": "H 0 · B 0"
+              },
+              "done": [
+                10
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": {
+                    "k": 10,
+                    "l": {
+                      "k": 8,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Empty spot: 8 becomes a new leaf with H = 0. Now step 2: go back UP the path, updating H and checking B at every node.",
+              "tags": {
+                "20": "H 2",
+                "15": "H 1",
+                "10": "H 0",
+                "8": "H 0 · B 0",
+                "25": "H 0"
+              },
+              "hl": [
+                8
+              ],
+              "path": [
+                20,
+                15,
+                10
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 15,
+                  "l": {
+                    "k": 10,
+                    "l": {
+                      "k": 8,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": null
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "At 15: B = 2. **Imbalance!** 15 is left-heavy. The new key 8 went into the left child 10's outer side (left of 10): case **LL**.",
+              "tags": {
+                "20": "H 2",
+                "15": "H 2 · B +2",
+                "10": "H 1 · B +1",
+                "8": "H 0 · B 0",
+                "25": "H 0"
+              },
+              "hl": [
+                15
+              ],
+              "path": [
+                20
+              ],
+              "warn": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": {
+                    "k": 8,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 15,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "right_rotate(15): 10 moves up and 15 becomes its right child. Heights are updated child first, then parent. The subtree is balanced again.",
+              "tags": {
+                "20": "H 2",
+                "10": "H 1 · B 0",
+                "8": "H 0 · B 0",
+                "15": "H 0 · B 0",
+                "25": "H 0"
+              },
+              "hl": [
+                10
+              ],
+              "done": [
+                15
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 20,
+                "l": {
+                  "k": 10,
+                  "l": {
+                    "k": 8,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 15,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 25,
+                  "l": null,
+                  "r": null
+                }
+              },
+              "caption": "Done inserting 8. One rotation set (LL) fixed it, and the heights above are back to what they were, so nothing else changes.",
+              "tags": {
+                "20": "H 2 · B +1",
+                "10": "H 1 · B 0",
+                "8": "H 0 · B 0",
+                "15": "H 0 · B 0",
+                "25": "H 0 · B 0"
+              },
+              "done": [
+                8
+              ]
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def insert(node, key):\n    if node is None:\n        return Node(key)               # new leaf, H = 0\n    if key < node.key:\n        node.left = insert(node.left, key)\n    elif key > node.key:\n        node.right = insert(node.right, key)\n    else:\n        return node                    # ignore duplicates\n    node.h = 1 + max(H(node.left), H(node.right))\n    b = H(node.left) - H(node.right)\n    if b > 1:                          # left-heavy\n        if key < node.left.key:        # LL\n            return right_rotate(node)\n        node.left = left_rotate(node.left)     # LR\n        return right_rotate(node)\n    if b < -1:                         # right-heavy\n        if key > node.right.key:       # RR\n            return left_rotate(node)\n        node.right = right_rotate(node.right)  # RL\n        return left_rotate(node)\n    return node\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                22
+              ],
+              [
+                1
+              ],
+              [
+                4,
+                6,
+                7
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                22
+              ],
+              [
+                22
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                17,
+                18
+              ],
+              [
+                19
+              ],
+              [
+                22
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                22
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                10,
+                11,
+                12,
+                13
+              ],
+              [
+                14
+              ],
+              [
+                22
+              ]
+            ],
+            "vars": [
+              {
+                "key": "15"
+              },
+              {
+                "key": "15"
+              },
+              {
+                "key": "15"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "15"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "20",
+                "node.key": "15",
+                "b": "-1"
+              },
+              {
+                "key": "20"
+              },
+              {
+                "key": "25"
+              },
+              {
+                "key": "25",
+                "node.key": "15",
+                "b": "-2"
+              },
+              {
+                "key": "25"
+              },
+              {
+                "key": "25"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "10"
+              },
+              {
+                "key": "8"
+              },
+              {
+                "key": "8",
+                "node.key": "15",
+                "b": "2"
+              },
+              {
+                "key": "8"
+              },
+              {
+                "key": "8"
+              }
+            ]
+          },
+          "id": "hw.189f2e02"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Insert",
+            "Rotation",
+            "Tree afterwards (level by level, H and B per node)"
+          ],
+          "rows": [
+            [
+              "15",
+              "none",
+              "Level 0: 15 (H 0, B 0)"
+            ],
+            [
+              "20",
+              "none",
+              "Level 0: 15 (H 1, B -1) · Level 1: 20 (H 0, B 0)"
+            ],
+            [
+              "25",
+              "RR",
+              "Level 0: 20 (H 1, B 0) · Level 1: 15 (H 0, B 0), 25 (H 0, B 0)"
+            ],
+            [
+              "10",
+              "none",
+              "Level 0: 20 (H 2, B +1) · Level 1: 15 (H 1, B +1), 25 (H 0, B 0) · Level 2: 10 (H 0, B 0)"
+            ],
+            [
+              "8",
+              "LL",
+              "Level 0: 20 (H 2, B +1) · Level 1: 10 (H 1, B 0), 25 (H 0, B 0) · Level 2: 8 (H 0, B 0), 15 (H 0, B 0)"
+            ]
+          ],
+          "title": "HW 13 Problem 1, every step (computed)",
+          "id": "hw.af3cdc67"
+        },
+        {
+          "type": "example",
+          "title": "Problem 2: getBalance",
+          "body": "static int getBalance(Node n) {\n    return height(n.left) - height(n.right);\n}\n\nheight(null) is already −1 in the template, so a missing child needs no special case. On the template's tree: node 30 has left 20 (H 0) and no right: 0 − (−1) = 1. Node 20: (−1) − (−1) = 0.",
+          "answer": "height(n.left) - height(n.right)",
+          "id": "hw.5654aeac"
+        },
+        {
+          "type": "example",
+          "title": "Problem 3: which case if 10 is inserted?",
+          "body": "The tree is 30 with a left child 20. Insert 10: 10 < 30 go left, 10 < 20 go left, so 10 becomes 20's left child.\n\nBack up at 30: H(20) = 1, H(null) = −1, so B(30) = 2: left-heavy. From 30 toward 10 the path is left, then left.",
+          "answer": "LL (fix: rightRotate(30))",
+          "id": "hw.862b0d35"
+        }
+      ]
+    },
+    {
+      "id": "delete",
+      "heading": "Delete: same idea, but it can cascade",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Step 1:** a plain BST delete (Lecture 12's three cases, successor for two children). **Step 2:** go back up the path, updating H and rebalancing. The difference is how the case is chosen: deleting removes weight from one side, so you look at the **other** side, the heavier child y, and its balance B(y).",
+          "slide": "delete strategy",
+          "id": "delete.91c28167"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Case",
+            "B(x)",
+            "Heavier child y",
+            "B(y)",
+            "Rotation set"
+          ],
+          "rows": [
+            [
+              "**LL**",
+              "> 1",
+              "left of x",
+              "**≥ 0** (left-heavy or balanced)",
+              "rightRotate(x)"
+            ],
+            [
+              "**LR**",
+              "> 1",
+              "left of x",
+              "**< 0** (right-heavy)",
+              "leftRotate(y), then rightRotate(x)"
+            ],
+            [
+              "**RR**",
+              "< −1",
+              "right of x",
+              "**≤ 0** (right-heavy or balanced)",
+              "leftRotate(x)"
+            ],
+            [
+              "**RL**",
+              "< −1",
+              "right of x",
+              "**> 0** (left-heavy)",
+              "rightRotate(y), then leftRotate(x)"
+            ]
+          ],
+          "title": "Delete cases (Poon's slide 68)",
+          "slide": "Delete cases",
+          "id": "delete.84a3fbd3"
+        },
+        {
+          "type": "stepper",
+          "title": "Cascading delete: delete(10) needs two rotation sets",
+          "frames": [
+            {
+              "kind": "bst",
+              "root": {
+                "k": 50,
+                "l": {
+                  "k": 20,
+                  "l": {
+                    "k": 10,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 30,
+                    "l": null,
+                    "r": {
+                      "k": 40,
+                      "l": null,
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 70,
+                  "l": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": {
+                    "k": 80,
+                    "l": {
+                      "k": 75,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 90,
+                      "l": null,
+                      "r": {
+                        "k": 95,
+                        "l": null,
+                        "r": null
+                      }
+                    }
+                  }
+                }
+              },
+              "caption": "delete(10). Step 1 is a plain BST delete: find 10 and remove it (a leaf).",
+              "tags": {
+                "50": "H 4 · B -1",
+                "20": "H 2 · B -1",
+                "10": "H 0 · B 0",
+                "30": "H 1 · B -1",
+                "40": "H 0 · B 0",
+                "70": "H 3 · B -1",
+                "60": "H 1 · B +1",
+                "55": "H 0 · B 0",
+                "80": "H 2 · B -1",
+                "75": "H 0 · B 0",
+                "90": "H 1 · B -1",
+                "95": "H 0 · B 0"
+              },
+              "hl": [
+                10
+              ],
+              "path": [
+                50,
+                20
+              ],
+              "warn": [
+                10
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 50,
+                "l": {
+                  "k": 20,
+                  "l": null,
+                  "r": {
+                    "k": 30,
+                    "l": null,
+                    "r": {
+                      "k": 40,
+                      "l": null,
+                      "r": null
+                    }
+                  }
+                },
+                "r": {
+                  "k": 70,
+                  "l": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": {
+                    "k": 80,
+                    "l": {
+                      "k": 75,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 90,
+                      "l": null,
+                      "r": {
+                        "k": 95,
+                        "l": null,
+                        "r": null
+                      }
+                    }
+                  }
+                }
+              },
+              "caption": "Up to 20: B = −2. **Imbalance.** The heavier child is y = 30 with B(y) = −1, so B(y) ≤ 0: case **RR**.",
+              "tags": {
+                "50": "H 4",
+                "20": "H 2 · B -2",
+                "30": "H 1 · B -1",
+                "40": "H 0",
+                "70": "H 3",
+                "60": "H 1",
+                "55": "H 0",
+                "80": "H 2",
+                "75": "H 0",
+                "90": "H 1",
+                "95": "H 0"
+              },
+              "hl": [
+                20
+              ],
+              "path": [
+                50
+              ],
+              "warn": [
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 50,
+                "l": {
+                  "k": 30,
+                  "l": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 40,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 70,
+                  "l": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": {
+                    "k": 80,
+                    "l": {
+                      "k": 75,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 90,
+                      "l": null,
+                      "r": {
+                        "k": 95,
+                        "l": null,
+                        "r": null
+                      }
+                    }
+                  }
+                }
+              },
+              "caption": "First rotation set: leftRotate(20). 30 takes 20's place. This subtree is now 1 tall, down from 2: the parent above may now be unbalanced too.",
+              "tags": {
+                "50": "H 4",
+                "30": "H 1 · B 0",
+                "20": "H 0 · B 0",
+                "40": "H 0 · B 0",
+                "70": "H 3",
+                "60": "H 1",
+                "55": "H 0",
+                "80": "H 2",
+                "75": "H 0",
+                "90": "H 1",
+                "95": "H 0"
+              },
+              "hl": [
+                30
+              ],
+              "path": [
+                50
+              ],
+              "done": [
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 50,
+                "l": {
+                  "k": 30,
+                  "l": {
+                    "k": 20,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 40,
+                    "l": null,
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 70,
+                  "l": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  },
+                  "r": {
+                    "k": 80,
+                    "l": {
+                      "k": 75,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 90,
+                      "l": null,
+                      "r": {
+                        "k": 95,
+                        "l": null,
+                        "r": null
+                      }
+                    }
+                  }
+                }
+              },
+              "caption": "Up to 50: B = −2. **Imbalance.** The heavier child is y = 70 with B(y) = −1, so B(y) ≤ 0: case **RR**.",
+              "tags": {
+                "50": "H 4 · B -2",
+                "30": "H 1",
+                "20": "H 0 · B 0",
+                "40": "H 0",
+                "70": "H 3 · B -1",
+                "60": "H 1",
+                "55": "H 0",
+                "80": "H 2",
+                "75": "H 0",
+                "90": "H 1",
+                "95": "H 0"
+              },
+              "hl": [
+                50
+              ],
+              "warn": [
+                50
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 70,
+                "l": {
+                  "k": 50,
+                  "l": {
+                    "k": 30,
+                    "l": {
+                      "k": 20,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 40,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 80,
+                  "l": {
+                    "k": 75,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 90,
+                    "l": null,
+                    "r": {
+                      "k": 95,
+                      "l": null,
+                      "r": null
+                    }
+                  }
+                }
+              },
+              "caption": "Second (cascading) rotation set: leftRotate(50). 70 takes 50's place. This subtree is now 3 tall, down from 4: the parent above may now be unbalanced too.",
+              "tags": {
+                "70": "H 3 · B 0",
+                "50": "H 2 · B 0",
+                "30": "H 1 · B 0",
+                "20": "H 0 · B 0",
+                "40": "H 0 · B 0",
+                "60": "H 1 · B +1",
+                "55": "H 0 · B 0",
+                "80": "H 2 · B -1",
+                "75": "H 0 · B 0",
+                "90": "H 1 · B -1",
+                "95": "H 0 · B 0"
+              },
+              "hl": [
+                70
+              ],
+              "done": [
+                50
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 70,
+                "l": {
+                  "k": 50,
+                  "l": {
+                    "k": 30,
+                    "l": {
+                      "k": 20,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": {
+                      "k": 40,
+                      "l": null,
+                      "r": null
+                    }
+                  },
+                  "r": {
+                    "k": 60,
+                    "l": {
+                      "k": 55,
+                      "l": null,
+                      "r": null
+                    },
+                    "r": null
+                  }
+                },
+                "r": {
+                  "k": 80,
+                  "l": {
+                    "k": 75,
+                    "l": null,
+                    "r": null
+                  },
+                  "r": {
+                    "k": 90,
+                    "l": null,
+                    "r": {
+                      "k": 95,
+                      "l": null,
+                      "r": null
+                    }
+                  }
+                }
+              },
+              "caption": "Final tree after delete(10): 2 rotation sets. Every node has |B| ≤ 1 again.",
+              "tags": {
+                "70": "H 3 · B 0",
+                "50": "H 2 · B 0",
+                "30": "H 1 · B 0",
+                "20": "H 0 · B 0",
+                "40": "H 0 · B 0",
+                "60": "H 1 · B +1",
+                "55": "H 0 · B 0",
+                "80": "H 2 · B -1",
+                "75": "H 0 · B 0",
+                "90": "H 1 · B -1",
+                "95": "H 0 · B 0"
+              }
+            }
+          ],
+          "slide": true,
+          "id": "delete.1bc3416f"
+        },
+        {
+          "type": "definition",
+          "term": "Why delete can cascade",
+          "body": "A rotation after a delete can leave the subtree **one shorter** than before. That height loss travels up, and a node higher up can become unbalanced too. So delete may need a rotation set at **several levels, all the way to the root**: up to O(log n) of them.",
+          "id": "delete.3d08f88d"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "insert",
+            "delete"
+          ],
+          "rows": [
+            [
+              "Rotation sets needed",
+              "**at most 1**",
+              "up to **O(log n)** (cascading)"
+            ],
+            [
+              "Why",
+              "the fix restores the subtree's old height",
+              "the fix can shrink the subtree's height"
+            ],
+            [
+              "Case decided by",
+              "where the new key went (compare keys)",
+              "B(y) of the heavier child"
+            ],
+            [
+              "Total time",
+              "O(log n)",
+              "O(log n)"
+            ]
+          ],
+          "title": "Insert vs delete (slide 71)",
+          "id": "delete.7dcb3903"
+        },
+        {
+          "type": "trap",
+          "body": "Using the insert rule (compare the key) to pick a delete case. After a delete there is no new key on the heavy side; you decide with B(y). And note the ≥ 0 / ≤ 0: a balanced y (B(y) = 0) is a single-rotation case on delete.",
+          "source": "Lecture 13 slide 71",
+          "points": null,
+          "id": "delete.18e1b994"
+        }
+      ]
+    },
+    {
+      "id": "runtime",
+      "heading": "How fast? O(log n), guaranteed",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Operation",
+            "Plain BST",
+            "AVL tree"
+          ],
+          "rows": [
+            [
+              "search",
+              "O(h): O(n) worst",
+              "**O(log n)**"
+            ],
+            [
+              "insert",
+              "O(h): O(n) worst",
+              "**O(log n)** (≤ 1 rotation set)"
+            ],
+            [
+              "delete",
+              "O(h): O(n) worst",
+              "**O(log n)** (rotations can cascade, still O(log n))"
+            ],
+            [
+              "min, max, successor",
+              "O(h)",
+              "**O(log n)**"
+            ],
+            [
+              "one rotation",
+              "",
+              "**O(1)**"
+            ],
+            [
+              "in-order traversal",
+              "O(n)",
+              "O(n)"
+            ]
+          ],
+          "title": "The payoff",
+          "id": "runtime.0eea33ac"
+        },
+        {
+          "type": "prose",
+          "md": "The whole point: an AVL tree is still a BST, so every operation is O(h). The AVL property just guarantees **h = O(log n)**, so O(h) becomes O(log n) even for the sorted input that ruins a plain BST.",
+          "id": "runtime.c251b494"
+        },
+        {
+          "type": "check",
+          "prompt": "You insert 1, 2, 3, …, 1000 in order into an AVL tree. Is search O(n)?",
+          "answer": "No. The rotations keep it balanced: height stays about log₂ 1000 ≈ 10, so search is **O(log n)**. A plain BST would be a 1000-node chain.",
+          "sectionRef": "runtime",
+          "id": "runtime.bccc1068"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "heading": "Where balanced trees show up",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Sorted maps and sets.** Java's `TreeMap` and `TreeSet`, and C++'s `std::map`, are self-balancing BSTs (red-black trees, a close cousin of AVL that allows a little more imbalance in exchange for fewer rotations). They promise O(log n) no matter the insertion order, which is exactly what this lecture builds.",
+          "label": "world",
+          "id": "apps.98b18c78"
+        },
+        {
+          "type": "prose",
+          "md": "**Anywhere keys arrive in order.** Timestamps, auto-increment ids and sorted imports all arrive sorted, the exact input that turns a plain BST into a list. Databases index such keys with balanced trees (B-trees, a wider relative) for the same reason.",
+          "label": "world",
+          "id": "apps.2ad0b361"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Height H",
+              "Edges on the longest path down to a leaf. Leaf 0, null −1."
+            ],
+            [
+              "Balance B",
+              "H(left) − H(right). Balanced if −1, 0 or 1."
+            ],
+            [
+              "Left-heavy / right-heavy",
+              "B > 1 / B < −1."
+            ],
+            [
+              "AVL tree",
+              "A BST with |B| ≤ 1 at every node. Height O(log n)."
+            ],
+            [
+              "rightRotate / leftRotate",
+              "Swap a node with its left / right child, moving the middle subtree over. O(1)."
+            ],
+            [
+              "LL, RR",
+              "Straight-line imbalance: one rotation."
+            ],
+            [
+              "LR, RL",
+              "Zig-zag imbalance: two rotations (straighten, then rotate)."
+            ],
+            [
+              "Rotation set",
+              "The one or two rotations that fix one node."
+            ],
+            [
+              "Cascading",
+              "Delete's fix can shrink a subtree and unbalance nodes above: up to O(log n) rotation sets."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "b-sign",
+      "title": "Which way is B?",
+      "prompt": "Poon's balance factor B(node) is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**H(left) − H(right)**."
+      ],
+      "why": "Every AVL question starts with computing B.",
+      "choices": [
+        {
+          "text": "H(left) − H(right)",
+          "feedback": "Yes: left minus right, so left-heavy is positive."
+        },
+        {
+          "text": "H(right) − H(left)",
+          "feedback": "That's the opposite sign; on the exam B = 2 would come out as −2."
+        },
+        {
+          "text": "size(left) − size(right)",
+          "feedback": "B compares heights, not node counts."
+        },
+        {
+          "text": "depth(left) − depth(right)",
+          "feedback": "Depth is measured from the root; B uses heights of the subtrees."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "balance"
+    },
+    {
+      "id": "h-leaf",
+      "title": "Height of nothing",
+      "prompt": "In Poon's convention, what is H(null)?",
+      "hints": [
+        "A leaf has H = 0.",
+        "H(leaf) = 1 + max(H(null), H(null)).",
+        "For that to come out 0, H(null) must be…"
+      ],
+      "solution": [
+        "**−1**, so that a leaf gets 1 + max(−1, −1) = 0."
+      ],
+      "why": "It makes the B formula work at every node.",
+      "accept": [
+        "-1",
+        "−1",
+        "negative one",
+        "minus one"
+      ],
+      "sectionRef": "balance"
+    },
+    {
+      "id": "case-name",
+      "title": "Name the case",
+      "prompt": "Insert 50, 30, 40 into an empty AVL tree. Which case fixes it?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**LR**: leftRotate(30), then rightRotate(50). Root becomes 40."
+      ],
+      "why": "Exactly the shape of HW 13 Problem 3 style questions.",
+      "choices": [
+        {
+          "text": "LR",
+          "feedback": "Yes: from 50, the path to 40 goes left (30) then right. Zig-zag on the left: LR."
+        },
+        {
+          "text": "LL",
+          "feedback": "LL would be 50, 30, 20 (left, left)."
+        },
+        {
+          "text": "RL",
+          "feedback": "RL starts by going right."
+        },
+        {
+          "text": "RR",
+          "feedback": "RR is two right steps."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "insert"
+    },
+    {
+      "id": "one-rotation",
+      "title": "Insert vs delete",
+      "prompt": "Which statement is true?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Insert: at most 1 rotation set. Delete: up to O(log n).**"
+      ],
+      "why": "Poon's 'comparing insert to delete' slide.",
+      "choices": [
+        {
+          "text": "Insert needs at most one rotation set; delete may need several",
+          "feedback": "Yes: insert's fix restores the old height; delete's can shrink it and cascade."
+        },
+        {
+          "text": "Delete needs at most one rotation set; insert may need several",
+          "feedback": "It's the other way round."
+        },
+        {
+          "text": "Both always need exactly one",
+          "feedback": "Many inserts need no rotation at all."
+        },
+        {
+          "text": "Neither ever rotates more than once in total",
+          "feedback": "LR and RL cases already use two rotations in one set, and deletes can cascade."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "delete"
+    },
+    {
+      "id": "rotate-cost",
+      "title": "Rotation cost",
+      "prompt": "What is the running time of one rotation, in Big-O?",
+      "hints": [
+        "Count the pointer changes in rightRotate.",
+        "It doesn't depend on how big the tree is.",
+        "Three pointer assignments and two height updates."
+      ],
+      "solution": [
+        "**O(1)**: a fixed number of pointer and height updates."
+      ],
+      "why": "That's why fixing the tree doesn't cost more than the O(log n) walk.",
+      "accept": [
+        "O(1)",
+        "o(1)",
+        "constant",
+        "1"
+      ],
+      "sectionRef": "rotations"
+    }
+  ]
+}

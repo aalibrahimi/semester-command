@@ -221,12 +221,25 @@ def successor_frames(t=None):
     fr.append(bframe(t, "Go to the right child, 7, then left as far as possible. 7 has no left child, so the successor of 6 is 7.", hl=[7], path=[6]))
     # Case 1 again: 15
     fr.append(bframe(t, "Successor of 15: right child 18, then left as far as possible: 17. So 17.", hl=[17], path=[15, 18]))
-    # Case 2: 13 has no right child
-    fr.append(bframe(t, "Successor of 13. Case 2: 13 has NO right child. Walk UP until you come up from a LEFT child.", hl=[13]))
-    fr.append(bframe(t, "13 is the RIGHT child of 7, so keep going up.", hl=[7], path=[13]))
-    fr.append(bframe(t, "7 is the RIGHT child of 6, so keep going up.", hl=[6], path=[13, 7]))
-    fr.append(bframe(t, "6 is the LEFT child of 15. Stop: 15 is the successor of 13 (check the sorted order: … 9, 13, 15, …).", hl=[15], path=[13, 7, 6]))
-    fr.append(bframe(t, "And 20? No right child, and walking up we only ever come from right children, all the way past the root. 20 is the maximum: no successor.", hl=[20], path=[18, 15]))
+    # Case 2, Poon's top-down version (updated slides, Oct 1): search from the
+    # root toward the target; every LEFT step records that node as the
+    # candidate, right steps leave it alone.
+    for key in (13, 20):
+        fr.append(bframe(t, f"Successor of {key}. Case 2: {key} has NO right child. Start at the ROOT and search for {key}. Every time you step LEFT, that node becomes the candidate.", hl=[key]))
+        cand, n, path = None, t, []
+        while n["k"] != key:
+            path.append(n["k"])
+            if key < n["k"]:
+                cand = n["k"]
+                fr.append(bframe(t, f"{key} < {n['k']}: step LEFT, so {n['k']} is now the candidate (it's bigger than {key}, and we're heading into its smaller side).", hl=[n["k"]], path=path[:-1], note=f"candidate = {cand}"))
+                n = n["l"]
+            else:
+                fr.append(bframe(t, f"{key} > {n['k']}: step RIGHT. {n['k']} is smaller than {key}, so it can't be the successor. Candidate stays {cand if cand is not None else 'none'}.", hl=[n["k"]], path=path[:-1], note=f"candidate = {cand if cand is not None else 'none'}"))
+                n = n["r"]
+        if cand is None:
+            fr.append(bframe(t, f"Reached {key} and we never stepped left: {key} is the maximum, so it has no successor.", hl=[key], path=path))
+        else:
+            fr.append(bframe(t, f"Reached {key}. The last candidate, {cand}, is the successor (sorted order: …, {key}, {cand}, …).", hl=[cand], path=path, done=[key]))
     return fr
 
 

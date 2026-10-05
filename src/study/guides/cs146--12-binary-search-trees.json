@@ -100,6 +100,39 @@
           "id": "map.c5ee9b9a"
         },
         {
+          "type": "video",
+          "src": "/study-videos/cs146-bst.mp4",
+          "slide": "Watch it first",
+          "caption": "The lecture's mechanics as a 90-second animation: building Poon's example tree, insert 10, then the three delete cases on the original tree. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Build the tree"
+            },
+            {
+              "t": 26,
+              "label": "Insert 10"
+            },
+            {
+              "t": 38,
+              "label": "Delete a leaf"
+            },
+            {
+              "t": 51,
+              "label": "One child"
+            },
+            {
+              "t": 64,
+              "label": "Two children"
+            },
+            {
+              "t": 88,
+              "label": "Runtime"
+            }
+          ],
+          "id": "map.79452907"
+        },
+        {
           "type": "prose",
           "md": "**Why it matters** Every 'sorted map' you'll use (Java's `TreeMap`, a database index answering `WHERE age > 25`) is a balanced BST underneath. The midterm traces insert and delete on a tree by hand, and next lecture (AVL trees) only makes sense once this one does.",
           "label": "why",
@@ -1084,18 +1117,24 @@
             ],
             [
               "No right child",
-              "walk **up** until you arrive from a LEFT child; that parent is it",
-              "successor(13) = 15"
+              "the **lowest ancestor whose left child is also an ancestor**. Poon's way to find it: search from the **root** toward the node; every time you step **left**, that node becomes the candidate (overwrite the old one); right steps change nothing. When you reach the node, the candidate is the successor",
+              "successor(13) = 15; successor(9) = 13"
             ],
             [
-              "No right child and you never arrive from the left",
+              "No right child, and you never stepped left",
               "it's the maximum: no successor",
               "successor(20) = none"
             ]
           ],
-          "title": "Finding the successor (Poon's two cases)",
+          "title": "Finding the successor (Poon's two cases, as in his updated Oct 1 slides)",
           "slide": "Successor cases",
           "id": "search.61aba64d"
+        },
+        {
+          "type": "prose",
+          "md": "**Why the left steps?** Stepping left at a node means the target is SMALLER than that node, so that node is a bigger key that could come next. The last left step is the closest such node: the smallest key that is still bigger than the target. Right steps pass nodes that are smaller than the target, which can never be its successor.",
+          "label": "think",
+          "id": "search.c9e2ec7a"
         },
         {
           "type": "stepper",
@@ -1263,7 +1302,7 @@
                   }
                 }
               },
-              "caption": "Successor of 13. Case 2: 13 has NO right child. Walk UP until you come up from a LEFT child.",
+              "caption": "Successor of 13. Case 2: 13 has NO right child. Start at the ROOT and search for 13. Every time you step LEFT, that node becomes the candidate.",
               "hl": [
                 13
               ]
@@ -1303,13 +1342,11 @@
                   }
                 }
               },
-              "caption": "13 is the RIGHT child of 7, so keep going up.",
+              "caption": "13 < 15: step LEFT, so 15 is now the candidate (it's bigger than 13, and we're heading into its smaller side).",
               "hl": [
-                7
+                15
               ],
-              "path": [
-                13
-              ]
+              "note": "candidate = 15"
             },
             {
               "kind": "bst",
@@ -1346,14 +1383,14 @@
                   }
                 }
               },
-              "caption": "7 is the RIGHT child of 6, so keep going up.",
+              "caption": "13 > 6: step RIGHT. 6 is smaller than 13, so it can't be the successor. Candidate stays 15.",
               "hl": [
                 6
               ],
               "path": [
-                13,
-                7
-              ]
+                15
+              ],
+              "note": "candidate = 15"
             },
             {
               "kind": "bst",
@@ -1390,14 +1427,62 @@
                   }
                 }
               },
-              "caption": "6 is the LEFT child of 15. Stop: 15 is the successor of 13 (check the sorted order: … 9, 13, 15, …).",
+              "caption": "13 > 7: step RIGHT. 7 is smaller than 13, so it can't be the successor. Candidate stays 15.",
+              "hl": [
+                7
+              ],
+              "path": [
+                15,
+                6
+              ],
+              "note": "candidate = 15"
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2
+                    },
+                    "r": {
+                      "k": 5
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9
+                      }
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17
+                  },
+                  "r": {
+                    "k": 20
+                  }
+                }
+              },
+              "caption": "Reached 13. The last candidate, 15, is the successor (sorted order: …, 13, 15, …).",
               "hl": [
                 15
               ],
               "path": [
-                13,
-                7,
-                6
+                15,
+                6,
+                7
+              ],
+              "done": [
+                13
               ]
             },
             {
@@ -1435,23 +1520,165 @@
                   }
                 }
               },
-              "caption": "And 20? No right child, and walking up we only ever come from right children, all the way past the root. 20 is the maximum: no successor.",
+              "caption": "Successor of 20. Case 2: 20 has NO right child. Start at the ROOT and search for 20. Every time you step LEFT, that node becomes the candidate.",
+              "hl": [
+                20
+              ]
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2
+                    },
+                    "r": {
+                      "k": 5
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9
+                      }
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17
+                  },
+                  "r": {
+                    "k": 20
+                  }
+                }
+              },
+              "caption": "20 > 15: step RIGHT. 15 is smaller than 20, so it can't be the successor. Candidate stays none.",
+              "hl": [
+                15
+              ],
+              "note": "candidate = none"
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2
+                    },
+                    "r": {
+                      "k": 5
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9
+                      }
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17
+                  },
+                  "r": {
+                    "k": 20
+                  }
+                }
+              },
+              "caption": "20 > 18: step RIGHT. 18 is smaller than 20, so it can't be the successor. Candidate stays none.",
+              "hl": [
+                18
+              ],
+              "path": [
+                15
+              ],
+              "note": "candidate = none"
+            },
+            {
+              "kind": "bst",
+              "root": {
+                "k": 15,
+                "l": {
+                  "k": 6,
+                  "l": {
+                    "k": 3,
+                    "l": {
+                      "k": 2
+                    },
+                    "r": {
+                      "k": 5
+                    }
+                  },
+                  "r": {
+                    "k": 7,
+                    "r": {
+                      "k": 13,
+                      "l": {
+                        "k": 9
+                      }
+                    }
+                  }
+                },
+                "r": {
+                  "k": 18,
+                  "l": {
+                    "k": 17
+                  },
+                  "r": {
+                    "k": 20
+                  }
+                }
+              },
+              "caption": "Reached 20 and we never stepped left: 20 is the maximum, so it has no successor.",
               "hl": [
                 20
               ],
               "path": [
-                18,
-                15
+                15,
+                18
               ]
             }
           ],
           "slide": true,
+          "resources": [
+            {
+              "label": "Poon's video: successor of 9 (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89088667",
+              "kind": "video"
+            },
+            {
+              "label": "Poon's video: successor of 13 (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89088648",
+              "kind": "video"
+            },
+            {
+              "label": "BST visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/BST.html",
+              "kind": "site"
+            }
+          ],
           "id": "search.9bdb9d8d"
         },
         {
           "type": "check",
           "prompt": "In the example tree, what is the successor of 5?",
-          "answer": "5 has no right child, so walk up: 5 is the RIGHT child of 3, keep going; 3 is the LEFT child of 6, stop. Successor = **6**.",
+          "answer": "5 has no right child, so search from the root: 5 < 15, step left (candidate 15); 5 < 6, step left (candidate 6); 5 > 3, step right (no change); reached 5. Successor = **6**.",
           "sectionRef": "search",
           "id": "search.48ef3bd1"
         },
@@ -5000,7 +5227,20 @@
               }
             ]
           },
+          "resources": [
+            {
+              "label": "Poon's video: what happens when insert() returns (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89089843",
+              "kind": "video"
+            }
+          ],
           "id": "insert.5df15b4e"
+        },
+        {
+          "type": "prose",
+          "md": "**How the new node gets linked in (Poon's added slide).** The recursion bottoms out at an empty spot and returns the new node. That return lands in the call running on the new node's **parent**, which does `root.left = …` or `root.right = …` and links it in. Every ancestor above also reassigns its child link as the recursion unwinds, but with the same pointer it already had, so nothing else changes. That's why insert (and delete) **return** a node: Java passes references by value, so returning the new subtree root is how the caller learns about the change.",
+          "label": "think",
+          "id": "insert.3fcca386"
         },
         {
           "type": "prose",
@@ -6616,25 +6856,25 @@
         "Pick the one that matches the definition word for word."
       ],
       "solution": [
-        "**13**: walk up, and the first time you come up from a left child, that parent is the successor."
+        "**13**: search from the root (15 left, 6 right, 7 right, 13 left). The last left step was at 13."
       ],
       "why": "Case 2 of the successor rule.",
       "choices": [
         {
           "text": "13",
-          "feedback": "Yes: 9 has no right child; its parent 13 is reached from a LEFT child, so 13."
+          "feedback": "Yes: searching from the root, the left steps are at 15 and then 13. The last one, 13, is the successor."
         },
         {
           "text": "15",
-          "feedback": "15 is the successor of 13, one step further."
+          "feedback": "15 was a candidate, but 13 replaced it (the last left step wins)."
         },
         {
           "text": "7",
-          "feedback": "7 is smaller than 9."
+          "feedback": "7 is smaller than 9: we stepped RIGHT at 7."
         },
         {
           "text": "none",
-          "feedback": "9 isn't the maximum."
+          "feedback": "9 isn't the maximum: we stepped left on the way down."
         }
       ],
       "answer": 0,

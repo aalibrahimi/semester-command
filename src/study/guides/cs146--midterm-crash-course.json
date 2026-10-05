@@ -1,0 +1,2359 @@
+{
+  "id": "cs146/midterm-crash-course",
+  "course": "cs146",
+  "lessons": "Midterm review",
+  "title": "Midterm crash course: Lectures 2 to 13 on one page",
+  "summary": "Every topic on the Oct 12 midterm, condensed to what you need to explain it: the idea in one sentence, the few definitions that matter, one small example, the trap that costs points, and why it matters. Each topic links straight into the full chapter section when you need the slow version, and the videos are right where they help.",
+  "estimatedMinutes": 120,
+  "sourceNote": "Condensed from this app's CS 146 chapters (Lectures 2 to 13), which were built from Poon's slides and homework. The exam facts (in class Mon Oct 12, master-method cases printed, everything else from memory) are from the syllabus and the course page. Videos: the app's own animations, Poon's Canvas videos, and checked YouTube explanations.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "start",
+      "heading": "How to use this (read first, 2 minutes)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "This page is the **whole midterm in one place**, written for understanding, not memorizing code. Every topic has the same five parts: **the idea in one sentence**, the **few definitions** you must be able to say, **one small example**, the **trap** that costs points, and a **go deeper** row of links into the full chapter when something doesn't click.",
+          "slide": "What this is",
+          "id": "start.b52e195e"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "The facts"
+          ],
+          "rows": [
+            [
+              "When",
+              "**Monday, Oct 12**, in class, on paper (30% of your grade)"
+            ],
+            [
+              "Covers",
+              "Lectures 2 to 13: ADTs to AVL trees"
+            ],
+            [
+              "Given to you",
+              "only the three master-method cases"
+            ],
+            [
+              "What he tests",
+              "exactly what's on the slides: traces on small arrays and trees, runtimes, and the **why** behind them. A few 'extend it to a new case' questions."
+            ]
+          ],
+          "title": "The midterm",
+          "id": "start.99a3370f"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "Midterm map",
+            "question": "Twelve topics, in lecture order",
+            "steps": [
+              {
+                "title": "Structures",
+                "sub": "ADTs, stacks, queues, linked lists",
+                "result": "Lecture 2",
+                "tone": "brand"
+              },
+              {
+                "title": "Correctness",
+                "sub": "loop invariants, insertion sort",
+                "result": "Lecture 3",
+                "tone": "brand"
+              },
+              {
+                "title": "Speed",
+                "sub": "Big-O, Ω, Θ, divide and conquer, merge sort",
+                "result": "Lectures 4 to 5",
+                "tone": "green"
+              },
+              {
+                "title": "Recurrences",
+                "sub": "unrolling, recursion trees, master method",
+                "result": "Lectures 6 to 7",
+                "tone": "green"
+              },
+              {
+                "title": "Sorting",
+                "sub": "heaps, quicksort, linear-time sorts",
+                "result": "Lectures 8 to 10",
+                "tone": "amber"
+              },
+              {
+                "title": "Lookup",
+                "sub": "hash tables, BSTs, AVL trees",
+                "result": "Lectures 11 to 13",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The course so far, grouped. Each group builds on the one before.",
+          "id": "start.3fceba93"
+        },
+        {
+          "type": "prose",
+          "md": "**Short on time?** Do it in this order: the **comparison tables** at the end (they answer half the 'which is faster and why' questions), then **master method**, **quicksort**, **heaps**, **BSTs** and **AVL** (the most traceable topics), then everything else. Each topic takes about 8 to 10 minutes. Mark a topic **shaky** and the app will bring it back in Recall and on your Ready page.",
+          "label": "when",
+          "id": "start.f1352a47"
+        }
+      ]
+    },
+    {
+      "id": "adts",
+      "heading": "1. ADTs, stacks, queues, linked lists (Lecture 2)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**An ADT says what a structure does, not how it's built**; a stack and a queue are two ADTs that differ only in which end things come out of.",
+          "label": "think",
+          "id": "adts.d183351e"
+        },
+        {
+          "type": "definition",
+          "term": "ADT (Poon's sentence)",
+          "body": "'An abstract data type is a data type defined by its **behavior** (what it does), not its **implementation** (how it does it).' He wants this sentence, then an example.",
+          "id": "adts.f5f4b29d"
+        },
+        {
+          "type": "definition",
+          "term": "Stack: LIFO",
+          "body": "Last in, first out. Add and remove at the **same end** (the top). push, pop, peek, isEmpty. Plates in a cafeteria. All O(1).",
+          "id": "adts.9bf1bc16"
+        },
+        {
+          "type": "definition",
+          "term": "Queue: FIFO",
+          "body": "First in, first out. Add at the **back**, remove from the **front**. enqueue, dequeue, peek, isEmpty. A checkout line. All O(1) (with a circular array or a linked list with head and tail).",
+          "id": "adts.2201a74f"
+        },
+        {
+          "type": "definition",
+          "term": "Linked list",
+          "body": "A chain of **nodes**; each holds a value and the **address of the next** node. You reach it through **head**; the last node's next is **null**. No index: getting the k-th item means walking k steps.",
+          "id": "adts.a15cf8cb"
+        },
+        {
+          "type": "example",
+          "title": "The same ADT, two builds",
+          "body": "A stack can be built on an array (top = last filled index) or on a linked list (top = head). The ADT, push/pop/peek, is identical; only the inside differs. That's the whole point of an ADT.",
+          "answer": "behavior, not implementation",
+          "id": "adts.0df3b4b6"
+        },
+        {
+          "type": "trap",
+          "body": "Two linked-list bugs he calls out: (1) inserting after node B, write **X.next = B.next before B.next = X**, or the rest of the list is lost; (2) in a linked queue, when you dequeue the **last** item, set **tail = null** too.",
+          "source": "Exam",
+          "points": null,
+          "id": "adts.4ad0d882"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The full chapter draws every pointer change step by step.",
+          "resources": [
+            {
+              "label": "ADTs",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=why",
+              "kind": "chapter"
+            },
+            {
+              "label": "Stack",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=stack",
+              "kind": "chapter"
+            },
+            {
+              "label": "Queue",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=queue",
+              "kind": "chapter"
+            },
+            {
+              "label": "Linked list",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=linked",
+              "kind": "chapter"
+            },
+            {
+              "label": "Stack / queue visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/Algorithms.html",
+              "kind": "site"
+            }
+          ],
+          "id": "adts.497bef06"
+        }
+      ]
+    },
+    {
+      "id": "invariants",
+      "heading": "2. Loop invariants and insertion sort (Lectures 2 to 3)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**A loop invariant is a sentence that stays true every time the loop checks its condition**; proving it at the start, keeping it true each pass, and reading it at the end proves the loop correct.",
+          "label": "think",
+          "id": "invariants.b651bf95"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Part",
+            "What you show",
+            "Like induction's…"
+          ],
+          "rows": [
+            [
+              "**Initialization**",
+              "true before the first iteration",
+              "base case"
+            ],
+            [
+              "**Maintenance**",
+              "if true before an iteration, still true after it",
+              "inductive step"
+            ],
+            [
+              "**Termination**",
+              "when the loop stops, invariant + stop condition = the goal",
+              "conclusion"
+            ]
+          ],
+          "title": "The three parts",
+          "id": "invariants.58625ccc"
+        },
+        {
+          "type": "definition",
+          "term": "Insertion sort",
+          "body": "Keep a **sorted left part**. Take the next item (the **key**), slide it left past every bigger item, drop it in. Invariant: **a[0..j−1] is sorted** (the prefix handled so far).",
+          "id": "invariants.05708aff"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Case",
+            "Input",
+            "Time",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Best",
+              "already sorted",
+              "**Ω(n)**",
+              "each key compares once and stays"
+            ],
+            [
+              "Worst",
+              "sorted backwards",
+              "**O(n²)**",
+              "shifts 1 + 2 + … + (n−1) = n(n−1)/2"
+            ]
+          ],
+          "title": "Insertion sort's runtime",
+          "id": "invariants.f5edefda"
+        },
+        {
+          "type": "prose",
+          "md": "Insertion sort is **in place** (O(1) extra space) and **stable**: the test is strictly `a[i] > key`, so equal items never jump past each other.",
+          "id": "invariants.002ae658"
+        },
+        {
+          "type": "trap",
+          "body": "Writing the invariant about the **whole** array ('the array is sorted') instead of the **prefix** ('a[0..j−1] is sorted'). An invariant must be true in the middle, when the job is half done.",
+          "source": "Exam",
+          "points": null,
+          "id": "invariants.d5beb468"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter walks the three parts on insertion sort itself.",
+          "resources": [
+            {
+              "label": "Loop invariants",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=invariants",
+              "kind": "chapter"
+            },
+            {
+              "label": "Insertion sort",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=insertion",
+              "kind": "chapter"
+            },
+            {
+              "label": "Induction (Chapter 0)",
+              "url": "/study/cs146/0-notation?s=induction",
+              "kind": "chapter"
+            }
+          ],
+          "id": "invariants.3d7742db"
+        }
+      ]
+    },
+    {
+      "id": "bigo",
+      "heading": "3. Big-O, Omega, Theta and the growth ladder (Lecture 4)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Big-O ignores constants and small terms and keeps only the shape of how the work grows** as the input gets big.",
+          "label": "think",
+          "id": "bigo.ef05a379"
+        },
+        {
+          "type": "definition",
+          "term": "Big-O: a ceiling",
+          "body": "f(n) = O(g(n)) if there are constants **c > 0** and **n₀** with **f(n) ≤ c·g(n) for all n ≥ n₀**. 'Past some size, f stays under a constant times g.'",
+          "id": "bigo.d0487e24"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Symbol",
+            "Means",
+            "Poon uses it for",
+            "Example"
+          ],
+          "rows": [
+            [
+              "O(g)",
+              "at most (ceiling)",
+              "worst case",
+              "insertion sort is O(n²)"
+            ],
+            [
+              "Ω(g)",
+              "at least (floor)",
+              "best case",
+              "insertion sort is Ω(n)"
+            ],
+            [
+              "Θ(g)",
+              "exactly (both)",
+              "when best = worst",
+              "summing an array is Θ(n)"
+            ]
+          ],
+          "title": "O, Ω, Θ",
+          "id": "bigo.615a7f63"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Rung",
+            "Name",
+            "Looks like in code"
+          ],
+          "rows": [
+            [
+              "O(1)",
+              "constant",
+              "no loop over the input"
+            ],
+            [
+              "O(log n)",
+              "logarithmic",
+              "a loop that **halves** what's left"
+            ],
+            [
+              "O(n)",
+              "linear",
+              "one loop over the input"
+            ],
+            [
+              "O(n log n)",
+              "linearithmic",
+              "halving, with a full pass at each level (merge sort)"
+            ],
+            [
+              "O(n²)",
+              "quadratic",
+              "a loop inside a loop, both over the input"
+            ],
+            [
+              "O(2ⁿ)",
+              "exponential",
+              "try every subset"
+            ]
+          ],
+          "title": "The growth ladder, slowest-growing first",
+          "id": "bigo.dc442e17"
+        },
+        {
+          "type": "example",
+          "title": "Simplify",
+          "body": "T(n) = 3n² + 10n log n + 500\n\nKeep the fastest-growing term, drop its constant: **Θ(n²)**.\nProve O(n²) with the definition: for n ≥ 1, 3n² + 10n log n + 500 ≤ 3n² + 10n² + 500n² = 513n², so c = 513, n₀ = 1.",
+          "answer": "Θ(n²)",
+          "id": "bigo.0fa2367e"
+        },
+        {
+          "type": "trap",
+          "body": "Dropping a term that **isn't** a constant. n log n is not 'n times a constant': log n grows. O(n log n) stays O(n log n).",
+          "source": "HW 4",
+          "points": null,
+          "id": "bigo.bb319589"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** Chapter 0 explains log and n^(log_b a) from zero; Lecture 4 does Big-O slowly.",
+          "resources": [
+            {
+              "label": "Big-O in plain words",
+              "url": "/study/cs146/4-big-o-merge-sort?s=bigo",
+              "kind": "chapter"
+            },
+            {
+              "label": "The growth ladder",
+              "url": "/study/cs146/4-big-o-merge-sort?s=classes",
+              "kind": "chapter"
+            },
+            {
+              "label": "What log n means",
+              "url": "/study/cs146/0-notation?s=log",
+              "kind": "chapter"
+            },
+            {
+              "label": "Asymptotic notation, worked (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=A03oI0znAoc",
+              "kind": "video"
+            },
+            {
+              "label": "Big-O cheat sheet",
+              "url": "https://www.bigocheatsheet.com/",
+              "kind": "site"
+            }
+          ],
+          "id": "bigo.a85e9c1c"
+        }
+      ]
+    },
+    {
+      "id": "dc",
+      "heading": "4. Divide and conquer, binary search, merge sort (Lectures 4 to 5)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Divide and conquer: split the problem into smaller copies of itself, solve those the same way, combine the answers.**",
+          "label": "think",
+          "id": "dc.96a25aad"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Binary search",
+            "Merge sort"
+          ],
+          "rows": [
+            [
+              "Divide",
+              "look at the middle",
+              "cut the array in half"
+            ],
+            [
+              "Conquer",
+              "search **one** half",
+              "sort **both** halves (recursively)"
+            ],
+            [
+              "Combine",
+              "nothing",
+              "**merge** the two sorted halves"
+            ],
+            [
+              "Time",
+              "**O(log n)**",
+              "**Θ(n log n)** always"
+            ],
+            [
+              "Needs",
+              "a sorted array",
+              "O(n) extra space for merging"
+            ]
+          ],
+          "title": "Same recipe, two algorithms",
+          "id": "dc.089c1128"
+        },
+        {
+          "type": "definition",
+          "term": "Merge",
+          "body": "Two sorted lists → one sorted list, by repeatedly taking the **smaller front item**. Θ(n) for n total items.",
+          "id": "dc.679086bc"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-merge-sort.mp4",
+          "caption": "Merge sort on [7, 3, 9, 1, 4, 8, 2, 6] as a 2.5-minute video: the splits going down, then every merge coming back up, with the call stack under the code. Use the chips to jump to a merge.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Start"
+            },
+            {
+              "t": 18,
+              "label": "First merge"
+            },
+            {
+              "t": 100,
+              "label": "Final merge"
+            },
+            {
+              "t": 147,
+              "label": "Runtime"
+            }
+          ],
+          "id": "dc.efc1a0fd"
+        },
+        {
+          "type": "prose",
+          "md": "**Why n log n?** The halving makes **log n levels**; every level merges all n items once. n work × log n levels = **n log n**. That picture (the recursion tree) is the answer to 'explain merge sort's runtime'.",
+          "id": "dc.1245dde6"
+        },
+        {
+          "type": "trap",
+          "body": "Saying merge sort sorts **in place**. It doesn't: merge writes into a temporary array, **O(n) extra space**. Insertion sort and heap sort are the in-place ones.",
+          "source": "Lecture 5",
+          "points": null,
+          "id": "dc.451e392d"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter.",
+          "resources": [
+            {
+              "label": "Binary search",
+              "url": "/study/cs146/4-big-o-merge-sort?s=binsearch",
+              "kind": "chapter"
+            },
+            {
+              "label": "Merge",
+              "url": "/study/cs146/4-big-o-merge-sort?s=merge",
+              "kind": "chapter"
+            },
+            {
+              "label": "Merge sort",
+              "url": "/study/cs146/4-big-o-merge-sort?s=mergesort",
+              "kind": "chapter"
+            },
+            {
+              "label": "Why n log n",
+              "url": "/study/cs146/4-big-o-merge-sort?s=whynlogn",
+              "kind": "chapter"
+            },
+            {
+              "label": "Merge sort (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
+              "kind": "video"
+            }
+          ],
+          "id": "dc.3029f4ad"
+        }
+      ]
+    },
+    {
+      "id": "recurrences",
+      "heading": "5. Recurrences and the recursion tree (Lecture 6)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**A recurrence writes a recursive algorithm's cost in terms of its own cost on smaller inputs**; the recursion tree adds that cost up row by row.",
+          "label": "think",
+          "id": "recurrences.880183f8"
+        },
+        {
+          "type": "definition",
+          "term": "Recurrence",
+          "body": "An equation for T(n) using T of smaller inputs, plus a **base case**. Merge sort: **T(n) = 2T(n/2) + n**, T(1) = 1. Read it as: 'two calls on half the input, plus n work to merge'.",
+          "id": "recurrences.d6d64efe"
+        },
+        {
+          "type": "definition",
+          "term": "Recursion tree",
+          "body": "One box per call, with the work that call does **itself** inside. Total = sum of the **rows**. For aT(n/b) + f(n): row i has **aⁱ** calls of size **n/bⁱ**, and there are about **log_b n** rows.",
+          "id": "recurrences.06ef0668"
+        },
+        {
+          "type": "example",
+          "title": "Merge sort's tree",
+          "body": "Row 0: 1 call × n work = n\nRow 1: 2 calls × n/2 = n\nRow 2: 4 calls × n/4 = n\n…\nlog₂ n rows, each costs n → total **n log n**",
+          "answer": "Θ(n log n)",
+          "id": "recurrences.03a4ab05"
+        },
+        {
+          "type": "definition",
+          "term": "Substitution method",
+          "body": "**Guess** the answer (usually from the tree), **assume** it holds for the smaller input, **substitute** into the recurrence, and **prove** it's ≤ c·(your guess). It's induction.",
+          "id": "recurrences.9a624322"
+        },
+        {
+          "type": "trap",
+          "body": "Forgetting the base case, or reading T(n−1) like T(n/2). T(n) = T(n−1) + 1 shrinks by **subtracting**: n levels, Θ(n). Halving gives log n levels.",
+          "source": "HW 6",
+          "points": null,
+          "id": "recurrences.c58f03ce"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter computes T(8) by hand before drawing the tree.",
+          "resources": [
+            {
+              "label": "Read a recurrence",
+              "url": "/study/cs146/6-recurrences?s=read",
+              "kind": "chapter"
+            },
+            {
+              "label": "Unrolling",
+              "url": "/study/cs146/6-recurrences?s=unroll",
+              "kind": "chapter"
+            },
+            {
+              "label": "Recursion tree",
+              "url": "/study/cs146/6-recurrences?s=tree",
+              "kind": "chapter"
+            },
+            {
+              "label": "Substitution",
+              "url": "/study/cs146/6-recurrences?s=substitution",
+              "kind": "chapter"
+            },
+            {
+              "label": "Recurrence relations (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=4V30R3I1vLI",
+              "kind": "video"
+            }
+          ],
+          "id": "recurrences.05326ee4"
+        }
+      ]
+    },
+    {
+      "id": "master",
+      "heading": "6. The master method (Lecture 7)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**For T(n) = aT(n/b) + f(n), compare f(n) with n^(log_b a); whichever is bigger wins, and a tie costs an extra log n.** The cases are printed on the exam; the points are in doing the comparison cleanly.",
+          "label": "think",
+          "id": "master.74b24099"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Move",
+            "What to do"
+          ],
+          "rows": [
+            [
+              "1. Match the shape",
+              "write **a** (number of calls), **b** (shrink factor), **f(n)** (work outside the calls)"
+            ],
+            [
+              "2. Watershed",
+              "compute **n^(log_b a)** ('b to what power gives a?'): the leaves' total work"
+            ],
+            [
+              "3. Compare",
+              "is f(n) polynomially **smaller**, the **same**, or polynomially **bigger**?"
+            ],
+            [
+              "4. Read the case",
+              "smaller → **Θ(n^(log_b a))** · same → **Θ(n^(log_b a) log n)** · bigger (+ regularity) → **Θ(f(n))**"
+            ],
+            [
+              "5. Know when it fails",
+              "say '**does not apply**, because…' for the four bad shapes"
+            ]
+          ],
+          "title": "The five moves",
+          "id": "master.caa0c71a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Recurrence",
+            "a, b, f",
+            "Watershed",
+            "Case",
+            "Answer"
+          ],
+          "rows": [
+            [
+              "T(n/2) + 1 (binary search)",
+              "1, 2, 1",
+              "n⁰ = 1",
+              "2 (same)",
+              "Θ(log n)"
+            ],
+            [
+              "2T(n/2) + n (merge sort)",
+              "2, 2, n",
+              "n",
+              "2 (same)",
+              "Θ(n log n)"
+            ],
+            [
+              "4T(n/2) + n",
+              "4, 2, n",
+              "n²",
+              "1 (f smaller)",
+              "Θ(n²)"
+            ],
+            [
+              "4T(n/2) + n³",
+              "4, 2, n³",
+              "n²",
+              "3 (f bigger)",
+              "Θ(n³)"
+            ]
+          ],
+          "title": "The four to know cold",
+          "id": "master.f84c74d5"
+        },
+        {
+          "type": "definition",
+          "term": "When it does NOT apply",
+          "body": "**a not constant** (n·T(n/2)); **subtracting instead of dividing** (T(n−1)); **only a log gap** (2T(n/2) + n/log n: not polynomially smaller); **case 3 without regularity** (n²(2 + cos n)). Write 'does not apply' plus the reason: that's the full-credit answer.",
+          "id": "master.24e8fc27"
+        },
+        {
+          "type": "trap",
+          "body": "Calling n/log n 'smaller than n' and using case 1. The gap must be **polynomial** (exponents differ by some ε > 0). A log factor isn't. Does not apply.",
+          "source": "HW 7, Midterm",
+          "points": null,
+          "id": "master.ebadf4c1"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter has a practice set with every case and every failure shape.",
+          "resources": [
+            {
+              "label": "The five moves",
+              "url": "/study/cs146/7-master-method?s=master",
+              "kind": "chapter"
+            },
+            {
+              "label": "The watershed",
+              "url": "/study/cs146/7-master-method?s=watershed",
+              "kind": "chapter"
+            },
+            {
+              "label": "When it doesn't apply",
+              "url": "/study/cs146/7-master-method?s=limits",
+              "kind": "chapter"
+            },
+            {
+              "label": "Practice set",
+              "url": "/study/cs146/7-master-method?s=practice",
+              "kind": "chapter"
+            },
+            {
+              "label": "Master theorem, worked (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=OynWkEj0S-s",
+              "kind": "video"
+            }
+          ],
+          "id": "master.e75753f1"
+        }
+      ]
+    },
+    {
+      "id": "heaps",
+      "heading": "7. Heaps, heap sort, priority queues (Lecture 8)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**A max-heap is a complete binary tree stored in an array where every parent is ≥ its children, so the biggest item is always at index 0.**",
+          "label": "think",
+          "id": "heaps.35b8591a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Index of…",
+            "Formula (0-based, Poon's)"
+          ],
+          "rows": [
+            [
+              "left child of i",
+              "**2i + 1**"
+            ],
+            [
+              "right child of i",
+              "**2i + 2**"
+            ],
+            [
+              "parent of i",
+              "**⌊(i − 1) / 2⌋**"
+            ],
+            [
+              "first leaf",
+              "**⌊n / 2⌋**"
+            ]
+          ],
+          "title": "The array IS the tree",
+          "id": "heaps.4b858695"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Operation",
+            "What it does",
+            "Time"
+          ],
+          "rows": [
+            [
+              "heapify(i)",
+              "let a[i] **sink**: swap with its **larger** child until it's bigger than both",
+              "O(log n)"
+            ],
+            [
+              "buildHeap",
+              "heapify every non-leaf from ⌊n/2⌋ − 1 **down to 0**",
+              "**O(n)** (not n log n)"
+            ],
+            [
+              "heapSort",
+              "buildHeap; then n times: swap root to the end, shrink, heapify(0)",
+              "O(n log n), O(1) space, **not stable**"
+            ],
+            [
+              "PQ insert",
+              "append, then swap **up** while bigger than the parent",
+              "O(log n)"
+            ],
+            [
+              "PQ extract",
+              "take a[0], move the last item to 0, heapify(0)",
+              "O(log n)"
+            ],
+            [
+              "PQ peek",
+              "return a[0]",
+              "O(1)"
+            ]
+          ],
+          "title": "Every heap operation",
+          "id": "heaps.85538f11"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-heapsort.mp4",
+          "caption": "The whole of heapsort in 2 minutes, on HW 8's array [1, 2, 3, 4, 5, 6, 7]: build the heap, then peel off the max seven times. The tree and the array move together, so you see they are the same thing.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Start"
+            },
+            {
+              "t": 9,
+              "label": "Build the heap"
+            },
+            {
+              "t": 45,
+              "label": "Sort"
+            },
+            {
+              "t": 117,
+              "label": "Runtime"
+            }
+          ],
+          "id": "heaps.d7d4d0a1"
+        },
+        {
+          "type": "trap",
+          "body": "Mixing up index formulas: Poon is **0-based** (2i+1, 2i+2). The textbook (CLRS) is 1-based (2i, 2i+1). Use his.",
+          "source": "Exam",
+          "points": null,
+          "id": "heaps.9a9d0bc5"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter traces heapify and buildHeap line by line.",
+          "resources": [
+            {
+              "label": "Array as tree",
+              "url": "/study/cs146/8-heaps-heapsort-pq?s=array",
+              "kind": "chapter"
+            },
+            {
+              "label": "heapify",
+              "url": "/study/cs146/8-heaps-heapsort-pq?s=heapify",
+              "kind": "chapter"
+            },
+            {
+              "label": "buildHeap is O(n)",
+              "url": "/study/cs146/8-heaps-heapsort-pq?s=build",
+              "kind": "chapter"
+            },
+            {
+              "label": "Heap sort",
+              "url": "/study/cs146/8-heaps-heapsort-pq?s=sort",
+              "kind": "chapter"
+            },
+            {
+              "label": "Priority queue",
+              "url": "/study/cs146/8-heaps-heapsort-pq?s=pq",
+              "kind": "chapter"
+            },
+            {
+              "label": "Heap sort and heapify (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U",
+              "kind": "video"
+            },
+            {
+              "label": "Heap visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/Heap.html",
+              "kind": "site"
+            }
+          ],
+          "id": "heaps.4947f52f"
+        }
+      ]
+    },
+    {
+      "id": "quicksort",
+      "heading": "8. Quicksort (Lecture 9)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Quicksort picks a pivot, partitions the array so smaller items are left of it and bigger ones right, then sorts each side the same way.** All the work is in partition; there's no combine step.",
+          "label": "think",
+          "id": "quicksort.45337e2f"
+        },
+        {
+          "type": "definition",
+          "term": "partition (Lomuto, Poon's version)",
+          "body": "pivot = **a[high]** (the last item). One left-to-right pass moves every item ≤ pivot into a left zone, then the pivot goes right after that zone, at **i + 1**, which is returned. The pivot is now in its **final sorted position**. Θ(n).",
+          "id": "quicksort.6bb34da9"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-quicksort.mp4",
+          "caption": "Quicksort on the slide's array as a 2.5-minute video: code on the left, bars on the right. Every partition, every swap, and which calls are waiting on the stack. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Start"
+            },
+            {
+              "t": 5,
+              "label": "First partition"
+            },
+            {
+              "t": 46,
+              "label": "Left side"
+            },
+            {
+              "t": 87,
+              "label": "Right side"
+            },
+            {
+              "t": 137,
+              "label": "Runtime"
+            }
+          ],
+          "id": "quicksort.87c48595"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Quicksort",
+            "Merge sort",
+            "Heap sort"
+          ],
+          "rows": [
+            [
+              "Average",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "Θ(n log n)"
+            ],
+            [
+              "Worst",
+              "**O(n²)**",
+              "Θ(n log n)",
+              "Θ(n log n)"
+            ],
+            [
+              "Extra space",
+              "O(log n) call stack",
+              "O(n)",
+              "O(1)"
+            ],
+            [
+              "Stable?",
+              "no",
+              "yes",
+              "no"
+            ],
+            [
+              "In practice",
+              "usually fastest",
+              "steady",
+              "steady"
+            ]
+          ],
+          "title": "The three n log n sorts (Poon's slide)",
+          "id": "quicksort.d2b89e86"
+        },
+        {
+          "type": "prose",
+          "md": "**Worst case:** every pivot is the largest or smallest item, so one side is empty and the other has n − 1: n + (n−1) + … = **n²**. With last-item pivots, that happens on **already sorted** input. Fixes: a **random** pivot, **median of three**.",
+          "id": "quicksort.79e002bb"
+        },
+        {
+          "type": "trap",
+          "body": "Returning i instead of **i + 1** from partition, or counting the returned index from low instead of from 0 (it's an index into the **whole** array).",
+          "source": "HW 9",
+          "points": null,
+          "id": "quicksort.bb2e94d0"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** Poon's own animation and the chapter's line-by-line partition trace.",
+          "resources": [
+            {
+              "label": "partition",
+              "url": "/study/cs146/9-quicksort?s=partition",
+              "kind": "chapter"
+            },
+            {
+              "label": "quicksort",
+              "url": "/study/cs146/9-quicksort?s=quicksort",
+              "kind": "chapter"
+            },
+            {
+              "label": "Why the worst case is n²",
+              "url": "/study/cs146/9-quicksort?s=analysis",
+              "kind": "chapter"
+            },
+            {
+              "label": "Poon's video: partitioning an array (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/88840377",
+              "kind": "video"
+            },
+            {
+              "label": "Quicksort (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=7h1s2SojIRw",
+              "kind": "video"
+            }
+          ],
+          "id": "quicksort.2742bace"
+        }
+      ]
+    },
+    {
+      "id": "linear",
+      "heading": "9. The n log n limit and linear-time sorts (Lecture 10)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Any sort that only compares pairs needs Ω(n log n) comparisons; counting, radix and bucket sort beat that by looking at the values themselves, but each only works on a certain kind of data.**",
+          "label": "think",
+          "id": "linear.add0f828"
+        },
+        {
+          "type": "definition",
+          "term": "Comparison sort lower bound",
+          "body": "Insertion, merge, heap and quicksort treat items like **closed boxes** they can only compare. Any such sort needs **Ω(n log n)** comparisons in the worst case. Poon states it; the proof is outside the course.",
+          "id": "linear.33f7932a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Counting sort",
+            "Radix sort",
+            "Bucket sort"
+          ],
+          "rows": [
+            [
+              "Input",
+              "integers in a small range [0, k]",
+              "integers with d digits",
+              "numbers spread **evenly** over [0, 1)"
+            ],
+            [
+              "Idea",
+              "count each value, cumulative counts = seats, place items **backwards**",
+              "stable-sort by the **last** digit, then the next, … d passes",
+              "n buckets, x goes to ⌊n·x⌋, sort each bucket, concatenate"
+            ],
+            [
+              "Time",
+              "**Θ(n + k)**",
+              "**Θ(d(n + b))**",
+              "average **Θ(n)**; worst = the inner sort (Θ(n²))"
+            ],
+            [
+              "Breaks when",
+              "k is huge",
+              "d is huge",
+              "data isn't evenly spread"
+            ]
+          ],
+          "title": "Poon's summary table",
+          "id": "linear.acde988c"
+        },
+        {
+          "type": "example",
+          "title": "Counting sort, the slide's example",
+          "body": "a = [4, 1, 0, 2, 1, 0], k = 4\ncount      = [2, 2, 1, 0, 1]   (two 0s, two 1s, …)\ncumulative = [2, 4, 5, 5, 6]   (count[v] = how many items are ≤ v)\nwalk a backwards; seat = count[x] − 1; then count[x] −= 1\noutput     = [0, 0, 1, 1, 2, 4]",
+          "answer": "[0, 0, 1, 1, 2, 4]",
+          "id": "linear.fa5d0c82"
+        },
+        {
+          "type": "trap",
+          "body": "Radix sort with an **unstable** inner sort gives **wrong** answers, not just slow ones: the earlier digits' order must survive. That's why counting sort walks **backwards** (it keeps it stable).",
+          "source": "Lecture 10",
+          "points": null,
+          "id": "linear.d7b624b1"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter traces all three on Poon's arrays.",
+          "resources": [
+            {
+              "label": "The n log n limit",
+              "url": "/study/cs146/10-linear-sorts?s=limits",
+              "kind": "chapter"
+            },
+            {
+              "label": "Counting sort",
+              "url": "/study/cs146/10-linear-sorts?s=counting",
+              "kind": "chapter"
+            },
+            {
+              "label": "Radix sort",
+              "url": "/study/cs146/10-linear-sorts?s=radix",
+              "kind": "chapter"
+            },
+            {
+              "label": "Bucket sort",
+              "url": "/study/cs146/10-linear-sorts?s=bucket",
+              "kind": "chapter"
+            },
+            {
+              "label": "Which sort when",
+              "url": "/study/cs146/10-linear-sorts?s=choose",
+              "kind": "chapter"
+            },
+            {
+              "label": "Counting sort (CS Dojo)",
+              "url": "https://www.youtube.com/watch?v=OKd534EWcdk",
+              "kind": "video"
+            },
+            {
+              "label": "Radix sort (CS Dojo)",
+              "url": "https://www.youtube.com/watch?v=XiuSW_mEn7g",
+              "kind": "video"
+            }
+          ],
+          "id": "linear.9caaa639"
+        }
+      ]
+    },
+    {
+      "id": "hash",
+      "heading": "10. Hash tables (Lecture 11)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**A hash table turns a key into an array index with a hash function, so insert, search and delete take O(1) on average**; collisions go into a chain at that slot.",
+          "label": "think",
+          "id": "hash.9dd28799"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-hash-tables.mp4",
+          "caption": "Poon's librarian analogy and the whole mechanism in 2.5 minutes. Use the chips to jump.",
+          "chapters": [
+            {
+              "t": 5,
+              "label": "Phase 1: waste"
+            },
+            {
+              "t": 17,
+              "label": "Phase 2: collisions"
+            },
+            {
+              "t": 45,
+              "label": "Phase 3: chains"
+            },
+            {
+              "t": 66,
+              "label": "Story → CS"
+            },
+            {
+              "t": 76,
+              "label": "Chaining trace"
+            },
+            {
+              "t": 112,
+              "label": "search(17)"
+            },
+            {
+              "t": 124,
+              "label": "Load factor + resize"
+            },
+            {
+              "t": 146,
+              "label": "Bottom line"
+            }
+          ],
+          "id": "hash.0795a36a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Hash function h(k)",
+              "key → slot number 0..m−1. Division: **k mod m**. Multiplication: **⌊m·(kA mod 1)⌋**"
+            ],
+            [
+              "Collision",
+              "two different keys, same slot. Unavoidable when there are more possible keys than slots"
+            ],
+            [
+              "Chaining",
+              "each slot holds a linked list; insert at the **head** (O(1))"
+            ],
+            [
+              "Load factor α",
+              "**n / m**, the average chain length. Search walks about α nodes"
+            ],
+            [
+              "Resize",
+              "when α passes a limit (0.75), double m and re-insert everything: O(n) once in a while"
+            ],
+            [
+              "Amortized O(1)",
+              "the occasional O(n) resize spread over all the cheap inserts averages to O(1)"
+            ]
+          ],
+          "title": "The whole lecture in six words",
+          "id": "hash.3b60221c"
+        },
+        {
+          "type": "example",
+          "title": "Chaining with h(k) = k mod 10",
+          "body": "insert 42, 17, 22, 37 (insert at head)\nslot 2: 22 → 42\nslot 7: 37 → 17\nsearch(42): slot 2, walk 22, then 42: found in 2 steps",
+          "answer": "slot 2: 22 → 42",
+          "id": "hash.7b301879"
+        },
+        {
+          "type": "trap",
+          "body": "'Amortized O(1)' does **not** mean every call is O(1): one insert can cost O(n) when it triggers a resize. And it assumes a good hash function; one that sends everything to the same slot makes search **O(n)**.",
+          "source": "Exam",
+          "points": null,
+          "id": "hash.3615cf70"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** Start from the librarian story in the chapter; it maps every word.",
+          "resources": [
+            {
+              "label": "The library analogy",
+              "url": "/study/cs146/11-hash-tables?s=library",
+              "kind": "chapter"
+            },
+            {
+              "label": "Hash functions",
+              "url": "/study/cs146/11-hash-tables?s=hashing",
+              "kind": "chapter"
+            },
+            {
+              "label": "Chaining",
+              "url": "/study/cs146/11-hash-tables?s=chaining",
+              "kind": "chapter"
+            },
+            {
+              "label": "Load factor and resizing",
+              "url": "/study/cs146/11-hash-tables?s=runtime",
+              "kind": "chapter"
+            },
+            {
+              "label": "Hashing, simplified (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=mFY0J5W8Udk",
+              "kind": "video"
+            },
+            {
+              "label": "Hash table visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/OpenHash.html",
+              "kind": "site"
+            }
+          ],
+          "id": "hash.e60c6c2e"
+        }
+      ]
+    },
+    {
+      "id": "bst",
+      "heading": "11. Binary search trees (Lecture 12)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**In a BST, every key in a node's left subtree is smaller and every key in its right subtree is bigger, so search walks one path down: O(h).** Unlike a hash table, it keeps things in order.",
+          "label": "think",
+          "id": "bst.2031349b"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-bst.mp4",
+          "caption": "The lecture's mechanics as a 90-second animation: building Poon's example tree, insert 10, then the three delete cases on the original tree. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "Build the tree"
+            },
+            {
+              "t": 26,
+              "label": "Insert 10"
+            },
+            {
+              "t": 38,
+              "label": "Delete a leaf"
+            },
+            {
+              "t": 51,
+              "label": "One child"
+            },
+            {
+              "t": 64,
+              "label": "Two children"
+            },
+            {
+              "t": 88,
+              "label": "Runtime"
+            }
+          ],
+          "id": "bst.79452907"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Operation",
+            "How",
+            "Time"
+          ],
+          "rows": [
+            [
+              "search / min / max",
+              "one path down (min: keep going left)",
+              "O(h)"
+            ],
+            [
+              "insert",
+              "search until you fall off; the new key becomes a **leaf**",
+              "O(h)"
+            ],
+            [
+              "delete",
+              "leaf: remove · one child: child takes its place · two children: copy the **successor** (min of the right subtree) up, then delete it",
+              "O(h)"
+            ],
+            [
+              "successor",
+              "right child? min of right subtree. Else: search from the root; the **last node where you stepped left**",
+              "O(h)"
+            ],
+            [
+              "in / pre / post-order",
+              "visit every node",
+              "O(n)"
+            ]
+          ],
+          "title": "Everything a BST does",
+          "id": "bst.a1024ec7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Order",
+            "Visit",
+            "On Poon's tree"
+          ],
+          "rows": [
+            [
+              "In-order",
+              "left, **node**, right",
+              "2 3 5 6 7 9 13 15 17 18 20 (sorted!)"
+            ],
+            [
+              "Pre-order",
+              "**node**, left, right",
+              "15 6 3 2 5 7 13 9 18 17 20"
+            ],
+            [
+              "Post-order",
+              "left, right, **node**",
+              "2 5 3 9 13 7 6 17 20 18 15"
+            ]
+          ],
+          "title": "The three traversals",
+          "id": "bst.86ce6375"
+        },
+        {
+          "type": "prose",
+          "md": "**h is the catch.** Keys in mixed order: h ≈ log n, everything O(log n). Keys in **sorted** order: the tree is a chain, h = n − 1, everything **O(n)**. That's the problem AVL trees fix.",
+          "id": "bst.814060f7"
+        },
+        {
+          "type": "trap",
+          "body": "The BST rule is about whole **subtrees**, not just children. And in the two-children delete, forgetting step two: after copying the successor up, delete the old successor node.",
+          "source": "Exam",
+          "points": null,
+          "id": "bst.d7a1354a"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** Poon's own successor videos, and the chapter's line-by-line traces.",
+          "resources": [
+            {
+              "label": "The BST property",
+              "url": "/study/cs146/12-binary-search-trees?s=property",
+              "kind": "chapter"
+            },
+            {
+              "label": "Search and successor",
+              "url": "/study/cs146/12-binary-search-trees?s=search",
+              "kind": "chapter"
+            },
+            {
+              "label": "Traversals",
+              "url": "/study/cs146/12-binary-search-trees?s=traversal",
+              "kind": "chapter"
+            },
+            {
+              "label": "Insert",
+              "url": "/study/cs146/12-binary-search-trees?s=insert",
+              "kind": "chapter"
+            },
+            {
+              "label": "Delete: three cases",
+              "url": "/study/cs146/12-binary-search-trees?s=delete",
+              "kind": "chapter"
+            },
+            {
+              "label": "Poon: successor of 13 (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89088648",
+              "kind": "video"
+            },
+            {
+              "label": "Poon: what insert() returns (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89089843",
+              "kind": "video"
+            },
+            {
+              "label": "BST visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/BST.html",
+              "kind": "site"
+            }
+          ],
+          "id": "bst.ad2065eb"
+        }
+      ]
+    },
+    {
+      "id": "avl",
+      "heading": "12. AVL trees (Lecture 13)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**An AVL tree is a BST that keeps |H(left) − H(right)| ≤ 1 at every node by doing O(1) rotations after inserts and deletes, so its height, and every operation, stays O(log n).**",
+          "label": "think",
+          "id": "avl.779d5bfa"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-avl.mp4",
+          "caption": "AVL insert as a 95-second animation, with H and B under every node: Poon's Example 2 (the zig-zag LR case, two rotations), then all of HW 13 Problem 1. Use the chips to jump, or slow it to 0.75×.",
+          "chapters": [
+            {
+              "t": 4,
+              "label": "Case LR"
+            },
+            {
+              "t": 40,
+              "label": "HW 13 Problem 1"
+            },
+            {
+              "t": 91,
+              "label": "Runtime"
+            }
+          ],
+          "id": "avl.33c1a533"
+        },
+        {
+          "type": "definition",
+          "term": "H and B",
+          "body": "**H(node)** = edges down to the deepest leaf (leaf 0, **null −1**). **B(node) = H(left) − H(right)**. Balanced if B is −1, 0 or 1; **B > 1** left-heavy, **B < −1** right-heavy.",
+          "id": "avl.cd20cfa3"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Case",
+            "Path from the unbalanced node to the new key",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "**LL**",
+              "left, left",
+              "rightRotate(node)"
+            ],
+            [
+              "**LR**",
+              "left, right (zig-zag)",
+              "leftRotate(node.left), then rightRotate(node)"
+            ],
+            [
+              "**RR**",
+              "right, right",
+              "leftRotate(node)"
+            ],
+            [
+              "**RL**",
+              "right, left (zig-zag)",
+              "rightRotate(node.right), then leftRotate(node)"
+            ]
+          ],
+          "title": "Insert cases",
+          "id": "avl.26946688"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "insert",
+            "delete"
+          ],
+          "rows": [
+            [
+              "Rotation sets",
+              "**at most 1**",
+              "up to **O(log n)** (can cascade to the root)"
+            ],
+            [
+              "Case picked by",
+              "where the new key went",
+              "**B(y)** of the heavier child (LL if ≥ 0, LR if < 0)"
+            ],
+            [
+              "Time",
+              "O(log n)",
+              "O(log n)"
+            ]
+          ],
+          "title": "Insert vs delete",
+          "id": "avl.7dcb3903"
+        },
+        {
+          "type": "example",
+          "title": "HW 13 Problem 1: insert 15, 20, 25, 10, 8",
+          "body": "15, 20: fine\n25: 15 has B = −2, path right, right → RR: leftRotate(15), 20 on top\n10: no rotation; 15 now leans left by 1\n8: 15 has B = +2, path left, left → LL: rightRotate(15), 10 takes its place\nFinal: 20 (10 (8, 15), 25)",
+          "answer": "RR, then LL; root 20",
+          "id": "avl.b7ba3f2b"
+        },
+        {
+          "type": "trap",
+          "body": "B is **left minus right** (left-heavy is positive), a missing child counts **−1**, and a zig-zag needs **two** rotations: one rotation just flips the problem to the other side.",
+          "source": "HW 13",
+          "points": null,
+          "id": "avl.31a98dd0"
+        },
+        {
+          "type": "prose",
+          "md": "**Stuck?** The chapter steps through every height update and rotation.",
+          "resources": [
+            {
+              "label": "H and B",
+              "url": "/study/cs146/13-avl-trees?s=balance",
+              "kind": "chapter"
+            },
+            {
+              "label": "Rotations",
+              "url": "/study/cs146/13-avl-trees?s=rotations",
+              "kind": "chapter"
+            },
+            {
+              "label": "Insert cases",
+              "url": "/study/cs146/13-avl-trees?s=insert",
+              "kind": "chapter"
+            },
+            {
+              "label": "HW 13 worked",
+              "url": "/study/cs146/13-avl-trees?s=hw",
+              "kind": "chapter"
+            },
+            {
+              "label": "Delete and cascading",
+              "url": "/study/cs146/13-avl-trees?s=delete",
+              "kind": "chapter"
+            },
+            {
+              "label": "AVL insertion and rotations (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=jDM6_TnYIqE",
+              "kind": "video"
+            },
+            {
+              "label": "AVL visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/AVLtree.html",
+              "kind": "site"
+            }
+          ],
+          "id": "avl.44c96a3b"
+        }
+      ]
+    },
+    {
+      "id": "compare",
+      "heading": "The comparison tables (the highest-value page)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Half the conceptual questions are 'which one, and why?'. These two tables answer most of them.",
+          "id": "compare.6f1b1eca"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Sort",
+            "Best",
+            "Average",
+            "Worst",
+            "Extra space",
+            "Stable",
+            "In place",
+            "One-line why"
+          ],
+          "rows": [
+            [
+              "Insertion",
+              "Ω(n)",
+              "Θ(n²)",
+              "O(n²)",
+              "O(1)",
+              "yes",
+              "yes",
+              "shifts each key left past bigger items"
+            ],
+            [
+              "Merge",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "O(n)",
+              "yes",
+              "no",
+              "log n levels × n work to merge"
+            ],
+            [
+              "Heap",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "O(1)",
+              "no",
+              "yes",
+              "n extracts × O(log n) each"
+            ],
+            [
+              "Quick",
+              "Θ(n log n)",
+              "Θ(n log n)",
+              "**O(n²)**",
+              "O(log n)",
+              "no",
+              "yes",
+              "bad pivots (sorted input) split n into 0 and n − 1"
+            ],
+            [
+              "Counting",
+              "Θ(n + k)",
+              "Θ(n + k)",
+              "Θ(n + k)",
+              "O(n + k)",
+              "yes",
+              "no",
+              "no comparisons: count values in [0, k]"
+            ],
+            [
+              "Radix",
+              "Θ(d(n + b))",
+              "Θ(d(n + b))",
+              "Θ(d(n + b))",
+              "O(n + b)",
+              "yes",
+              "no",
+              "d stable passes, one per digit"
+            ],
+            [
+              "Bucket",
+              "Θ(n)",
+              "Θ(n) average",
+              "O(n²)",
+              "O(n)",
+              "if inner is",
+              "no",
+              "even data → about 1 item per bucket"
+            ]
+          ],
+          "title": "Every sort",
+          "id": "compare.8f67da61"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Structure",
+            "search",
+            "insert",
+            "delete",
+            "min / ordered walk",
+            "Catch"
+          ],
+          "rows": [
+            [
+              "Unsorted array",
+              "O(n)",
+              "O(1) at the end",
+              "O(n)",
+              "O(n)",
+              "everything but append is slow"
+            ],
+            [
+              "Sorted array",
+              "O(log n) binary search",
+              "O(n) shifting",
+              "O(n) shifting",
+              "fast",
+              "changes are slow"
+            ],
+            [
+              "Linked list",
+              "O(n)",
+              "O(1) at head",
+              "O(1) once found",
+              "O(n)",
+              "no indexing"
+            ],
+            [
+              "Max-heap (PQ)",
+              "O(n)",
+              "O(log n)",
+              "extract O(log n)",
+              "max O(1)",
+              "only the top is easy"
+            ],
+            [
+              "Hash table",
+              "**O(1)** avg",
+              "**O(1)** amortized",
+              "**O(1)** avg",
+              "O(n): no order",
+              "bad hash → O(n)"
+            ],
+            [
+              "BST",
+              "O(h)",
+              "O(h)",
+              "O(h)",
+              "O(h), in order",
+              "sorted input → h = n − 1"
+            ],
+            [
+              "AVL tree",
+              "**O(log n)**",
+              "**O(log n)**",
+              "**O(log n)**",
+              "O(log n), in order",
+              "rotations to maintain"
+            ]
+          ],
+          "title": "Every structure",
+          "id": "compare.11afb31a"
+        },
+        {
+          "type": "prose",
+          "md": "**Picking, in one breath:** need lookup by key only → hash table. Need order (min, ranges, sorted walk) → balanced BST (AVL). Need 'give me the most urgent next' → heap. Sorting small integers → counting/radix. General sorting with a guarantee → merge sort (stable) or heap sort (in place); fastest in practice → quicksort with a random pivot.",
+          "label": "think",
+          "id": "compare.72af4e00"
+        }
+      ]
+    },
+    {
+      "id": "night",
+      "heading": "The night before: the traps, all in one list",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every trap from every chapter that has cost students points, in lecture order. Read it once the night before and once in the morning.",
+          "id": "night.16b680c4"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Topic",
+            "The trap"
+          ],
+          "rows": [
+            [
+              "Linked list",
+              "set X.next before B.next; dequeueing the last item also sets tail = null"
+            ],
+            [
+              "Invariants",
+              "about the **prefix** handled so far, never the whole array"
+            ],
+            [
+              "Big-O",
+              "log n is not a constant: O(n log n) stays O(n log n)"
+            ],
+            [
+              "Merge sort",
+              "not in place: O(n) extra space"
+            ],
+            [
+              "Recurrences",
+              "T(n−1) means n levels; T(n/2) means log n levels"
+            ],
+            [
+              "Master method",
+              "a log gap isn't polynomial: 'does not apply'"
+            ],
+            [
+              "Heaps",
+              "0-based: children 2i+1, 2i+2; buildHeap is O(n); heap sort isn't stable"
+            ],
+            [
+              "Quicksort",
+              "partition returns i + 1; worst case n² on sorted input"
+            ],
+            [
+              "Linear sorts",
+              "radix needs a stable inner sort; bucket's Θ(n) is only for even data"
+            ],
+            [
+              "Hash tables",
+              "amortized ≠ every call; a bad hash makes search O(n)"
+            ],
+            [
+              "BSTs",
+              "the rule is about whole subtrees; two-children delete = copy successor + delete it"
+            ],
+            [
+              "AVL",
+              "B = left − right; null is −1; zig-zags need two rotations; delete can cascade"
+            ]
+          ],
+          "title": "The trap list",
+          "id": "night.e0a830ac"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters** These are the exact slips Poon marks down on homework, and he writes the midterm from the same slides. Knowing the trap is often worth the whole question.",
+          "label": "why",
+          "id": "night.8feb54cd"
+        },
+        {
+          "type": "prose",
+          "md": "**Want a test run?** The mock exam and the Ready page use everything you've marked so far.",
+          "resources": [
+            {
+              "label": "Start of Lecture 2",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=map",
+              "kind": "chapter"
+            },
+            {
+              "label": "Start of Lecture 13",
+              "url": "/study/cs146/13-avl-trees?s=map",
+              "kind": "chapter"
+            }
+          ],
+          "id": "night.801819a5"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "adt",
+      "title": "ADT",
+      "prompt": "Which sentence matches Poon's definition of an abstract data type?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Behavior, not implementation.**"
+      ],
+      "why": "He asks for this sentence word for word.",
+      "choices": [
+        {
+          "text": "A type defined by what it does, not how it's built",
+          "feedback": "Yes: behavior, not implementation."
+        },
+        {
+          "text": "A type built from an array",
+          "feedback": "That's one possible implementation, which is exactly what an ADT leaves out."
+        },
+        {
+          "text": "Any type with more than one field",
+          "feedback": "Fields describe implementation."
+        },
+        {
+          "text": "A type that can't be instantiated",
+          "feedback": "That's an abstract class in Java, a different idea."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "adts"
+    },
+    {
+      "id": "invariant",
+      "title": "Invariant",
+      "prompt": "For insertion sort, the loop invariant is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**The prefix a[0..j−1] is sorted.**"
+      ],
+      "why": "The most common lost point on invariants.",
+      "choices": [
+        {
+          "text": "a[0..j−1] is sorted",
+          "feedback": "Yes: the prefix handled so far."
+        },
+        {
+          "text": "the whole array is sorted",
+          "feedback": "That's only true at the end."
+        },
+        {
+          "text": "a[j] is the smallest item",
+          "feedback": "Insertion sort doesn't select minimums."
+        },
+        {
+          "text": "j < n",
+          "feedback": "That's the loop condition, not an invariant about progress."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "invariants"
+    },
+    {
+      "id": "theta",
+      "title": "Theta",
+      "prompt": "Summing all n elements of an array is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Θ(n)**: Ω(n) and O(n) at once."
+      ],
+      "why": "Θ means best = worst.",
+      "choices": [
+        {
+          "text": "Θ(n)",
+          "feedback": "Yes: best and worst are both n, so Θ."
+        },
+        {
+          "text": "Θ(1)",
+          "feedback": "You must touch every element."
+        },
+        {
+          "text": "Θ(log n)",
+          "feedback": "There's no halving."
+        },
+        {
+          "text": "Θ(n²)",
+          "feedback": "One pass, not nested."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "bigo"
+    },
+    {
+      "id": "merge-space",
+      "title": "Merge sort space",
+      "prompt": "Why isn't merge sort in place?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**The merge step needs an O(n) temporary array.**"
+      ],
+      "why": "A classic 'compare the sorts' question.",
+      "choices": [
+        {
+          "text": "merge writes into a temporary array of size n",
+          "feedback": "Yes: O(n) extra space."
+        },
+        {
+          "text": "it uses recursion",
+          "feedback": "Quicksort recurses too and is in place."
+        },
+        {
+          "text": "it compares pairs",
+          "feedback": "All comparison sorts compare."
+        },
+        {
+          "text": "it's stable",
+          "feedback": "Stability is unrelated to space."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "dc"
+    },
+    {
+      "id": "master-1",
+      "title": "Master method",
+      "prompt": "T(n) = 8T(n/2) + n². What is the solution?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Θ(n³)**, case 1: the leaves dominate."
+      ],
+      "why": "Compute the watershed first, always.",
+      "choices": [
+        {
+          "text": "Θ(n³)",
+          "feedback": "Yes: watershed n^(log₂ 8) = n³; n² is polynomially smaller, case 1."
+        },
+        {
+          "text": "Θ(n² log n)",
+          "feedback": "That would need f = n³ (a tie)."
+        },
+        {
+          "text": "Θ(n²)",
+          "feedback": "f(n) loses here; the leaves win."
+        },
+        {
+          "text": "does not apply",
+          "feedback": "It fits the shape with constants a = 8, b = 2."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "master"
+    },
+    {
+      "id": "master-no",
+      "title": "Does not apply",
+      "prompt": "T(n) = 2T(n/2) + n/log n. Master method?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Does not apply**: the gap between n/log n and n is only a log factor."
+      ],
+      "why": "Poon grades 'does not apply because…' as full credit.",
+      "choices": [
+        {
+          "text": "does not apply: only a log gap",
+          "feedback": "Yes: n/log n is smaller than n, but not polynomially."
+        },
+        {
+          "text": "case 1: Θ(n)",
+          "feedback": "Case 1 needs a polynomial gap."
+        },
+        {
+          "text": "case 2: Θ(n log n)",
+          "feedback": "Case 2 needs f to equal the watershed."
+        },
+        {
+          "text": "case 3: Θ(n/log n)",
+          "feedback": "f is smaller, not bigger."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "master"
+    },
+    {
+      "id": "buildheap",
+      "title": "buildHeap",
+      "prompt": "buildHeap on n items costs…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**O(n).**"
+      ],
+      "why": "A favorite 'surprising runtime' question.",
+      "choices": [
+        {
+          "text": "O(n)",
+          "feedback": "Yes: most nodes are near the bottom and sink only a little."
+        },
+        {
+          "text": "O(n log n)",
+          "feedback": "That's n separate inserts, the slow way."
+        },
+        {
+          "text": "O(log n)",
+          "feedback": "That's one heapify."
+        },
+        {
+          "text": "O(n²)",
+          "feedback": "Far too much."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "heaps"
+    },
+    {
+      "id": "quick-worst",
+      "title": "Quicksort worst case",
+      "prompt": "With the last item as pivot, quicksort's worst case happens on…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Sorted (or reverse-sorted) input**: Θ(n²)."
+      ],
+      "why": "The fix: a random pivot.",
+      "choices": [
+        {
+          "text": "already sorted input",
+          "feedback": "Yes: every pivot is the max, splitting n into n − 1 and 0."
+        },
+        {
+          "text": "random input",
+          "feedback": "Random input gives n log n on average."
+        },
+        {
+          "text": "input with all different values",
+          "feedback": "Distinct values don't matter."
+        },
+        {
+          "text": "small arrays",
+          "feedback": "Size isn't the issue."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "quicksort"
+    },
+    {
+      "id": "radix-stable",
+      "title": "Radix sort",
+      "prompt": "Why must radix sort's inner sort be stable?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**To keep the earlier digits' order.** Unstable = wrong answers."
+      ],
+      "why": "Lecture 10's key idea.",
+      "choices": [
+        {
+          "text": "so the order from earlier digits survives",
+          "feedback": "Yes: ties on this digit must keep the order the last pass made."
+        },
+        {
+          "text": "so it runs in place",
+          "feedback": "Stability isn't about space."
+        },
+        {
+          "text": "so it's faster",
+          "feedback": "Speed is the same."
+        },
+        {
+          "text": "so it can handle negatives",
+          "feedback": "Unrelated."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "linear"
+    },
+    {
+      "id": "hash-alpha",
+      "title": "Load factor",
+      "prompt": "A hash table with chaining has m = 8 slots and n = 6 keys. α is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**α = n / m = 0.75**, right at the resize limit."
+      ],
+      "why": "α is the average chain length.",
+      "choices": [
+        {
+          "text": "0.75",
+          "feedback": "Yes: α = n / m = 6 / 8."
+        },
+        {
+          "text": "1.33",
+          "feedback": "That's m / n, upside down."
+        },
+        {
+          "text": "48",
+          "feedback": "That's n × m."
+        },
+        {
+          "text": "6",
+          "feedback": "That's just n."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "hash"
+    },
+    {
+      "id": "bst-inorder",
+      "title": "In-order",
+      "prompt": "An in-order traversal of any BST gives the keys…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Sorted.**"
+      ],
+      "why": "A free check on any BST answer.",
+      "choices": [
+        {
+          "text": "in sorted order",
+          "feedback": "Yes: left, node, right = smaller, this, bigger."
+        },
+        {
+          "text": "in insertion order",
+          "feedback": "Insertion order is lost once the tree is built."
+        },
+        {
+          "text": "level by level",
+          "feedback": "That's a breadth-first walk, not in-order."
+        },
+        {
+          "text": "in reverse order",
+          "feedback": "Reverse would be right, node, left."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "bst"
+    },
+    {
+      "id": "bst-sorted",
+      "title": "BST on sorted input",
+      "prompt": "Inserting 1, 2, 3, …, n into a plain BST makes search…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**O(n).** That's why AVL trees exist."
+      ],
+      "why": "The bridge from Lecture 12 to 13.",
+      "choices": [
+        {
+          "text": "O(n): the tree is a chain",
+          "feedback": "Yes: every key goes right; h = n − 1."
+        },
+        {
+          "text": "O(log n)",
+          "feedback": "Only if it stayed balanced."
+        },
+        {
+          "text": "O(1)",
+          "feedback": "Only a hash table promises that."
+        },
+        {
+          "text": "O(n log n)",
+          "feedback": "Search is one path, never n log n."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "bst"
+    },
+    {
+      "id": "avl-case",
+      "title": "AVL case",
+      "prompt": "Insert 10, 30, 20 into an empty AVL tree. Which case?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**RL**: rightRotate(30), then leftRotate(10). 20 ends on top."
+      ],
+      "why": "Name the two steps from the unbalanced node.",
+      "choices": [
+        {
+          "text": "RL",
+          "feedback": "Yes: from 10 the path to 20 goes right (30), then left."
+        },
+        {
+          "text": "RR",
+          "feedback": "RR would be 10, 20, 30."
+        },
+        {
+          "text": "LR",
+          "feedback": "LR starts by going left."
+        },
+        {
+          "text": "LL",
+          "feedback": "LL is two left steps."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "avl"
+    },
+    {
+      "id": "avl-delete",
+      "title": "AVL delete",
+      "prompt": "Why can an AVL delete need several rotation sets?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**The height loss can cascade upward**, so up to O(log n) rotation sets."
+      ],
+      "why": "Insert needs at most one.",
+      "choices": [
+        {
+          "text": "a rotation can shrink the subtree, unbalancing nodes above",
+          "feedback": "Yes: the height loss travels up, possibly to the root."
+        },
+        {
+          "text": "deletes always remove two nodes",
+          "feedback": "A delete removes one node."
+        },
+        {
+          "text": "the successor must be rotated",
+          "feedback": "The successor is just copied up."
+        },
+        {
+          "text": "it rebuilds the tree",
+          "feedback": "Nothing is rebuilt."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "avl"
+    }
+  ]
+}
