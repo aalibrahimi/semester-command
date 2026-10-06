@@ -119,7 +119,7 @@ g = {
     ], title="Insertion sort's runtime"),
     P("Insertion sort is **in place** (O(1) extra space) and **stable**: the test is strictly `a[i] > key`, so equal items never jump past each other."),
     TRAP("Writing the invariant about the **whole** array ('the array is sorted') instead of the **prefix** ('a[0..j−1] is sorted'). An invariant must be true in the middle, when the job is half done.", "Exam"),
-    DEEPER("**Stuck?** The chapter walks the three parts on insertion sort itself.", [ch("Loop invariants", L2, "invariants"), ch("Insertion sort", L2, "insertion"), ch("Induction (Chapter 0)", L0, "induction")]),
+    DEEPER("**Stuck?** Lecture 3 from zero goes one idea at a time, with the code next to plain English and a video.", [ch("Lecture 3 from zero: invariants", "3-from-zero", "invariant"), ch("Lecture 3 from zero: the code", "3-from-zero", "code"), ch("Loop invariants", L2, "invariants"), ch("Insertion sort", L2, "insertion"), ch("Induction (Chapter 0)", L0, "induction")]),
   ]},
 
   {"id": "bigo", "heading": "3. Big-O, Omega, Theta and the growth ladder (Lecture 4)", "blocks": [
@@ -140,7 +140,7 @@ g = {
     ], title="The growth ladder, slowest-growing first"),
     E("Simplify", "T(n) = 3n² + 10n log n + 500\n\nKeep the fastest-growing term, drop its constant: **Θ(n²)**.\nProve O(n²) with the definition: for n ≥ 1, 3n² + 10n log n + 500 ≤ 3n² + 10n² + 500n² = 513n², so c = 513, n₀ = 1.", answer="Θ(n²)"),
     TRAP("Dropping a term that **isn't** a constant. n log n is not 'n times a constant': log n grows. O(n log n) stays O(n log n).", "HW 4"),
-    DEEPER("**Stuck?** Chapter 0 explains log and n^(log_b a) from zero; Lecture 4 does Big-O slowly.", [ch("Big-O in plain words", L4, "bigo"), ch("The growth ladder", L4, "classes"), ch("What log n means", L0, "log"), yt("Asymptotic notation, worked (Abdul Bari)", "A03oI0znAoc"), site("Big-O cheat sheet", "https://www.bigocheatsheet.com/")]),
+    DEEPER("**Stuck?** Lecture 3 from zero explains what O, Ω and Θ are each for, with a video; Chapter 0 explains log from zero.", [ch("O, Ω, Θ from zero", "3-from-zero", "family"), ch("log n vs n log n", "3-from-zero", "logs"), ch("Big-O in plain words", L4, "bigo"), ch("The growth ladder", L4, "classes"), ch("What log n means", L0, "log"), yt("Asymptotic notation, worked (Abdul Bari)", "A03oI0znAoc"), site("Big-O cheat sheet", "https://www.bigocheatsheet.com/")]),
   ]},
 
   {"id": "dc", "heading": "4. Divide and conquer, binary search, merge sort (Lectures 4 to 5)", "blocks": [
@@ -156,7 +156,7 @@ g = {
     video("/study-videos/cs146-merge-sort.mp4"),
     P("**Why n log n?** The halving makes **log n levels**; every level merges all n items once. n work × log n levels = **n log n**. That picture (the recursion tree) is the answer to 'explain merge sort's runtime'."),
     TRAP("Saying merge sort sorts **in place**. It doesn't: merge writes into a temporary array, **O(n) extra space**. Insertion sort and heap sort are the in-place ones.", "Lecture 5"),
-    DEEPER("**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter.", [ch("Binary search", L4, "binsearch"), ch("Merge", L4, "merge"), ch("Merge sort", L4, "mergesort"), ch("Why n log n", L4, "whynlogn"), yt("Merge sort (Abdul Bari)", "mB5HXBb_HY8")]),
+    DEEPER("**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter. log n vs n log n has its own slow section.", [ch("log n vs n log n, slowly", "3-from-zero", "logs"), ch("Binary search", L4, "binsearch"), ch("Merge", L4, "merge"), ch("Merge sort", L4, "mergesort"), ch("Why n log n", L4, "whynlogn"), yt("Merge sort (Abdul Bari)", "mB5HXBb_HY8")]),
   ]},
 
   {"id": "recurrences", "heading": "5. Recurrences and the recursion tree (Lecture 6)", "blocks": [

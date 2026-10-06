@@ -1,0 +1,3988 @@
+{
+  "id": "cs146/3-from-zero",
+  "course": "cs146",
+  "lessons": "Lecture 3, slowly",
+  "title": "Lecture 3 from zero: insertion sort, loop invariants, and what O, Ω and Θ are for",
+  "summary": "One idea at a time: insertion sort with cards, then the code next to plain English; what a loop invariant is and why it proves the sort works; counting steps on the best and worst input; what Big-O, Omega and Theta are each for and how to think about them; and exactly why O(log n) and O(n log n) are so different.",
+  "estimatedMinutes": 60,
+  "sourceNote": "A slower retelling of Lecture 3 (Loop Invariants, Insertion Sort) and the parts of Lectures 4 and 5 it leads into (asymptotic notation, binary search, merge sort), matching the facts in the Lecture 2 to 3 and Lecture 4 to 5 chapters. The insertion sort example [5, 2, 4, 6, 1, 3] is the textbook's (CLRS). Every count, curve and table is computed by the script that builds this chapter.",
+  "requires": [],
+  "sections": [
+    {
+      "id": "map",
+      "heading": "What Lecture 3 is really asking",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Every algorithm in this course gets asked the same **two questions**: **Is it correct?** (does it give the right answer for every possible input, not just the ones you tried?) and **How fast is it?** (how does the work grow when the input gets bigger?). Lecture 3 answers both for one small algorithm, **insertion sort**. Loop invariants answer the first question. Big-O, Omega and Theta answer the second.",
+          "slide": "Two questions",
+          "id": "map.899637b5"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "This chapter",
+            "question": "Lecture 3, one idea at a time",
+            "steps": [
+              {
+                "title": "Insertion sort",
+                "sub": "cards in your hand",
+                "result": "what it does",
+                "tone": "brand"
+              },
+              {
+                "title": "The code",
+                "sub": "line by line, next to English",
+                "result": "how it does it",
+                "tone": "brand"
+              },
+              {
+                "title": "Loop invariant",
+                "sub": "a promise the loop keeps",
+                "result": "is it correct?",
+                "tone": "green"
+              },
+              {
+                "title": "Counting steps",
+                "sub": "best and worst input",
+                "result": "how fast?",
+                "tone": "amber"
+              },
+              {
+                "title": "O, Ω, Θ",
+                "sub": "ceiling, floor, both",
+                "result": "saying 'how fast' precisely",
+                "tone": "amber"
+              },
+              {
+                "title": "log n vs n log n",
+                "sub": "one path vs the whole tree",
+                "result": "the two you'll mix up",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "Each step only needs the one before it.",
+          "id": "map.76b0f8fd"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-insertion-invariant.mp4",
+          "caption": "Insertion sort on [5, 2, 4, 6, 1, 3] with the code running beside it, and the loop invariant checked out loud at every pass. About 1.5 minutes; slow it to 0.75× the first time.",
+          "chapters": [
+            {
+              "t": 0,
+              "label": "The idea"
+            },
+            {
+              "t": 9,
+              "label": "Initialization"
+            },
+            {
+              "t": 14,
+              "label": "Maintenance"
+            },
+            {
+              "t": 80,
+              "label": "Termination"
+            },
+            {
+              "t": 86,
+              "label": "How fast?"
+            }
+          ],
+          "id": "map.a86b65dc"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters** Lecture 3 is the vocabulary for the rest of the course. Every later algorithm (merge sort, heaps, quicksort, BSTs, AVL) gets the same treatment: show it works, then say its O, Ω or Θ. If these two ideas click now, the next ten lectures are new examples of the same thing.",
+          "label": "why",
+          "id": "map.f3b53f00"
+        }
+      ]
+    },
+    {
+      "id": "cards",
+      "heading": "Insertion sort, with cards (no code yet)",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Picture sorting a hand of playing cards as you're dealt them. You keep the cards **in your hand sorted** at all times. Each new card, you slide it left past every card bigger than it, and drop it in the gap. When the deck runs out, your whole hand is sorted.",
+          "slide": "The idea",
+          "id": "cards.5e316908"
+        },
+        {
+          "type": "definition",
+          "term": "Insertion sort",
+          "body": "Keep a **sorted left part** of the list. Take the next item (the **key**), slide it left past every bigger item, and drop it in the gap. Repeat until the sorted part is the whole list.",
+          "id": "cards.05708aff"
+        },
+        {
+          "type": "definition",
+          "term": "Key",
+          "body": "The item currently being placed. In the card picture, the new card in your other hand.",
+          "id": "cards.0e2a565f"
+        },
+        {
+          "type": "definition",
+          "term": "Sorted part (the hand)",
+          "body": "Everything to the **left** of the key: a[0..j−1]. It's always sorted, even though it isn't in its final place yet (smaller items can still arrive later and push things right).",
+          "id": "cards.df146099"
+        },
+        {
+          "type": "stepper",
+          "title": "Insertion sort on [5, 2, 4, 6, 1, 3], card by card",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                5,
+                2,
+                4,
+                6,
+                1,
+                3
+              ],
+              "caption": "Your hand starts as the first card, 5. One card is already sorted.",
+              "done": [
+                0
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                4,
+                6,
+                1,
+                3
+              ],
+              "caption": "Pick up 2: slide it left past 5. Your hand is now [2, 5].",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                4,
+                5,
+                6,
+                1,
+                3
+              ],
+              "caption": "Pick up 4: slide it left past 5. Your hand is now [2, 4, 5].",
+              "hl": [
+                1
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                4,
+                5,
+                6,
+                1,
+                3
+              ],
+              "caption": "Pick up 6: it's already bigger than everything in your hand, so it stays put. Your hand is now [2, 4, 5, 6].",
+              "hl": [
+                3
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                6,
+                3
+              ],
+              "caption": "Pick up 1: slide it left past 6, 5, 4, 2. Your hand is now [1, 2, 4, 5, 6].",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "caption": "Pick up 3: slide it left past 6, 5, 4. Your hand is now [1, 2, 3, 4, 5, 6].",
+              "hl": [
+                2
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "caption": "No cards left on the table. The whole hand is sorted: [1, 2, 3, 4, 5, 6].",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            }
+          ],
+          "slide": true,
+          "id": "cards.f5ec8a46"
+        },
+        {
+          "type": "check",
+          "prompt": "In the middle of sorting [5, 2, 4, 6, 1, 3], the left part is [2, 4, 5, 6] and the key is 1. Where does 1 end up after this pass?",
+          "answer": "At the very front: 1 is smaller than all four, so it slides past 6, 5, 4 and 2. The left part becomes **[1, 2, 4, 5, 6]**.",
+          "sectionRef": "cards",
+          "id": "cards.25216ba1"
+        }
+      ]
+    },
+    {
+      "id": "code",
+      "heading": "The code, next to plain English",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Here's the same thing as code. Read each row left to right: the code, what it means, and what you'd do with cards. There are only **two loops**: the outer `for` picks the next card, the inner `while` slides bigger cards right.",
+          "slide": "Line by line",
+          "id": "code.eede475c"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Line",
+            "Python (Poon's slides are Java; same logic)",
+            "In plain English",
+            "With cards in your hand"
+          ],
+          "rows": [
+            [
+              "1",
+              "`def insertion_sort(a):`",
+              "a function that sorts the list a",
+              "you're dealt a row of cards face up"
+            ],
+            [
+              "2",
+              "`for j in range(1, len(a)):`",
+              "take each item from the 2nd to the last, one at a time",
+              "pick up the next card from the table"
+            ],
+            [
+              "3",
+              "`key = a[j]`",
+              "remember it; it's the one we're placing",
+              "hold the new card in your other hand"
+            ],
+            [
+              "4",
+              "`i = j - 1`",
+              "start comparing with the item just to its left",
+              "look at the rightmost card in your hand"
+            ],
+            [
+              "5",
+              "`while i >= 0 and a[i] > key:`",
+              "while there's something to the left AND it's bigger…",
+              "…is that card bigger than the new one?"
+            ],
+            [
+              "6",
+              "`a[i + 1] = a[i]`",
+              "…slide it one spot right",
+              "nudge it right to make room"
+            ],
+            [
+              "7",
+              "`i -= 1`",
+              "move one spot further left",
+              "look at the next card to the left"
+            ],
+            [
+              "8",
+              "`a[i + 1] = key`",
+              "drop the key into the gap",
+              "slot the new card in"
+            ]
+          ],
+          "title": "Insertion sort, line by line: code, English, and cards side by side",
+          "id": "code.be80a44c"
+        },
+        {
+          "type": "stepper",
+          "title": "insertion_sort([5, 2, 4, 6, 1, 3]), line by line",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    2,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "insertion_sort([5, 2, 4, 6, 1, 3]). a[0] alone is a sorted hand (green). The loop on line 2 hands us one new card at a time."
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 1. Line 3 lifts the key, 2, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 0. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    5,
+                    null,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[0] = 5 > 2? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    5,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Line 6 copies 5 one slot right, into the hole. The hole is now at index 0. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    2
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    5,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: i = −1: nothing left to compare, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    4,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 2 into the hole at index 0. Now a[0..1] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  1
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    4
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 2. Line 3 lifts the key, 4, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    4
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 1. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    4
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    5,
+                    null,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[1] = 5 > 4? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    4
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    null,
+                    5,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 5 one slot right, into the hole. The hole is now at index 1. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    4
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    null,
+                    5,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: a[0] = 2 > 4? **No**, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 4 into the hole at index 1. Now a[0..2] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  2
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    null,
+                    1,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 3. Line 3 lifts the key, 6, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    null,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 2. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    6
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    null,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: a[2] = 5 > 6? **No**, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    1,
+                    3
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 6 into the hole at index 3. Now a[0..3] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  3
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    null,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 4. Line 3 lifts the key, 1, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    null,
+                    3
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 3. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    null,
+                    3
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[3] = 6 > 1? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    null,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 6 one slot right, into the hole. The hole is now at index 3. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    5,
+                    null,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[2] = 5 > 1? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    null,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 5 one slot right, into the hole. The hole is now at index 2. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    4,
+                    null,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[1] = 4 > 1? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    null,
+                    4,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 4 one slot right, into the hole. The hole is now at index 1. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    1
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    2,
+                    null,
+                    4,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[0] = 2 > 1? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    2,
+                    4,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 2 one slot right, into the hole. The hole is now at index 0. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    1
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    null,
+                    2,
+                    4,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [],
+                  "done": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: i = −1: nothing left to compare, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    3
+                  ],
+                  "hl": [
+                    0
+                  ],
+                  "done": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 1 into the hole at index 0. Now a[0..4] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    5
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    null
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                }
+              ],
+              "caption": "Line 2 sets j = 5. Line 3 lifts the key, 3, out of the array, leaving a hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    5
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    null
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 4: i = j − 1 = 4. i points at the card just left of the hole.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    5
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    null
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[4] = 6 > 3? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    null,
+                    6
+                  ],
+                  "hl": [
+                    5
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 6 one slot right, into the hole. The hole is now at index 4. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    4
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    null,
+                    6
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[3] = 5 > 3? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    null,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    4
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 5 one slot right, into the hole. The hole is now at index 3. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    3
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    4,
+                    null,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks: i ≥ 0 and a[2] = 4 > 3? **Yes**, so the loop body runs.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    null,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    3
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 6 copies 4 one slot right, into the hole. The hole is now at index 2. Line 7 moves i left.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    3
+                  ],
+                  "at": [
+                    2
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    null,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    1
+                  ],
+                  "done": [
+                    0,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 5 checks again: a[1] = 2 > 3? **No**, so the loop stops.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [
+                    2
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "Line 8 drops 3 into the hole at index 2. Now a[0..5] is sorted.",
+              "ptrs": {
+                "j": [
+                  1,
+                  5
+                ]
+              }
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "key",
+                  "cells": [
+                    ""
+                  ],
+                  "at": [
+                    0
+                  ]
+                },
+                {
+                  "label": "a",
+                  "cells": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "hl": [],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "caption": "j ran past the end, so the for loop on line 2 is done. Sorted: [1, 2, 3, 4, 5, 6]."
+            }
+          ],
+          "slide": true,
+          "trace": {
+            "code": "def insertion_sort(a):\n    for j in range(1, len(a)):\n        key = a[j]\n        i = j - 1\n        while i >= 0 and a[i] > key:\n            a[i + 1] = a[i]     # slide right\n            i -= 1\n        a[i + 1] = key          # drop in\n",
+            "lines": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                5
+              ],
+              [
+                8
+              ],
+              [
+                2
+              ]
+            ],
+            "vars": [
+              {
+                "a": "[5, 2, 4, 6, 1, 3]"
+              },
+              {
+                "j": "1",
+                "key": "2"
+              },
+              {
+                "j": "1",
+                "key": "2",
+                "i": "0"
+              },
+              {
+                "j": "1",
+                "key": "2",
+                "i": "0",
+                "a[i]": "5"
+              },
+              {
+                "j": "1",
+                "key": "2",
+                "i": "-1"
+              },
+              {
+                "j": "1",
+                "key": "2",
+                "i": "-1"
+              },
+              {
+                "j": "1",
+                "a": "[2, 5, 4, 6, 1, 3]"
+              },
+              {
+                "j": "2",
+                "key": "4"
+              },
+              {
+                "j": "2",
+                "key": "4",
+                "i": "1"
+              },
+              {
+                "j": "2",
+                "key": "4",
+                "i": "1",
+                "a[i]": "5"
+              },
+              {
+                "j": "2",
+                "key": "4",
+                "i": "0"
+              },
+              {
+                "j": "2",
+                "key": "4",
+                "i": "0"
+              },
+              {
+                "j": "2",
+                "a": "[2, 4, 5, 6, 1, 3]"
+              },
+              {
+                "j": "3",
+                "key": "6"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "2"
+              },
+              {
+                "j": "3",
+                "key": "6",
+                "i": "2"
+              },
+              {
+                "j": "3",
+                "a": "[2, 4, 5, 6, 1, 3]"
+              },
+              {
+                "j": "4",
+                "key": "1"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "3"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "3",
+                "a[i]": "6"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "2"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "2",
+                "a[i]": "5"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "1"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "1",
+                "a[i]": "4"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "0"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "0",
+                "a[i]": "2"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "-1"
+              },
+              {
+                "j": "4",
+                "key": "1",
+                "i": "-1"
+              },
+              {
+                "j": "4",
+                "a": "[1, 2, 4, 5, 6, 3]"
+              },
+              {
+                "j": "5",
+                "key": "3"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "4"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "4",
+                "a[i]": "6"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "3"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "3",
+                "a[i]": "5"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "2"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "2",
+                "a[i]": "4"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "1"
+              },
+              {
+                "j": "5",
+                "key": "3",
+                "i": "1"
+              },
+              {
+                "j": "5",
+                "a": "[1, 2, 3, 4, 5, 6]"
+              },
+              {
+                "a": "[1, 2, 3, 4, 5, 6]"
+              }
+            ]
+          },
+          "id": "code.bf9b5729"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Python",
+            "Java (how Poon writes it)"
+          ],
+          "rows": [
+            [
+              "`for j in range(1, len(a)):`",
+              "`for (int j = 1; j < a.length; j++) {`"
+            ],
+            [
+              "`key = a[j]`",
+              "`int key = a[j];`"
+            ],
+            [
+              "`i = j - 1`",
+              "`int i = j - 1;`"
+            ],
+            [
+              "`while i >= 0 and a[i] > key:`",
+              "`while (i >= 0 && a[i] > key) {`"
+            ],
+            [
+              "`a[i + 1] = a[i]`",
+              "`a[i + 1] = a[i];`"
+            ],
+            [
+              "`i -= 1`",
+              "`i--;`"
+            ],
+            [
+              "`a[i + 1] = key`",
+              "`a[i + 1] = key;`"
+            ]
+          ],
+          "title": "The same code in both languages, line for line",
+          "id": "code.b37b19a7"
+        },
+        {
+          "type": "prose",
+          "md": "**How to read any loop:** find the variable that moves (here j, then i), say out loud what it points at, and say what the loop body does to that spot. 'j picks the next card; i walks left while the cards are bigger; each step slides one card right.' If you can say that sentence, you understand the code.",
+          "label": "think",
+          "id": "code.1abe2d97"
+        },
+        {
+          "type": "trap",
+          "body": "Line 8 is `a[i + 1] = key`, not `a[i] = key`. When the while loop stops, i points at the first card that is NOT bigger (or −1 if none). The gap is one to its right.",
+          "source": "Lecture 3, HW 3",
+          "points": null,
+          "id": "code.6a330458"
+        },
+        {
+          "type": "prose",
+          "md": "**Still fuzzy?** The Lecture 2 to 3 chapter has an interactive version: type your own array and watch every shift.",
+          "resources": [
+            {
+              "label": "Insertion sort (Lectures 2 to 3)",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=insertion",
+              "kind": "chapter"
+            },
+            {
+              "label": "Comparison sort visualizer (USFCA)",
+              "url": "https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html",
+              "kind": "site"
+            }
+          ],
+          "id": "code.d6ca4299"
+        }
+      ]
+    },
+    {
+      "id": "invariant",
+      "heading": "Loop invariants: a promise the loop keeps",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem.** You can test insertion sort on 10 arrays and it works. That proves nothing about the 11th. There are infinitely many inputs, so 'I tried it' is never a proof. We need a way to show it's right for **every** input.",
+          "slide": "Why we need this",
+          "id": "invariant.b4db67b8"
+        },
+        {
+          "type": "definition",
+          "term": "Loop invariant",
+          "body": "A sentence about the loop's variables that is **true every time the loop checks its condition**: before the first pass, after every pass, and when it finally stops. It describes the progress made so far.",
+          "id": "invariant.0c1f2946"
+        },
+        {
+          "type": "definition",
+          "term": "Insertion sort's invariant",
+          "body": "At the start of each pass of the for loop with index j: **a[0..j−1] is sorted** (and holds the same items that were there at the start).",
+          "id": "invariant.8bb34cf1"
+        },
+        {
+          "type": "prose",
+          "md": "**The bookmark picture.** Imagine a bookmark at position j. The promise is: 'everything left of my bookmark is sorted'. The loop's whole job is to move the bookmark right **without ever breaking the promise**. When the bookmark reaches the end, the promise covers everything.",
+          "id": "invariant.7534ec58"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Part",
+            "What you show",
+            "For insertion sort",
+            "Like induction's…"
+          ],
+          "rows": [
+            [
+              "**Initialization**",
+              "it's true before the loop starts",
+              "j = 1: a[0..0] is one item, and one item is always sorted",
+              "base case"
+            ],
+            [
+              "**Maintenance**",
+              "if it's true before a pass, it's still true after",
+              "the pass slides the key into the right spot in a sorted part, so a[0..j] is sorted",
+              "inductive step"
+            ],
+            [
+              "**Termination**",
+              "when the loop stops, invariant + stop condition give the answer",
+              "the loop stops at j = n, so a[0..n−1], the whole array, is sorted",
+              "conclusion"
+            ]
+          ],
+          "title": "The three parts, side by side",
+          "id": "invariant.f02e9842"
+        },
+        {
+          "type": "stepper",
+          "title": "Watch the promise hold at every check",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                5,
+                2,
+                4,
+                6,
+                1,
+                3
+              ],
+              "caption": "Initialization. Before the loop starts, j = 1. The invariant says a[0..0] is sorted. One card is always sorted, so it's true before we've done anything.",
+              "done": [
+                0
+              ],
+              "ptrs": {
+                "j": 1
+              },
+              "note": "a[0..0] = [5] sorted ✓"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                4,
+                6,
+                1,
+                3
+              ],
+              "caption": "Maintenance. This pass inserted 2 into the sorted part. Back at the loop check with j = 2: is a[0..1] sorted? Yes. Still true, one card bigger.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "ptrs": {
+                "j": 2
+              },
+              "note": "a[0..1] = [2, 5] sorted ✓"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                4,
+                5,
+                6,
+                1,
+                3
+              ],
+              "caption": "Maintenance. This pass inserted 4 into the sorted part. Back at the loop check with j = 3: is a[0..2] sorted? Yes. Still true, one card bigger.",
+              "hl": [
+                1
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "ptrs": {
+                "j": 3
+              },
+              "note": "a[0..2] = [2, 4, 5] sorted ✓"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                4,
+                5,
+                6,
+                1,
+                3
+              ],
+              "caption": "Maintenance. This pass inserted 6 into the sorted part. Back at the loop check with j = 4: is a[0..3] sorted? Yes. Still true, one card bigger.",
+              "hl": [
+                3
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "ptrs": {
+                "j": 4
+              },
+              "note": "a[0..3] = [2, 4, 5, 6] sorted ✓"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                4,
+                5,
+                6,
+                3
+              ],
+              "caption": "Maintenance. This pass inserted 1 into the sorted part. Back at the loop check with j = 5: is a[0..4] sorted? Yes. Still true, one card bigger.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "ptrs": {
+                "j": 5
+              },
+              "note": "a[0..4] = [1, 2, 4, 5, 6] sorted ✓"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "caption": "Termination. j = 6, so the loop stops. Plug j = 6 into the invariant: a[0..5] is sorted. That's the whole array, which is exactly the goal.",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "note": "a[0..5] sorted ✓ = the whole array"
+            }
+          ],
+          "slide": true,
+          "id": "invariant.9ffaa0fe"
+        },
+        {
+          "type": "example",
+          "title": "The four sentences to write on the exam (fill in the blanks for any loop)",
+          "body": "Invariant: at the start of each iteration, ____ (what's true about the part done so far).\nInitialization: before the first iteration, ____ is true because ____.\nMaintenance: if ____ holds before an iteration, the body ____, so it still holds after.\nTermination: the loop stops when ____; then the invariant says ____, which is what we wanted.",
+          "answer": "invariant, init, maintenance, termination",
+          "id": "invariant.4f2ac6ff"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Insertion sort",
+            "Summing an array (HW 3 Problem 1)"
+          ],
+          "rows": [
+            [
+              "The loop",
+              "for j = 1 to n − 1",
+              "for i = 0 to n − 1: total += a[i]"
+            ],
+            [
+              "Invariant",
+              "a[0..j−1] is sorted",
+              "total = a[0] + … + a[i−1]"
+            ],
+            [
+              "Initialization",
+              "a[0..0] is one item: sorted",
+              "i = 0, total = 0 = the empty sum"
+            ],
+            [
+              "Maintenance",
+              "insert a[j] into the sorted part",
+              "adding a[i] extends the sum by one"
+            ],
+            [
+              "Termination",
+              "j = n: whole array sorted",
+              "i = n: total = sum of everything"
+            ]
+          ],
+          "title": "Same recipe, two loops",
+          "id": "invariant.f19af57d"
+        },
+        {
+          "type": "trap",
+          "body": "Writing the invariant about the **whole** array ('the array is sorted'). That's false in the middle of the loop. The invariant is always about the **part done so far**: a[0..j−1].",
+          "source": "Exam",
+          "points": null,
+          "id": "invariant.18cbc828"
+        },
+        {
+          "type": "prose",
+          "md": "**Want the induction connection explained slowly?** Chapter 0 does induction from zero, and the Lecture 2 to 3 chapter proves HW 3's sum loop.",
+          "resources": [
+            {
+              "label": "Induction (Chapter 0)",
+              "url": "/study/cs146/0-notation?s=induction",
+              "kind": "chapter"
+            },
+            {
+              "label": "Loop invariants (Lectures 2 to 3)",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=invariants",
+              "kind": "chapter"
+            }
+          ],
+          "id": "invariant.26510a31"
+        }
+      ]
+    },
+    {
+      "id": "count",
+      "heading": "Counting steps: best case and worst case",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Now the second question: how fast? We **count steps**, not seconds (seconds depend on the computer). For insertion sort, the step that matters is the **shift**: sliding a card right. How many shifts depends on what order the cards arrive in.",
+          "slide": "Count, don't time",
+          "id": "count.17990559"
+        },
+        {
+          "type": "stepper",
+          "title": "Sorted vs reversed, n = 5: count the shifts",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "Sorted input, n = 5. Count how many times an item slides right.",
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "j = 1: the key 2 slides past 0 items. Already in place: one comparison and done.",
+              "hl": [
+                1
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "j = 2: the key 3 slides past 0 items. Already in place: one comparison and done.",
+              "hl": [
+                2
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "j = 3: the key 4 slides past 0 items. Already in place: one comparison and done.",
+              "hl": [
+                3
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "j = 4: the key 5 slides past 0 items. Already in place: one comparison and done.",
+              "hl": [
+                4
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "Sorted: 0 shifts in total. Best case: about n steps in all (just the comparisons): Ω(n).",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "note": "total shifts: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                5,
+                4,
+                3,
+                2,
+                1
+              ],
+              "caption": "Reversed input, n = 5. Count how many times an item slides right.",
+              "note": "shifts so far: 0"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                4,
+                5,
+                3,
+                2,
+                1
+              ],
+              "caption": "j = 1: the key 4 slides past 1 item.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1
+              ],
+              "note": "shifts so far: 1"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                3,
+                4,
+                5,
+                2,
+                1
+              ],
+              "caption": "j = 2: the key 3 slides past 2 items.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1,
+                2
+              ],
+              "note": "shifts so far: 3"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                3,
+                4,
+                5,
+                1
+              ],
+              "caption": "j = 3: the key 2 slides past 3 items.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "note": "shifts so far: 6"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "j = 4: the key 1 slides past 4 items.",
+              "hl": [
+                0
+              ],
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "note": "shifts so far: 10"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "caption": "Reversed: 10 shifts in total. Worst case: 1 + 2 + 3 + 4 = 10 = n(n−1)/2: O(n²).",
+              "done": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "note": "total shifts: 10"
+            }
+          ],
+          "slide": true,
+          "id": "count.c29b3de5"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "n",
+            "Best case (already sorted): comparisons",
+            "Worst case (reversed): shifts = n(n−1)/2"
+          ],
+          "rows": [
+            [
+              "5",
+              "4",
+              "10"
+            ],
+            [
+              "10",
+              "9",
+              "45"
+            ],
+            [
+              "100",
+              "99",
+              "4,950"
+            ],
+            [
+              "1,000",
+              "999",
+              "499,500"
+            ]
+          ],
+          "title": "The gap explodes as n grows",
+          "id": "count.c826a774"
+        },
+        {
+          "type": "prose",
+          "md": "Look at the last row: 1,000 items take about **1,000** steps when sorted but about **500,000** when reversed. Same algorithm, same n. So 'how fast is insertion sort?' has no single answer, and that's exactly why we need three different symbols.",
+          "id": "count.fad7765c"
+        }
+      ]
+    },
+    {
+      "id": "family",
+      "heading": "O, Ω and Θ: what each one is for",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The point of all three:** we want to describe how the work **grows** as n grows, ignoring details that don't matter (the computer's speed, constant factors like 3n vs 5n, small terms like +10). Each symbol answers a slightly different question.",
+          "slide": "What they're for",
+          "id": "family.6e9d6131"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Symbol",
+            "Say it as",
+            "It's a…",
+            "Commute analogy",
+            "Insertion sort"
+          ],
+          "rows": [
+            [
+              "**O(g)**",
+              "'grows **no faster** than g'",
+              "**ceiling** (upper bound)",
+              "'it takes **at most** 40 minutes'",
+              "**O(n²)**: never worse than about n²"
+            ],
+            [
+              "**Ω(g)**",
+              "'grows **no slower** than g'",
+              "**floor** (lower bound)",
+              "'it takes **at least** 20 minutes'",
+              "**Ω(n)**: never better than about n"
+            ],
+            [
+              "**Θ(g)**",
+              "'grows **exactly like** g'",
+              "**both**: floor and ceiling match",
+              "'it **always** takes about 30 minutes'",
+              "no single Θ overall (n vs n²); worst case is Θ(n²)"
+            ]
+          ],
+          "title": "The three symbols",
+          "id": "family.5ca857d5"
+        },
+        {
+          "type": "prose",
+          "md": "**How to think about them:** O is a promise about the **worst** that can happen ('it won't be slower than this'). Ω is a promise about the **best** that can happen ('it can't be faster than this'). Θ is when both promises have the **same shape**, so you know the growth exactly. Poon uses O for the worst case and Ω for the best case.",
+          "label": "think",
+          "id": "family.5961d7a1"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='22' font-size='14' font-weight='800'>Θ means 'sandwiched': a floor and a ceiling of the same shape</text><line x1='60' y1='270' x2='530' y2='270' stroke='currentColor' stroke-opacity='0.4'/><line x1='60' y1='270' x2='60' y2='34' stroke='currentColor' stroke-opacity='0.4'/><text x='524' y='286' font-size='11' opacity='0.7'>n (input size)</text><text x='52' y='44' font-size='11' opacity='0.7' text-anchor='end'>steps</text><rect x='272.3076923076923' y='34' width='247.69230769230768' height='236' fill='rgb(var(--accent-fg) / 0.05)'/><line x1='272.3076923076923' y1='34' x2='272.3076923076923' y2='270' stroke='rgb(var(--accent-fg))' stroke-dasharray='4 4'/><text x='276.3076923076923' y='264' font-size='11' fill='rgb(var(--accent-fg))' font-weight='700'>n₀ = 7</text><g><title>Ceiling: 5n². Past n₀, f never goes above it. That's the O part.</title><path d='M60.0 268.8 L65.8 268.4 L71.5 267.9 L77.2 267.4 L83.0 266.8 L88.8 266.1 L94.5 265.4 L100.2 264.6 L106.0 263.8 L111.8 262.9 L117.5 261.9 L123.2 260.9 L129.0 259.8 L134.8 258.6 L140.5 257.4 L146.2 256.1 L152.0 254.8 L157.8 253.4 L163.5 251.9 L169.2 250.4 L175.0 248.8 L180.8 247.2 L186.5 245.4 L192.2 243.7 L198.0 241.8 L203.8 239.9 L209.5 238.0 L215.3 235.9 L221.0 233.9 L226.8 231.7 L232.5 229.5 L238.2 227.2 L244.0 224.9 L249.8 222.5 L255.5 220.0 L261.2 217.5 L267.0 214.9 L272.8 212.3 L278.5 209.6 L284.2 206.8 L290.0 204.0 L295.8 201.1 L301.5 198.1 L307.2 195.1 L313.0 192.1 L318.8 188.9 L324.5 185.7 L330.2 182.5 L336.0 179.1 L341.8 175.7 L347.5 172.3 L353.2 168.8 L359.0 165.2 L364.8 161.6 L370.5 157.9 L376.2 154.1 L382.0 150.3 L387.8 146.4 L393.5 142.5 L399.3 138.5 L405.0 134.4 L410.8 130.3 L416.5 126.1 L422.3 121.8 L428.0 117.5 L433.8 113.1 L439.5 108.7 L445.2 104.2 L451.0 99.6 L456.8 95.0 L462.5 90.3 L468.2 85.5 L474.0 80.7 L479.8 75.9 L485.5 70.9 L491.2 65.9 L497.0 60.9 L502.8 55.7 L508.5 50.6 L514.2 45.3 L520.0 40.0' fill='none' stroke='rgb(var(--critical))' stroke-width='2'/></g><g><title>Floor: 3n². f never goes below it. That's the Ω part.</title><path d='M60.0 269.3 L65.8 269.0 L71.5 268.8 L77.2 268.4 L83.0 268.1 L88.8 267.7 L94.5 267.3 L100.2 266.8 L106.0 266.3 L111.8 265.7 L117.5 265.1 L123.2 264.5 L129.0 263.9 L134.8 263.2 L140.5 262.4 L146.2 261.7 L152.0 260.9 L157.8 260.0 L163.5 259.2 L169.2 258.2 L175.0 257.3 L180.8 256.3 L186.5 255.3 L192.2 254.2 L198.0 253.1 L203.8 252.0 L209.5 250.8 L215.3 249.6 L221.0 248.3 L226.8 247.0 L232.5 245.7 L238.2 244.3 L244.0 242.9 L249.8 241.5 L255.5 240.0 L261.2 238.5 L267.0 237.0 L272.8 235.4 L278.5 233.8 L284.2 232.1 L290.0 230.4 L295.8 228.7 L301.5 226.9 L307.2 225.1 L313.0 223.2 L318.8 221.3 L324.5 219.4 L330.2 217.5 L336.0 215.5 L341.8 213.4 L347.5 211.4 L353.2 209.3 L359.0 207.1 L364.8 204.9 L370.5 202.7 L376.2 200.5 L382.0 198.2 L387.8 195.8 L393.5 193.5 L399.3 191.1 L405.0 188.6 L410.8 186.2 L416.5 183.6 L422.3 181.1 L428.0 178.5 L433.8 175.9 L439.5 173.2 L445.2 170.5 L451.0 167.8 L456.8 165.0 L462.5 162.2 L468.2 159.3 L474.0 156.4 L479.8 153.5 L485.5 150.6 L491.2 147.6 L497.0 144.5 L502.8 141.4 L508.5 138.3 L514.2 135.2 L520.0 132.0' fill='none' stroke='rgb(var(--on-track))' stroke-width='2'/></g><g><title>f(n) = 3n² + 10n + 20, the real step count.</title><path d='M60.0 262.3 L65.8 261.6 L71.5 261.0 L77.2 260.3 L83.0 259.5 L88.8 258.7 L94.5 257.9 L100.2 257.1 L106.0 256.2 L111.8 255.3 L117.5 254.3 L123.2 253.3 L129.0 252.3 L134.8 251.2 L140.5 250.1 L146.2 248.9 L152.0 247.7 L157.8 246.5 L163.5 245.2 L169.2 243.9 L175.0 242.6 L180.8 241.2 L186.5 239.8 L192.2 238.4 L198.0 236.9 L203.8 235.4 L209.5 233.8 L215.3 232.2 L221.0 230.6 L226.8 228.9 L232.5 227.2 L238.2 225.5 L244.0 223.7 L249.8 221.9 L255.5 220.0 L261.2 218.1 L267.0 216.2 L272.8 214.2 L278.5 212.2 L284.2 210.2 L290.0 208.1 L295.8 206.0 L301.5 203.8 L307.2 201.6 L313.0 199.4 L318.8 197.1 L324.5 194.8 L330.2 192.5 L336.0 190.1 L341.8 187.7 L347.5 185.3 L353.2 182.8 L359.0 180.3 L364.8 177.7 L370.5 175.1 L376.2 172.5 L382.0 169.8 L387.8 167.1 L393.5 164.3 L399.3 161.5 L405.0 158.7 L410.8 155.9 L416.5 153.0 L422.3 150.0 L428.0 147.0 L433.8 144.0 L439.5 141.0 L445.2 137.9 L451.0 134.8 L456.8 131.6 L462.5 128.4 L468.2 125.2 L474.0 121.9 L479.8 118.6 L485.5 115.3 L491.2 111.9 L497.0 108.5 L502.8 105.0 L508.5 101.5 L514.2 98.0 L520.0 94.4' fill='none' stroke='currentColor' stroke-width='3'/></g><text x='526' y='44.0' font-size='12' fill='rgb(var(--critical))' font-weight='700'>5n²  ceiling → O(n²)</text><text x='526' y='98.44897959183672' font-size='12' font-weight='700'>f(n)</text><text x='526' y='136.0' font-size='12' fill='rgb(var(--on-track))' font-weight='700'>3n²  floor → Ω(n²)</text><text x='20' y='306' font-size='12'>Both bounds are n² times a constant, so f(n) = <tspan font-weight='800' fill='rgb(var(--accent-fg))'>Θ(n²)</tspan>. The +10n + 20 stops mattering once n is past n₀.</text></g>",
+          "viewBox": "0 0 700 320",
+          "caption": "Θ(n²) as a picture: past n₀, the real step count stays between 3n² and 5n². Hover each line.",
+          "id": "family.b00a9667"
+        },
+        {
+          "type": "definition",
+          "term": "The formal definitions (Poon's)",
+          "body": "**f(n) = O(g(n))** if there are constants c > 0 and n₀ with f(n) ≤ c·g(n) for every n ≥ n₀. **f(n) = Ω(g(n))** if f(n) ≥ c·g(n) for every n ≥ n₀. **f(n) = Θ(g(n))** if both hold (with possibly different c's).",
+          "id": "family.059dc3d1"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Statement",
+            "True?",
+            "Why"
+          ],
+          "rows": [
+            [
+              "insertion sort is O(n²)",
+              "**yes**",
+              "the worst case is about n²/2"
+            ],
+            [
+              "insertion sort is O(n³)",
+              "yes, but useless",
+              "a ceiling can be too high; we always give the tightest one"
+            ],
+            [
+              "insertion sort is Ω(n)",
+              "**yes**",
+              "even sorted input needs a comparison per item"
+            ],
+            [
+              "insertion sort is Θ(n²)",
+              "**no** (as a blanket statement)",
+              "on sorted input it's about n, so n² isn't a floor"
+            ],
+            [
+              "merge sort is Θ(n log n)",
+              "**yes**",
+              "best and worst are both n log n"
+            ],
+            [
+              "summing an array is Θ(n)",
+              "**yes**",
+              "you must touch all n items, never more"
+            ]
+          ],
+          "title": "Check yourself: true or false?",
+          "id": "family.16d88a9f"
+        },
+        {
+          "type": "trap",
+          "body": "Thinking O means 'worst case' by definition. O is just a ceiling on a function. It's the **worst-case running time** that we usually bound with O, which is why the two get said together.",
+          "source": "Lecture 4",
+          "points": null,
+          "id": "family.5646180b"
+        },
+        {
+          "type": "video",
+          "src": "/study-videos/cs146-growth.mp4",
+          "caption": "O, Ω and Θ as ceiling, floor and sandwich, then O(log n) vs O(n log n) on 16 items, then the four shapes racing to n = 1,000,000. About 2 minutes.",
+          "chapters": [
+            {
+              "t": 9,
+              "label": "O: ceiling"
+            },
+            {
+              "t": 19,
+              "label": "Ω: floor"
+            },
+            {
+              "t": 24,
+              "label": "Θ: both"
+            },
+            {
+              "t": 35,
+              "label": "log n"
+            },
+            {
+              "t": 61,
+              "label": "n log n"
+            },
+            {
+              "t": 85,
+              "label": "The race"
+            }
+          ],
+          "id": "family.c1f075c3"
+        },
+        {
+          "type": "prose",
+          "md": "**More on this:** the Lecture 4 to 5 chapter proves 5n + 10 = O(n) step by step, and Abdul Bari's video works more examples.",
+          "resources": [
+            {
+              "label": "Big-O, step by step (Lectures 4 to 5)",
+              "url": "/study/cs146/4-big-o-merge-sort?s=bigo",
+              "kind": "chapter"
+            },
+            {
+              "label": "O(g(n)) from zero (Chapter 0)",
+              "url": "/study/cs146/0-notation?s=bigo",
+              "kind": "chapter"
+            },
+            {
+              "label": "Asymptotic notation, worked (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=A03oI0znAoc",
+              "kind": "video"
+            }
+          ],
+          "id": "family.a585bcb8"
+        }
+      ]
+    },
+    {
+      "id": "logs",
+      "heading": "O(log n) vs O(n log n): the two you'll mix up",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "These two look alike and are **completely different**. The 'log n' part means the same thing in both: **how many times you can cut n in half** before reaching 1. The difference is **how much work you do each time you halve**.",
+          "slide": "Same log, different work",
+          "id": "logs.aaa552f5"
+        },
+        {
+          "type": "definition",
+          "term": "log₂ n",
+          "body": "The number of halvings from n down to 1. 8 → 4 → 2 → 1 is **3** halvings, so log₂ 8 = 3. 1,000,000 needs only about **20**. That's why log n is so small.",
+          "id": "logs.f595d04a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "O(log n)",
+            "O(n log n)"
+          ],
+          "rows": [
+            [
+              "The picture",
+              "walk **one path** down the halvings",
+              "do **all n items** at **every** level of halving"
+            ],
+            [
+              "Work per halving",
+              "a constant (one comparison)",
+              "n (touch every item)"
+            ],
+            [
+              "Total",
+              "about log n",
+              "n × log n"
+            ],
+            [
+              "Classic example",
+              "**binary search**: look at the middle, throw away half",
+              "**merge sort**: split everything in half, merge all of it back"
+            ],
+            [
+              "Code shape",
+              "one loop that halves what's left",
+              "halving recursion, with an O(n) merge at each level"
+            ],
+            [
+              "n = 1,000,000",
+              "about 20 steps",
+              "about 20 million steps"
+            ]
+          ],
+          "title": "Side by side",
+          "id": "logs.c2cad2c9"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='22' font-size='14' font-weight='800'>Same 16 items, same 4 halvings, very different work</text><text x='170' y='52' text-anchor='middle' font-size='13' font-weight='800' fill='rgb(var(--on-track))'>O(log n): binary search</text><text x='170' y='68' text-anchor='middle' font-size='11' opacity='0.75'>keep ONE half, ignore the other</text><rect x='21.5' y='90' width='297.0' height='22' rx='4' fill='rgb(var(--on-track) / 0.28)' stroke='rgb(var(--on-track))' stroke-opacity='0.9'/><text x='170.0' y='105' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>16</text><text x='330' y='105' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--on-track))'>1 look</text><rect x='21.5' y='128' width='147.0' height='22' rx='4' fill='rgb(var(--on-track) / 0.28)' stroke='rgb(var(--on-track))' stroke-opacity='0.9'/><text x='95.0' y='143' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>8</text><rect x='171.5' y='128' width='147.0' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='245.0' y='143' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>8</text><text x='330' y='143' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--on-track))'>1 look</text><rect x='21.5' y='166' width='72.0' height='22' rx='4' fill='rgb(var(--on-track) / 0.28)' stroke='rgb(var(--on-track))' stroke-opacity='0.9'/><text x='57.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='96.5' y='166' width='72.0' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='132.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='171.5' y='166' width='72.0' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='207.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='246.5' y='166' width='72.0' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='282.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><text x='330' y='181' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--on-track))'>1 look</text><rect x='21.5' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--on-track) / 0.28)' stroke='rgb(var(--on-track))' stroke-opacity='0.9'/><text x='38.8' y='219' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>2</text><rect x='59.0' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='96.5' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='134.0' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='171.5' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='209.0' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='246.5' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='284.0' y='204' width='34.5' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='330' y='219' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--on-track))'>1 look</text><rect x='21.5' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--on-track) / 0.28)' stroke='rgb(var(--on-track))' stroke-opacity='0.9'/><text x='29.4' y='257' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>1</text><rect x='40.2' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='59.0' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='77.8' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='96.5' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='115.2' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='134.0' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='152.8' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='171.5' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='190.2' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='209.0' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='227.8' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='246.5' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='265.2' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='284.0' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><rect x='302.8' y='242' width='15.8' height='22' rx='4' fill='none' stroke='currentColor' stroke-opacity='0.18'/><text x='330' y='257' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--on-track))'>1 look</text><text x='170' y='290' text-anchor='middle' font-size='11'>one look per level: at most 5 looks (log₂ 16 + 1)</text><text x='530' y='52' text-anchor='middle' font-size='13' font-weight='800' fill='rgb(var(--at-risk))'>O(n log n): merge sort</text><text x='530' y='68' text-anchor='middle' font-size='11' opacity='0.75'>keep BOTH halves, all n items every level</text><rect x='381.5' y='90' width='297.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='530.0' y='105' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>16</text><text x='690' y='105' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--at-risk))'>16</text><rect x='381.5' y='128' width='147.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='455.0' y='143' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>8</text><rect x='531.5' y='128' width='147.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='605.0' y='143' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>8</text><text x='690' y='143' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--at-risk))'>16</text><rect x='381.5' y='166' width='72.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='417.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='456.5' y='166' width='72.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='492.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='531.5' y='166' width='72.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='567.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><rect x='606.5' y='166' width='72.0' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='642.5' y='181' text-anchor='middle' font-size='10' font-family='ui-monospace, SFMono-Regular, monospace'>4</text><text x='690' y='181' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--at-risk))'>16</text><rect x='381.5' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='419.0' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='456.5' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='494.0' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='531.5' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='569.0' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='606.5' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='644.0' y='204' width='34.5' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='690' y='219' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--at-risk))'>16</text><rect x='381.5' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='400.2' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='419.0' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='437.8' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='456.5' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='475.2' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='494.0' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='512.8' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='531.5' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='550.2' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='569.0' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='587.8' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='606.5' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='625.2' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='644.0' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><rect x='662.8' y='242' width='15.8' height='22' rx='4' fill='rgb(var(--at-risk) / 0.28)' stroke='rgb(var(--at-risk))' stroke-opacity='0.9'/><text x='690' y='257' font-size='10.5' font-family='ui-monospace, SFMono-Regular, monospace' fill='rgb(var(--at-risk))'>0</text><text x='530' y='290' text-anchor='middle' font-size='11'>merging: 16 + 16 + 16 + 16 = 64 = 16 × log₂ 16</text><text x='20' y='322' font-size='12'>Both have log₂ 16 = 4 levels of halving. Binary search walks <tspan font-weight='800' fill='rgb(var(--on-track))'>one path</tspan> (one look per level);</text><text x='20' y='340' font-size='12'>merge sort does <tspan font-weight='800' fill='rgb(var(--at-risk))'>all n items on every level</tspan>.</text></g>",
+          "viewBox": "0 0 720 352",
+          "caption": "Same 16 items, same 4 levels of halving. Binary search keeps one half (green path); merge sort keeps both and touches all 16 on every merge level.",
+          "id": "logs.2d3719b6"
+        },
+        {
+          "type": "stepper",
+          "title": "O(log n): binary search throws half away each look",
+          "frames": [
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "Find 23. The list is sorted. low and high mark the part that could still hold 23: right now, all 16 items.",
+              "ptrs": {
+                "low": 0,
+                "high": 15
+              },
+              "note": "16 candidates"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "Look 1: mid = (0 + 15) / 2 = 7. a[7] = 45, which is bigger than 23.",
+              "hl": [
+                7
+              ],
+              "ptrs": {
+                "low": 0,
+                "mid": 7,
+                "high": 15
+              },
+              "note": "16 candidates"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "So 23 can only be LEFT of index 7. high = mid − 1 = 6. Half the candidates are gone in one comparison.",
+              "dim": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "ptrs": {
+                "low": 0,
+                "high": 6
+              },
+              "note": "7 candidates left"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "Look 2: mid = (0 + 6) / 2 = 3. a[3] = 12, which is smaller than 23.",
+              "hl": [
+                3
+              ],
+              "dim": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "ptrs": {
+                "low": 0,
+                "mid": 3,
+                "high": 6
+              },
+              "note": "7 candidates"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "So 23 can only be RIGHT of index 3. low = mid + 1 = 4. Half the candidates are gone in one comparison.",
+              "dim": [
+                0,
+                1,
+                2,
+                3,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "ptrs": {
+                "low": 4,
+                "high": 6
+              },
+              "note": "3 candidates left"
+            },
+            {
+              "kind": "array",
+              "cells": [
+                2,
+                5,
+                8,
+                12,
+                16,
+                23,
+                38,
+                45,
+                56,
+                72,
+                81,
+                90,
+                91,
+                95,
+                97,
+                99
+              ],
+              "caption": "Look 3: mid = (4 + 6) / 2 = 5. a[5] = 23. Found it, after 3 looks. A left-to-right scan would have needed 6.",
+              "done": [
+                5
+              ],
+              "dim": [
+                0,
+                1,
+                2,
+                3,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "ptrs": {
+                "low": 4,
+                "mid": 5,
+                "high": 6
+              },
+              "note": "found at index 5"
+            }
+          ],
+          "slide": true,
+          "id": "logs.c6236521"
+        },
+        {
+          "type": "stepper",
+          "title": "O(n log n): merge sort does n work on every level",
+          "frames": [
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "pieces of 1",
+                  "cells": [
+                    38,
+                    27,
+                    43,
+                    3,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "log₂ 8 = 3 halvings turn 8 items into 8 pieces of 1. A piece of 1 is already sorted (the base case). No work yet.",
+              "note": "levels of merging so far: 0 · steps so far: 0"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "pieces of 1",
+                  "cells": [
+                    38,
+                    27,
+                    43,
+                    3,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 2",
+                  "cells": [
+                    27,
+                    38,
+                    3,
+                    43,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Merge level: 4 merges, each of 2 pieces of 1, make pieces of 2. Every one of the 8 items gets copied once: 8 steps on this level.",
+              "note": "levels of merging so far: 1 · steps so far: 8"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "pieces of 1",
+                  "cells": [
+                    38,
+                    27,
+                    43,
+                    3,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 2",
+                  "cells": [
+                    27,
+                    38,
+                    3,
+                    43,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 4",
+                  "cells": [
+                    3,
+                    27,
+                    38,
+                    43,
+                    9,
+                    10,
+                    15,
+                    82
+                  ],
+                  "done": []
+                }
+              ],
+              "caption": "Merge level: 2 merges, each of 2 pieces of 2, make pieces of 4. Every one of the 8 items gets copied once: 8 steps on this level.",
+              "note": "levels of merging so far: 2 · steps so far: 16"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "pieces of 1",
+                  "cells": [
+                    38,
+                    27,
+                    43,
+                    3,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 2",
+                  "cells": [
+                    27,
+                    38,
+                    3,
+                    43,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 4",
+                  "cells": [
+                    3,
+                    27,
+                    38,
+                    43,
+                    9,
+                    10,
+                    15,
+                    82
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 8",
+                  "cells": [
+                    3,
+                    9,
+                    10,
+                    15,
+                    27,
+                    38,
+                    43,
+                    82
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                  ]
+                }
+              ],
+              "caption": "Merge level: 1 merges, each of 2 pieces of 4, make pieces of 8. Every one of the 8 items gets copied once: 8 steps on this level.",
+              "note": "levels of merging so far: 3 · steps so far: 24"
+            },
+            {
+              "kind": "rows",
+              "rows": [
+                {
+                  "label": "pieces of 1",
+                  "cells": [
+                    38,
+                    27,
+                    43,
+                    3,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 2",
+                  "cells": [
+                    27,
+                    38,
+                    3,
+                    43,
+                    9,
+                    82,
+                    10,
+                    15
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 4",
+                  "cells": [
+                    3,
+                    27,
+                    38,
+                    43,
+                    9,
+                    10,
+                    15,
+                    82
+                  ],
+                  "done": []
+                },
+                {
+                  "label": "pieces of 8",
+                  "cells": [
+                    3,
+                    9,
+                    10,
+                    15,
+                    27,
+                    38,
+                    43,
+                    82
+                  ],
+                  "done": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                  ]
+                }
+              ],
+              "caption": "3 merge levels × 8 items per level = 24 steps = n · log₂ n. That's where n log n comes from: n work, repeated log n times.",
+              "note": "8 × 3 = 24 = n log₂ n"
+            }
+          ],
+          "slide": true,
+          "id": "logs.8ada737e"
+        },
+        {
+          "type": "example",
+          "title": "Binary search vs merge sort, as code",
+          "body": "# O(log n): ONE loop, and it halves what's left each time\nwhile lo <= hi:\n    mid = (lo + hi) // 2\n    if a[mid] == x: return mid\n    if a[mid] < x: lo = mid + 1   # throw away the left half\n    else: hi = mid - 1            # throw away the right half\n\n# O(n log n): halve EVERYTHING, then merge ALL of it back\ndef merge_sort(a):\n    if len(a) <= 1: return a\n    m = len(a) // 2\n    return merge(merge_sort(a[:m]), merge_sort(a[m:]))   # merge is O(n)",
+          "answer": "log n vs n log n",
+          "id": "logs.611af20e"
+        },
+        {
+          "type": "figure",
+          "svg": "<g font-family='ui-sans-serif, system-ui' fill='currentColor'><text x='20' y='22' font-size='14' font-weight='800'>How the four shapes grow (n from 1 to 32)</text><defs><clipPath id='gclip'><rect x='60' y='40' width='412' height='230'/></clipPath></defs><line x1='60' y1='270' x2='470' y2='270' stroke='currentColor' stroke-opacity='0.4'/><line x1='60' y1='270' x2='60' y2='40' stroke='currentColor' stroke-opacity='0.4'/><text x='470' y='286' font-size='11' opacity='0.7' text-anchor='end'>n</text><text x='52' y='48' font-size='11' opacity='0.7' text-anchor='end'>steps</text><g clip-path='url(#gclip)'><title>n²</title><path d='M60.0 269.0 L63.4 268.5 L66.8 267.8 L70.2 267.0 L73.7 266.0 L77.1 265.0 L80.5 263.8 L83.9 262.4 L87.3 261.0 L90.8 259.4 L94.2 257.7 L97.6 255.9 L101.0 253.9 L104.4 251.8 L107.8 249.6 L111.2 247.2 L114.7 244.7 L118.1 242.1 L121.5 239.4 L124.9 236.5 L128.3 233.6 L131.8 230.4 L135.2 227.2 L138.6 223.8 L142.0 220.3 L145.4 216.7 L148.8 212.9 L152.2 209.0 L155.7 205.0 L159.1 200.9 L162.5 196.6 L165.9 192.2 L169.3 187.7 L172.8 183.1 L176.2 178.3 L179.6 173.4 L183.0 168.3 L186.4 163.2 L189.8 157.9 L193.2 152.5 L196.7 146.9 L200.1 141.2 L203.5 135.4 L206.9 129.5 L210.3 123.4 L213.8 117.3 L217.2 110.9 L220.6 104.5 L224.0 97.9 L227.4 91.2 L230.8 84.4 L234.3 77.4 L237.7 70.4 L241.1 63.1 L244.5 55.8 L247.9 48.3 L251.3 40.7 L254.8 33.0 L258.2 25.2 L261.6 17.2 L265.0 9.1 L268.4 0.9 L271.8 -7.5 L275.2 -16.0 L278.7 -24.6 L282.1 -33.4 L285.5 -42.2 L288.9 -51.2 L292.3 -60.4 L295.8 -69.6 L299.2 -79.0 L302.6 -88.5 L306.0 -98.2 L309.4 -107.9 L312.8 -117.8 L316.2 -127.8 L319.7 -138.0 L323.1 -148.3 L326.5 -158.7 L329.9 -169.2 L333.3 -179.9 L336.8 -190.7 L340.2 -201.6 L343.6 -212.6 L347.0 -223.8 L350.4 -235.1 L353.8 -246.6 L357.3 -258.1 L360.7 -269.8 L364.1 -281.6 L367.5 -293.6 L370.9 -305.6 L374.3 -317.8 L377.8 -330.2 L381.2 -342.6 L384.6 -355.2 L388.0 -367.9 L391.4 -380.7 L394.8 -393.7 L398.2 -406.8 L401.7 -420.0 L405.1 -433.4 L408.5 -446.9 L411.9 -460.5 L415.3 -474.2 L418.8 -488.1 L422.2 -502.0 L425.6 -516.2 L429.0 -530.4 L432.4 -544.8 L435.8 -559.3 L439.3 -573.9 L442.7 -588.7 L446.1 -603.6 L449.5 -618.6 L452.9 -633.7 L456.3 -649.0 L459.8 -664.4 L463.2 -679.9 L466.6 -695.6 L470.0 -711.3' fill='none' stroke='rgb(var(--critical))' stroke-width='2.6'/></g><g clip-path='url(#gclip)'><title>n log n</title><path d='M60.0 270.0 L63.4 269.6 L66.8 269.1 L70.2 268.6 L73.7 268.0 L77.1 267.4 L80.5 266.7 L83.9 266.0 L87.3 265.2 L90.8 264.5 L94.2 263.7 L97.6 262.9 L101.0 262.0 L104.4 261.1 L107.8 260.2 L111.2 259.3 L114.7 258.4 L118.1 257.4 L121.5 256.5 L124.9 255.5 L128.3 254.5 L131.8 253.5 L135.2 252.4 L138.6 251.4 L142.0 250.3 L145.4 249.3 L148.8 248.2 L152.2 247.1 L155.7 246.0 L159.1 244.9 L162.5 243.8 L165.9 242.6 L169.3 241.5 L172.8 240.3 L176.2 239.2 L179.6 238.0 L183.0 236.8 L186.4 235.6 L189.8 234.4 L193.2 233.2 L196.7 232.0 L200.1 230.7 L203.5 229.5 L206.9 228.3 L210.3 227.0 L213.8 225.7 L217.2 224.5 L220.6 223.2 L224.0 221.9 L227.4 220.6 L230.8 219.3 L234.3 218.0 L237.7 216.7 L241.1 215.4 L244.5 214.1 L247.9 212.8 L251.3 211.4 L254.8 210.1 L258.2 208.8 L261.6 207.4 L265.0 206.0 L268.4 204.7 L271.8 203.3 L275.2 201.9 L278.7 200.6 L282.1 199.2 L285.5 197.8 L288.9 196.4 L292.3 195.0 L295.8 193.6 L299.2 192.2 L302.6 190.8 L306.0 189.4 L309.4 187.9 L312.8 186.5 L316.2 185.1 L319.7 183.7 L323.1 182.2 L326.5 180.8 L329.9 179.3 L333.3 177.9 L336.8 176.4 L340.2 174.9 L343.6 173.5 L347.0 172.0 L350.4 170.5 L353.8 169.1 L357.3 167.6 L360.7 166.1 L364.1 164.6 L367.5 163.1 L370.9 161.6 L374.3 160.1 L377.8 158.6 L381.2 157.1 L384.6 155.6 L388.0 154.1 L391.4 152.5 L394.8 151.0 L398.2 149.5 L401.7 148.0 L405.1 146.4 L408.5 144.9 L411.9 143.3 L415.3 141.8 L418.8 140.3 L422.2 138.7 L425.6 137.1 L429.0 135.6 L432.4 134.0 L435.8 132.5 L439.3 130.9 L442.7 129.3 L446.1 127.8 L449.5 126.2 L452.9 124.6 L456.3 123.0 L459.8 121.4 L463.2 119.9 L466.6 118.3 L470.0 116.7' fill='none' stroke='rgb(var(--at-risk))' stroke-width='2.6'/></g><g clip-path='url(#gclip)'><title>n</title><path d='M60.0 269.0 L63.4 268.8 L66.8 268.5 L70.2 268.3 L73.7 268.1 L77.1 267.8 L80.5 267.6 L83.9 267.3 L87.3 267.1 L90.8 266.8 L94.2 266.6 L97.6 266.3 L101.0 266.1 L104.4 265.8 L107.8 265.6 L111.2 265.3 L114.7 265.1 L118.1 264.8 L121.5 264.6 L124.9 264.3 L128.3 264.1 L131.8 263.8 L135.2 263.6 L138.6 263.3 L142.0 263.1 L145.4 262.9 L148.8 262.6 L152.2 262.4 L155.7 262.1 L159.1 261.9 L162.5 261.6 L165.9 261.4 L169.3 261.1 L172.8 260.9 L176.2 260.6 L179.6 260.4 L183.0 260.1 L186.4 259.9 L189.8 259.6 L193.2 259.4 L196.7 259.1 L200.1 258.9 L203.5 258.6 L206.9 258.4 L210.3 258.1 L213.8 257.9 L217.2 257.7 L220.6 257.4 L224.0 257.2 L227.4 256.9 L230.8 256.7 L234.3 256.4 L237.7 256.2 L241.1 255.9 L244.5 255.7 L247.9 255.4 L251.3 255.2 L254.8 254.9 L258.2 254.7 L261.6 254.4 L265.0 254.2 L268.4 253.9 L271.8 253.7 L275.2 253.4 L278.7 253.2 L282.1 252.9 L285.5 252.7 L288.9 252.5 L292.3 252.2 L295.8 252.0 L299.2 251.7 L302.6 251.5 L306.0 251.2 L309.4 251.0 L312.8 250.7 L316.2 250.5 L319.7 250.2 L323.1 250.0 L326.5 249.7 L329.9 249.5 L333.3 249.2 L336.8 249.0 L340.2 248.7 L343.6 248.5 L347.0 248.2 L350.4 248.0 L353.8 247.8 L357.3 247.5 L360.7 247.3 L364.1 247.0 L367.5 246.8 L370.9 246.5 L374.3 246.3 L377.8 246.0 L381.2 245.8 L384.6 245.5 L388.0 245.3 L391.4 245.0 L394.8 244.8 L398.2 244.5 L401.7 244.3 L405.1 244.0 L408.5 243.8 L411.9 243.5 L415.3 243.3 L418.8 243.0 L422.2 242.8 L425.6 242.6 L429.0 242.3 L432.4 242.1 L435.8 241.8 L439.3 241.6 L442.7 241.3 L446.1 241.1 L449.5 240.8 L452.9 240.6 L456.3 240.3 L459.8 240.1 L463.2 239.8 L466.6 239.6 L470.0 239.3' fill='none' stroke='rgb(var(--accent-fg))' stroke-width='2.6'/></g><g clip-path='url(#gclip)'><title>log n</title><path d='M60.0 270.0 L63.4 269.7 L66.8 269.4 L70.2 269.2 L73.7 269.0 L77.1 268.9 L80.5 268.7 L83.9 268.6 L87.3 268.5 L90.8 268.3 L94.2 268.2 L97.6 268.1 L101.0 268.0 L104.4 268.0 L107.8 267.9 L111.2 267.8 L114.7 267.7 L118.1 267.7 L121.5 267.6 L124.9 267.5 L128.3 267.5 L131.8 267.4 L135.2 267.4 L138.6 267.3 L142.0 267.3 L145.4 267.2 L148.8 267.2 L152.2 267.1 L155.7 267.1 L159.1 267.0 L162.5 267.0 L165.9 267.0 L169.3 266.9 L172.8 266.9 L176.2 266.8 L179.6 266.8 L183.0 266.8 L186.4 266.7 L189.8 266.7 L193.2 266.7 L196.7 266.6 L200.1 266.6 L203.5 266.6 L206.9 266.6 L210.3 266.5 L213.8 266.5 L217.2 266.5 L220.6 266.4 L224.0 266.4 L227.4 266.4 L230.8 266.4 L234.3 266.3 L237.7 266.3 L241.1 266.3 L244.5 266.3 L247.9 266.2 L251.3 266.2 L254.8 266.2 L258.2 266.2 L261.6 266.1 L265.0 266.1 L268.4 266.1 L271.8 266.1 L275.2 266.1 L278.7 266.0 L282.1 266.0 L285.5 266.0 L288.9 266.0 L292.3 266.0 L295.8 265.9 L299.2 265.9 L302.6 265.9 L306.0 265.9 L309.4 265.9 L312.8 265.9 L316.2 265.8 L319.7 265.8 L323.1 265.8 L326.5 265.8 L329.9 265.8 L333.3 265.7 L336.8 265.7 L340.2 265.7 L343.6 265.7 L347.0 265.7 L350.4 265.7 L353.8 265.7 L357.3 265.6 L360.7 265.6 L364.1 265.6 L367.5 265.6 L370.9 265.6 L374.3 265.6 L377.8 265.5 L381.2 265.5 L384.6 265.5 L388.0 265.5 L391.4 265.5 L394.8 265.5 L398.2 265.5 L401.7 265.5 L405.1 265.4 L408.5 265.4 L411.9 265.4 L415.3 265.4 L418.8 265.4 L422.2 265.4 L425.6 265.4 L429.0 265.3 L432.4 265.3 L435.8 265.3 L439.3 265.3 L442.7 265.3 L446.1 265.3 L449.5 265.3 L452.9 265.3 L456.3 265.3 L459.8 265.2 L463.2 265.2 L466.6 265.2 L470.0 265.2' fill='none' stroke='rgb(var(--on-track))' stroke-width='2.6'/></g><text x='156.5483870967742' y='50' font-size='12' font-weight='800' fill='rgb(var(--critical))'>n²</text><text x='400' y='110.66666666666666' font-size='12' font-weight='800' fill='rgb(var(--at-risk))'>n log n</text><text x='456' y='233.33333333333334' font-size='12' font-weight='800' fill='rgb(var(--accent-fg))'>n</text><text x='436' y='257.2083333333333' font-size='12' font-weight='800' fill='rgb(var(--on-track))'>log n</text><text x='500' y='70' font-size='12' font-weight='800'>Steps at n = 1,000,000</text><text x='500' y='98' font-size='12' font-weight='700' fill='rgb(var(--on-track))'>log n</text><text x='690' y='98' font-size='12' text-anchor='end' font-family='ui-monospace, SFMono-Regular, monospace'>20</text><text x='500' y='128' font-size='12' font-weight='700' fill='rgb(var(--accent-fg))'>n</text><text x='690' y='128' font-size='12' text-anchor='end' font-family='ui-monospace, SFMono-Regular, monospace'>1,000,000</text><text x='500' y='158' font-size='12' font-weight='700' fill='rgb(var(--at-risk))'>n log n</text><text x='690' y='158' font-size='12' text-anchor='end' font-family='ui-monospace, SFMono-Regular, monospace'>20 million</text><text x='500' y='188' font-size='12' font-weight='700' fill='rgb(var(--critical))'>n²</text><text x='690' y='188' font-size='12' text-anchor='end' font-family='ui-monospace, SFMono-Regular, monospace'>1,000,000,000,000</text><text x='500' y='218' font-size='11' opacity='0.75'>log n barely moves. n log n is only</text><text x='500' y='234' font-size='11' opacity='0.75'>20 times n. n² is a million times n.</text></g>",
+          "viewBox": "0 0 710 300",
+          "caption": "All four shapes on one chart. log n hugs the bottom; n log n is just above n; n² leaves the chart almost at once.",
+          "id": "logs.17b3fcd8"
+        },
+        {
+          "type": "prose",
+          "md": "**The one sentence to remember:** log n = 'one path down the halvings'; n log n = 'every item, on every level of halving'. If the algorithm **throws away** half, it's log n. If it **keeps and processes** both halves, it's n log n.",
+          "label": "think",
+          "id": "logs.63c901a2"
+        },
+        {
+          "type": "trap",
+          "body": "Writing merge sort as O(log n) because 'it halves'. Halving gives you the **number of levels** (log n). You still have to count the **work per level**: merge sort merges all n items on each one.",
+          "source": "Lecture 5",
+          "points": null,
+          "id": "logs.a2af9775"
+        },
+        {
+          "type": "prose",
+          "md": "**Go deeper:** both algorithms are animated step by step in the Lecture 4 to 5 chapter.",
+          "resources": [
+            {
+              "label": "What log n means (Chapter 0)",
+              "url": "/study/cs146/0-notation?s=log",
+              "kind": "chapter"
+            },
+            {
+              "label": "Binary search",
+              "url": "/study/cs146/4-big-o-merge-sort?s=binsearch",
+              "kind": "chapter"
+            },
+            {
+              "label": "Why merge sort is n log n",
+              "url": "/study/cs146/4-big-o-merge-sort?s=whynlogn",
+              "kind": "chapter"
+            },
+            {
+              "label": "Merge sort (Abdul Bari)",
+              "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
+              "kind": "video"
+            }
+          ],
+          "id": "logs.25987c5f"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Insertion sort",
+              "Keep a sorted left part; slide each new key left past bigger items. Ω(n) best, O(n²) worst."
+            ],
+            [
+              "Key",
+              "The item being placed on this pass."
+            ],
+            [
+              "Loop invariant",
+              "A sentence true every time the loop checks its condition. Insertion sort's: a[0..j−1] is sorted."
+            ],
+            [
+              "Initialization / Maintenance / Termination",
+              "True at the start / stays true each pass / at the end it gives the answer."
+            ],
+            [
+              "Best case / worst case",
+              "The input that makes it fastest / slowest (sorted / reversed for insertion sort)."
+            ],
+            [
+              "O(g)",
+              "Ceiling: grows no faster than g."
+            ],
+            [
+              "Ω(g)",
+              "Floor: grows no slower than g."
+            ],
+            [
+              "Θ(g)",
+              "Both: grows exactly like g."
+            ],
+            [
+              "log₂ n",
+              "How many times n halves down to 1."
+            ],
+            [
+              "O(log n) vs O(n log n)",
+              "One path down the halvings vs all n items on every level."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "inv-whole",
+      "title": "Which invariant?",
+      "prompt": "Which is a correct loop invariant for insertion sort?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**a[0..j−1] is sorted.**"
+      ],
+      "why": "The most common lost point on invariants.",
+      "choices": [
+        {
+          "text": "a[0..j−1] is sorted",
+          "feedback": "Yes: it's about the part done so far, so it's true mid-loop."
+        },
+        {
+          "text": "the array is sorted",
+          "feedback": "False in the middle of the loop."
+        },
+        {
+          "text": "a[j] is the smallest item",
+          "feedback": "Insertion sort doesn't pick minimums (that's selection sort)."
+        },
+        {
+          "text": "j < n",
+          "feedback": "That's just the loop condition."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "invariant"
+    },
+    {
+      "id": "inv-part",
+      "title": "Name the part",
+      "prompt": "'When the loop stops at j = n, a[0..n−1] is sorted, which is the whole array.' Which part is this?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Termination.**"
+      ],
+      "why": "Each of the three parts has its own job.",
+      "choices": [
+        {
+          "text": "Termination",
+          "feedback": "Yes: invariant + stop condition = the goal."
+        },
+        {
+          "text": "Initialization",
+          "feedback": "Initialization is before the first pass."
+        },
+        {
+          "text": "Maintenance",
+          "feedback": "Maintenance is about one pass keeping it true."
+        },
+        {
+          "text": "Base case",
+          "feedback": "The base case is the induction word for Initialization."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "invariant"
+    },
+    {
+      "id": "best",
+      "title": "Best case",
+      "prompt": "On an already sorted array of n items, insertion sort does about…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**About n: Ω(n).**"
+      ],
+      "why": "Best case = the floor.",
+      "choices": [
+        {
+          "text": "n steps: Ω(n)",
+          "feedback": "Yes: one comparison per key, no shifts."
+        },
+        {
+          "text": "n² steps",
+          "feedback": "That's the reversed (worst) case."
+        },
+        {
+          "text": "log n steps",
+          "feedback": "It still has to look at every item once."
+        },
+        {
+          "text": "1 step",
+          "feedback": "It must at least look at every item."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "count"
+    },
+    {
+      "id": "theta",
+      "title": "What Θ means",
+      "prompt": "f(n) = Θ(n²) means…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Both O(n²) and Ω(n²).**"
+      ],
+      "why": "Θ = sandwiched.",
+      "choices": [
+        {
+          "text": "f grows exactly like n²: it's both O(n²) and Ω(n²)",
+          "feedback": "Yes: a floor and a ceiling of the same shape."
+        },
+        {
+          "text": "f is at most n²",
+          "feedback": "That's only O."
+        },
+        {
+          "text": "f is at least n²",
+          "feedback": "That's only Ω."
+        },
+        {
+          "text": "f equals n² exactly",
+          "feedback": "Θ ignores constants and small terms: 3n² + 10 is Θ(n²)."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "family"
+    },
+    {
+      "id": "o-ceiling",
+      "title": "A loose ceiling",
+      "prompt": "Is insertion sort O(n³)?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Technically yes, but say O(n²).**"
+      ],
+      "why": "A classic trick question.",
+      "choices": [
+        {
+          "text": "Yes, but it's a useless bound; O(n²) is the tight one",
+          "feedback": "Right: anything ≤ n² is also ≤ n³. We always give the tightest ceiling."
+        },
+        {
+          "text": "No, it's only O(n²)",
+          "feedback": "A ceiling can be higher than needed and still be true."
+        },
+        {
+          "text": "No, O only applies to worst cases",
+          "feedback": "O is just a ceiling on a function."
+        },
+        {
+          "text": "Yes, and it's the best answer",
+          "feedback": "It's true but not the best answer."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "family"
+    },
+    {
+      "id": "log-vs",
+      "title": "log n or n log n?",
+      "prompt": "An algorithm keeps cutting the list in half and throws away the half it doesn't need. Its running time is…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**O(log n)**, like binary search."
+      ],
+      "why": "Throw away half → log n.",
+      "choices": [
+        {
+          "text": "O(log n)",
+          "feedback": "Yes: one path down the halvings, constant work per step."
+        },
+        {
+          "text": "O(n log n)",
+          "feedback": "That needs n work on every level (keeping both halves)."
+        },
+        {
+          "text": "O(n)",
+          "feedback": "It never looks at every item."
+        },
+        {
+          "text": "O(n²)",
+          "feedback": "Far too slow."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "logs"
+    },
+    {
+      "id": "ms-log",
+      "title": "Merge sort",
+      "prompt": "Why is merge sort O(n log n) and not O(log n)?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**n work on every one of log n levels.**"
+      ],
+      "why": "Halving gives the levels; you still count the work per level.",
+      "choices": [
+        {
+          "text": "it does n work (merging) on each of its log n levels",
+          "feedback": "Yes: log n levels × n work each."
+        },
+        {
+          "text": "it uses recursion",
+          "feedback": "Binary search can be recursive too and it's log n."
+        },
+        {
+          "text": "it compares pairs",
+          "feedback": "Every comparison sort compares pairs."
+        },
+        {
+          "text": "it needs extra memory",
+          "feedback": "Memory is about space, not time."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "logs"
+    },
+    {
+      "id": "log8",
+      "title": "Count the halvings",
+      "prompt": "What is log₂ 1024? (Hint: 2¹⁰ = 1024.)",
+      "hints": [
+        "log₂ n asks: 2 to what power is n?",
+        "Halve 1024: 512, 256, 128, …",
+        "Count the halvings until you reach 1."
+      ],
+      "solution": [
+        "**10**: 1024 → 512 → 256 → 128 → 64 → 32 → 16 → 8 → 4 → 2 → 1 is 10 halvings."
+      ],
+      "why": "Binary search on 1,024 items takes about 10 looks.",
+      "accept": [
+        "10",
+        "ten"
+      ],
+      "sectionRef": "logs"
+    }
+  ]
+}

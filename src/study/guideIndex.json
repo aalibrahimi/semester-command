@@ -318,6 +318,51 @@
   "sha": "0004e2ca604de6406087e146cb47b495f2e24ee26a6d077d8c9c91566b762798"
  },
  {
+  "id": "cs146/3-from-zero",
+  "course": "cs146",
+  "lessons": "Lecture 3, slowly",
+  "title": "Lecture 3 from zero: insertion sort, loop invariants, and what O, Ω and Θ are for",
+  "summary": "One idea at a time: insertion sort with cards, then the code next to plain English; what a loop invariant is and why it proves the sort works; counting steps on the best and worst input; what Big-O, Omega and Theta are each for and how to think about them; and exactly why O(log n) and O(n log n) are so different.",
+  "estimatedMinutes": 60,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "What Lecture 3 is really asking"
+   },
+   {
+    "id": "cards",
+    "heading": "Insertion sort, with cards (no code yet)"
+   },
+   {
+    "id": "code",
+    "heading": "The code, next to plain English"
+   },
+   {
+    "id": "invariant",
+    "heading": "Loop invariants: a promise the loop keeps"
+   },
+   {
+    "id": "count",
+    "heading": "Counting steps: best case and worst case"
+   },
+   {
+    "id": "family",
+    "heading": "O, Ω and Θ: what each one is for"
+   },
+   {
+    "id": "logs",
+    "heading": "O(log n) vs O(n log n): the two you'll mix up"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 8,
+  "sha": "5ecc5ef600436036a9993f17eb42ca1657806c16059c98271c0ecfc64f1ff38f"
+ },
+ {
   "id": "cs146/4-big-o-merge-sort",
   "course": "cs146",
   "lessons": "Lectures 4–5",
@@ -639,7 +684,7 @@
    }
   ],
   "exerciseCount": 14,
-  "sha": "911884041b81fdcee7b2bf7e2c315260cfb6ee39421ac0c683f453e1bf7a5e7f"
+  "sha": "ef44b2e889f8859aac7cdd22e2b468c521b05ce88f122ff7c67bfb356b531168"
  },
  {
   "id": "cs154/1-sets-functions",

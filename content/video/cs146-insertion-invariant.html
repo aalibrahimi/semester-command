@@ -1,0 +1,86 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+/* Lecture 3: insertion sort on CLRS's [5, 2, 4, 6, 1, 3], with the loop
+   invariant drawn as a green zone over a[0..j-1] and checked out loud at
+   every test of the for loop (Initialization, Maintenance, Termination). */
+const CODE = `def insertion_sort(a):
+    for j in range(1, len(a)):
+        key = a[j]
+        i = j - 1
+        while i >= 0 and a[i] > key:
+            a[i + 1] = a[i]     # slide right
+            i -= 1
+        a[i + 1] = key          # drop in
+`;
+const A0 = [5, 2, 4, 6, 1, 3];
+const X = (k) => 610 + k * 104, BASE = 480, KEYY = 290, BH = (v) => 24 + v * 22;
+
+video({
+  title: "Insertion sort and its loop invariant", sub: "CS 146 · Lecture 3 · the promise: a[0..j−1] is always sorted", code: CODE,
+  build(rec) {
+    const a = [...A0], n = a.length;
+    const leg = legend([["sorted part (the invariant)", C.green], ["key", C.amber], ["comparing", C.blue]]);
+    function paint({ j = null, sortedTo = 0, key = null, keyAt = null, look = null, done = false, inPass = false } = {}) {
+      a.forEach((v, k) => {
+        if (v === null) return;
+        let fill = k < sortedTo + (inPass ? 1 : 0) || done ? "#2b7a5c" : C.slate;
+        if (k === look) fill = C.blue;
+        rec.set("v" + v, { kind: "bar", x: X(k), y: BASE, h: BH(v), val: v, fill, op: 1, ring: k === look ? C.fg : null, w: 64, fs: 22, z: 0 });
+      });
+      if (key !== null) rec.set("v" + key, { kind: "bar", x: X(keyAt), y: KEYY, h: BH(key), val: key, fill: C.amber, op: 1, ring: C.fg, w: 64, fs: 22, z: 3 });
+      // At a loop check the zone is exactly a[0..j-1]. During a pass the sorted
+      // cards spread over a[0..j] around the gap the key will drop into.
+      const zTo = inPass ? sortedTo : sortedTo - 1;
+      rec.zones = sortedTo > 0 ? [{ x: X(0) - 50, y: 96, w: X(zTo) - X(0) + 100, h: BASE - 70, col: C.green, label: inPass ? `sorted part + the gap for ${key}` : `a[0..${sortedTo - 1}] sorted ✓` }] : [];
+      rec.ptrs = j !== null && j < n ? [{ x: X(j), y: BASE + 14, label: `j = ${j}`, up: true, col: C.amber }] : [];
+      rec.extra = leg;
+      rec.vars = j !== null ? `j = ${j}` + (key !== null ? `   key = ${key}` : "") : "";
+    }
+
+    rec.mark("The idea");
+    rec.card("Insertion sort", "Lecture 3 · like sorting a hand of cards", 4.5,
+      "Keep the left part sorted. Pick up the next item, slide it left past bigger ones, drop it in.");
+    paint();
+    rec.snap("Six numbers. Two questions for this lecture: **does it always work?** and **how fast is it?**", [1], 4);
+    rec.mark("Initialization");
+    paint({ j: 1, sortedTo: 1 });
+    rec.snap("**Initialization.** Before the first pass, j = 1. The promise: a[0..0] is sorted. One item is always sorted, so it's true.", [2], 5);
+
+    for (let j = 1; j < n; j++) {
+      const key = a[j];
+      if (j === 1) rec.mark("Maintenance");
+      a[j] = null;
+      paint({ j, sortedTo: j, key, keyAt: j, inPass: true });
+      rec.snap(`Pick up the key, **${key}** (line 3). The green part a[0..${j - 1}] is sorted: that's the promise.`, [3, 4], j < 3 ? 3.2 : 2.4);
+      let i = j - 1, hole = j;
+      while (i >= 0 && a[i] > key) {
+        paint({ j, sortedTo: j, key, keyAt: hole, look: i, inPass: true });
+        rec.snap(`${a[i]} > ${key}: slide ${a[i]} one spot right (line 6).`, [5, 6], j < 3 ? 2.6 : 1.7);
+        a[i + 1] = a[i];
+        a[i] = null;
+        hole = i;
+        paint({ j, sortedTo: j, key, keyAt: hole, inPass: true });
+        rec.snap(`The gap moves left to index ${hole}.`, [7], j < 3 ? 1.8 : 1.2);
+        i--;
+      }
+      paint({ j, sortedTo: j, key, keyAt: hole, look: i >= 0 ? i : null, inPass: true });
+      rec.snap(i >= 0 ? `${a[i]} is not bigger than ${key}: stop.` : `Nothing left to compare: stop.`, [5], j < 3 ? 2.2 : 1.5);
+      a[hole] = key;
+      paint({ j: j + 1, sortedTo: j + 1 });
+      rec.snap(j < n - 1
+        ? `Drop ${key} in (line 8). **Maintenance:** back at the loop check, a[0..${j}] is still sorted, one item bigger.`
+        : `Drop ${key} in. Now a[0..${j}] is sorted.`, [8, 2], j < 3 ? 3.6 : 2.6);
+    }
+    rec.mark("Termination");
+    paint({ sortedTo: n, done: true });
+    rec.snap(`**Termination.** j = ${n}, the loop stops. The promise says a[0..${n - 1}] is sorted: that's the whole array. **Proven for every input**, not just this one.`, [2], 5.5);
+    rec.mark("How fast?");
+    rec.card("How fast?", "sorted input: about n steps (Ω(n)) · reversed: n(n−1)/2 shifts (O(n²))", 5,
+      "The more items are out of order, the more slides. That's why we need O, Ω and Θ.");
+  },
+});
+</script></body></html>

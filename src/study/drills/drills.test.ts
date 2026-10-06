@@ -288,6 +288,35 @@ describe("oracle: AVL trees", () => {
   });
 });
 
+/* ── Oracles: CS 146 Lecture 3 from zero ─────────────────────────────── */
+
+describe("oracle: Lecture 3 from zero", () => {
+  const G = "cs146/3-from-zero";
+  it("count!shifts equals the number of inversions", () => {
+    for (const inst of instances(G, "count!shifts")) {
+      const a = nums(inst.prompt.split("[")[1].split("]")[0]);
+      let inv = 0;
+      for (let i = 0; i < a.length; i++) for (let j = i + 1; j < a.length; j++) if (a[i] > a[j]) inv++;
+      expect(Number(answerOf(inst))).toBe(inv);
+    }
+  });
+  it("cards!place is the hand plus the key, sorted", () => {
+    for (const inst of instances(G, "cards!place")) {
+      const hand = nums(inst.prompt.split("[")[1].split("]")[0]);
+      const key = nums(inst.prompt.split("key is")[1])[0];
+      expect(nums(answerOf(inst))).toEqual([...hand, key].sort((x, y) => x - y));
+    }
+  });
+  it("logs!steps is log2 n for binary search and n log2 n for merge sort", () => {
+    for (const inst of instances(G, "logs!steps")) {
+      const n = Number(inst.prompt.match(/on ([\d,]+)/)![1].replace(/,/g, ""));
+      const k = Math.log2(n);
+      const want = inst.prompt.startsWith("Binary") ? k : n * k;
+      expect(Number(answerOf(inst).replace(/,/g, ""))).toBe(want);
+    }
+  });
+});
+
 describe("linear-time sort oracles (recomputed from the prompt)", () => {
   const G = "cs146/10-linear-sorts";
   const arrays = (s: string) => [...s.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1].split(",").map((x) => Number(x.trim())));

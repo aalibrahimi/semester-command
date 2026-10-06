@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0e1014}#stage{width:1280px;height:720px}svg{display:block}</style>
+</head><body><div id="stage"></div>
+<script src="sortvid.js"></script>
+<script>
+/* O, Omega, Theta as ceiling, floor and sandwich; then O(log n) vs
+   O(n log n) on the same 16 items (binary search keeps one half, merge sort
+   keeps both); then the four shapes at n = 16, 1,024 and 1,000,000.
+   Every number is computed here. */
+const CODE = `# O(log n): ONE loop that halves what's left
+def binary_search(a, x):
+    lo, hi = 0, len(a) - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if a[mid] == x: return mid
+        if a[mid] < x: lo = mid + 1
+        else: hi = mid - 1
+    return -1
+
+# O(n log n): halve EVERYTHING, merge ALL back
+def merge_sort(a):
+    if len(a) <= 1: return a
+    m = len(a) // 2
+    return merge(merge_sort(a[:m]),
+                 merge_sort(a[m:]))
+`;
+// chart frame on the stage
+const CX0 = 580, CX1 = 1200, CY0 = 540, CY1 = 120;
+const f = (n) => 3 * n * n + 10 * n + 20, lo = (n) => 3 * n * n, hi = (n) => 5 * n * n;
+const N1 = 14, n0 = (() => { for (let n = 1; ; n++) if (hi(n) >= f(n)) return n; })();
+const sx = (CX1 - CX0) / (N1 - 1), sy = (CY0 - CY1) / hi(N1);
+const px = (n) => CX0 + (n - 1) * sx, py = (v) => CY0 - v * sy;
+function curve(fn, col, w = 3, to = N1) {
+  let d = "";
+  for (let i = 0; i <= 60; i++) { const n = 1 + (to - 1) * i / 60; d += (i ? " L" : "M") + px(n).toFixed(1) + " " + py(fn(n)).toFixed(1); }
+  return `<path d='${d}' fill='none' stroke='${col}' stroke-width='${w}'/>`;
+}
+const axes = `<line x1='${CX0}' y1='${CY0}' x2='${CX1 + 10}' y2='${CY0}' stroke='${C.line}' stroke-width='2'/><line x1='${CX0}' y1='${CY0}' x2='${CX0}' y2='${CY1 - 10}' stroke='${C.line}' stroke-width='2'/>` +
+  txt(CX1 + 10, CY0 + 26, "n (input size)", { size: 14, fill: C.mute, anchor: "end" }) + txt(CX0 - 10, CY1, "steps", { size: 14, fill: C.mute, anchor: "end" });
+const lab = (fn, s, col) => txt(CX1 - 4, py(fn(N1)) - 10, s, { size: 17, w: 800, fill: col, anchor: "end" });
+
+video({
+  title: "O, Ω, Θ, and log n vs n log n", sub: "CS 146 · Lectures 3 to 5 · what each symbol is for", code: CODE,
+  build(rec) {
+    rec.mark("Why");
+    rec.card("Big-O, Omega, Theta", "a way to say how the work GROWS, not how many seconds it takes", 4.5,
+      "Exact step counts depend on details. The growth shape is what decides if an algorithm is usable.");
+    rec.extra = axes + curve(f, C.fg, 4) + lab(f, "f(n)", C.fg);
+    rec.snap("Some algorithm's exact step count: f(n) = 3n² + 10n + 20. We don't want to carry all of that around.", [], 4.5);
+    rec.mark("O: ceiling");
+    rec.extra = axes + curve(hi, C.red) + lab(hi, "5n²", C.red) + curve(f, C.fg, 4) + lab(f, "f(n)", C.fg);
+    rec.snap("**O is a ceiling.** Past some n, f stays under 5n². So f(n) = **O(n²)**: 'grows no faster than n²'.", [], 5);
+    const zone = `<rect x='${px(n0)}' y='${CY1 - 10}' width='${CX1 - px(n0)}' height='${CY0 - CY1 + 10}' fill='${soft(C.blue, .06)}'/><line x1='${px(n0)}' y1='${CY1 - 10}' x2='${px(n0)}' y2='${CY0}' stroke='${C.blue}' stroke-dasharray='6 6' stroke-width='2'/>` + txt(px(n0) + 8, CY0 - 12, `n₀ = ${n0}`, { size: 15, w: 700, fill: C.blue });
+    rec.extra = axes + zone + curve(hi, C.red) + lab(hi, "5n²", C.red) + curve(f, C.fg, 4) + lab(f, "f(n)", C.fg);
+    rec.snap(`'Past some n' is **n₀**. From n₀ = ${n0} on, f(n) ≤ 5·n² every time. The small terms (10n + 20) stop mattering.`, [], 5);
+    rec.mark("Ω: floor");
+    rec.extra = axes + zone + curve(hi, C.red) + lab(hi, "5n²", C.red) + curve(lo, C.green) + lab(lo, "3n²", C.green) + curve(f, C.fg, 4) + lab(f, "f(n)", C.fg);
+    rec.snap("**Ω is a floor.** f never drops below 3n². So f(n) = **Ω(n²)**: 'grows no slower than n²'.", [], 5);
+    rec.mark("Θ: both");
+    rec.snap("**Θ is both.** Floor and ceiling are the same shape (n² times a constant), so f(n) = **Θ(n²)**: 'grows exactly like n²'.", [], 5.5);
+    rec.card("Like a commute", "O: 'at most 40 min' · Ω: 'at least 20 min' · Θ: 'always about 30 min'", 5,
+      "Insertion sort is O(n²) (reversed input) and Ω(n) (sorted input). Floor and ceiling differ, so no single Θ.");
+
+    // ── log n: binary search keeps one half ───────────────────────────────
+    rec.mark("log n");
+    rec.extra = "";
+    const vals = Array.from({ length: 16 }, (_, i) => 3 * i + 2), target = vals[12];
+    const CXs = (k) => 600 + k * 38, ROWY = 200;
+    let lo_ = 0, hi_ = 15, looks = 0;
+    const paintBS = (mid = null, found = false) => {
+      vals.forEach((v, k) => rec.set("c" + k, { kind: "cell", x: CXs(k), y: ROWY, val: v, s: 34, fill: k === mid ? (found ? C.green : C.blue) : (k < lo_ || k > hi_ ? "#20242c" : C.slate), op: k < lo_ || k > hi_ ? 0.35 : 1 }));
+      rec.vars = `looks: ${looks}   candidates left: ${Math.max(0, hi_ - lo_ + 1)}`;
+    };
+    paintBS();
+    rec.snap(`**O(log n)**: binary search for ${target} in 16 sorted numbers. Each look throws away half.`, [2, 3], 4);
+    while (lo_ <= hi_) {
+      const mid = (lo_ + hi_) >> 1; looks++;
+      if (vals[mid] === target) { paintBS(mid, true); rec.snap(`Look ${looks}: found it. **${looks} looks for 16 items.** log₂ 16 = 4.`, [5, 6], 4); break; }
+      paintBS(mid);
+      rec.snap(`Look ${looks}: a[${mid}] = ${vals[mid]} ${vals[mid] < target ? "<" : ">"} ${target}. Keep the ${vals[mid] < target ? "right" : "left"} half only.`, vals[mid] < target ? [4, 5, 7] : [4, 5, 8], 2.8);
+      if (vals[mid] < target) lo_ = mid + 1; else hi_ = mid - 1;
+      paintBS();
+      rec.snap(`${hi_ - lo_ + 1} candidates left. The other half is never looked at again.`, [4], 2);
+    }
+    rec.snap("**One path down the halvings.** A million items would take only about 20 looks.", [4], 4);
+
+    // ── n log n: merge sort keeps both halves ─────────────────────────────
+    rec.mark("n log n");
+    for (let k = 0; k < 16; k++) rec.set("c" + k, { op: 0 });
+    const ms = [12, 5, 9, 1, 14, 7, 3, 16, 8, 2, 11, 6, 15, 4, 10, 13];
+    const LY = (lv) => 150 + lv * 100;
+    const GC = [C.blue, C.violet];
+    let total = 0;
+    rec.vars = "";
+    for (let size = 1, lv = 0; size <= 16; size *= 2, lv++) {
+      const flat = [];
+      for (let s = 0; s < 16; s += size) flat.push(...ms.slice(s, s + size).sort((a, b) => a - b));
+      flat.forEach((v, k) => rec.set(`m${lv}_${k}`, { kind: "cell", x: CXs(k), y: LY(lv), val: v, s: 34, fill: size === 16 ? C.green : GC[Math.floor(k / size) % 2], op: 1 }));
+      if (size === 1) {
+        rec.vars = "steps so far: 0";
+        rec.snap("**O(n log n)**: merge sort on 16 items. Halving gives 16 pieces of 1, already sorted. No work yet.", [12, 13], 4.5);
+      } else {
+        total += 16;
+        rec.vars = `steps so far: ${total}`;
+        rec.snap(`Merge level ${lv}: pieces of ${size / 2} become pieces of ${size}. **All 16 items** get merged: +16 steps.`, [14, 15, 16], 3.4);
+      }
+    }
+    rec.snap(`**log₂ 16 = 4 levels × 16 items = ${total} steps = n log n.** Same halving as binary search, but every item, on every level.`, [14, 15, 16], 5.5);
+
+    // ── the race ──────────────────────────────────────────────────────────
+    rec.mark("The race");
+    for (const id of Object.keys(rec.items)) rec.set(id, { op: 0 });
+    rec.vars = "";
+    const shapes = [["log n", (n) => Math.log2(n), C.green], ["n", (n) => n, C.blue], ["n log n", (n) => n * Math.log2(n), C.amber], ["n²", (n) => n * n, C.red]];
+    const fmt = (x) => x >= 1e9 ? (x / 1e12 >= 1 ? (x / 1e12).toFixed(0) + " trillion" : (x / 1e9).toFixed(0) + " billion") : x >= 1e6 ? (x / 1e6).toFixed(0) + " million" : Math.round(x).toLocaleString("en-US");
+    for (const n of [16, 1024, 1e6]) {
+      let g = txt(600, 150, `steps when n = ${n.toLocaleString("en-US")}`, { size: 22, w: 800 });
+      const maxLog = Math.log10(1e12);
+      shapes.forEach(([name, fn, col], i) => {
+        const v = fn(n), y = 210 + i * 86;
+        const w = Math.max(6, (Math.log10(Math.max(v, 1)) / maxLog) * 380);
+        g += txt(600, y + 26, name, { size: 18, w: 800, fill: col }) + rect(720, y, w, 40, { r: 8, fill: soft(col, .35), stroke: col }) + txt(730 + w, y + 27, fmt(v), { size: 17, mono: true, w: 700 });
+      });
+      g += txt(600, 575, "(bar length on a log scale, or n² wouldn't fit)", { size: 13, fill: C.mute });
+      rec.extra = g;
+      rec.snap(n === 16 ? "At n = 16 they're all small. The difference only shows as n grows." : n === 1024 ? "n = 1,024: log n is 10. n log n is about 10,000. n² is about a million." : "**n = 1,000,000:** log n ≈ 20, n log n ≈ 20 million, n² = a trillion. That gap is why we care about the shape.", [], 5.5);
+    }
+    rec.mark("Remember");
+    rec.card("Throw half away → log n", "keep and process both halves → n log n", 5.5,
+      "O = ceiling, Ω = floor, Θ = both. log n = one path down the halvings; n log n = every item on every level.");
+  },
+});
+</script></body></html>

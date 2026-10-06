@@ -17,6 +17,7 @@ import { drills as cs146Recurrences } from "./cs146--6-recurrences";
 import { drills as cs146Heaps } from "./cs146--8-heaps-heapsort-pq";
 import { drills as cs146Quick } from "./cs146--9-quicksort";
 import { drills as cs146Linear } from "./cs146--10-linear-sorts";
+import { drills as cs146Zero } from "./cs146--3-from-zero";
 import { drills as cs146Hash } from "./cs146--11-hash-tables";
 import { drills as cs146Bst } from "./cs146--12-binary-search-trees";
 import { drills as cs146Avl } from "./cs146--13-avl-trees";
@@ -58,6 +59,7 @@ const ALL: Drill[][] = [
   cs146Heaps,
   cs146Quick,
   cs146Linear,
+  cs146Zero,
   cs146Hash,
   cs146Bst,
   cs146Avl,

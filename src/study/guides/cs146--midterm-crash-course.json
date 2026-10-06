@@ -265,8 +265,18 @@
         },
         {
           "type": "prose",
-          "md": "**Stuck?** The chapter walks the three parts on insertion sort itself.",
+          "md": "**Stuck?** Lecture 3 from zero goes one idea at a time, with the code next to plain English and a video.",
           "resources": [
+            {
+              "label": "Lecture 3 from zero: invariants",
+              "url": "/study/cs146/3-from-zero?s=invariant",
+              "kind": "chapter"
+            },
+            {
+              "label": "Lecture 3 from zero: the code",
+              "url": "/study/cs146/3-from-zero?s=code",
+              "kind": "chapter"
+            },
             {
               "label": "Loop invariants",
               "url": "/study/cs146/2-adts-invariants-insertion?s=invariants",
@@ -283,7 +293,7 @@
               "kind": "chapter"
             }
           ],
-          "id": "invariants.3d7742db"
+          "id": "invariants.5f8520d5"
         }
       ]
     },
@@ -392,8 +402,18 @@
         },
         {
           "type": "prose",
-          "md": "**Stuck?** Chapter 0 explains log and n^(log_b a) from zero; Lecture 4 does Big-O slowly.",
+          "md": "**Stuck?** Lecture 3 from zero explains what O, Ω and Θ are each for, with a video; Chapter 0 explains log from zero.",
           "resources": [
+            {
+              "label": "O, Ω, Θ from zero",
+              "url": "/study/cs146/3-from-zero?s=family",
+              "kind": "chapter"
+            },
+            {
+              "label": "log n vs n log n",
+              "url": "/study/cs146/3-from-zero?s=logs",
+              "kind": "chapter"
+            },
             {
               "label": "Big-O in plain words",
               "url": "/study/cs146/4-big-o-merge-sort?s=bigo",
@@ -420,7 +440,7 @@
               "kind": "site"
             }
           ],
-          "id": "bigo.a85e9c1c"
+          "id": "bigo.d7e6ac4d"
         }
       ]
     },
@@ -515,8 +535,13 @@
         },
         {
           "type": "prose",
-          "md": "**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter.",
+          "md": "**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter. log n vs n log n has its own slow section.",
           "resources": [
+            {
+              "label": "log n vs n log n, slowly",
+              "url": "/study/cs146/3-from-zero?s=logs",
+              "kind": "chapter"
+            },
             {
               "label": "Binary search",
               "url": "/study/cs146/4-big-o-merge-sort?s=binsearch",
@@ -543,7 +568,7 @@
               "kind": "video"
             }
           ],
-          "id": "dc.3029f4ad"
+          "id": "dc.3060b428"
         }
       ]
     },

@@ -17,7 +17,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent / "authoring"
 SCRIPTS = [
-    ("cs146/0-notation", "cs146_0.py"), ("cs146/2-adts-invariants-insertion", "cs146_2.py"),
+    ("cs146/0-notation", "cs146_0.py"), ("cs146/2-adts-invariants-insertion", "cs146_2.py"), ("cs146/3-from-zero", "cs146_3z.py"),
     ("cs146/4-big-o-merge-sort", "cs146_4.py"), ("cs146/6-recurrences", "cs146_6.py"),
     ("cs146/7-master-method", "cs146_7.py"), ("cs146/8-heaps-heapsort-pq", "cs146_8.py"),
     ("cs146/9-quicksort", "cs146_9.py"), ("cs146/10-linear-sorts", "cs146_10.py"),
