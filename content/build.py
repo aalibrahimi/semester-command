@@ -30,6 +30,7 @@ SCRIPTS = [
     ("ling112/2-categories", "ling112_2.py"), ("ling112/4-heads-dependents", "ling112_4.py"),
     ("ling112/5-constituency-tests", "ling112_5.py"), ("ling112/6-phrase-structure", "ling112_6.py"),
     ("ling112/7-x-bar", "ling112_7.py"),
+    ("ling112/8-arguments-projection", "ling112_8.py"),
     ("ling115/9-frequency-keyness", "ling115_6.py"), ("ling115/p-python-for-corpora", "py115.py"),
     ("ling124/0-reading-a-wave", "l124_0.py"), ("ling124/3-sampling-aliasing", "l124_3.py"),
     ("ling124/4-complex-sinusoids", "l124_4.py"), ("ling124/5-fourier-series", "l124_5.py"),

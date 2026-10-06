@@ -1,0 +1,972 @@
+{
+  "id": "ling112/8-arguments-projection",
+  "course": "ling112",
+  "lessons": "Week 8",
+  "title": "Arguments, theta roles and the Projection Principle (Oral Exam 1)",
+  "summary": "What makes a phrase an argument or an adjunct; the three kinds of requirement a verb has (how many arguments, what category, what theta role); theta roles and theta grids; the Theta Criterion; the Projection Principle ('every head must have all of its requirements fulfilled') and the EPP; then the whole oral exam on the Projection Principle: the 2 to 3 minute explanation and ten practice sentences with X-bar trees.",
+  "estimatedMinutes": 75,
+  "sourceNote": "Week 8 handout 'Arguments and adjuncts' (Dr. Nie): the definitions of argument, valency, selectional restrictions, the five theta roles and their examples, theta grids for place, dislike and scare, the Theta Criterion (7), the theta role hierarchy (8), the Projection Principle (1), expletives and the EPP (9) to (10), and the adjective and adverbial hierarchies. Oral exam format from the course's oral exam sign-up page. Trees follow the Week 6 phrase structure rules and the Week 7 X-bar handout (TP → DP T′, T′ → T VP, every nominal a DP, all three bar levels on every phrase).",
+  "requires": [
+    "ling112/4-heads-dependents",
+    "ling112/6-phrase-structure",
+    "ling112/7-x-bar"
+  ],
+  "sections": [
+    {
+      "id": "map",
+      "heading": "Start here: verbs come with requirements",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The idea of this week.** A verb isn't just a word; it comes with a list of **requirements**. *Laugh* needs one participant, *eat* two, *put* three, *snow* none. The sentence has to supply exactly what the verb asks for. This week names those requirements (theta roles, theta grids) and the principle that enforces them: the **Projection Principle**.",
+          "slide": "The idea",
+          "id": "map.3230c77c"
+        },
+        {
+          "type": "diagram",
+          "kind": "roadmap",
+          "data": {
+            "eyebrow": "Week 8 agenda",
+            "question": "Week 8, in order",
+            "steps": [
+              {
+                "title": "Arguments",
+                "sub": "obligatory participants, 0 to 3",
+                "result": "valency",
+                "tone": "brand"
+              },
+              {
+                "title": "Three requirements",
+                "sub": "number, category, theta role",
+                "result": "selection",
+                "tone": "brand"
+              },
+              {
+                "title": "Theta roles and grids",
+                "sub": "Agent, Theme, Recipient, Location, Experiencer",
+                "result": "writing them down",
+                "tone": "green"
+              },
+              {
+                "title": "Theta Criterion",
+                "sub": "one role per argument, one argument per role",
+                "result": "the matching rule",
+                "tone": "green"
+              },
+              {
+                "title": "Projection Principle + EPP",
+                "sub": "every requirement fulfilled; every clause has a subject",
+                "result": "your oral topic",
+                "tone": "amber"
+              },
+              {
+                "title": "Adjuncts",
+                "sub": "everything else; their own hierarchies",
+                "result": "the leftovers",
+                "tone": "red"
+              }
+            ]
+          },
+          "caption": "The handout's parts, in order.",
+          "id": "map.5d310b85"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it matters** This is your Oral Exam 1 topic (Thursday Oct 15, 12:00, CL 491). It's also the reason the trees from Weeks 6 and 7 look the way they do: the verb's requirements decide which phrases are complements and which are adjuncts.",
+          "label": "why",
+          "id": "map.91707a82"
+        }
+      ]
+    },
+    {
+      "id": "arguments",
+      "heading": "Arguments and the three kinds of requirement",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Argument",
+          "body": "An **obligatory participant** of the verb. Each verb has requirements on the number and type of arguments it takes (its **selectional restrictions**).",
+          "id": "arguments.e6c57c0f"
+        },
+        {
+          "type": "definition",
+          "term": "Adjunct",
+          "body": "An **optional** phrase the verb doesn't ask for: time, manner, extra location. You can drop it, and you can stack as many as you like.",
+          "id": "arguments.f5a70fd5"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Valency (number of arguments)",
+            "Verbs from the handout"
+          ],
+          "rows": [
+            [
+              "0",
+              "rain, snow, seem, be likely"
+            ],
+            [
+              "1",
+              "laugh, smile, sleep, arrive, fall, drift, rise"
+            ],
+            [
+              "2",
+              "hit, build, defeat, praise, eat, create, like, watch"
+            ],
+            [
+              "3",
+              "give, hand, put, set, place"
+            ]
+          ],
+          "title": "Number: English verbs allow 0 to 3 arguments",
+          "id": "arguments.54d5f362"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Requirement",
+            "What it restricts",
+            "Handout example (✓ fine, # odd or bad)"
+          ],
+          "rows": [
+            [
+              "**Number** (valency)",
+              "how many arguments",
+              "*place* needs 3: # Carly placed the briefcase"
+            ],
+            [
+              "**Category**",
+              "DP, PP, …",
+              "*give* allows DP PP and DP DP: I gave [a book] [to George] ✓ · I gave [George] [a book] ✓. *place* allows only DP PP: # I placed [the table] [a book]"
+            ],
+            [
+              "**Theta role**",
+              "the meaning/role of each argument",
+              "*give*'s PP must be an animate Recipient: # I gave a book to George's lap. *place*'s PP must be an inanimate Location: # I placed a book on George"
+            ]
+          ],
+          "title": "The three requirements a verb has",
+          "id": "arguments.c8c5d187"
+        },
+        {
+          "type": "definition",
+          "term": "Subcategory",
+          "body": "Verbs that share the same requirements form a **subtype** (subcategory): *give* and *hand* (DP DP or DP PP), *place* and *put* (DP PP Location only).",
+          "id": "arguments.7004e8da"
+        },
+        {
+          "type": "check",
+          "prompt": "Is 'in the kitchen' an argument or an adjunct in (a) 'Sam put the bowl in the kitchen' and (b) 'Sam ate in the kitchen'?",
+          "answer": "(a) **Argument**: *put* requires a Location (# Sam put the bowl). (b) **Adjunct**: *eat* doesn't need a place (Sam ate is fine).",
+          "sectionRef": "arguments",
+          "id": "arguments.0ae15488"
+        }
+      ]
+    },
+    {
+      "id": "theta",
+      "heading": "Theta roles: who does what to whom",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**Grammatical relations vs theta roles.** 'Subject' and 'object' describe a phrase's role in the **sentence**, so they change when the sentence changes. **Theta roles** describe its role relative to the **verb**, so they stay the same.",
+          "id": "theta.bf0b13f7"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "",
+            "Active: She punched them.",
+            "Passive: They were punched by her."
+          ],
+          "rows": [
+            [
+              "she / her",
+              "**subject**, Agent",
+              "non-subject, **still Agent**"
+            ],
+            [
+              "them / they",
+              "non-subject, Theme",
+              "**subject**, **still Theme**"
+            ]
+          ],
+          "title": "Same roles, different grammatical relations",
+          "id": "theta.7b7a1a5b"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Theta role",
+            "Definition (handout)",
+            "Handout examples"
+          ],
+          "rows": [
+            [
+              "**Agent**",
+              "the initiator or doer of an action",
+              "*Rosa* danced all night · The cats were chased *by Zeno*"
+            ],
+            [
+              "**Theme** (Patient)",
+              "the entity that undergoes an action, is perceived or is experienced",
+              "Victor threw *the ball* · *The building* collapsed onto the ground"
+            ],
+            [
+              "**Recipient**",
+              "the entity that receives a theme; with verbs of transfer of possession",
+              "Michelle handed *Lee* a red pen · *Carlos* was gifted an office plant"
+            ],
+            [
+              "**Location**",
+              "the place where an action or state occurs",
+              "She quickly crossed *the street* · José slid the bag *under the table*"
+            ],
+            [
+              "**Experiencer**",
+              "the entity that perceives an event or state",
+              "*Anna* noticed the train · The rabid dog scared *my poor cats*"
+            ]
+          ],
+          "title": "The five major theta roles",
+          "id": "theta.cb2f43b8"
+        },
+        {
+          "type": "trap",
+          "body": "Reading the role off the position. In 'The building collapsed', the subject is a **Theme** (it undergoes the collapse; nobody did it). In 'The rabid dog scared my poor cats', the Experiencer is the **object**. Ask what the phrase **does in the event**, not where it sits.",
+          "source": "Week 8 handout",
+          "points": null,
+          "id": "theta.27523d48"
+        },
+        {
+          "type": "check",
+          "prompt": "Give the theta roles in 'Anna noticed the train'.",
+          "answer": "*Anna* = **Experiencer** (she perceives), *the train* = **Theme** (what's perceived).",
+          "sectionRef": "theta",
+          "id": "theta.c5cac7f4"
+        }
+      ]
+    },
+    {
+      "id": "grids",
+      "heading": "Theta grids and the Theta Criterion",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Theta grid (subcategorization frame)",
+          "body": "A verb's requirements written down: the **number**, **category** and **theta role** of each argument, as slots x, y, z. Arguments can be DPs or PPs.",
+          "id": "grids.f5e5f41b"
+        },
+        {
+          "type": "example",
+          "title": "Handout theta grids",
+          "body": "place  (Carly placed the briefcase on the table)\n  x: DP Agent      y: DP Theme          z: PP Location\n     Carly           the briefcase         on the table\n\ndislike  (The boss disliked the strong smell)\n  x: DP Experiencer   y: DP Theme\n     the boss            the strong smell\n\nscare  (Horror movies scare Lisa)\n  x: DP Theme      y: DP Experiencer\n     horror movies    Lisa",
+          "answer": "x, y, z = category + role",
+          "id": "grids.df51d7cd"
+        },
+        {
+          "type": "definition",
+          "term": "Theta Criterion",
+          "body": "**Every theta role is assigned to one and only one argument. Every argument is assigned one and only one theta role.** No empty slots, no double roles, no extra arguments with no role.",
+          "id": "grids.1b8e4bdb"
+        },
+        {
+          "type": "definition",
+          "term": "Theta role hierarchy",
+          "body": "Roles usually line up in this order: **Agent, Experiencer > Theme, Recipient > Location**. The higher role tends to be the subject. Exception: *scare* (Theme > Experiencer).",
+          "id": "grids.8b1d512f"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Sentence",
+            "What goes wrong"
+          ],
+          "rows": [
+            [
+              "# Carly placed the briefcase.",
+              "the Location role has no argument (role left unassigned)"
+            ],
+            [
+              "# Carly placed the briefcase on the table the book.",
+              "*the book* gets no role (argument with no role)"
+            ],
+            [
+              "# The boss disliked.",
+              "the Theme role has no argument"
+            ]
+          ],
+          "title": "Theta Criterion violations",
+          "id": "grids.ca4f8333"
+        },
+        {
+          "type": "check",
+          "prompt": "Write the theta grid for *throw* in 'Victor threw the ball'.",
+          "answer": "x: DP **Agent** (Victor), y: DP **Theme** (the ball).",
+          "sectionRef": "grids",
+          "id": "grids.ae0a5c94"
+        }
+      ]
+    },
+    {
+      "id": "projection",
+      "heading": "The Projection Principle (your oral topic)",
+      "blocks": [
+        {
+          "type": "definition",
+          "term": "Projection Principle",
+          "body": "**Every head must have all of its requirements fulfilled.** (Dr. Nie's handout (1).) A head's requirements are its number of arguments, their categories and their theta roles: its theta grid. The sentence, and so the tree, must contain a phrase for every one of them.",
+          "id": "projection.09c24ba9"
+        },
+        {
+          "type": "prose",
+          "md": "**Why it's called 'projection'.** The requirements live in the head (in its lexical entry), and they **project** up into the structure: the head's grid decides what has to appear around it in the tree. The tree is the head's requirements made visible.",
+          "id": "projection.1e614bbe"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "What the head requires",
+            "Where it goes in the X-bar tree",
+            "Example"
+          ],
+          "rows": [
+            [
+              "internal argument (object, PP Location, Recipient)",
+              "**complement**: sister of V, daughter of the lowest V′",
+              "*placed* [the briefcase] [on the table]"
+            ],
+            [
+              "external argument (the x slot, usually the highest role)",
+              "**subject**: specifier of TP (TP → DP T′)",
+              "[Carly] placed…"
+            ],
+            [
+              "nothing (not in the grid)",
+              "**adjunct**: sister of a V′ (one V′ per adjunct)",
+              "…[yesterday], [in the morning]"
+            ]
+          ],
+          "title": "The Projection Principle decides where every phrase goes",
+          "id": "projection.a97125d0"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Carly placed the briefcase on the table. All three of *place*'s requirements are in the tree: Carly in Spec,TP, the briefcase and on the table as complements of V. Click the lowest V′: V and both its complements.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D ∅] [NP [N′ [N Carly]]]]] [T′ [T PAST] [VP [V′ [V placed] [DP [D′ [D the] [NP [N′ [N briefcase]]]]] [PP [P′ [P on] [DP [D′ [D the] [NP [N′ [N table]]]]]]]]]]]"
+          },
+          "slide": "Try it",
+          "id": "projection.fe1f8c7f"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Violation",
+            "Which requirement fails"
+          ],
+          "rows": [
+            [
+              "# Carly placed the briefcase.",
+              "**number**: place's z slot is empty"
+            ],
+            [
+              "# I placed the table a book.",
+              "**category**: place wants DP PP, not DP DP"
+            ],
+            [
+              "# I placed a book on George.",
+              "**theta role**: place's PP must be an inanimate Location"
+            ],
+            [
+              "# The students laughed the joke.",
+              "**number**: laugh has one slot; the joke has no role (Theta Criterion too)"
+            ]
+          ],
+          "title": "Four ways to break the Projection Principle",
+          "id": "projection.5026fdb9"
+        },
+        {
+          "type": "trap",
+          "body": "Putting an argument PP as an adjunct (or the reverse). In 'put the keys in the drawer before dinner', *in the drawer* is put's Location: complement, sister of V. *before dinner* isn't in the grid: adjunct, sister of V′. Two PPs, two different positions, decided by the grid.",
+          "source": "Oral exam practical",
+          "points": null,
+          "id": "projection.25b92dd9"
+        }
+      ]
+    },
+    {
+      "id": "epp",
+      "heading": "Expletives and the EPP",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "**The problem the Projection Principle can't solve alone.** Zero-argument predicates (*snow*, *rain*, *seem*) have no requirements, so the Projection Principle asks for nothing. Yet English still needs a subject: 'It snowed yesterday', never just 'Snowed yesterday'.",
+          "id": "epp.34424525"
+        },
+        {
+          "type": "definition",
+          "term": "Expletive pronoun",
+          "body": "A subject that **doesn't mean or refer to anything**: *it* in 'It snowed yesterday' and 'It seems that horror movies scare Lisa', *there* in 'There appears to be a problem with our oven'. It gets **no theta role**.",
+          "id": "epp.accd830d"
+        },
+        {
+          "type": "definition",
+          "term": "Extended Projection Principle (EPP)",
+          "body": "**Every clause must have a subject.** (Handout (10).) The structural position is the **specifier of TP**.",
+          "id": "epp.a5f68370"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "Handout task: 'It snowed yesterday' in X-bar. *It* sits in Spec,TP to satisfy the EPP (no theta role, since snow has none to give). *yesterday* is an adjunct: sister of V′.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D it]]] [T′ [T PAST] [VP [V′ [V′ [V snowed]] [AdvP [Adv′ [Adv yesterday]]]]]]]"
+          },
+          "slide": "Try it",
+          "id": "epp.59ed5a32"
+        },
+        {
+          "type": "prose",
+          "md": "**Projection Principle vs EPP in one line each:** the Projection Principle says every head gets **everything it asks for**; the EPP says every clause gets **a subject, even if no head asked for one**. The expletive is how English satisfies the EPP without breaking the Theta Criterion.",
+          "label": "think",
+          "id": "epp.21fdce87"
+        }
+      ]
+    },
+    {
+      "id": "adjuncts",
+      "heading": "Adjuncts and their order",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "Adjuncts aren't required, but they still come in a preferred order.",
+          "id": "adjuncts.43d62bd0"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Opinion",
+            "Size / physical",
+            "Age",
+            "Shape",
+            "Color",
+            "Origin",
+            "Material",
+            "Purpose",
+            "Noun"
+          ],
+          "rows": [
+            [
+              "good",
+              "sturdy",
+              "old",
+              "square",
+              "red",
+              "French",
+              "wooden",
+              "rocking",
+              "chair"
+            ]
+          ],
+          "title": "Adjective hierarchy (fairly rigid, possibly universal; subjectivity predicts the order)",
+          "id": "adjuncts.ff53561a"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Verb",
+            "Manner",
+            "Location",
+            "Frequency",
+            "Time",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "jog",
+              "lightly",
+              "around the park",
+              "every day",
+              "in the morning",
+              "for exercise"
+            ]
+          ],
+          "title": "Adverbial hierarchy (freer; both AdvPs and PPs act as adverbials)",
+          "id": "adjuncts.c9c5abaf"
+        },
+        {
+          "type": "check",
+          "prompt": "Why is 'a wooden old chair' odd?",
+          "answer": "Age comes before material in the adjective hierarchy: **an old wooden chair**.",
+          "sectionRef": "adjuncts",
+          "id": "adjuncts.4512e65e"
+        }
+      ]
+    },
+    {
+      "id": "oral",
+      "heading": "Oral Exam 1: the prepared portion",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Part",
+            "Points",
+            "What it asks",
+            "Notes allowed?"
+          ],
+          "rows": [
+            [
+              "Prepared (2 to 3 min)",
+              "2",
+              "a concise definition or description of the Projection Principle",
+              "yes"
+            ],
+            [
+              "",
+              "2",
+              "one or more examples; one or more issues it raises or solves",
+              "yes"
+            ],
+            [
+              "Practical",
+              "2",
+              "explain how the Projection Principle applies to her sentence",
+              "**no**"
+            ],
+            [
+              "",
+              "2",
+              "demonstrate and explain your approach before drawing",
+              "**no**"
+            ],
+            [
+              "",
+              "2",
+              "draw the X-bar tree with our English rules",
+              "**no**"
+            ]
+          ],
+          "title": "How the 10 points break down (Thu Oct 15, 12:00, CL 491, whiteboard)",
+          "id": "oral.e35e2d62"
+        },
+        {
+          "type": "prose",
+          "md": "**Definition.** The Projection Principle says that every head must have all of its requirements fulfilled. A verb, for example, comes with requirements on its arguments: how many it takes, what syntactic category each one is, and what theta role each one plays. We write those requirements as a theta grid, and the Projection Principle says the sentence has to fulfill every one of them.\n\n**Example.** Take place, as in 'Carly placed the briefcase on the table.' Its theta grid has three slots: a DP Agent, a DP Theme and a PP Location. Carly, the briefcase and on the table fill them. If I drop one, 'Carly placed the briefcase', the sentence is bad because place's Location requirement isn't fulfilled. The category matters too: 'I placed the table a book' is bad because place wants DP PP, not DP DP. And the role matters: 'I placed a book on George' is odd because the PP has to be an inanimate Location.\n\n**What it solves.** It explains why some phrases are obligatory and others aren't. Anything in the head's grid is an argument and has to be there: in the tree, the internal arguments are complements, sisters of V, and the external argument is the subject in Spec,TP. Anything that isn't in the grid, like 'yesterday' or 'in the morning', is an adjunct: it's optional, I can stack as many as I want, and it attaches to V′. So the Projection Principle tells me where each phrase goes before I draw anything.\n\n**What it raises.** Some verbs have no requirements at all, like snow. The Projection Principle asks for nothing there, but English still says 'It snowed', with a subject that means nothing. So we also need the Extended Projection Principle: every clause must have a subject. The expletive 'it' fills the subject position without getting a theta role, which also keeps the Theta Criterion happy.",
+          "id": "oral.f7fdc82d"
+        },
+        {
+          "type": "prose",
+          "md": "**Timing:** read at a calm pace, this script is about 2.5 minutes. You can bring it as notes, but practice it until you only glance at the bold words. For the examples, **write them on the whiteboard as you talk**: the theta grid for *place* with x, y, z, and the three starred sentences. Writing is what makes it look fluent.",
+          "id": "oral.ea5e21e5"
+        },
+        {
+          "type": "example",
+          "title": "If she asks you to elaborate",
+          "body": "\"What's a theta grid?\"  → the verb's requirements written down: number, category and theta role of each argument.\n\"How is that different from the Theta Criterion?\"  → the Projection Principle says the requirements must be fulfilled; the Theta Criterion says the matching is one-to-one (one role per argument, one argument per role).\n\"Why do we need the EPP?\"  → snow has no requirements but 'It snowed' still needs a subject: an expletive with no role.\n\"Do only verbs have requirements?\"  → no, every head: possessive 's needs a possessor and a possessed noun; a preposition needs its DP object.",
+          "answer": "grid, criterion, EPP, other heads",
+          "id": "oral.fcb97c4f"
+        }
+      ]
+    },
+    {
+      "id": "practical",
+      "heading": "Oral Exam 1: the practical, step by step",
+      "blocks": [
+        {
+          "type": "prose",
+          "md": "No notes here, so learn these six steps by heart. They also earn the 2 points for 'demonstrate and explain your approach before drawing a tree': **say each step out loud** as you do it.",
+          "id": "practical.469408ad"
+        },
+        {
+          "type": "table",
+          "columns": [
+            "Step",
+            "What to do (and say out loud)"
+          ],
+          "rows": [
+            [
+              "1. Find the heads with requirements",
+              "Underline every verb (and any other head that selects, like possessive 's). Say what kind of verb it is: zero, one, two or three arguments."
+            ],
+            [
+              "2. Write the theta grid",
+              "For the main verb: x, y, z with category and theta role (DP Agent, DP Theme, PP Location…). Say it out loud: 'place needs a DP Agent, a DP Theme and a PP Location.'"
+            ],
+            [
+              "3. Match arguments to slots",
+              "Point to the phrase that fills each slot. Use the Theta Criterion: one role per argument, one argument per role. If there's no subject role (snow, rain, seem), the subject is an expletive (EPP)."
+            ],
+            [
+              "4. Everything left over is an adjunct",
+              "Any phrase not in a grid (time, manner, place words the verb doesn't need) is an adjunct. Prove it: it can be dropped, and you could stack another."
+            ],
+            [
+              "5. Place them in the tree",
+              "TP → DP T′ (subject in Spec,TP), T′ → T VP (T = PAST, PRES or an auxiliary like will). Complements: sisters of V under the lowest V′. Adjuncts: one new V′ each (V′ → V′ AdvP/PP, or AdvP V′ on the left)."
+            ],
+            [
+              "6. Draw, then check",
+              "Every phrase has all three levels (XP, X′, X); every nominal is a DP. Then check: is every requirement in the grid filled exactly once? That's the Projection Principle, verified on your own tree."
+            ]
+          ],
+          "title": "The six steps (memorize the left column)",
+          "id": "practical.19bf5cd8"
+        },
+        {
+          "type": "prose",
+          "md": "**A one-line mnemonic for the six steps:** *Verbs, Grid, Match, Leftovers, Place, Check*.",
+          "id": "practical.49125f53"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(1) Carly placed the briefcase on the table.  Theta grid of **place**: DP Agent = *Carly*; DP Theme = *the briefcase*; PP Location = *on the table*. No adjuncts. place needs three things, so all three must be in the tree: Carly in Spec,TP (the external argument), the briefcase and on the table as complements, sisters of V. Drop the PP and place is left unfulfilled: *Carly placed the briefcase.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D ∅] [NP [N′ [N Carly]]]]] [T′ [T PAST] [VP [V′ [V placed] [DP [D′ [D the] [NP [N′ [N briefcase]]]]] [PP [P′ [P on] [DP [D′ [D the] [NP [N′ [N table]]]]]]]]]]]"
+          },
+          "id": "practical.8f7bb5d8"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(2) The boss disliked the strong smell.  Theta grid of **dislike**: DP Experiencer = *the boss*; DP Theme = *the strong smell*. No adjuncts. dislike has two requirements: an Experiencer (the boss, subject) and a Theme (the strong smell, complement). 'strong' is not in dislike's grid at all: it's an adjunct inside the NP, sister of N′.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D the] [NP [N′ [N boss]]]]] [T′ [T PAST] [VP [V′ [V disliked] [DP [D′ [D the] [NP [N′ [AdjP [Adj′ [Adj strong]]] [N′ [N smell]]]]]]]]]]"
+          },
+          "id": "practical.a9b11f74"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(3) Horror movies scare Lisa.  Theta grid of **scare**: DP Theme = *horror movies*; DP Experiencer = *Lisa*. No adjuncts. scare's requirements are a Theme and an Experiencer, in that order: the exception to the theta hierarchy (Experiencer usually comes first). The Projection Principle doesn't care about the order of roles, only that both are filled, once each.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D ∅] [NP [N′ [AdjP [Adj′ [Adj horror]]] [N′ [N movies]]]]]] [T′ [T PRES] [VP [V′ [V scare] [DP [D′ [D ∅] [NP [N′ [N Lisa]]]]]]]]]"
+          },
+          "id": "practical.764a070b"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(4) It snowed yesterday.  Theta grid of **snow**: none (zero arguments). Adjuncts: *yesterday*. snow has NO requirements (a zero-argument predicate), so the Projection Principle asks for nothing. But English still demands a subject: that's the EPP. 'It' is an expletive: it fills Spec,TP but gets no theta role. 'yesterday' is an adjunct (sister of V′).",
+          "params": {
+            "bracket": "[TP [DP [D′ [D it]]] [T′ [T PAST] [VP [V′ [V′ [V snowed]] [AdvP [Adv′ [Adv yesterday]]]]]]]"
+          },
+          "id": "practical.d41eb4cc"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(5) Michelle handed Lee a red pen.  Theta grid of **hand**: DP Agent = *Michelle*; DP Recipient = *Lee*; DP Theme = *a red pen*. No adjuncts. hand takes DP DP complements here (like give): Recipient first, then Theme. All three requirements fulfilled: Michelle (subject), Lee and a red pen (both complements of V).",
+          "params": {
+            "bracket": "[TP [DP [D′ [D ∅] [NP [N′ [N Michelle]]]]] [T′ [T PAST] [VP [V′ [V handed] [DP [D′ [D ∅] [NP [N′ [N Lee]]]]] [DP [D′ [D a] [NP [N′ [AdjP [Adj′ [Adj red]]] [N′ [N pen]]]]]]]]]]"
+          },
+          "id": "practical.36ebcf8f"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(6) The tired students laughed loudly in the hallway.  Theta grid of **laugh**: DP Agent = *the tired students*. Adjuncts: *loudly*, *in the hallway*. laugh has one requirement, filled by the subject. Everything after the verb is NOT in its grid, so loudly and in the hallway are adjuncts: each gets its own V′ (V′ → V′ AdvP, then V′ → V′ PP), and the lowest V′ has the verb alone.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D the] [NP [N′ [AdjP [Adj′ [Adj tired]]] [N′ [N students]]]]]] [T′ [T PAST] [VP [V′ [V′ [V′ [V laughed]] [AdvP [Adv′ [Adv loudly]]]] [PP [P′ [P in] [DP [D′ [D the] [NP [N′ [N hallway]]]]]]]]]]]"
+          },
+          "id": "practical.dd6e3ac4"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(7) My roommate will put the keys in the drawer before dinner.  Theta grid of **put**: DP Agent = *my roommate*; DP Theme = *the keys*; PP Location = *in the drawer*. Adjuncts: *before dinner*. Two PPs, two different jobs. in the drawer is put's Location requirement (a complement, sister of V). before dinner is not in put's grid (an adjunct, sister of V′). 'will' is in T.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D my] [NP [N′ [N roommate]]]]] [T′ [T will] [VP [V′ [V′ [V put] [DP [D′ [D the] [NP [N′ [N keys]]]]] [PP [P′ [P in] [DP [D′ [D the] [NP [N′ [N drawer]]]]]]]] [PP [P′ [P before] [DP [D′ [D ∅] [NP [N′ [N dinner]]]]]]]]]]]"
+          },
+          "id": "practical.552c9209"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(8) Rosa sent a letter to her grandmother on Tuesday.  Theta grid of **send**: DP Agent = *Rosa*; DP Theme = *a letter*; PP Recipient = *to her grandmother*. Adjuncts: *on Tuesday*. send's Recipient can be a PP (to her grandmother), like give. on Tuesday is time, not in send's grid: adjunct. The test: 'Rosa sent a letter to her grandmother' is complete; 'Rosa sent a letter on Tuesday' still needs the recipient understood.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D ∅] [NP [N′ [N Rosa]]]]] [T′ [T PAST] [VP [V′ [V′ [V sent] [DP [D′ [D a] [NP [N′ [N letter]]]]] [PP [P′ [P to] [DP [D′ [D her] [NP [N′ [N grandmother]]]]]]]] [PP [P′ [P on] [DP [D′ [D ∅] [NP [N′ [N Tuesday]]]]]]]]]]]"
+          },
+          "id": "practical.5c11c87d"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(9) She quickly crossed the street.  Theta grid of **cross**: DP Agent = *she*; DP Location = *the street*. Adjuncts: *quickly*. cross's Location is a DP here (the street), straight from the handout's (5a): a Location doesn't have to be a PP. quickly is an adjunct on the left: V′ → AdvP V′.",
+          "params": {
+            "bracket": "[TP [DP [D′ [D she]]] [T′ [T PAST] [VP [V′ [AdvP [Adv′ [Adv quickly]]] [V′ [V crossed] [DP [D′ [D the] [NP [N′ [N street]]]]]]]]]]"
+          },
+          "id": "practical.bfd3703e"
+        },
+        {
+          "type": "sim",
+          "sim": "tree",
+          "caption": "(10) The chef's assistant ate the cake.  Theta grid of **eat**: DP Agent = *the chef's assistant*; DP Theme = *the cake*. No adjuncts. Heads other than verbs have requirements too: the possessive 's needs a possessor (the chef, its specifier) and a possessed noun (assistant, its complement). eat's two requirements: the whole DP the chef's assistant (Agent) and the cake (Theme).",
+          "params": {
+            "bracket": "[TP [DP [DP [D′ [D the] [NP [N′ [N chef]]]]] [D′ [D 's] [NP [N′ [N assistant]]]]] [T′ [T PAST] [VP [V′ [V ate] [DP [D′ [D the] [NP [N′ [N cake]]]]]]]]]"
+          },
+          "id": "practical.35a730ee"
+        },
+        {
+          "type": "trap",
+          "body": "Forgetting the bar levels. Dr. Nie's trees have **all three levels on every phrase**, even a lone word: [DP [D′ [D it]]], [AdvP [Adv′ [Adv yesterday]]]. And every nominal is a DP (a name gets an empty D: [DP [D′ [D ∅] [NP Carly]]]).",
+          "source": "Week 7 handout",
+          "points": null,
+          "id": "practical.4ef92288"
+        }
+      ]
+    },
+    {
+      "id": "words",
+      "heading": "Words from this chapter",
+      "blocks": [
+        {
+          "type": "table",
+          "columns": [
+            "Word",
+            "Plain meaning"
+          ],
+          "rows": [
+            [
+              "Argument",
+              "An obligatory participant of the verb."
+            ],
+            [
+              "Adjunct",
+              "An optional phrase the verb doesn't require; stackable."
+            ],
+            [
+              "Valency",
+              "How many arguments a verb takes (0 to 3 in English)."
+            ],
+            [
+              "Selectional restrictions",
+              "A verb's requirements on its arguments: number, category, theta role."
+            ],
+            [
+              "Theta role",
+              "The role an argument plays relative to the verb: Agent, Theme, Recipient, Location, Experiencer."
+            ],
+            [
+              "Theta grid",
+              "The requirements written as slots: x: DP Agent, y: DP Theme, z: PP Location."
+            ],
+            [
+              "Theta Criterion",
+              "One role per argument, one argument per role."
+            ],
+            [
+              "Projection Principle",
+              "Every head must have all of its requirements fulfilled."
+            ],
+            [
+              "Expletive",
+              "A subject with no meaning and no theta role: it, there."
+            ],
+            [
+              "EPP",
+              "Every clause must have a subject (in Spec,TP)."
+            ]
+          ],
+          "title": "Words from this chapter",
+          "slide": "Words from this chapter",
+          "id": "words.3b60221c"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "pp-def",
+      "title": "The definition",
+      "prompt": "Dr. Nie's Projection Principle says…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Every head must have all of its requirements fulfilled.**"
+      ],
+      "why": "Say this sentence first in the prepared portion.",
+      "choices": [
+        {
+          "text": "every head must have all of its requirements fulfilled",
+          "feedback": "Yes, word for word from the handout."
+        },
+        {
+          "text": "every clause must have a subject",
+          "feedback": "That's the EPP."
+        },
+        {
+          "text": "every argument gets exactly one theta role",
+          "feedback": "That's (half of) the Theta Criterion."
+        },
+        {
+          "text": "every phrase has a head",
+          "feedback": "That's endocentricity (Week 4), true but not this principle."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "projection"
+    },
+    {
+      "id": "pp-break",
+      "title": "What breaks",
+      "prompt": "'# I placed the table a book' breaks which requirement of *place*?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Category.**"
+      ],
+      "why": "The handout's place vs give contrast.",
+      "choices": [
+        {
+          "text": "category: place wants DP PP, not DP DP",
+          "feedback": "Yes: place takes DP PP only (give takes both)."
+        },
+        {
+          "text": "number: too few arguments",
+          "feedback": "It has three phrases, the right number."
+        },
+        {
+          "text": "theta role: the book isn't a Theme",
+          "feedback": "The problem is the shape, DP DP."
+        },
+        {
+          "text": "the EPP",
+          "feedback": "There is a subject."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "arguments"
+    },
+    {
+      "id": "expl",
+      "title": "Expletives",
+      "prompt": "In 'It snowed yesterday', what theta role does *it* get?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**None.**"
+      ],
+      "why": "The EPP, not the Projection Principle, puts it there.",
+      "choices": [
+        {
+          "text": "none: it's an expletive",
+          "feedback": "Yes: snow has no roles to give; it only satisfies the EPP."
+        },
+        {
+          "text": "Agent",
+          "feedback": "Nothing does the snowing."
+        },
+        {
+          "text": "Theme",
+          "feedback": "It doesn't undergo anything."
+        },
+        {
+          "text": "Location",
+          "feedback": "yesterday is time, and it's an adjunct anyway."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "epp"
+    },
+    {
+      "id": "comp-adj",
+      "title": "Complement or adjunct?",
+      "prompt": "In 'My roommate will put the keys in the drawer before dinner', which PP is a complement?",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**in the drawer** (complement, sister of V); before dinner is an adjunct (sister of V′)."
+      ],
+      "why": "The grid decides the position.",
+      "choices": [
+        {
+          "text": "in the drawer",
+          "feedback": "Yes: put requires a Location."
+        },
+        {
+          "text": "before dinner",
+          "feedback": "Time isn't in put's grid: adjunct."
+        },
+        {
+          "text": "both",
+          "feedback": "Only one is required: drop 'before dinner' and it's fine; drop 'in the drawer' and it's not."
+        },
+        {
+          "text": "neither",
+          "feedback": "put needs its Location."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "projection"
+    },
+    {
+      "id": "role",
+      "title": "Theta role",
+      "prompt": "In 'The building collapsed onto the ground', *the building* is the…",
+      "hints": [
+        "Read each option out loud and cross off the ones that are clearly wrong.",
+        "The chapter's cards in this section have the exact fact you need.",
+        "Pick the one that matches the definition word for word."
+      ],
+      "solution": [
+        "**Theme.**"
+      ],
+      "why": "Subjects aren't always Agents.",
+      "choices": [
+        {
+          "text": "Theme",
+          "feedback": "Yes: it undergoes the collapse."
+        },
+        {
+          "text": "Agent",
+          "feedback": "Nobody initiated it: not an Agent."
+        },
+        {
+          "text": "Experiencer",
+          "feedback": "It doesn't perceive anything."
+        },
+        {
+          "text": "Recipient",
+          "feedback": "Nothing is transferred to it."
+        }
+      ],
+      "answer": 0,
+      "sectionRef": "theta"
+    },
+    {
+      "id": "valency",
+      "title": "How many?",
+      "prompt": "How many arguments does *give* take in 'I gave George a book'?",
+      "hints": [
+        "Count the participants the verb needs.",
+        "Who gives? What is given? Who receives?",
+        "Agent, Theme, Recipient."
+      ],
+      "solution": [
+        "**3**: I (Agent), George (Recipient), a book (Theme)."
+      ],
+      "why": "A three-place predicate, like hand, put, place.",
+      "accept": [
+        "3",
+        "three"
+      ],
+      "sectionRef": "arguments"
+    }
+  ]
+}

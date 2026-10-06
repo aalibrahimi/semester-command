@@ -21,7 +21,9 @@ def NP(n, **kw):
 
 
 def DP(d, n=None, **kw):
-    return XP("D", d, comp=NP(n) if isinstance(n, str) else n, **kw)
+    # n is a bare noun ("track") or an NP already built with NP(...) (a bracket)
+    comp = (n if n.startswith("[") else NP(n)) if isinstance(n, str) else n
+    return XP("D", d, comp=comp, **kw)
 
 
 def NAME(n):

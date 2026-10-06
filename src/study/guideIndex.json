@@ -1394,7 +1394,64 @@
    }
   ],
   "exerciseCount": 5,
-  "sha": "52bc695587502368a39e622f56834b3c3840eedb0b1f69c0a8b036df99f12adf"
+  "sha": "f818b1254731fee6b5ceff4403d8a6f33cd02b16bfa34dcdb45045fb8a6a06e9"
+ },
+ {
+  "id": "ling112/8-arguments-projection",
+  "course": "ling112",
+  "lessons": "Week 8",
+  "title": "Arguments, theta roles and the Projection Principle (Oral Exam 1)",
+  "summary": "What makes a phrase an argument or an adjunct; the three kinds of requirement a verb has (how many arguments, what category, what theta role); theta roles and theta grids; the Theta Criterion; the Projection Principle ('every head must have all of its requirements fulfilled') and the EPP; then the whole oral exam on the Projection Principle: the 2 to 3 minute explanation and ten practice sentences with X-bar trees.",
+  "estimatedMinutes": 75,
+  "requires": [
+   "ling112/4-heads-dependents",
+   "ling112/6-phrase-structure",
+   "ling112/7-x-bar"
+  ],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "Start here: verbs come with requirements"
+   },
+   {
+    "id": "arguments",
+    "heading": "Arguments and the three kinds of requirement"
+   },
+   {
+    "id": "theta",
+    "heading": "Theta roles: who does what to whom"
+   },
+   {
+    "id": "grids",
+    "heading": "Theta grids and the Theta Criterion"
+   },
+   {
+    "id": "projection",
+    "heading": "The Projection Principle (your oral topic)"
+   },
+   {
+    "id": "epp",
+    "heading": "Expletives and the EPP"
+   },
+   {
+    "id": "adjuncts",
+    "heading": "Adjuncts and their order"
+   },
+   {
+    "id": "oral",
+    "heading": "Oral Exam 1: the prepared portion"
+   },
+   {
+    "id": "practical",
+    "heading": "Oral Exam 1: the practical, step by step"
+   },
+   {
+    "id": "words",
+    "heading": "Words from this chapter"
+   }
+  ],
+  "exerciseCount": 6,
+  "sha": "6edf875e7fb10122c9c1bd48edf49b4cfbefb278d2713165ad9dcc92c7f97a65"
  },
  {
   "id": "ling115/1-what-is-a-corpus",

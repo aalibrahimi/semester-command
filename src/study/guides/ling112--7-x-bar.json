@@ -330,7 +330,7 @@
         {
           "type": "example",
           "title": "(9a) and (9c) in brackets",
-          "body": "(9a) her phone:\n[DP [D′ [D her] [NP [N′ [N phone]]]]]\n\n(9c) my best friend's phone:\n[DP [DP [D′ [D my] [NP [N′ [N [NP [N′ [AdjP [Adj′ [Adj best]]] [N′ [N friend]]]]]]]]] [D′ [D 's] [NP [N′ [N phone]]]]]\n\nIn (9c) the possessor is itself a DP with its own adjunct: *best* sits on an N′ inside it.",
+          "body": "(9a) her phone:\n[DP [D′ [D her] [NP [N′ [N phone]]]]]\n\n(9c) my best friend's phone:\n[DP [DP [D′ [D my] [NP [N′ [AdjP [Adj′ [Adj best]]] [N′ [N friend]]]]]] [D′ [D 's] [NP [N′ [N phone]]]]]\n\nIn (9c) the possessor is itself a DP with its own adjunct: *best* sits on an N′ inside it.",
           "slide": "(9a) and (9c)",
           "id": "spec.2c41365c"
         },
@@ -396,7 +396,7 @@
           "sim": "tree",
           "caption": "(11) in X-bar form. Click the three N′ nodes: they are exactly (11c), (11b) and (11a). The PP *of flour* hangs from the lowest N′, next to the head: a complement.",
           "params": {
-            "bracket": "[DP [D′ [D those] [NP [N′ [N [NP [N′ [N′ [AdjP [Adj′ [Adj heavy]]] [N′ [N sacks] [PP [P′ [P of] [DP [D′ [D ∅] [NP [N′ [N flour]]]]]]]]] [PP [P′ [P in] [DP [D′ [D the] [NP [N′ [N corner]]]]]]]]]]]]]]"
+            "bracket": "[DP [D′ [D those] [NP [N′ [N′ [AdjP [Adj′ [Adj heavy]]] [N′ [N sacks] [PP [P′ [P of] [DP [D′ [D ∅] [NP [N′ [N flour]]]]]]]]] [PP [P′ [P in] [DP [D′ [D the] [NP [N′ [N corner]]]]]]]]]]]"
           },
           "slide": "Try it",
           "id": "np.856a76a2"
@@ -422,7 +422,7 @@
           "sim": "tree",
           "caption": "(14), reading A: she tripped him using a cane. The PP is an adjunct V′.",
           "params": {
-            "bracket": "[TP [DP [D′ [D she]]] [T′ [T PAST] [VP [V′ [V′ [V tripped] [DP [D′ [D that] [NP [N′ [N [NP [N′ [AdjP [Adj′ [Adj unlucky]]] [N′ [N man]]]]]]]]]] [PP [P′ [P with] [DP [D′ [D a] [NP [N′ [N cane]]]]]]]]]]]"
+            "bracket": "[TP [DP [D′ [D she]]] [T′ [T PAST] [VP [V′ [V′ [V tripped] [DP [D′ [D that] [NP [N′ [AdjP [Adj′ [Adj unlucky]]] [N′ [N man]]]]]]] [PP [P′ [P with] [DP [D′ [D a] [NP [N′ [N cane]]]]]]]]]]]"
           },
           "id": "np.77e41aae"
         },
@@ -431,7 +431,7 @@
           "sim": "tree",
           "caption": "(14), reading B: the man who had a cane. The PP is an adjunct N′ inside the object DP.",
           "params": {
-            "bracket": "[TP [DP [D′ [D she]]] [T′ [T PAST] [VP [V′ [V tripped] [DP [D′ [D that] [NP [N′ [N [NP [N′ [N′ [AdjP [Adj′ [Adj unlucky]]] [N′ [N man]]] [PP [P′ [P with] [DP [D′ [D a] [NP [N′ [N cane]]]]]]]]]]]]]]]]]]"
+            "bracket": "[TP [DP [D′ [D she]]] [T′ [T PAST] [VP [V′ [V tripped] [DP [D′ [D that] [NP [N′ [N′ [AdjP [Adj′ [Adj unlucky]]] [N′ [N man]]] [PP [P′ [P with] [DP [D′ [D a] [NP [N′ [N cane]]]]]]]]]]]]]]]"
           },
           "id": "np.3b31c119"
         },

@@ -162,15 +162,15 @@ export const courses: Course[] = [
     ],
     exam: {
       label: "Oral Exam 1",
-      date: "2026-10-13",
-      format: "Individual, 20–25 min, Oct 13 or 15. Explain a concept chosen in advance, then apply it to a fresh problem.",
+      date: "2026-10-15",
+      format: "Your slot: Thu Oct 15, 12:00 to 12:30, Clark Hall 491, at the whiteboard. Topic: the Projection Principle. 2 to 3 min prepared (notes OK, 4 pts), then a sentence on the day: apply the topic, explain your approach, draw the X-bar tree (no notes, 6 pts).",
       covers: "Weeks 1–8: categories & distribution tests, heads/dependents, complements vs adjuncts, constituency tests, phrase structure, X-bar, theta roles.",
     },
     deadlines: [
       { date: "2026-09-21", label: "Quiz 2 due Mon noon (open book)", kind: "quiz" },
       { date: "2026-09-24", label: "Quiz 3 in class", kind: "quiz" },
       { date: "2026-09-30", label: "HW 2 due Wed noon", weight: "7.5%", kind: "hw" },
-      { date: "2026-10-13", label: "ORAL EXAM 1", weight: "10–20%", kind: "exam" },
+      { date: "2026-10-15", label: "ORAL EXAM 1 · Projection Principle · 12:00, CL 491", weight: "10%", kind: "exam" },
     ],
     alerts: [
       { kind: "info", text: "Participation includes uploading class notes twice; you were scheduled for 8/25. Upload a photo of that packet if you haven't." },
@@ -182,10 +182,8 @@ export const courses: Course[] = [
       "Substitution, movement, fragment-answer tests with correct pass/fail.",
       "Head directionality for English, Japanese, Arabic.",
     ],
-    guides: ["0-what-syntax-is", "1-universals", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure", "7-x-bar"],
-    planned: [
-      { label: "Week 8", title: "Arguments, adjuncts, theta roles · Oral Exam 1 prep" },
-    ],
+    guides: ["0-what-syntax-is", "1-universals", "2-categories", "4-heads-dependents", "5-constituency-tests", "6-phrase-structure", "7-x-bar", "8-arguments-projection"],
+    planned: [],
   },
   {
     slug: "ling124",

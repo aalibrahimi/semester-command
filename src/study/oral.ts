@@ -39,6 +39,58 @@ export const ORAL_APPLY_SECONDS = 180;
 
 const LING112: OralConcept[] = [
   {
+    id: "projection",
+    title: "The Projection Principle (your Oral Exam 1 topic)",
+    prompt: "What is the Projection Principle? Give an example, and explain an issue it solves or raises.",
+    guideId: "ling112/8-arguments-projection",
+    sectionId: "oral",
+    points: [
+      { label: "Definition (Dr. Nie's words)", detail: "Every head must have all of its requirements fulfilled." },
+      { label: "What 'requirements' are", detail: "Number of arguments (valency), their syntactic category (DP, PP), and their theta roles (Agent, Theme, Recipient, Location, Experiencer): the head's theta grid." },
+      { label: "An example with its grid", detail: "place: x DP Agent, y DP Theme, z PP Location ('Carly placed the briefcase on the table'), written on the board." },
+      { label: "Show it failing", detail: "# Carly placed the briefcase (number), # I placed the table a book (category: DP DP), # I placed a book on George (role: needs an inanimate Location)." },
+      { label: "What it solves", detail: "Which phrases are obligatory: arguments are in the grid (complements = sisters of V, subject = Spec,TP); everything else is an adjunct (sister of V′, optional, stackable)." },
+      { label: "What it raises", detail: "Zero-argument verbs (snow, rain, seem) require nothing, yet 'It snowed' needs a subject: the EPP (every clause has a subject); the expletive gets no theta role, so the Theta Criterion still holds." },
+    ],
+    problems: [
+      {
+        task: "Apply the Projection Principle to 'The students gave their teacher a card on Friday', explain your approach, then draw the X-bar tree.",
+        checklist: [
+          "Verb: gave (give), a three-argument verb",
+          "Grid: x DP Agent (the students), y DP Recipient (their teacher), z DP Theme (a card)",
+          "give allows DP DP here (also DP PP: gave a card to their teacher)",
+          "on Friday is not in the grid: adjunct, sister of V′",
+          "Tree: [TP [DP the students] [T′ [T PAST] [VP [V′ [V′ [V gave] [DP their teacher] [DP a card]] [PP on Friday]]]]], all three levels on every phrase",
+          "Check: every slot in give's grid filled exactly once",
+        ],
+        model: "The head with requirements is 'gave'. Give is a three-place predicate: x is a DP Agent, the students; y is a DP Recipient, their teacher; z is a DP Theme, a card. By the Projection Principle all three have to be in the tree: the students in the specifier of TP, and their teacher and a card as complements, both sisters of V under the lowest V-bar. 'On Friday' isn't in give's grid, so it's an adjunct: I can drop it, and it attaches to a new V-bar above. T is PAST. Checking the tree, every requirement of give is filled exactly once.",
+      },
+      {
+        task: "Apply the Projection Principle to 'It rained in the city', then draw the tree.",
+        checklist: [
+          "rain is a zero-argument predicate: the Projection Principle requires nothing",
+          "It is an expletive: required by the EPP (every clause has a subject), no theta role",
+          "in the city is an adjunct (rain doesn't need a place): sister of V′",
+          "Tree: [TP [DP [D′ [D it]]] [T′ [T PAST] [VP [V′ [V′ [V rained]] [PP in the city]]]]]",
+          "Say why this is the interesting case: the Projection Principle alone doesn't explain 'it'",
+        ],
+        model: "Rain has no requirements: it's a zero-argument predicate, so the Projection Principle asks for nothing here, and nothing in the sentence is a complement. But English still needs a subject, and that's the EPP: every clause must have a subject. So 'it' is an expletive in the specifier of TP with no theta role, which keeps the Theta Criterion happy. 'In the city' isn't required by rain, so it's an adjunct, sister of V-bar. This sentence shows exactly where the Projection Principle stops and the EPP takes over.",
+      },
+      {
+        task: "Apply the Projection Principle to 'Maya will set the plates on the table carefully', then draw the tree.",
+        checklist: [
+          "Verb: set, three arguments like place",
+          "Grid: x DP Agent (Maya), y DP Theme (the plates), z PP Location (on the table)",
+          "carefully is an adjunct (manner): sister of V′",
+          "will is in T",
+          "Tree: [TP [DP Maya] [T′ [T will] [VP [V′ [V′ [V set] [DP the plates] [PP on the table]] [AdvP carefully]]]]]",
+          "Contrast: # Maya will set the plates (the Location requirement isn't fulfilled)",
+        ],
+        model: "The verb is set, which works like place: it needs a DP Agent, a DP Theme and a PP Location. Maya is the Agent in the specifier of TP; 'the plates' and 'on the table' are both complements, sisters of V, because set requires them: 'Maya will set the plates' on its own is incomplete. 'Carefully' is manner, not in the grid, so it's an adjunct on a higher V-bar. 'Will' goes in T. Every requirement of set is fulfilled once, so the Projection Principle is satisfied.",
+      },
+    ],
+  },
+  {
     id: "heads",
     title: "Heads, complements and adjuncts",
     prompt: "What is the head of a phrase, and how do you tell a complement from an adjunct?",
