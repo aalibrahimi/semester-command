@@ -21,6 +21,7 @@ pub mod auth;
 pub mod content;
 pub mod data;
 pub mod degree;
+pub mod explain;
 pub mod grades;
 pub mod inbox;
 pub mod lectures;

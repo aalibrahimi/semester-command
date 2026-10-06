@@ -393,3 +393,11 @@
 .study-svg [font-family*="mono" i] {
   font-family: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
 }
+
+/* Saved highlights in the Read view (CSS Custom Highlight API, see
+   components/study/HighlightLayer.tsx). Amber, like a highlighter pen,
+   readable in both themes. */
+::highlight(study-hl) {
+  background-color: rgb(var(--at-risk) / 0.32);
+  color: inherit;
+}

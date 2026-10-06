@@ -19,6 +19,8 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
 import { Search as SearchIcon } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { HighlightsButton } from "./HighlightsButton";
+import { ExplainDialog } from "@/components/study/ExplainDialog";
 import { InboxBell } from "@/components/inbox/InboxBell";
 import { CanvasStatus } from "@/components/layout/CanvasStatus";
 import { ToastStack } from "@/components/inbox/NotificationCard";
@@ -127,6 +129,7 @@ export function AppShell() {
 
           <div className="ml-auto flex items-center gap-2">
             <CanvasStatus />
+            <HighlightsButton />
             <InboxBell />
             {/* Styled as the reference's floating search pill rather than a
                 bordered button — same ⌘K affordance, softer body language. */}
@@ -170,6 +173,7 @@ export function AppShell() {
       </div>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <ExplainDialog />
 
       <ToastStack
         toasts={stack.toasts}

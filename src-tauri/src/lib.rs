@@ -29,6 +29,7 @@ pub mod commands;
 pub mod content;
 pub mod db;
 pub mod degree;
+pub mod explain;
 pub mod grades;
 pub mod ical;
 pub mod inbox;
@@ -133,6 +134,15 @@ pub fn run() {
             commands::study::study_attempts_recent,
             commands::study::record_study_exam,
             commands::study::study_exams_recent,
+            commands::explain::highlight_add,
+            commands::explain::highlights_all,
+            commands::explain::highlight_delete,
+            commands::explain::explain_record,
+            commands::explain::explains_all,
+            commands::explain::explain_ai_status,
+            commands::explain::explain_ai_set_key,
+            commands::explain::explain_ai_clear_key,
+            commands::explain::explain_ai_grade,
             commands::inbox::inbox_list,
             commands::inbox::inbox_unread_count,
             commands::inbox::inbox_mark_read,
@@ -257,6 +267,8 @@ fn setup_auth(app: tauri::AppHandle, config_dir: std::path::PathBuf) {
             Slot::Session => AuthMode::Session {
                 cookie_header: r.secret,
             },
+            // load() only ever returns the two Canvas slots.
+            Slot::Anthropic => return,
         };
         tracing::info!(slot = ?r.slot, backend = ?r.backend, "credential restored from storage");
 

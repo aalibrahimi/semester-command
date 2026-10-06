@@ -19,11 +19,13 @@
  * Called by: StudyRead. Calls: Inline (markdown-ish inline), Stepper.
  * Consecutive definition/trap cards are laid out in a two-column grid.
  */
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2 } from "lucide-react";
+import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { AlertOctagon, Compass, Globe2, HelpCircle, Lightbulb, Maximize2, MessageSquareText } from "lucide-react";
 import { IS_TAURI, contentAsset } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 import type { GuideBlock, ProseLabel } from "@/study/guide";
+import { ReadingContext, openExplain } from "@/study/highlights";
+import { boldPhrases, pickKeys } from "@/study/explainCheck";
 import { Inline } from "./Blocks";
 import { Diagram } from "./Diagram";
 import { ExampleBody } from "./ExampleBody";
@@ -120,8 +122,11 @@ export function GuideBlockView({ block }: { block: GuideBlock }) {
 
     case "definition":
       return (
-        <div id={block.id} className="scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-3.5 shadow-card">
-          <div className="mb-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground">Definition</div>
+        <div id={block.id} className="group/def scroll-mt-6 rounded-xl border border-border/70 bg-card px-4 py-3.5 shadow-card">
+          <div className="mb-1 flex items-center text-2xs font-medium uppercase tracking-wider text-muted-foreground">
+            Definition
+            <ExplainDefinition block={block} />
+          </div>
           <div className="font-display text-base font-semibold tracking-tight">{block.term}</div>
           <p className={cn(BODY, "mt-1.5 text-[15px] leading-relaxed")}>
             <Inline text={block.body} />
@@ -441,5 +446,36 @@ function FigureView({ id, svg, viewBox, caption }: { id: string; svg: string; vi
         </div>
       )}
     </figure>
+  );
+}
+
+/**
+ * The definition card's "Explain it" button: opens the explain dialog on
+ * this term (fill the blanks, or say it in your own words). Shown only in
+ * the Read view, where the chapter and section are known.
+ */
+function ExplainDefinition({ block }: { block: Extract<GuideBlock, { type: "definition" }> }) {
+  const at = useContext(ReadingContext);
+  if (!at) return null;
+  const keys = boldPhrases(block.body);
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        openExplain({
+          target: `d:${block.id}`,
+          guideId: at.guideId,
+          sectionId: at.sectionId,
+          blockId: block.id,
+          title: block.term,
+          text: block.body,
+          context: `${block.term}: ${block.body.replace(/\*\*/g, "")}`,
+          keys: keys.length ? keys : pickKeys(block.body),
+        })
+      }
+      className="ml-auto flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium normal-case tracking-normal text-brand-fg opacity-60 transition-opacity hover:bg-brand/10 hover:opacity-100 group-hover/def:opacity-100"
+    >
+      <MessageSquareText className="h-3 w-3" /> Explain it
+    </button>
   );
 }

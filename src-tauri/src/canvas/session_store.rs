@@ -30,11 +30,14 @@ pub enum Backend {
     File,
 }
 
-/// The two credential kinds (§2.0). Token is Tier 0, cookies are Tier 1.
+/// The credential kinds. Token is Tier 0, cookies are Tier 1 (§2.0).
+/// `Anthropic` is the reader's own API key for the optional Claude check in
+/// Study (explain.rs); it is never part of Canvas sign-in or sign-out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Slot {
     Token,
     Session,
+    Anthropic,
 }
 
 impl Slot {
@@ -43,6 +46,7 @@ impl Slot {
         match self {
             Slot::Token => "canvas-token",
             Slot::Session => "canvas-session",
+            Slot::Anthropic => "anthropic-api-key",
         }
     }
 }
@@ -106,6 +110,11 @@ impl SessionStore {
             }
         }
         None
+    }
+
+    /// Read one slot (keyring first, then the fallback file).
+    pub fn load_one(&self, slot: Slot) -> Option<String> {
+        self.load_slot(slot).map(|(secret, _)| secret)
     }
 
     fn load_slot(&self, slot: Slot) -> Option<(String, Backend)> {

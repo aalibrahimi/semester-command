@@ -676,3 +676,53 @@ export async function contentSync(): Promise<ContentSyncReport> {
 
 /** Emitted by the backend after a content sync that changed something. */
 export const CONTENT_EVENT = "content:synced";
+
+/* ── Highlights and explain-it (migration 0019) ──────────────────────────── */
+
+export interface HighlightRecord {
+  id?: number | null;
+  guideId: string;
+  sectionId: string;
+  blockId: string;
+  text: string;
+  /** The whole block's plain text. */
+  context: string;
+  /** JSON array of key ideas. */
+  keys: string;
+  createdAt: string;
+}
+
+export interface ExplainRecord {
+  id?: number | null;
+  /** "h:<highlight id>" or "d:<block id>". */
+  target: string;
+  guideId: string;
+  mode: "blanks" | "own";
+  answer: string;
+  score: number;
+  /** JSON array of key ideas not covered. */
+  missed: string;
+  /** JSON of AiFeedback, when Claude was asked. */
+  ai?: string | null;
+  at: string;
+}
+
+export interface AiFeedback {
+  verdict: "right" | "almost" | "wrong";
+  got: string[];
+  missing: string[];
+  wrong: string[];
+  nudge: string;
+  compare?: string | null;
+}
+
+export const highlightAdd = (highlight: HighlightRecord) => call<HighlightRecord>("highlight_add", { highlight });
+export const highlightsAll = () => call<HighlightRecord[]>("highlights_all");
+export const highlightDelete = (id: number) => call<void>("highlight_delete", { id });
+export const explainRecord = (attempt: ExplainRecord) => call<ExplainRecord>("explain_record", { attempt });
+export const explainsAll = () => call<ExplainRecord[]>("explains_all");
+export const explainAiStatus = () => call<boolean>("explain_ai_status");
+export const explainAiSetKey = (key: string) => call<void>("explain_ai_set_key", { key });
+export const explainAiClearKey = () => call<void>("explain_ai_clear_key");
+export const explainAiGrade = (request: { concept: string; reference: string; answer: string; previous?: string | null }) =>
+  call<AiFeedback>("explain_ai_grade", { request });

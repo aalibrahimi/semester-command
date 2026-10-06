@@ -22,7 +22,7 @@ import {
 } from "@tauri-apps/plugin-autostart";
 import { BellOff, BellRing, KeyRound, Link2, Monitor, PencilLine } from "lucide-react";
 import { NotificationCard } from "@/components/inbox/NotificationCard";
-import { contentStatus, contentSync, getPopupStyle, notifyTest, setPopupStyle, type ContentStatus } from "@/lib/ipc";
+import { contentStatus, contentSync, explainAiClearKey, explainAiSetKey, explainAiStatus, getPopupStyle, notifyTest, setPopupStyle, type ContentStatus } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 import type { InboxItem, PopupStyle } from "@/types";
 import { toast } from "sonner";
@@ -190,6 +190,9 @@ export default function Settings() {
         {/* ── Study content (Railway) ───────────────────────────────────── */}
         <ContentSettings />
 
+        {/* ── Claude check for "explain it" ─────────────────────────────── */}
+        <ClaudeKeySettings />
+
         {/* ── Appearance ────────────────────────────────────────────────── */}
         <Card className="rounded-2xl border-border/60 shadow-card">
           <CardHeader>
@@ -340,6 +343,74 @@ function AutostartToggle() {
         aria-label="Start at login"
       />
     </div>
+  );
+}
+
+/**
+ * The reader's own Anthropic API key, for the optional "Ask Claude" check in
+ * the explain dialog. Saved by the Rust side into the OS keychain; the
+ * webview only ever learns whether one is saved, never the key itself.
+ */
+function ClaudeKeySettings() {
+  const [saved, setSaved] = useState<boolean | null>(null);
+  const [key, setKey] = useState("");
+  const [busy, setBusy] = useState(false);
+  const refresh = () => void (IS_TAURI ? explainAiStatus().then(setSaved).catch(() => setSaved(false)) : setSaved(false));
+  useEffect(() => {
+    // oxlint-disable-next-line set-state-in-effect -- reads external state once
+    refresh();
+  }, []);
+  const save = () => {
+    setBusy(true);
+    explainAiSetKey(key)
+      .then(() => {
+        setKey("");
+        toast.success("Key saved in your keychain.");
+      })
+      .catch((e: unknown) => toast.error(errorText(e, "Could not save the key.")))
+      .finally(() => {
+        setBusy(false);
+        refresh();
+      });
+  };
+  const remove = () =>
+    void explainAiClearKey()
+      .then(() => toast.success("Key removed."))
+      .catch((e: unknown) => toast.error(errorText(e, "Could not remove the key.")))
+      .finally(refresh);
+  return (
+    <Card className="rounded-2xl border-border/60 shadow-card">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          Claude check for "Explain it"
+          {saved && <Badge variant="secondary">Key saved</Badge>}
+        </CardTitle>
+        <CardDescription>
+          Optional. The built-in check always runs and is free. With your own Anthropic API key, the explain dialog also gets an
+          Ask Claude button that judges meaning instead of matching words. Each check is one small request (well under a cent).
+          The key is stored in your Mac's keychain and only the app's backend reads it.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-wrap items-center gap-2">
+        <input
+          type="password"
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          placeholder={saved ? "Paste a new key to replace it" : "sk-ant-…"}
+          autoComplete="off"
+          spellCheck={false}
+          className="min-w-[260px] flex-1 rounded-lg border border-border bg-background px-3 py-2 font-mono text-sm outline-none focus:border-brand"
+        />
+        <Button size="sm" onClick={save} disabled={busy || !key.trim() || !IS_TAURI}>
+          Save key
+        </Button>
+        {saved && (
+          <Button size="sm" variant="ghost" onClick={remove}>
+            Remove
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

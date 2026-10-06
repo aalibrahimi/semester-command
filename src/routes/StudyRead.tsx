@@ -19,6 +19,8 @@ import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-r
 import { ArrowLeft, ArrowRight, Check, Circle, PencilLine, Presentation, X } from "lucide-react";
 import { DrillFocus, DrillPanel, drillsFor } from "@/components/study/Drill";
 import { GuideBlocks } from "@/components/study/GuideBlocks";
+import { HighlightLayer } from "@/components/study/HighlightLayer";
+import { ReadingContext } from "@/study/highlights";
 import { GuideTopRow } from "@/components/study/GuideChrome";
 import { Inline } from "@/components/study/Blocks";
 import { Practice } from "@/components/study/Practice";
@@ -365,7 +367,11 @@ export default function StudyRead() {
               <span className={cn("ml-auto text-2xs font-medium uppercase tracking-wider", status === "mastered" ? "text-on-track-fg" : "text-at-risk-fg")}>{status}</span>
             )}
           </h2>
-          <GuideBlocks blocks={section.blocks} />
+          <ReadingContext.Provider value={{ guideId: guide.id, sectionId: section.id }}>
+            <HighlightLayer guide={guide} sectionId={section.id}>
+              <GuideBlocks blocks={section.blocks} />
+            </HighlightLayer>
+          </ReadingContext.Provider>
 
           {drills.length > 0 && <DrillPanel guide={guide} sectionId={section.id} drills={drills} mastery={mastery} onFocus={() => setFocus(true)} replay={replay} />}
 
