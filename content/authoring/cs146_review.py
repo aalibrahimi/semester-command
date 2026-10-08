@@ -78,9 +78,10 @@ g = {
   {"id": "start", "heading": "How to use this (read first, 2 minutes)", "blocks": [
     P("This page is the **whole midterm in one place**, written for understanding, not memorizing code. Every topic has the same five parts: **the idea in one sentence**, the **few definitions** you must be able to say, **one small example**, the **trap** that costs points, and a **go deeper** row of links into the full chapter when something doesn't click.", slide="What this is"),
     T(["", "The facts"], [
-      ["When", "**Monday, Oct 12**, in class, on paper (30% of your grade)"],
-      ["Covers", "Lectures 2 to 13: ADTs to AVL trees"],
-      ["Given to you", "only the three master-method cases"],
+      ["When", "**Monday, Oct 12**, in class, on paper, the full 75 minutes (30% of your grade)"],
+      ["Shape", "about **10 short answers** and **5 detailed answers**, front and back, partial credit"],
+      ["Covers", "every lecture to date: ADTs to AVL trees"],
+      ["Given to you", "only the three master-method cases. No notes, scratch paper, devices or watches; bring your Tower Card"],
       ["What he tests", "exactly what's on the slides: traces on small arrays and trees, runtimes, and the **why** behind them. A few 'extend it to a new case' questions."],
     ], title="The midterm"),
     ROAD("Twelve topics, in lecture order", [
@@ -91,6 +92,7 @@ g = {
       ("Sorting", "heaps, quicksort, linear-time sorts", "Lectures 8 to 10", "amber"),
       ("Lookup", "hash tables, BSTs, AVL trees", "Lectures 11 to 13", "red"),
     ], "The course so far, grouped. Each group builds on the one before.", eyebrow="Midterm map"),
+    DEEPER("**Do Poon's own review first.** The Lecture 14 chapter answers every question from his review slides, in his order, with a practice paper in the real exam's shape.", [ch("Lecture 14: Poon's review, answered", "14-midterm-review", "map"), ch("Practice paper", "14-midterm-review", "paper")]),
     WHEN("**Short on time?** Do it in this order: the **comparison tables** at the end (they answer half the 'which is faster and why' questions), then **master method**, **quicksort**, **heaps**, **BSTs** and **AVL** (the most traceable topics), then everything else. Each topic takes about 8 to 10 minutes. Mark a topic **shaky** and the app will bring it back in Recall and on your Ready page."),
   ]},
 
@@ -119,7 +121,7 @@ g = {
     ], title="Insertion sort's runtime"),
     P("Insertion sort is **in place** (O(1) extra space) and **stable**: the test is strictly `a[i] > key`, so equal items never jump past each other."),
     TRAP("Writing the invariant about the **whole** array ('the array is sorted') instead of the **prefix** ('a[0..j−1] is sorted'). An invariant must be true in the middle, when the job is half done.", "Exam"),
-    DEEPER("**Stuck?** Lecture 3 from zero goes one idea at a time, with the code next to plain English and a video.", [ch("Lecture 3 from zero: invariants", "3-from-zero", "invariant"), ch("Lecture 3 from zero: the code", "3-from-zero", "code"), ch("Loop invariants", L2, "invariants"), ch("Insertion sort", L2, "insertion"), ch("Induction (Chapter 0)", L0, "induction")]),
+    DEEPER("**Stuck?** Lecture 3 from zero goes one idea at a time, with the code next to plain English and a video.", [ch("Lecture 3 from zero: invariants", "3-from-zero", "invariant"), ch("Lecture 3 from zero: the code", "3-from-zero", "code"), ch("Loop invariants", L2, "invariants"), ch("Insertion sort", L2, "insertion"), ch("Induction (Chapter 0)", L0, "induction"), canvas("Poon: insertion sort", 89211807)]),
   ]},
 
   {"id": "bigo", "heading": "3. Big-O, Omega, Theta and the growth ladder (Lecture 4)", "blocks": [
@@ -140,7 +142,7 @@ g = {
     ], title="The growth ladder, slowest-growing first"),
     E("Simplify", "T(n) = 3n² + 10n log n + 500\n\nKeep the fastest-growing term, drop its constant: **Θ(n²)**.\nProve O(n²) with the definition: for n ≥ 1, 3n² + 10n log n + 500 ≤ 3n² + 10n² + 500n² = 513n², so c = 513, n₀ = 1.", answer="Θ(n²)"),
     TRAP("Dropping a term that **isn't** a constant. n log n is not 'n times a constant': log n grows. O(n log n) stays O(n log n).", "HW 4"),
-    DEEPER("**Stuck?** Lecture 3 from zero explains what O, Ω and Θ are each for, with a video; Chapter 0 explains log from zero.", [ch("O, Ω, Θ from zero", "3-from-zero", "family"), ch("log n vs n log n", "3-from-zero", "logs"), ch("Big-O in plain words", L4, "bigo"), ch("The growth ladder", L4, "classes"), ch("What log n means", L0, "log"), yt("Asymptotic notation, worked (Abdul Bari)", "A03oI0znAoc"), site("Big-O cheat sheet", "https://www.bigocheatsheet.com/")]),
+    DEEPER("**Stuck?** Lecture 3 from zero explains what O, Ω and Θ are each for, with a video; Chapter 0 explains log from zero.", [ch("O, Ω, Θ from zero", "3-from-zero", "family"), ch("log n vs n log n", "3-from-zero", "logs"), ch("Big-O in plain words", L4, "bigo"), ch("The growth ladder", L4, "classes"), ch("What log n means", L0, "log"), canvas("Poon: Big-O", 89211000), yt("Asymptotic notation, worked (Abdul Bari)", "A03oI0znAoc"), site("Big-O cheat sheet", "https://www.bigocheatsheet.com/")]),
   ]},
 
   {"id": "dc", "heading": "4. Divide and conquer, binary search, merge sort (Lectures 4 to 5)", "blocks": [
@@ -156,7 +158,7 @@ g = {
     video("/study-videos/cs146-merge-sort.mp4"),
     P("**Why n log n?** The halving makes **log n levels**; every level merges all n items once. n work × log n levels = **n log n**. That picture (the recursion tree) is the answer to 'explain merge sort's runtime'."),
     TRAP("Saying merge sort sorts **in place**. It doesn't: merge writes into a temporary array, **O(n) extra space**. Insertion sort and heap sort are the in-place ones.", "Lecture 5"),
-    DEEPER("**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter. log n vs n log n has its own slow section.", [ch("log n vs n log n, slowly", "3-from-zero", "logs"), ch("Binary search", L4, "binsearch"), ch("Merge", L4, "merge"), ch("Merge sort", L4, "mergesort"), ch("Why n log n", L4, "whynlogn"), yt("Merge sort (Abdul Bari)", "mB5HXBb_HY8")]),
+    DEEPER("**Stuck?** Watch the video again at 0.75×, or step through merge in the chapter. log n vs n log n has its own slow section.", [ch("log n vs n log n, slowly", "3-from-zero", "logs"), ch("Binary search", L4, "binsearch"), ch("Merge", L4, "merge"), ch("Merge sort", L4, "mergesort"), ch("Why n log n", L4, "whynlogn"), canvas("Poon: merge", 89211345), canvas("Poon: merge sort", 89211678), yt("Merge sort (Abdul Bari)", "mB5HXBb_HY8")]),
   ]},
 
   {"id": "recurrences", "heading": "5. Recurrences and the recursion tree (Lecture 6)", "blocks": [
@@ -204,7 +206,7 @@ g = {
     ], title="Every heap operation"),
     video("/study-videos/cs146-heapsort.mp4"),
     TRAP("Mixing up index formulas: Poon is **0-based** (2i+1, 2i+2). The textbook (CLRS) is 1-based (2i, 2i+1). Use his.", "Exam"),
-    DEEPER("**Stuck?** The chapter traces heapify and buildHeap line by line.", [ch("Array as tree", L8, "array"), ch("heapify", L8, "heapify"), ch("buildHeap is O(n)", L8, "build"), ch("Heap sort", L8, "sort"), ch("Priority queue", L8, "pq"), yt("Heap sort and heapify (Abdul Bari)", "HqPJF2L5h9U"), site("Heap visualizer (USFCA)", "https://www.cs.usfca.edu/~galles/visualization/Heap.html")]),
+    DEEPER("**Stuck?** The chapter traces heapify and buildHeap line by line.", [ch("Array as tree", L8, "array"), ch("heapify", L8, "heapify"), ch("buildHeap is O(n)", L8, "build"), ch("Heap sort", L8, "sort"), ch("Priority queue", L8, "pq"), canvas("Poon: heap sort", 89212093), yt("Heap sort and heapify (Abdul Bari)", "HqPJF2L5h9U"), site("Heap visualizer (USFCA)", "https://www.cs.usfca.edu/~galles/visualization/Heap.html")]),
   ]},
 
   {"id": "quicksort", "heading": "8. Quicksort (Lecture 9)", "blocks": [
@@ -220,7 +222,7 @@ g = {
     ], title="The three n log n sorts (Poon's slide)"),
     P("**Worst case:** every pivot is the largest or smallest item, so one side is empty and the other has n − 1: n + (n−1) + … = **n²**. With last-item pivots, that happens on **already sorted** input. Fixes: a **random** pivot, **median of three**."),
     TRAP("Returning i instead of **i + 1** from partition, or counting the returned index from low instead of from 0 (it's an index into the **whole** array).", "HW 9"),
-    DEEPER("**Stuck?** Poon's own animation and the chapter's line-by-line partition trace.", [ch("partition", L9, "partition"), ch("quicksort", L9, "quicksort"), ch("Why the worst case is n²", L9, "analysis"), canvas("Poon's video: partitioning an array", 88840377), yt("Quicksort (Abdul Bari)", "7h1s2SojIRw")]),
+    DEEPER("**Stuck?** Poon's own animation and the chapter's line-by-line partition trace.", [ch("partition", L9, "partition"), ch("quicksort", L9, "quicksort"), ch("Why the worst case is n²", L9, "analysis"), canvas("Poon's video: partitioning an array", 88840377), canvas("Poon: partitioning students", 89211879), canvas("Poon: quicksort", 89211995), yt("Quicksort (Abdul Bari)", "7h1s2SojIRw")]),
   ]},
 
   {"id": "linear", "heading": "9. The n log n limit and linear-time sorts (Lecture 10)", "blocks": [
@@ -270,7 +272,7 @@ g = {
     ], title="The three traversals"),
     P("**h is the catch.** Keys in mixed order: h ≈ log n, everything O(log n). Keys in **sorted** order: the tree is a chain, h = n − 1, everything **O(n)**. That's the problem AVL trees fix."),
     TRAP("The BST rule is about whole **subtrees**, not just children. And in the two-children delete, forgetting step two: after copying the successor up, delete the old successor node.", "Exam"),
-    DEEPER("**Stuck?** Poon's own successor videos, and the chapter's line-by-line traces.", [ch("The BST property", L12, "property"), ch("Search and successor", L12, "search"), ch("Traversals", L12, "traversal"), ch("Insert", L12, "insert"), ch("Delete: three cases", L12, "delete"), canvas("Poon: successor of 13", 89088648), canvas("Poon: what insert() returns", 89089843), site("BST visualizer (USFCA)", "https://www.cs.usfca.edu/~galles/visualization/BST.html")]),
+    DEEPER("**Stuck?** Poon's own successor videos, and the chapter's line-by-line traces.", [ch("The BST property", L12, "property"), ch("Search and successor", L12, "search"), ch("Traversals", L12, "traversal"), ch("Insert", L12, "insert"), ch("Delete: three cases", L12, "delete"), canvas("Poon: successor of 13", 89088648), canvas("Poon: what insert() returns", 89089843), canvas("Poon: successor of 9", 89212217), canvas("Poon: BST insert", 89212360), site("BST visualizer (USFCA)", "https://www.cs.usfca.edu/~galles/visualization/BST.html")]),
   ]},
 
   {"id": "avl", "heading": "12. AVL trees (Lecture 13)", "blocks": [
@@ -333,7 +335,7 @@ g = {
       ["AVL", "B = left − right; null is −1; zig-zags need two rotations; delete can cascade"],
     ], title="The trap list"),
     WHY("**Why it matters** These are the exact slips Poon marks down on homework, and he writes the midterm from the same slides. Knowing the trap is often worth the whole question."),
-    DEEPER("**Want a test run?** The mock exam and the Ready page use everything you've marked so far.", [ch("Start of Lecture 2", L2, "map"), ch("Start of Lecture 13", L13, "map")]),
+    DEEPER("**Want a test run?** The mock exam and the Ready page use everything you've marked so far.", [ch("Practice paper (Lecture 14)", "14-midterm-review", "paper"), ch("Poon's practice list", "14-midterm-review", "practice"), ch("Start of Lecture 2", L2, "map")]),
   ]},
  ],
  "exercises": [

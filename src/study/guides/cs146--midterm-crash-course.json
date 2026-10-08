@@ -27,15 +27,19 @@
           "rows": [
             [
               "When",
-              "**Monday, Oct 12**, in class, on paper (30% of your grade)"
+              "**Monday, Oct 12**, in class, on paper, the full 75 minutes (30% of your grade)"
+            ],
+            [
+              "Shape",
+              "about **10 short answers** and **5 detailed answers**, front and back, partial credit"
             ],
             [
               "Covers",
-              "Lectures 2 to 13: ADTs to AVL trees"
+              "every lecture to date: ADTs to AVL trees"
             ],
             [
               "Given to you",
-              "only the three master-method cases"
+              "only the three master-method cases. No notes, scratch paper, devices or watches; bring your Tower Card"
             ],
             [
               "What he tests",
@@ -92,6 +96,23 @@
           },
           "caption": "The course so far, grouped. Each group builds on the one before.",
           "id": "start.3fceba93"
+        },
+        {
+          "type": "prose",
+          "md": "**Do Poon's own review first.** The Lecture 14 chapter answers every question from his review slides, in his order, with a practice paper in the real exam's shape.",
+          "resources": [
+            {
+              "label": "Lecture 14: Poon's review, answered",
+              "url": "/study/cs146/14-midterm-review?s=map",
+              "kind": "chapter"
+            },
+            {
+              "label": "Practice paper",
+              "url": "/study/cs146/14-midterm-review?s=paper",
+              "kind": "chapter"
+            }
+          ],
+          "id": "start.72abc04b"
         },
         {
           "type": "prose",
@@ -291,6 +312,11 @@
               "label": "Induction (Chapter 0)",
               "url": "/study/cs146/0-notation?s=induction",
               "kind": "chapter"
+            },
+            {
+              "label": "Poon: insertion sort (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211807",
+              "kind": "video"
             }
           ],
           "id": "invariants.5f8520d5"
@@ -430,6 +456,11 @@
               "kind": "chapter"
             },
             {
+              "label": "Poon: Big-O (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211000",
+              "kind": "video"
+            },
+            {
               "label": "Asymptotic notation, worked (Abdul Bari)",
               "url": "https://www.youtube.com/watch?v=A03oI0znAoc",
               "kind": "video"
@@ -561,6 +592,16 @@
               "label": "Why n log n",
               "url": "/study/cs146/4-big-o-merge-sort?s=whynlogn",
               "kind": "chapter"
+            },
+            {
+              "label": "Poon: merge (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211345",
+              "kind": "video"
+            },
+            {
+              "label": "Poon: merge sort (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211678",
+              "kind": "video"
             },
             {
               "label": "Merge sort (Abdul Bari)",
@@ -918,6 +959,11 @@
               "kind": "chapter"
             },
             {
+              "label": "Poon: heap sort (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89212093",
+              "kind": "video"
+            },
+            {
               "label": "Heap sort and heapify (Abdul Bari)",
               "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U",
               "kind": "video"
@@ -1053,6 +1099,16 @@
             {
               "label": "Poon's video: partitioning an array (Canvas)",
               "url": "https://sjsu.instructure.com/courses/1629570/files/88840377",
+              "kind": "video"
+            },
+            {
+              "label": "Poon: partitioning students (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211879",
+              "kind": "video"
+            },
+            {
+              "label": "Poon: quicksort (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89211995",
               "kind": "video"
             },
             {
@@ -1472,6 +1528,16 @@
               "kind": "video"
             },
             {
+              "label": "Poon: successor of 9 (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89212217",
+              "kind": "video"
+            },
+            {
+              "label": "Poon: BST insert (Canvas)",
+              "url": "https://sjsu.instructure.com/courses/1629570/files/89212360",
+              "kind": "video"
+            },
+            {
               "label": "BST visualizer (USFCA)",
               "url": "https://www.cs.usfca.edu/~galles/visualization/BST.html",
               "kind": "site"
@@ -1888,13 +1954,18 @@
           "md": "**Want a test run?** The mock exam and the Ready page use everything you've marked so far.",
           "resources": [
             {
-              "label": "Start of Lecture 2",
-              "url": "/study/cs146/2-adts-invariants-insertion?s=map",
+              "label": "Practice paper (Lecture 14)",
+              "url": "/study/cs146/14-midterm-review?s=paper",
               "kind": "chapter"
             },
             {
-              "label": "Start of Lecture 13",
-              "url": "/study/cs146/13-avl-trees?s=map",
+              "label": "Poon's practice list",
+              "url": "/study/cs146/14-midterm-review?s=practice",
+              "kind": "chapter"
+            },
+            {
+              "label": "Start of Lecture 2",
+              "url": "/study/cs146/2-adts-invariants-insertion?s=map",
               "kind": "chapter"
             }
           ],

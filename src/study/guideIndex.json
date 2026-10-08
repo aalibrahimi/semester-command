@@ -273,6 +273,71 @@
   "sha": "19d3f0f275b736e1e57fdbb8b5d5aec61efa37915d6425a75f6e045f9f16bcea"
  },
  {
+  "id": "cs146/14-midterm-review",
+  "course": "cs146",
+  "lessons": "Lecture 14",
+  "title": "Poon's midterm review, every question answered",
+  "summary": "Lecture 14 is Poon's own list of what the midterm looks like. This chapter goes through it slide by slide in his order: every '?' on his slides filled in, with the reason behind each answer, the traces animated, his list of practice-problem types turned into links to the app's drills, and a practice paper shaped like the real exam (about 10 short answers and 5 detailed ones).",
+  "estimatedMinutes": 150,
+  "requires": [],
+  "sections": [
+   {
+    "id": "map",
+    "heading": "The exam, in Poon's words"
+   },
+   {
+    "id": "structures",
+    "heading": "1. List, stack and queue runtimes (slides 9 to 14)"
+   },
+   {
+    "id": "invariant",
+    "heading": "2. Write a loop invariant (slide 16)"
+   },
+   {
+    "id": "bigo",
+    "heading": "3. Prove a Big-O, and the growth table (slides 18 to 19)"
+   },
+   {
+    "id": "sorts",
+    "heading": "4. The sorting table (slide 21)"
+   },
+   {
+    "id": "recurrences",
+    "heading": "5. Recurrences: read, substitute, draw the tree (slides 23 to 36)"
+   },
+   {
+    "id": "master",
+    "heading": "6. The master method, and when it doesn't apply (slides 39 to 43)"
+   },
+   {
+    "id": "heaps",
+    "heading": "7. Heaps: fill in the ?s, and what happens if 14 → 3 (slides 46 to 52)"
+   },
+   {
+    "id": "hash",
+    "heading": "8. Hash tables: a good hash function, and chaining runtimes (slides 54 to 56)"
+   },
+   {
+    "id": "bst",
+    "heading": "9. BSTs: why, traversals, insert, runtimes (slides 59 to 69)"
+   },
+   {
+    "id": "avl",
+    "heading": "10. AVL trees: draw the rotations, fill in the strategy (slides 71 to 76)"
+   },
+   {
+    "id": "practice",
+    "heading": "Poon's practice list, turned into the app (slide 78)"
+   },
+   {
+    "id": "paper",
+    "heading": "Practice paper: 10 short, 5 detailed"
+   }
+  ],
+  "exerciseCount": 7,
+  "sha": "ce8f4af6a9bb38abdd85b018196c496b789c2929183b7ee00e7565993bf6f189"
+ },
+ {
   "id": "cs146/2-adts-invariants-insertion",
   "course": "cs146",
   "lessons": "Lectures 2–3",
@@ -684,7 +749,7 @@
    }
   ],
   "exerciseCount": 14,
-  "sha": "ef44b2e889f8859aac7cdd22e2b468c521b05ce88f122ff7c67bfb356b531168"
+  "sha": "5a806380916d5c723fb88849498a33c74bde7120a674af1f11c453da47c5a14c"
  },
  {
   "id": "cs154/1-sets-functions",

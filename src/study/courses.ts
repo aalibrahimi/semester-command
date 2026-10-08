@@ -26,8 +26,8 @@ export const courses: Course[] = [
     exam: {
       label: "Midterm",
       date: "2026-10-12",
-      format: "In class, on paper. Master-theorem cases are given; everything else from memory.",
-      covers: "Lectures 2–13: ADTs, loop invariants, insertion sort, asymptotic notation, divide & conquer, merge sort, recurrences, heaps, quicksort, linear-time sorts, hash tables, BSTs, AVL trees.",
+      format: "In class, on paper, the full 75-minute period: about 10 short answers and 5 detailed answers, front and back. Partial credit. The three master-method cases are printed on it (Lecture 7 slide 35); everything else from memory. Bring your Tower Card and a pencil; no notes, scratch paper, devices or watches.",
+      covers: "Every lecture to date (1–13): ADTs, loop invariants, insertion sort, asymptotic notation, divide & conquer, merge sort, recurrences, heaps, quicksort, linear-time sorts, hash tables, BSTs, AVL trees.",
     },
     deadlines: [
       { date: "2026-09-21", label: "HW 8 · Heaps, Heap Sort, PQs", kind: "hw" },
@@ -35,10 +35,11 @@ export const courses: Course[] = [
       { date: "2026-09-25", label: "Project 1 · SortingHub", weight: "10% of grade", kind: "project" },
       { date: "2026-10-07", label: "Midterm review lecture", kind: "other" },
       { date: "2026-10-12", label: "MIDTERM", weight: "30% of grade", kind: "exam" },
+      { date: "2026-10-14", label: "Post-Midterm Homework", kind: "hw" },
     ],
     alerts: [
-      { kind: "warn", text: "Project 1 (10% of your grade) is due Fri Sep 25, 11:59pm: Insertion Sort + Merge Sort + a hybrid. 10% off per day late." },
-      { kind: "warn", text: "HW 7 (master method) is unsubmitted. Homework is 0% but Poon's data says < 6 completed = high risk of failing. Do it from the Lectures 6–7 chapter and submit late anyway." },
+      { kind: "warn", text: "Midterm Mon Oct 12 (30%). Start with the Lecture 14 chapter: Poon's own review questions, answered in his order, plus a practice paper in the real shape." },
+      { kind: "info", text: "Poon posted short videos of each algorithm to Canvas Files on Oct 8 (Big-O, merge, merge sort, insertion sort, partition, quicksort, heap sort, BST insert and successor). The Lecture 14 chapter links each one where it helps." },
       { kind: "info", text: "Office hours Mon & Wed 8:45–9:00 and 10:15–10:30 around DH318. He leaves at 11:45 sharp: ask in lecture or message on Canvas." },
     ],
     checklist: [
@@ -53,7 +54,7 @@ export const courses: Course[] = [
       "Heap index formulas; trace heapify, buildHeap, heapSort, extract; buildHeap is O(n), heapSort O(1) space.",
       "(After Sep 21–Oct 5) partition trace, counting sort, hash collisions, BST delete, AVL rotations.",
     ],
-    guides: ["0-notation", "2-adts-invariants-insertion", "3-from-zero", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "10-linear-sorts", "11-hash-tables", "12-binary-search-trees", "13-avl-trees"],
+    guides: ["0-notation", "2-adts-invariants-insertion", "3-from-zero", "4-big-o-merge-sort", "6-recurrences", "7-master-method", "8-heaps-heapsort-pq", "9-quicksort", "10-linear-sorts", "11-hash-tables", "12-binary-search-trees", "13-avl-trees", "14-midterm-review"],
     planned: [],
     review: "midterm-crash-course",
   },

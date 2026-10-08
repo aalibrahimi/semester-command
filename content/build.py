@@ -23,6 +23,7 @@ SCRIPTS = [
     ("cs146/9-quicksort", "cs146_9.py"), ("cs146/10-linear-sorts", "cs146_10.py"),
     ("cs146/11-hash-tables", "cs146_11.py"),
     ("cs146/12-binary-search-trees", "cs146_12.py"), ("cs146/13-avl-trees", "cs146_13.py"),
+    ("cs146/14-midterm-review", "cs146_14.py"),
     ("cs146/midterm-crash-course", "cs146_review.py"),
     ("cs154/8-nfa-intro", "cs154_8.py"),
     ("hist15/1-slavery", "h15_1.py"), ("hist15/3-declaration", "h15_3.py"), ("hist15/12-reform", "h15_12.py"),

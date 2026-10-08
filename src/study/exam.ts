@@ -25,7 +25,7 @@ export interface ExamFormat {
 
 /** Per-course shape, from `howTheyTest` and `exam.format` in courses.ts. */
 export const EXAM_FORMATS: Record<string, ExamFormat> = {
-  cs146: { questions: 12, secondsPer: 180, blurb: "In class, on paper: traces, runtimes, and the why. Only the three master-method cases are printed." },
+  cs146: { questions: 15, secondsPer: 300, blurb: "In class, on paper, 75 minutes: about 10 short answers and 5 detailed ones. Traces, runtimes, and the why. Partial credit, so show your steps." },
   cs154: { questions: 15, secondsPer: 120, blurb: "Timed Canvas quiz, closed materials: the weekly quiz with more questions and less time each. Notation counts." },
   hist15: { questions: 15, secondsPer: 120, blurb: "15 multiple choice in 30 minutes, one attempt. Two minutes a question." },
   ling112: { questions: 10, secondsPer: 150, blurb: "The oral exam asks you to explain a concept, then apply it to a fresh problem. 'How do you know?' is the real question every time." },

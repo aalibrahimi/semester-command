@@ -21,6 +21,7 @@ import { drills as cs146Zero } from "./cs146--3-from-zero";
 import { drills as cs146Hash } from "./cs146--11-hash-tables";
 import { drills as cs146Bst } from "./cs146--12-binary-search-trees";
 import { drills as cs146Avl } from "./cs146--13-avl-trees";
+import { drills as cs146Review } from "./cs146--14-midterm-review";
 import { drills as cs154Sets } from "./cs154--1-sets-functions";
 import { drills as cs154Strings } from "./cs154--3-strings-languages";
 import { drills as cs154Dfa } from "./cs154--5-dfa";
@@ -63,6 +64,7 @@ const ALL: Drill[][] = [
   cs146Hash,
   cs146Bst,
   cs146Avl,
+  cs146Review,
   cs154Sets,
   cs154Strings,
   cs154Dfa,

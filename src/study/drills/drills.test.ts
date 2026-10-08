@@ -358,3 +358,57 @@ describe("linear-time sort oracles (recomputed from the prompt)", () => {
     }
   });
 });
+
+describe("midterm review oracles (recomputed from the prompt)", () => {
+  const G = "cs146/14-midterm-review";
+  const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  it("bigo!n0 is the first n with b <= n^k, and a(n^k) + b <= (a+1) n^k from there on", () => {
+    for (const inst of instances(G, "bigo!n0")) {
+      const m = inst.prompt.match(/Prove (\d+)n([⁰-⁹¹²³]*) \+ (\d+) = .* c = (\d+)/)!;
+      const a = Number(m[1]);
+      const k = m[2] ? Number([...m[2]].map((ch) => SUP.indexOf(ch)).join("")) : 1;
+      const b = Number(m[3]);
+      const c = Number(m[4]);
+      const n0 = Number(answerOf(inst));
+      for (let n = n0; n < n0 + 20; n++) expect(a * n ** k + b).toBeLessThanOrEqual(c * n ** k);
+      if (n0 > 1) expect(a * (n0 - 1) ** k + b).toBeGreaterThan(c * (n0 - 1) ** k);
+    }
+  });
+  it("master!regularity: a * f(n/b) equals c * f(n) at sample n, and c < 1", () => {
+    for (const inst of instances(G, "master!regularity")) {
+      const m = inst.prompt.match(/= (\d+)T\(n\/(\d+)\) \+ n([⁰-⁹¹²³]*)/)!;
+      const a = Number(m[1]), b = Number(m[2]);
+      const k = m[3] ? Number([...m[3]].map((ch) => SUP.indexOf(ch)).join("")) : 1;
+      const [p, q] = answerOf(inst).split("/").map(Number);
+      expect(p / q).toBeLessThan(1);
+      for (const n of [64, 81, 256]) expect(Math.abs(a * (n / b) ** k - (p / q) * n ** k)).toBeLessThan(1e-6);
+    }
+  });
+  it("recurrences!levels is the number of divisions by b to reach 1, plus the root", () => {
+    for (const inst of instances(G, "recurrences!levels")) {
+      const b = Number(inst.prompt.match(/T\(n\/(\d+)\)/)![1]);
+      let n = Number(inst.prompt.match(/n = ([\d,]+)/)![1].replace(/,/g, ""));
+      let levels = 1;
+      while (n > 1) { n /= b; levels++; }
+      expect(Number(answerOf(inst))).toBe(levels);
+    }
+  });
+  it("avl!rotate keeps the in-order and puts the right child on top", () => {
+    type T = { k: number; l: T | null; r: T | null };
+    const ins = (t: T | null, k: number): T => (!t ? { k, l: null, r: null } : (k < t.k ? (t.l = ins(t.l, k)) : (t.r = ins(t.r, k)), t));
+    const inord = (t: T | null): number[] => (t ? [...inord(t.l), t.k, ...inord(t.r)] : []);
+    for (const inst of instances(G, "avl!rotate")) {
+      const before = inst.prompt.match(/pre-order is ([\d, ]+) \(/)![1].split(",").map((x) => Number(x.trim()));
+      const dir = inst.prompt.includes("rightRotate") ? "right" : "left";
+      let t: T | null = null;
+      for (const k of before) t = ins(t, k);
+      const after = nums(answerOf(inst));
+      let u: T | null = null;
+      for (const k of after) u = ins(u, k);
+      expect(inord(u)).toEqual(inord(t));
+      expect(after[0]).toBe(dir === "right" ? t!.l!.k : t!.r!.k);
+      // the old root is the new root's child on the rotation side
+      expect((dir === "right" ? u!.r : u!.l)!.k).toBe(t!.k);
+    }
+  });
+});
